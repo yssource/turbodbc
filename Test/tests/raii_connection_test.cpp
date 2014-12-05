@@ -16,17 +16,22 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "cpp_odbc_test/level2_mock_api.h"
+#include "cpp_odbc_test/level2_dummy_api.h"
+
+#include <type_traits>
 
 class raii_connection_test : public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( raii_connection_test );
 
 	CPPUNIT_TEST( raii_connect_and_disconnect );
+	CPPUNIT_TEST( get_handle );
 
 CPPUNIT_TEST_SUITE_END();
 
 public:
 
 	void raii_connect_and_disconnect();
+	void get_handle();
 
 };
 
@@ -77,3 +82,15 @@ void raii_connection_test::raii_connect_and_disconnect()
 	}
 }
 
+void raii_connection_test::get_handle()
+{
+	auto api = psapp::make_valid_ptr<cpp_odbc_test::level2_dummy_api>();
+
+	std::string const connection_string = "my DSN";
+	raii_connection instance(api, e_handle, connection_string);
+
+	bool const returns_handle_ref = std::is_same<connection_handle const &, decltype(instance.get_handle())>::value;
+
+	CPPUNIT_ASSERT( returns_handle_ref );
+	instance.get_handle(); // make sure function symbol is there
+}

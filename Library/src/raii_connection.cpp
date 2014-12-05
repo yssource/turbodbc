@@ -86,5 +86,9 @@ raii_connection::raii_connection(psapp::valid_ptr<cpp_odbc::level2::api const> a
 {
 }
 
+level2::connection_handle const & raii_connection::get_handle() const
+{
+	return impl_->handle.handle;
+}
 
 }
