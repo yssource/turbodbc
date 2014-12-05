@@ -27,7 +27,7 @@ namespace cpp_odbc {
 
 class raii_connection {
 public:
-	raii_connection(psapp::valid_ptr<cpp_odbc::level2::api> api, cpp_odbc::level2::environment_handle const & environment, std::string const & connection_string);
+	raii_connection(psapp::valid_ptr<cpp_odbc::level2::api const> api, cpp_odbc::level2::environment_handle const & environment, std::string const & connection_string);
 
 private:
 	struct intern;

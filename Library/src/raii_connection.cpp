@@ -29,7 +29,7 @@ namespace {
 		psapp::valid_ptr<cpp_odbc::level2::api const> api;
 		cpp_odbc::level2::connection_handle handle;
 
-		raii_handle(psapp::valid_ptr<cpp_odbc::level2::api> api,
+		raii_handle(psapp::valid_ptr<cpp_odbc::level2::api const> api,
 				cpp_odbc::level2::environment_handle const & environment) :
 			api(std::move(api)),
 			handle(api->allocate_connection_handle(environment))
@@ -47,10 +47,10 @@ namespace cpp_odbc {
 
 struct raii_connection::intern {
 	raii_handle handle;
-	psapp::valid_ptr<cpp_odbc::level2::api> api;
+	psapp::valid_ptr<cpp_odbc::level2::api const> api;
 
 	intern(
-			psapp::valid_ptr<cpp_odbc::level2::api> api,
+			psapp::valid_ptr<cpp_odbc::level2::api const> api,
 			cpp_odbc::level2::environment_handle const & environment,
 			std::string const & connection_string
 		) :
@@ -81,7 +81,7 @@ private:
 };
 
 
-raii_connection::raii_connection(psapp::valid_ptr<cpp_odbc::level2::api> api, cpp_odbc::level2::environment_handle const & environment, std::string const & connection_string) :
+raii_connection::raii_connection(psapp::valid_ptr<cpp_odbc::level2::api const> api, cpp_odbc::level2::environment_handle const & environment, std::string const & connection_string) :
 	impl_(std::move(api), environment, connection_string)
 {
 }
