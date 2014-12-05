@@ -23,7 +23,7 @@ namespace pydbc {
 
 }
 
-BOOST_PYTHON_MODULE(libpydbc)
+BOOST_PYTHON_MODULE(pydbc)
 {
     bp::def("connect", pydbc::connect);
 }

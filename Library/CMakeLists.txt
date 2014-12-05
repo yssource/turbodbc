@@ -2,6 +2,8 @@ file(GLOB_RECURSE LIBRARY_FILES "src/*.cpp")
 
 add_library(pydbc ${LIBRARY_FILES})
 
+SET_TARGET_PROPERTIES(pydbc PROPERTIES PREFIX "")
+
 add_dependencies(pydbc
     refresh_cmake_configuration
 )
