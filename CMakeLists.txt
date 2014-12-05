@@ -3,8 +3,12 @@ cmake_minimum_required(VERSION 2.8.7)
 
 include(default_build_setup)
 
-find_package(Boost REQUIRED COMPONENTS system locale thread serialization regex date_time)
+#find_package(Boost REQUIRED COMPONENTS system locale)
+find_package(UsePsapp REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+
+find_package(odbc)
+include_directories(SYSTEM ${Odbc_INCLUDE_DIR})
 
 include_directories(Library)
 add_subdirectory(Library)

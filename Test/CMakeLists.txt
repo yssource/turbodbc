@@ -13,6 +13,8 @@ target_link_libraries(cpp_odbc_test
     cppunit_toolbox
     cppunit_runner_gmock
     cppunit
+    ${Odbc_LIBRARIES}
+    ${Psapp_core_LIB}
 )
 
 add_test(Library cpp_odbc_test)

@@ -8,6 +8,8 @@ add_dependencies(cpp_odbc
 
 target_link_libraries(cpp_odbc
 	${Boost_LIBRARIES}
+	${Odbc_LIBRARIES}
+	${Psapp_core_LIB}
 )
 
 
