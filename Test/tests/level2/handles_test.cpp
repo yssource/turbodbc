@@ -90,7 +90,7 @@ void handles_test::environment_handle()
 
 void handles_test::environment_handle_equality()
 {
-	test_handle_equality<cpp_odbc::level2::connection_handle>();
+	test_handle_equality<cpp_odbc::level2::environment_handle>();
 }
 
 void handles_test::statement_handle()
@@ -100,5 +100,5 @@ void handles_test::statement_handle()
 
 void handles_test::statement_handle_equality()
 {
-	test_handle_equality<cpp_odbc::level2::connection_handle>();
+	test_handle_equality<cpp_odbc::level2::statement_handle>();
 }
