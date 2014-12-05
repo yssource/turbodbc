@@ -18,7 +18,7 @@
 
 namespace cpp_odbc {
 
-raii_statement::raii_statement(psapp::valid_ptr<cpp_odbc::level2::api> api, cpp_odbc::level2::connection_handle const & connection) :
+raii_statement::raii_statement(psapp::valid_ptr<cpp_odbc::level2::api const> api, cpp_odbc::level2::connection_handle const & connection) :
 		api_(api),
 		handle_(api->allocate_statement_handle(connection))
 {
