@@ -16,6 +16,7 @@
 #include "cppunit_toolbox/helpers/is_abstract_base_class.h"
 
 #include "cpp_odbc_test/mock_connection.h"
+#include "cpp_odbc_test/mock_environment.h"
 
 class environment_test : public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( environment_test );
@@ -37,21 +38,13 @@ public:
 // Registers the fixture with the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( environment_test );
 
-namespace {
-
-	class mock_environment : public cpp_odbc::environment {
-	public:
-		MOCK_CONST_METHOD1(do_make_connection, std::shared_ptr<cpp_odbc::connection>(std::string const &));
-		MOCK_CONST_METHOD2(do_set_attribute, void(SQLINTEGER, long));
-	};
-
-}
-
 void environment_test::is_suitable_as_base_class()
 {
 	bool const is_base = cppunit_toolbox::is_abstract_base_class<cpp_odbc::environment>::value;
 	CPPUNIT_ASSERT( is_base );
 }
+
+using cpp_odbc_test::mock_environment;
 
 void environment_test::make_connection_forwards()
 {
