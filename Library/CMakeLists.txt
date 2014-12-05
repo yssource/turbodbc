@@ -10,6 +10,7 @@ target_link_libraries(pydbc
 	${Boost_LIBRARIES}
 	${Odbc_LIBRARIES}
 	${Psapp_core_LIB}
+	${Python_LIBRARIES}
 )
 
 

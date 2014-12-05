@@ -10,3 +10,20 @@
  *
  */
 
+#include <boost/python.hpp>
+
+namespace bp = boost::python;
+
+namespace pydbc {
+
+	int connect()
+	{
+		return 42;
+	}
+
+}
+
+BOOST_PYTHON_MODULE(libpydbc)
+{
+    bp::def("connect", pydbc::connect);
+}
