@@ -13,6 +13,7 @@ target_link_libraries(pydbc
 	${Odbc_LIBRARIES}
 	${Psapp_core_LIB}
 	${Python_LIBRARIES}
+	cpp_odbc
 )
 
 
