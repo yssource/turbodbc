@@ -11,13 +11,8 @@
  */
 
 #include <boost/python.hpp>
-#include <cpp_odbc/level1/unixodbc_backend.h>
-#include <cpp_odbc/level2/level1_connector.h>
-#include <cpp_odbc/raii_environment.h>
-#include <cpp_odbc/connection.h>
-#include <cpp_odbc/statement.h>
+#include <cpp_odbc/cpp_odbc.h>
 
-#include <psapp/valid_ptr.h>
 #include <sqlext.h>
 
 namespace bp = boost::python;
@@ -47,16 +42,9 @@ namespace pydbc {
 		}
 	};
 
-	psapp::valid_ptr<cpp_odbc::environment> make_environment()
-	{
-		auto l1 = psapp::make_valid_ptr<cpp_odbc::level1::unixodbc_backend const>();
-		auto l2 = psapp::make_valid_ptr<cpp_odbc::level2::level1_connector const>(l1);
-		return psapp::make_valid_ptr<cpp_odbc::raii_environment>(l2);
-	}
-
 	py_connection connect(std::string const & data_source_name)
 	{
-		auto environment = make_environment();
+		auto environment = cpp_odbc::make_environment();
 		return {psapp::to_valid(environment->make_connection("dsn=" + data_source_name))};
 	}
 
