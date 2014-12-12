@@ -22,6 +22,7 @@ class connection_test : public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( connection_test );
 
 	CPPUNIT_TEST( is_suitable_as_base_class );
+	CPPUNIT_TEST( is_sharable );
 	CPPUNIT_TEST( make_statement_forwards );
 	CPPUNIT_TEST( set_integer_connection_attribute_forwards );
 	CPPUNIT_TEST( commit_forwards );
@@ -33,6 +34,7 @@ CPPUNIT_TEST_SUITE_END();
 public:
 
 	void is_suitable_as_base_class();
+	void is_sharable();
 	void make_statement_forwards();
 	void set_integer_connection_attribute_forwards();
 	void commit_forwards();
@@ -50,6 +52,13 @@ void connection_test::is_suitable_as_base_class()
 {
 	bool const is_base = cppunit_toolbox::is_abstract_base_class<cpp_odbc::connection>::value;
 	CPPUNIT_ASSERT( is_base );
+}
+
+void connection_test::is_sharable()
+{
+	auto connection = std::make_shared<mock_connection>();
+	auto shared = connection->shared_from_this();
+	CPPUNIT_ASSERT( connection == shared );
 }
 
 void connection_test::make_statement_forwards()

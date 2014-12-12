@@ -23,7 +23,7 @@ namespace cpp_odbc {
 /**
  * @brief This interface represents a connection with an ODBC database
  */
-class connection {
+class connection : public std::enable_shared_from_this<connection> {
 public:
 	connection(connection const &) = delete;
 	connection & operator=(connection const &) = delete;
