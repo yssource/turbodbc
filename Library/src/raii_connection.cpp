@@ -48,16 +48,17 @@ namespace {
 namespace cpp_odbc {
 
 struct raii_connection::intern {
-	raii_handle handle;
+	psapp::valid_ptr<raii_environment const> environment;
 	psapp::valid_ptr<cpp_odbc::level2::api const> api;
+	raii_handle handle;
 
 	intern(
-			psapp::valid_ptr<cpp_odbc::level2::api const> api,
 			psapp::valid_ptr<raii_environment const> environment,
 			std::string const & connection_string
 		) :
-		handle(api, environment->get_handle()),
-		api(std::move(api))
+		environment(environment),
+		api(environment->get_api()),
+		handle(api, environment->get_handle())
 	{
 		thread_safe_establish_connection(connection_string);
 	}
@@ -83,8 +84,8 @@ private:
 };
 
 
-raii_connection::raii_connection(psapp::valid_ptr<cpp_odbc::level2::api const> api, psapp::valid_ptr<raii_environment const> environment, std::string const & connection_string) :
-	impl_(std::move(api), environment, connection_string)
+raii_connection::raii_connection(psapp::valid_ptr<raii_environment const> environment, std::string const & connection_string) :
+	impl_(environment, connection_string)
 {
 }
 

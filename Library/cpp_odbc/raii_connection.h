@@ -30,7 +30,7 @@ class raii_environment;
 
 class raii_connection : public connection {
 public:
-	raii_connection(psapp::valid_ptr<cpp_odbc::level2::api const> api, psapp::valid_ptr<raii_environment const> environment, std::string const & connection_string);
+	raii_connection(psapp::valid_ptr<raii_environment const> environment, std::string const & connection_string);
 
 	/**
 	 * @brief Retrieve the API instance associated with this environment.

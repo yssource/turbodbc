@@ -116,7 +116,7 @@ void raii_statement_test::resource_management()
 		.WillByDefault(testing::Return(default_c_handle));
 
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 
 	statement_handle s_handle = {&value_b};
 
@@ -135,7 +135,7 @@ void raii_statement_test::keeps_connection_alive()
 {
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 
 	auto const use_count_before = connection.get().use_count();
 	raii_statement statement(connection);
@@ -151,7 +151,7 @@ void raii_statement_test::get_integer_statement_attribute()
 
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_get_integer_statement_attribute(default_s_handle, attribute))
 		.WillOnce(testing::Return(expected));
 
@@ -166,7 +166,7 @@ void raii_statement_test::set_integer_statement_attribute()
 
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_set_statement_attribute(default_s_handle, attribute, value)).Times(1);
 
 	raii_statement statement(connection);
@@ -179,7 +179,7 @@ void raii_statement_test::execute()
 
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_execute_statement(default_s_handle, sql)).Times(1);
 
 	raii_statement statement(connection);
@@ -192,7 +192,7 @@ void raii_statement_test::prepare()
 
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_prepare_statement(default_s_handle, sql)).Times(1);
 
 	raii_statement statement(connection);
@@ -208,7 +208,7 @@ void raii_statement_test::bind_input_parameter()
 
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_bind_input_parameter(default_s_handle, parameter_id, value_type, parameter_type, testing::Ref(parameter_values))).Times(1);
 
 	raii_statement statement(connection);
@@ -219,7 +219,7 @@ void raii_statement_test::execute_prepared()
 {
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_execute_prepared_statement(default_s_handle)).Times(1);
 
 	raii_statement statement(connection);
@@ -232,7 +232,7 @@ void raii_statement_test::number_of_columns()
 
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_number_of_result_columns(default_s_handle))
 		.WillOnce(testing::Return(expected));
 
@@ -248,7 +248,7 @@ void raii_statement_test::bind_column()
 
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_bind_column(default_s_handle, column_id, column_type, testing::Ref(column_buffer))).Times(1);
 
 	raii_statement statement(connection);
@@ -259,7 +259,7 @@ void raii_statement_test::fetch_next()
 {
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_fetch_scroll(default_s_handle, SQL_FETCH_NEXT, 0)).Times(1);
 
 	raii_statement statement(connection);
@@ -270,7 +270,7 @@ void raii_statement_test::close_cursor()
 {
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_free_statement(default_s_handle, SQL_CLOSE)).Times(1);
 
 	raii_statement statement(connection);
@@ -285,7 +285,7 @@ void raii_statement_test::get_integer_column_attribute()
 
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_get_integer_column_attribute(default_s_handle, column_id, field_identifier))
 		.WillOnce(testing::Return(expected));
 
@@ -301,7 +301,7 @@ void raii_statement_test::get_string_column_attribute()
 
 	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(api, environment, "dummy");
+	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_get_string_column_attribute(default_s_handle, column_id, field_identifier))
 		.WillOnce(testing::Return(expected));
 
