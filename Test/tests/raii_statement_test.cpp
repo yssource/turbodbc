@@ -14,6 +14,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "cpp_odbc/raii_connection.h"
 #include "cpp_odbc_test/level2_mock_api.h"
 #include "psapp/valid_ptr_core.h"
 
@@ -62,7 +63,9 @@ public:
 CPPUNIT_TEST_SUITE_REGISTRATION( raii_statement_test );
 
 using cpp_odbc::raii_statement;
+using cpp_odbc::raii_connection;
 using cpp_odbc_test::level2_mock_api;
+using cpp_odbc::level2::environment_handle;
 using cpp_odbc::level2::connection_handle;
 using cpp_odbc::level2::statement_handle;
 
@@ -71,14 +74,18 @@ namespace {
 	// destinations for pointers, values irrelevant
 	int value_a = 17;
 	int value_b = 23;
+	int value_c = 17;
 
-	connection_handle const c_handle = {&value_a};
-	statement_handle const default_s_handle = {&value_b};
+	environment_handle const default_e_handle = {&value_a};
+	connection_handle const default_c_handle = {&value_b};
+	statement_handle const default_s_handle = {&value_c};
 
-	psapp::valid_ptr<testing::NiceMock<level2_mock_api>> make_default_api()
+	psapp::valid_ptr<testing::NiceMock<level2_mock_api> const> make_default_api()
 	{
 		auto api = psapp::make_valid_ptr<testing::NiceMock<level2_mock_api>>();
 
+		ON_CALL(*api, do_allocate_connection_handle(testing::_))
+			.WillByDefault(testing::Return(default_c_handle));
 		ON_CALL(*api, do_allocate_statement_handle(testing::_))
 			.WillByDefault(testing::Return(default_s_handle));
 
@@ -95,14 +102,18 @@ void raii_statement_test::is_statement()
 
 void raii_statement_test::resource_management()
 {
-	auto api = psapp::make_valid_ptr<level2_mock_api>();
+	auto api = psapp::make_valid_ptr<testing::NiceMock<level2_mock_api> const>();
+	ON_CALL(*api, do_allocate_connection_handle(testing::_))
+		.WillByDefault(testing::Return(default_c_handle));
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
+
 	statement_handle s_handle = {&value_b};
 
-	EXPECT_CALL(*api, do_allocate_statement_handle(c_handle))
+	EXPECT_CALL(*api, do_allocate_statement_handle(default_c_handle))
 		.WillOnce(testing::Return(s_handle));
 
 	{
-		raii_statement statement(api, c_handle);
+		raii_statement statement(api, connection);
 
 		// free handle on destruction
 		EXPECT_CALL(*api, do_free_handle(s_handle)).Times(1);
@@ -115,10 +126,11 @@ void raii_statement_test::get_integer_statement_attribute()
 	long const expected = 12345;
 
 	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_get_integer_statement_attribute(default_s_handle, attribute))
 		.WillOnce(testing::Return(expected));
 
-	raii_statement statement(api, c_handle);
+	raii_statement statement(api, connection);
 	CPPUNIT_ASSERT_EQUAL( expected, statement.get_integer_statement_attribute(attribute));
 }
 
@@ -128,9 +140,10 @@ void raii_statement_test::set_integer_statement_attribute()
 	long const value = 12345;
 
 	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_set_statement_attribute(default_s_handle, attribute, value)).Times(1);
 
-	raii_statement statement(api, c_handle);
+	raii_statement statement(api, connection);
 	statement.set_statement_attribute(attribute, value);
 }
 
@@ -139,9 +152,10 @@ void raii_statement_test::execute()
 	std::string const sql = "SELECT dummy FROM test";
 
 	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_execute_statement(default_s_handle, sql)).Times(1);
 
-	raii_statement statement(api, c_handle);
+	raii_statement statement(api, connection);
 	statement.execute(sql);
 }
 
@@ -150,9 +164,10 @@ void raii_statement_test::prepare()
 	std::string const sql = "SELECT dummy FROM test";
 
 	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_prepare_statement(default_s_handle, sql)).Times(1);
 
-	raii_statement statement(api, c_handle);
+	raii_statement statement(api, connection);
 	statement.prepare(sql);
 }
 
@@ -164,18 +179,20 @@ void raii_statement_test::bind_input_parameter()
 	cpp_odbc::multi_value_buffer parameter_values(3, 4);
 
 	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_bind_input_parameter(default_s_handle, parameter_id, value_type, parameter_type, testing::Ref(parameter_values))).Times(1);
 
-	raii_statement statement(api, c_handle);
+	raii_statement statement(api, connection);
 	statement.bind_input_parameter(parameter_id, value_type, parameter_type, parameter_values);
 }
 
 void raii_statement_test::execute_prepared()
 {
 	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_execute_prepared_statement(default_s_handle)).Times(1);
 
-	raii_statement statement(api, c_handle);
+	raii_statement statement(api, connection);
 	statement.execute_prepared();
 }
 
@@ -184,10 +201,11 @@ void raii_statement_test::number_of_columns()
 	short int const expected = 23;
 
 	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_number_of_result_columns(default_s_handle))
 		.WillOnce(testing::Return(expected));
 
-	raii_statement statement(api, c_handle);
+	raii_statement statement(api, connection);
 	CPPUNIT_ASSERT_EQUAL( expected, statement.number_of_columns());
 }
 
@@ -198,27 +216,30 @@ void raii_statement_test::bind_column()
 	cpp_odbc::multi_value_buffer column_buffer(3, 4);
 
 	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_bind_column(default_s_handle, column_id, column_type, testing::Ref(column_buffer))).Times(1);
 
-	raii_statement statement(api, c_handle);
+	raii_statement statement(api, connection);
 	statement.bind_column(column_id, column_type, column_buffer);
 }
 
 void raii_statement_test::fetch_next()
 {
 	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_fetch_scroll(default_s_handle, SQL_FETCH_NEXT, 0)).Times(1);
 
-	raii_statement statement(api, c_handle);
+	raii_statement statement(api, connection);
 	statement.fetch_next();
 }
 
 void raii_statement_test::close_cursor()
 {
 	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_free_statement(default_s_handle, SQL_CLOSE)).Times(1);
 
-	raii_statement statement(api, c_handle);
+	raii_statement statement(api, connection);
 	statement.close_cursor();
 }
 
@@ -229,10 +250,11 @@ void raii_statement_test::get_integer_column_attribute()
 	long const expected = 23;
 
 	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_get_integer_column_attribute(default_s_handle, column_id, field_identifier))
 		.WillOnce(testing::Return(expected));
 
-	raii_statement statement(api, c_handle);
+	raii_statement statement(api, connection);
 	CPPUNIT_ASSERT_EQUAL( expected, statement.get_integer_column_attribute(column_id, field_identifier));
 }
 
@@ -243,9 +265,10 @@ void raii_statement_test::get_string_column_attribute()
 	std::string const expected = "test value";
 
 	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_get_string_column_attribute(default_s_handle, column_id, field_identifier))
 		.WillOnce(testing::Return(expected));
 
-	raii_statement statement(api, c_handle);
+	raii_statement statement(api, connection);
 	CPPUNIT_ASSERT_EQUAL( expected, statement.get_string_column_attribute(column_id, field_identifier));
 }

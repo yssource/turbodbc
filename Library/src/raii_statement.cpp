@@ -12,15 +12,16 @@
 
 #include "cpp_odbc/raii_statement.h"
 
+#include "cpp_odbc/raii_connection.h"
 #include "cpp_odbc/level2/api.h"
 
 #include "sql.h"
 
 namespace cpp_odbc {
 
-raii_statement::raii_statement(psapp::valid_ptr<cpp_odbc::level2::api const> api, cpp_odbc::level2::connection_handle const & connection) :
+raii_statement::raii_statement(psapp::valid_ptr<cpp_odbc::level2::api const> api, psapp::valid_ptr<cpp_odbc::raii_connection const> connection) :
 		api_(api),
-		handle_(api->allocate_statement_handle(connection))
+		handle_(api->allocate_statement_handle(connection->get_handle()))
 {
 }
 

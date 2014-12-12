@@ -23,9 +23,15 @@ namespace cpp_odbc { namespace level2 {
 
 namespace cpp_odbc {
 
+class raii_connection;
+
+/**
+ * A concrete implementation of the statement interface. It manages the lifetime of
+ * the underlying level2::statement_handle
+ */
 class raii_statement : public statement {
 public:
-	raii_statement(psapp::valid_ptr<cpp_odbc::level2::api const> api, cpp_odbc::level2::connection_handle const & connection);
+	raii_statement(psapp::valid_ptr<cpp_odbc::level2::api const> api, psapp::valid_ptr<cpp_odbc::raii_connection const> connection);
 
 	virtual ~raii_statement();
 private:
