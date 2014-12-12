@@ -10,11 +10,11 @@
  *
  */
 
-#include "cpp_odbc/raii_environment.h"
+#include "cpp_odbc/level3/raii_environment.h"
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "cpp_odbc/raii_connection.h"
+#include "cpp_odbc/level3/raii_connection.h"
 #include "cpp_odbc_test/level2_mock_api.h"
 
 #include "sqlext.h"
@@ -51,8 +51,8 @@ public:
 // Registers the fixture with the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( raii_environment_test );
 
-using cpp_odbc::raii_environment;
-using cpp_odbc::raii_connection;
+using cpp_odbc::level3::raii_connection;
+using cpp_odbc::level3::raii_environment;
 using cpp_odbc_test::level2_mock_api;
 using cpp_odbc::level2::environment_handle;
 using cpp_odbc::level2::connection_handle;
@@ -79,9 +79,6 @@ namespace {
 
 }
 
-namespace level2 = cpp_odbc::level2;
-using cpp_odbc::raii_environment;
-
 void raii_environment_test::is_environment()
 {
 	bool const derived_from_environment = std::is_base_of<cpp_odbc::environment, raii_environment>::value;
@@ -90,7 +87,7 @@ void raii_environment_test::is_environment()
 
 void raii_environment_test::resource_management()
 {
-	level2::environment_handle internal_handle = {&value_a};
+	environment_handle internal_handle = {&value_a};
 
 	auto api = psapp::make_valid_ptr<testing::NiceMock<cpp_odbc_test::level2_mock_api> const>();
 
@@ -128,7 +125,7 @@ void raii_environment_test::get_handle()
 	auto api = make_default_api();
 
 	raii_environment instance(api);
-	bool const returns_handle_ref = std::is_same<level2::environment_handle const &, decltype(instance.get_handle())>::value;
+	bool const returns_handle_ref = std::is_same<environment_handle const &, decltype(instance.get_handle())>::value;
 
 	CPPUNIT_ASSERT( returns_handle_ref );
 	instance.get_handle(); // make sure function symbol is there

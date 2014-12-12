@@ -10,16 +10,16 @@
  *
  */
 
-#include "cpp_odbc/raii_statement.h"
+#include "cpp_odbc/level3/raii_statement.h"
 
-#include "cpp_odbc/raii_connection.h"
+#include "cpp_odbc/level3/raii_connection.h"
 #include "cpp_odbc/level2/api.h"
 
 #include "sql.h"
 
-namespace cpp_odbc {
+namespace cpp_odbc { namespace level3 {
 
-raii_statement::raii_statement(psapp::valid_ptr<cpp_odbc::raii_connection const> connection) :
+raii_statement::raii_statement(psapp::valid_ptr<raii_connection const> connection) :
 		connection_(connection),
 		api_(connection_->get_api()),
 		handle_(api_->allocate_statement_handle(connection->get_handle()))
@@ -92,4 +92,4 @@ std::string raii_statement::do_get_string_column_attribute(SQLUSMALLINT column_i
 	return api_->get_string_column_attribute(handle_, column_id, field_identifier);
 }
 
-}
+} }

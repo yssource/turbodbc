@@ -16,14 +16,16 @@
 #include "psapp/pattern/pimpl.h"
 #include "psapp/valid_ptr_core.h"
 
+namespace cpp_odbc {
+	class environment;
+}
+
 namespace cpp_odbc { namespace level2 {
 	class api;
 	class environment_handle;
 } }
 
-namespace cpp_odbc {
-
-class environment;
+namespace cpp_odbc { namespace level3 {
 
 /**
  * @brief This class represents an initialized ODBC environment.
@@ -57,4 +59,4 @@ private:
 	psapp::pattern::pimpl<raii_environment> impl_;
 };
 
-}
+} }

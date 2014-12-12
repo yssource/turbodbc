@@ -10,13 +10,13 @@
  *
  */
 
-#include "cpp_odbc/raii_statement.h"
+#include "cpp_odbc/level3/raii_statement.h"
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
 
-#include "cpp_odbc/raii_environment.h"
-#include "cpp_odbc/raii_connection.h"
+#include "cpp_odbc/level3/raii_environment.h"
+#include "cpp_odbc/level3/raii_connection.h"
 #include "cpp_odbc_test/level2_mock_api.h"
 #include "psapp/valid_ptr_core.h"
 
@@ -66,9 +66,9 @@ public:
 // Registers the fixture with the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( raii_statement_test );
 
-using cpp_odbc::raii_environment;
-using cpp_odbc::raii_statement;
-using cpp_odbc::raii_connection;
+using cpp_odbc::level3::raii_connection;
+using cpp_odbc::level3::raii_environment;
+using cpp_odbc::level3::raii_statement;
 using cpp_odbc_test::level2_mock_api;
 using cpp_odbc::level2::environment_handle;
 using cpp_odbc::level2::connection_handle;

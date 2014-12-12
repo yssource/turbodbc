@@ -24,7 +24,7 @@ namespace cpp_odbc { namespace level2 {
 	class api;
 } }
 
-namespace cpp_odbc {
+namespace cpp_odbc { namespace level3 {
 
 class raii_environment;
 
@@ -67,4 +67,4 @@ private:
 	psapp::pattern::pimpl<raii_connection> impl_;
 };
 
-}
+} }

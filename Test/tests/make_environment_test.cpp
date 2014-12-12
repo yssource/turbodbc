@@ -14,7 +14,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "cpp_odbc/raii_environment.h"
+#include "cpp_odbc/level3/raii_environment.h"
 #include <memory>
 
 class make_environment_test : public CppUnit::TestFixture {
@@ -29,7 +29,8 @@ public:
 	void test()
 	{
 		auto environment = cpp_odbc::make_environment();
-		bool const is_raii_environment = (std::dynamic_pointer_cast<cpp_odbc::raii_environment>(environment.get()) != nullptr);
+		bool const is_raii_environment =
+				(std::dynamic_pointer_cast<cpp_odbc::level3::raii_environment>(environment.get()) != nullptr);
 		CPPUNIT_ASSERT( is_raii_environment );
 	}
 

@@ -10,14 +10,14 @@
  *
  */
 
-#include "cpp_odbc/raii_environment.h"
-#include "cpp_odbc/raii_connection.h"
+#include "cpp_odbc/level3/raii_environment.h"
+#include "cpp_odbc/level3/raii_connection.h"
 #include "cpp_odbc/level2/handles.h"
 #include "cpp_odbc/level2/api.h"
 
 #include "sqlext.h"
 
-namespace cpp_odbc {
+namespace cpp_odbc { namespace level3 {
 
 struct raii_environment::intern {
 	psapp::valid_ptr<level2::api const> api;
@@ -63,4 +63,4 @@ void raii_environment::do_set_attribute(SQLINTEGER attribute, long value) const
 }
 
 
-}
+} }

@@ -10,10 +10,10 @@
  *
  */
 
-#include "cpp_odbc/raii_connection.h"
+#include "cpp_odbc/level3/raii_connection.h"
 
-#include "cpp_odbc/raii_statement.h"
-#include "cpp_odbc/raii_environment.h"
+#include "cpp_odbc/level3/raii_statement.h"
+#include "cpp_odbc/level3/raii_environment.h"
 
 #include "cpp_odbc/level2/api.h"
 #include "cpp_odbc/level2/handles.h"
@@ -45,7 +45,7 @@ namespace {
 	};
 }
 
-namespace cpp_odbc {
+namespace cpp_odbc { namespace level3 {
 
 struct raii_connection::intern {
 	psapp::valid_ptr<raii_environment const> environment;
@@ -125,4 +125,4 @@ std::string raii_connection::do_get_string_info(SQLUSMALLINT info_type) const
 	return impl_->api->get_string_connection_info(impl_->handle.handle, info_type);
 }
 
-}
+} }

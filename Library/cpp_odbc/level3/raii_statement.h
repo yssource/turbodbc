@@ -21,7 +21,7 @@ namespace cpp_odbc { namespace level2 {
 	class api;
 } }
 
-namespace cpp_odbc {
+namespace cpp_odbc { namespace level3 {
 
 class raii_connection;
 
@@ -38,7 +38,7 @@ public:
 	 *                   the life time of this object. The connection also contains the level2 API
 	 *                   to which all calls are forwarded.
 	 */
-	raii_statement(psapp::valid_ptr<cpp_odbc::raii_connection const> connection);
+	raii_statement(psapp::valid_ptr<raii_connection const> connection);
 
 	virtual ~raii_statement();
 private:
@@ -57,10 +57,10 @@ private:
 	long do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
 	std::string do_get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
 
-	psapp::valid_ptr<cpp_odbc::raii_connection const> connection_;
-	psapp::valid_ptr<cpp_odbc::level2::api const> api_;
+	psapp::valid_ptr<raii_connection const> connection_;
+	psapp::valid_ptr<level2::api const> api_;
 	level2::statement_handle handle_;
 };
 
 
-}
+} }
