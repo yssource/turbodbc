@@ -13,6 +13,7 @@
 #include "cpp_odbc/raii_connection.h"
 
 #include "cpp_odbc/raii_statement.h"
+#include "cpp_odbc/raii_environment.h"
 
 #include "cpp_odbc/level2/api.h"
 #include "cpp_odbc/level2/handles.h"
@@ -52,10 +53,10 @@ struct raii_connection::intern {
 
 	intern(
 			psapp::valid_ptr<cpp_odbc::level2::api const> api,
-			cpp_odbc::level2::environment_handle const & environment,
+			psapp::valid_ptr<raii_environment const> environment,
 			std::string const & connection_string
 		) :
-		handle(api, environment),
+		handle(api, environment->get_handle()),
 		api(std::move(api))
 	{
 		thread_safe_establish_connection(connection_string);
@@ -82,7 +83,7 @@ private:
 };
 
 
-raii_connection::raii_connection(psapp::valid_ptr<cpp_odbc::level2::api const> api, cpp_odbc::level2::environment_handle const & environment, std::string const & connection_string) :
+raii_connection::raii_connection(psapp::valid_ptr<cpp_odbc::level2::api const> api, psapp::valid_ptr<raii_environment const> environment, std::string const & connection_string) :
 	impl_(std::move(api), environment, connection_string)
 {
 }
