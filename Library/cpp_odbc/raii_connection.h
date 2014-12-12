@@ -30,6 +30,12 @@ public:
 	raii_connection(psapp::valid_ptr<cpp_odbc::level2::api const> api, cpp_odbc::level2::environment_handle const & environment, std::string const & connection_string);
 
 	/**
+	 * @brief Retrieve the API instance associated with this environment.
+	 * @return The associated API instance
+	 */
+	psapp::valid_ptr<level2::api const> get_api() const;
+
+	/**
 	 * @brief Retrieve the non-raii connection_handle which you can use in level 2 API calls.
 	 * @return The non-raii connection_handle
 	 */

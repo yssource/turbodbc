@@ -24,6 +24,7 @@ class raii_connection_test : public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( raii_connection_test );
 
 	CPPUNIT_TEST( raii_connect_and_disconnect );
+	CPPUNIT_TEST( get_api );
 	CPPUNIT_TEST( get_handle );
 
 CPPUNIT_TEST_SUITE_END();
@@ -31,6 +32,7 @@ CPPUNIT_TEST_SUITE_END();
 public:
 
 	void raii_connect_and_disconnect();
+	void get_api();
 	void get_handle();
 
 };
@@ -80,6 +82,14 @@ void raii_connection_test::raii_connect_and_disconnect()
 		EXPECT_CALL(*api, do_disconnect(c_handle)).Times(1);
 		EXPECT_CALL(*api, do_free_handle(c_handle)).Times(1);
 	}
+}
+
+void raii_connection_test::get_api()
+{
+	auto expected_api = psapp::make_valid_ptr<cpp_odbc_test::level2_dummy_api const>();
+
+	raii_connection instance(expected_api, e_handle, "dummy");
+	CPPUNIT_ASSERT( expected_api == instance.get_api());
 }
 
 void raii_connection_test::get_handle()
