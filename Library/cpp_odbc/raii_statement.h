@@ -27,10 +27,17 @@ class raii_connection;
 
 /**
  * A concrete implementation of the statement interface. It manages the lifetime of
- * the underlying level2::statement_handle
+ * the underlying level2::statement_handle and forwards all calls to the level2 API
+ * associated with the given connection.
  */
 class raii_statement : public statement {
 public:
+	/**
+	 * @brief Create a new raii_statement
+	 * @param connection The statement lives in this connection. The connection is kept alive for
+	 *                   the life time of this object. The connection also contains the level2 API
+	 *                   to which all calls are forwarded.
+	 */
 	raii_statement(psapp::valid_ptr<cpp_odbc::raii_connection const> connection);
 
 	virtual ~raii_statement();

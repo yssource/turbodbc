@@ -25,7 +25,7 @@ namespace cpp_odbc { namespace level2 {
  *
  *        - generic handle types and void pointers have been replaced by actual types
  *        - where functions could do more than one thing, e.g., reading either strings
- *          or integers, the function has been split into multiple ones.
+ *          or integers, they have been split into multiple ones.
  *        - pointers to buffers, size variables, and length counters have been combined
  *          to real buffer types
  *        - output parameters have been replaced by return values

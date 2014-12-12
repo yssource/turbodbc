@@ -24,8 +24,8 @@ namespace cpp_odbc { namespace level2 {
 
 
 /**
- * @brief This connector implements the level2::api by forwarding calls to a basic implementation
- *        of level1::api. Thereby, this class does all exception handling, data type translation,
+ * @brief This connector implements the level2::api by forwarding calls to a level1::api.
+ *        Thereby, this class does all exception handling, data type translation,
  *        and return value generation.
  */
 class level1_connector : public api {

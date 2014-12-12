@@ -28,8 +28,20 @@ namespace cpp_odbc {
 
 class raii_environment;
 
+/**
+ * @brief This class is an implementation of the connection interface. It manages the life time
+ *        of a level2::connection_handle and forwards calls to the level2 API associated with
+ *        the given environment.
+ */
 class raii_connection : public connection {
 public:
+	/**
+	 * @brief Create a new raii_connection
+	 * @param environment The connection lives in this environment. The environment is kept alive for
+	 *                    the life time of this object. The environment also contains the level2 API
+	 *                    to which all calls are forwarded.
+	 * @param connection_string The connection is created using this connection string.
+	 */
 	raii_connection(psapp::valid_ptr<raii_environment const> environment, std::string const & connection_string);
 
 	/**
