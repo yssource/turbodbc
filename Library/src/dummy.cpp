@@ -14,21 +14,18 @@
 #include <cpp_odbc/level1/unixodbc_backend.h>
 #include <cpp_odbc/level2/level1_connector.h>
 #include <cpp_odbc/raii_environment.h>
-#include <cpp_odbc/raii_connection.h>
-#include <cpp_odbc/raii_statement.h>
+#include <cpp_odbc/connection.h>
+#include <cpp_odbc/statement.h>
 
 #include <psapp/valid_ptr.h>
 #include <sqlext.h>
 
 namespace bp = boost::python;
-using namespace cpp_odbc;
 
 namespace pydbc {
 
 	struct py_cursor {
-		psapp::valid_ptr<raii_environment> environment;
-		psapp::valid_ptr<raii_connection> connection;
-		psapp::valid_ptr<raii_statement> statement;
+		psapp::valid_ptr<cpp_odbc::statement> statement;
 
 		void execute(std::string const & sql)
 		{
@@ -37,31 +34,30 @@ namespace pydbc {
 	};
 
 	struct py_connection {
-		psapp::valid_ptr<raii_environment> environment;
-		psapp::valid_ptr<raii_connection> connection;
-		psapp::valid_ptr<raii_statement> statement;
+		psapp::valid_ptr<cpp_odbc::connection> connection;
 
 		void commit()
 		{
-			auto api = environment->get_api();
-			api->end_transaction(connection->get_handle(), SQL_COMMIT);
+			connection->commit();
 		}
 
 		py_cursor cursor()
 		{
-			return {environment, connection, statement};
+			return {psapp::to_valid(connection->make_statement())};
 		}
 	};
 
+	psapp::valid_ptr<cpp_odbc::environment> make_environment()
+	{
+		auto l1 = psapp::make_valid_ptr<cpp_odbc::level1::unixodbc_backend const>();
+		auto l2 = psapp::make_valid_ptr<cpp_odbc::level2::level1_connector const>(l1);
+		return psapp::make_valid_ptr<cpp_odbc::raii_environment>(l2);
+	}
+
 	py_connection connect(std::string const & data_source_name)
 	{
-		auto l1 = psapp::make_valid_ptr<level1::unixodbc_backend const>();
-		auto l2 = psapp::make_valid_ptr<level2::level1_connector const>(l1);
-		auto environment = psapp::make_valid_ptr<raii_environment>(l2);
-		auto connection = psapp::make_valid_ptr<raii_connection>(l2, environment->get_handle(), "dsn=" + data_source_name);
-		auto statement = psapp::make_valid_ptr<raii_statement>(l2, connection->get_handle());
-
-		return {environment, connection, statement};
+		auto environment = make_environment();
+		return {psapp::to_valid(environment->make_connection("dsn=" + data_source_name))};
 	}
 
 }
