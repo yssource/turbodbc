@@ -19,7 +19,6 @@
 #include "cpp_odbc/raii_statement.h"
 #include "cpp_odbc/raii_environment.h"
 #include "cpp_odbc_test/level2_mock_api.h"
-#include "cpp_odbc_test/level2_dummy_api.h"
 
 #include <type_traits>
 
@@ -33,7 +32,7 @@ CPPUNIT_TEST_SUITE( raii_connection_test );
 	CPPUNIT_TEST( get_handle );
 
 	CPPUNIT_TEST( make_statement );
-	CPPUNIT_TEST( set_connection_attribute );
+	CPPUNIT_TEST( set_attribute );
 	CPPUNIT_TEST( commit );
 	CPPUNIT_TEST( rollback );
 	CPPUNIT_TEST( get_string_info );
@@ -49,7 +48,7 @@ public:
 	void get_handle();
 
 	void make_statement();
-	void set_connection_attribute();
+	void set_attribute();
 	void commit();
 	void rollback();
 	void get_string_info();
@@ -134,7 +133,7 @@ void raii_connection_test::keeps_environment_alive()
 
 void raii_connection_test::get_api()
 {
-	auto expected_api = psapp::make_valid_ptr<cpp_odbc_test::level2_dummy_api const>();
+	auto expected_api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(expected_api);
 
 	raii_connection instance(environment, "dummy");
@@ -143,7 +142,7 @@ void raii_connection_test::get_api()
 
 void raii_connection_test::get_handle()
 {
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level2_dummy_api>();
+	auto api = make_default_api();
 	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
 
 	std::string const connection_string = "my DSN";
@@ -169,7 +168,7 @@ void raii_connection_test::make_statement()
 	CPPUNIT_ASSERT( is_raii_statement );
 }
 
-void raii_connection_test::set_connection_attribute()
+void raii_connection_test::set_attribute()
 {
 	SQLINTEGER const attribute = 42;
 	long const value = 1234;
@@ -180,7 +179,7 @@ void raii_connection_test::set_connection_attribute()
 	EXPECT_CALL(*api, do_set_connection_attribute(default_c_handle, attribute, value))
 		.Times(1);
 
-	connection.set_connection_attribute(attribute, value);
+	connection.set_attribute(attribute, value);
 }
 
 void raii_connection_test::commit()

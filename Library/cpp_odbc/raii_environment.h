@@ -11,6 +11,8 @@
  *
  */
 
+#include "cpp_odbc/environment.h"
+
 #include "psapp/pattern/pimpl.h"
 #include "psapp/valid_ptr_core.h"
 
@@ -21,11 +23,13 @@ namespace cpp_odbc { namespace level2 {
 
 namespace cpp_odbc {
 
+class environment;
+
 /**
  * @brief This class represents an initialized ODBC environment.
  *        On destruction, instances automatically free acquired resources.
  */
-class raii_environment {
+class raii_environment : public environment {
 public:
 	/**
 	 * @brief Initialize the environment with the given level 2 API instance
@@ -46,6 +50,9 @@ public:
 	level2::environment_handle const & get_handle() const;
 
 private:
+	std::shared_ptr<connection> do_make_connection(std::string const & connection_string) const final;
+	void do_set_attribute(SQLINTEGER attribute, long value) const final;
+
 	struct intern;
 	psapp::pattern::pimpl<raii_environment> impl_;
 };

@@ -12,13 +12,14 @@
  */
 
 #include "cpp_odbc/connection.h"
+#include <memory>
 
 namespace cpp_odbc {
 
 /**
  * @brief This interface represents an ODBC environment
  */
-class environment {
+class environment : public std::enable_shared_from_this<environment> {
 public:
 	environment(environment const &) = delete;
 	environment & operator=(environment const &) = delete;

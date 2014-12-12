@@ -22,9 +22,9 @@ std::shared_ptr<statement> connection::make_statement() const
 	return do_make_statement();
 }
 
-void connection::set_connection_attribute(SQLINTEGER attribute, long value) const
+void connection::set_attribute(SQLINTEGER attribute, long value) const
 {
-	do_set_connection_attribute(attribute, value);
+	do_set_attribute(attribute, value);
 }
 
 void connection::commit() const

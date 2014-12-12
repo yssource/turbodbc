@@ -22,6 +22,7 @@ class environment_test : public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( environment_test );
 
 	CPPUNIT_TEST( is_suitable_as_base_class );
+	CPPUNIT_TEST( is_sharable );
 	CPPUNIT_TEST( make_connection_forwards );
 	CPPUNIT_TEST( set_integer_attribute_forwards );
 
@@ -30,6 +31,7 @@ CPPUNIT_TEST_SUITE_END();
 public:
 
 	void is_suitable_as_base_class();
+	void is_sharable();
 	void make_connection_forwards();
 	void set_integer_attribute_forwards();
 
@@ -45,6 +47,13 @@ void environment_test::is_suitable_as_base_class()
 }
 
 using cpp_odbc_test::mock_environment;
+
+void environment_test::is_sharable()
+{
+	auto environment = std::make_shared<mock_environment>();
+	auto shared = environment->shared_from_this();
+	CPPUNIT_ASSERT( environment == shared );
+}
 
 void environment_test::make_connection_forwards()
 {

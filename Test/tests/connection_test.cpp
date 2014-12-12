@@ -24,7 +24,7 @@ CPPUNIT_TEST_SUITE( connection_test );
 	CPPUNIT_TEST( is_suitable_as_base_class );
 	CPPUNIT_TEST( is_sharable );
 	CPPUNIT_TEST( make_statement_forwards );
-	CPPUNIT_TEST( set_integer_connection_attribute_forwards );
+	CPPUNIT_TEST( set_integer_attribute_forwards );
 	CPPUNIT_TEST( commit_forwards );
 	CPPUNIT_TEST( rollback_forwards );
 	CPPUNIT_TEST( get_string_info_forwards );
@@ -36,7 +36,7 @@ public:
 	void is_suitable_as_base_class();
 	void is_sharable();
 	void make_statement_forwards();
-	void set_integer_connection_attribute_forwards();
+	void set_integer_attribute_forwards();
 	void commit_forwards();
 	void rollback_forwards();
 	void get_string_info_forwards();
@@ -72,15 +72,15 @@ void connection_test::make_statement_forwards()
 	CPPUNIT_ASSERT( statement == connection.make_statement() );
 }
 
-void connection_test::set_integer_connection_attribute_forwards()
+void connection_test::set_integer_attribute_forwards()
 {
 	mock_connection connection;
 	SQLINTEGER const attribute = 42;
 	long const value = 17;
 
-	EXPECT_CALL(connection, do_set_connection_attribute(attribute, value)).Times(1);
+	EXPECT_CALL(connection, do_set_attribute(attribute, value)).Times(1);
 
-	connection.set_connection_attribute(attribute, value);
+	connection.set_attribute(attribute, value);
 }
 
 void connection_test::commit_forwards()

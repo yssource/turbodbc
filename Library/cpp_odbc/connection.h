@@ -39,7 +39,7 @@ public:
 	 * @param attribute An ODBC constant which represents the attribute which shall be set
 	 * @param value The new value for the attribute
 	 */
-	void set_connection_attribute(SQLINTEGER attribute, long value) const;
+	void set_attribute(SQLINTEGER attribute, long value) const;
 
 	/**
 	 * @brief End the current transaction by committing all changes to the database
@@ -63,7 +63,7 @@ protected:
 	connection();
 private:
 	virtual std::shared_ptr<statement> do_make_statement() const = 0;
-	virtual void do_set_connection_attribute(SQLINTEGER attribute, long value) const = 0;
+	virtual void do_set_attribute(SQLINTEGER attribute, long value) const = 0;
 	virtual void do_commit() const = 0;
 	virtual void do_rollback() const = 0;
 	virtual std::string do_get_string_info(SQLUSMALLINT info_type) const = 0;
