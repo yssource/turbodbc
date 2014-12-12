@@ -13,6 +13,7 @@
 #include "cpp_odbc/raii_statement.h"
 
 #include <cppunit/extensions/HelperMacros.h>
+#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
 
 #include "cpp_odbc/raii_connection.h"
 #include "cpp_odbc_test/level2_mock_api.h"
@@ -25,6 +26,7 @@ CPPUNIT_TEST_SUITE( raii_statement_test );
 
 	CPPUNIT_TEST( is_statement );
 	CPPUNIT_TEST( resource_management );
+	CPPUNIT_TEST( keeps_connection_alive );
 	CPPUNIT_TEST( get_integer_statement_attribute );
 	CPPUNIT_TEST( set_integer_statement_attribute );
 	CPPUNIT_TEST( execute );
@@ -44,6 +46,7 @@ public:
 
 	void is_statement();
 	void resource_management();
+	void keeps_connection_alive();
 	void get_integer_statement_attribute();
 	void set_integer_statement_attribute();
 	void execute();
@@ -113,11 +116,23 @@ void raii_statement_test::resource_management()
 		.WillOnce(testing::Return(s_handle));
 
 	{
-		raii_statement statement(api, connection);
+		raii_statement statement(connection);
 
 		// free handle on destruction
 		EXPECT_CALL(*api, do_free_handle(s_handle)).Times(1);
 	}
+}
+
+void raii_statement_test::keeps_connection_alive()
+{
+	auto api = make_default_api();
+	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
+
+	auto const use_count_before = connection.get().use_count();
+	raii_statement statement(connection);
+	auto const use_count_after = connection.get().use_count();
+
+	CPPUNIT_ASSERT_EQUAL(1, use_count_after - use_count_before);
 }
 
 void raii_statement_test::get_integer_statement_attribute()
@@ -130,7 +145,7 @@ void raii_statement_test::get_integer_statement_attribute()
 	EXPECT_CALL(*api, do_get_integer_statement_attribute(default_s_handle, attribute))
 		.WillOnce(testing::Return(expected));
 
-	raii_statement statement(api, connection);
+	raii_statement statement(connection);
 	CPPUNIT_ASSERT_EQUAL( expected, statement.get_integer_statement_attribute(attribute));
 }
 
@@ -143,7 +158,7 @@ void raii_statement_test::set_integer_statement_attribute()
 	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_set_statement_attribute(default_s_handle, attribute, value)).Times(1);
 
-	raii_statement statement(api, connection);
+	raii_statement statement(connection);
 	statement.set_statement_attribute(attribute, value);
 }
 
@@ -155,7 +170,7 @@ void raii_statement_test::execute()
 	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_execute_statement(default_s_handle, sql)).Times(1);
 
-	raii_statement statement(api, connection);
+	raii_statement statement(connection);
 	statement.execute(sql);
 }
 
@@ -167,7 +182,7 @@ void raii_statement_test::prepare()
 	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_prepare_statement(default_s_handle, sql)).Times(1);
 
-	raii_statement statement(api, connection);
+	raii_statement statement(connection);
 	statement.prepare(sql);
 }
 
@@ -182,7 +197,7 @@ void raii_statement_test::bind_input_parameter()
 	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_bind_input_parameter(default_s_handle, parameter_id, value_type, parameter_type, testing::Ref(parameter_values))).Times(1);
 
-	raii_statement statement(api, connection);
+	raii_statement statement(connection);
 	statement.bind_input_parameter(parameter_id, value_type, parameter_type, parameter_values);
 }
 
@@ -192,7 +207,7 @@ void raii_statement_test::execute_prepared()
 	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_execute_prepared_statement(default_s_handle)).Times(1);
 
-	raii_statement statement(api, connection);
+	raii_statement statement(connection);
 	statement.execute_prepared();
 }
 
@@ -205,7 +220,7 @@ void raii_statement_test::number_of_columns()
 	EXPECT_CALL(*api, do_number_of_result_columns(default_s_handle))
 		.WillOnce(testing::Return(expected));
 
-	raii_statement statement(api, connection);
+	raii_statement statement(connection);
 	CPPUNIT_ASSERT_EQUAL( expected, statement.number_of_columns());
 }
 
@@ -219,7 +234,7 @@ void raii_statement_test::bind_column()
 	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_bind_column(default_s_handle, column_id, column_type, testing::Ref(column_buffer))).Times(1);
 
-	raii_statement statement(api, connection);
+	raii_statement statement(connection);
 	statement.bind_column(column_id, column_type, column_buffer);
 }
 
@@ -229,7 +244,7 @@ void raii_statement_test::fetch_next()
 	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_fetch_scroll(default_s_handle, SQL_FETCH_NEXT, 0)).Times(1);
 
-	raii_statement statement(api, connection);
+	raii_statement statement(connection);
 	statement.fetch_next();
 }
 
@@ -239,7 +254,7 @@ void raii_statement_test::close_cursor()
 	auto connection = psapp::make_valid_ptr<raii_connection const>(api, default_e_handle, "dummy");
 	EXPECT_CALL(*api, do_free_statement(default_s_handle, SQL_CLOSE)).Times(1);
 
-	raii_statement statement(api, connection);
+	raii_statement statement(connection);
 	statement.close_cursor();
 }
 
@@ -254,7 +269,7 @@ void raii_statement_test::get_integer_column_attribute()
 	EXPECT_CALL(*api, do_get_integer_column_attribute(default_s_handle, column_id, field_identifier))
 		.WillOnce(testing::Return(expected));
 
-	raii_statement statement(api, connection);
+	raii_statement statement(connection);
 	CPPUNIT_ASSERT_EQUAL( expected, statement.get_integer_column_attribute(column_id, field_identifier));
 }
 
@@ -269,6 +284,6 @@ void raii_statement_test::get_string_column_attribute()
 	EXPECT_CALL(*api, do_get_string_column_attribute(default_s_handle, column_id, field_identifier))
 		.WillOnce(testing::Return(expected));
 
-	raii_statement statement(api, connection);
+	raii_statement statement(connection);
 	CPPUNIT_ASSERT_EQUAL( expected, statement.get_string_column_attribute(column_id, field_identifier));
 }

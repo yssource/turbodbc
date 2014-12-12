@@ -31,7 +31,7 @@ class raii_connection;
  */
 class raii_statement : public statement {
 public:
-	raii_statement(psapp::valid_ptr<cpp_odbc::level2::api const> api, psapp::valid_ptr<cpp_odbc::raii_connection const> connection);
+	raii_statement(psapp::valid_ptr<cpp_odbc::raii_connection const> connection);
 
 	virtual ~raii_statement();
 private:
@@ -50,7 +50,8 @@ private:
 	long do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
 	std::string do_get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
 
-	psapp::valid_ptr<level2::api const> api_;
+	psapp::valid_ptr<cpp_odbc::raii_connection const> connection_;
+	psapp::valid_ptr<cpp_odbc::level2::api const> api_;
 	level2::statement_handle handle_;
 };
 
