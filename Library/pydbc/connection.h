@@ -17,12 +17,12 @@
 
 namespace pydbc {
 
-struct py_connection {
+struct connection {
 	psapp::valid_ptr<cpp_odbc::connection> connection;
 
 	void commit();
 
-	py_cursor cursor();
+	pydbc::cursor make_cursor();
 };
 
 }

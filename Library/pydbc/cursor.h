@@ -16,7 +16,7 @@
 
 namespace pydbc {
 
-struct py_cursor {
+struct cursor {
 	psapp::valid_ptr<cpp_odbc::statement> statement;
 
 	void execute(std::string const & sql);

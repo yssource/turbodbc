@@ -16,6 +16,6 @@
 
 namespace pydbc {
 
-py_connection connect(std::string const & data_source_name);
+connection connect(std::string const & data_source_name);
 
 }

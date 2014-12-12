@@ -18,9 +18,9 @@ namespace pydbc { namespace bindings {
 
 void for_connection()
 {
-	boost::python::class_<pydbc::py_connection>("Connection", boost::python::no_init)
-    		.def("commit", &pydbc::py_connection::commit)
-    		.def("cursor", &pydbc::py_connection::cursor)
+	boost::python::class_<pydbc::connection>("Connection", boost::python::no_init)
+    		.def("commit", &pydbc::connection::commit)
+    		.def("cursor", &pydbc::connection::make_cursor)
     	;
 }
 

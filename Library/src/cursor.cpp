@@ -14,7 +14,7 @@
 
 namespace pydbc {
 
-void py_cursor::execute(std::string const & sql)
+void cursor::execute(std::string const & sql)
 {
 	statement->execute(sql);
 }

@@ -14,12 +14,12 @@
 
 namespace pydbc {
 
-void py_connection::commit()
+void connection::commit()
 {
 	connection->commit();
 }
 
-py_cursor py_connection::cursor()
+cursor connection::make_cursor()
 {
 	return {psapp::to_valid(connection->make_statement())};
 }
