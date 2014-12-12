@@ -13,6 +13,7 @@
 
 
 #include "cpp_odbc/level2/handles.h"
+#include "cpp_odbc/connection.h"
 
 #include "psapp/pattern/pimpl.h"
 #include "psapp/valid_ptr_core.h"
@@ -25,7 +26,7 @@ namespace cpp_odbc { namespace level2 {
 
 namespace cpp_odbc {
 
-class raii_connection {
+class raii_connection : public connection {
 public:
 	raii_connection(psapp::valid_ptr<cpp_odbc::level2::api const> api, cpp_odbc::level2::environment_handle const & environment, std::string const & connection_string);
 
@@ -42,6 +43,12 @@ public:
 	level2::connection_handle const & get_handle() const;
 
 private:
+	std::shared_ptr<statement> do_make_statement() const final;
+	void do_set_connection_attribute(SQLINTEGER attribute, long value) const final;
+	void do_commit() const final;
+	void do_rollback() const final;
+	std::string do_get_string_info(SQLUSMALLINT info_type) const final;
+
 	struct intern;
 	psapp::pattern::pimpl<raii_connection> impl_;
 };

@@ -12,7 +12,8 @@
 
 #include "cpp_odbc/raii_connection.h"
 
-#include "cpp_odbc/raii_environment.h"
+#include "cpp_odbc/raii_statement.h"
+
 #include "cpp_odbc/level2/api.h"
 #include "cpp_odbc/level2/handles.h"
 
@@ -94,6 +95,32 @@ psapp::valid_ptr<level2::api const> raii_connection::get_api() const
 level2::connection_handle const & raii_connection::get_handle() const
 {
 	return impl_->handle.handle;
+}
+
+std::shared_ptr<statement> raii_connection::do_make_statement() const
+{
+	auto as_valid_raii_connection = psapp::to_valid(std::dynamic_pointer_cast<raii_connection const>(shared_from_this()));
+	return std::make_shared<raii_statement>(as_valid_raii_connection);
+}
+
+void raii_connection::do_set_connection_attribute(SQLINTEGER attribute, long value) const
+{
+	impl_->api->set_connection_attribute(impl_->handle.handle, attribute, value);
+}
+
+void raii_connection::do_commit() const
+{
+	impl_->api->end_transaction(impl_->handle.handle, SQL_COMMIT);
+}
+
+void raii_connection::do_rollback() const
+{
+	impl_->api->end_transaction(impl_->handle.handle, SQL_ROLLBACK);
+}
+
+std::string raii_connection::do_get_string_info(SQLUSMALLINT info_type) const
+{
+	return impl_->api->get_string_connection_info(impl_->handle.handle, info_type);
 }
 
 }
