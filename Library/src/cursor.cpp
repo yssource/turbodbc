@@ -33,17 +33,7 @@ void cursor::execute(std::string const & sql)
 std::vector<long> cursor::fetch_one()
 {
 	if (result) {
-		auto const has_results = statement->fetch_next();
-		if (has_results) {
-			std::vector<long> row;
-			for (auto const & column : result->columns) {
-				auto value_ptr = reinterpret_cast<long const *>(column[0].data_pointer);
-				row.push_back(*value_ptr);
-			}
-			return row;
-		} else {
-			return {};
-		}
+		return result->fetch_one();
 	} else {
 		throw std::runtime_error("No active result set");
 	}

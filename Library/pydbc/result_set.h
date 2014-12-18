@@ -23,6 +23,8 @@ struct result_set {
 	std::vector<cpp_odbc::multi_value_buffer> columns;
 
 	result_set(std::shared_ptr<cpp_odbc::statement> statement);
+
+	std::vector<long> fetch_one();
 };
 
 }
