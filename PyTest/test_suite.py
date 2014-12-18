@@ -1,10 +1,8 @@
 from unittest import TestCase
-#import pyodbc as pydbc
 import pydbc
 
-#dsn = "DSN=PostgreSQL R&D test database"
 dsn = "PostgreSQL R&D test database"
-dsn = "Exasol R&D test database"
+#dsn = "Exasol R&D test database"
 
 class TestConnect(TestCase):
 
