@@ -1,4 +1,4 @@
-export BY_HOME_BASE=/home/localdata/${USER}
+BY_HOME_BASE=/home/localdata/${USER}
 
 export CPP_ODBC_LIB_DIR=${BY_HOME_BASE}/workspace/cpp_odbc_build//Library
 export CPP_ODBC_INCLUDE_DIR=${BY_HOME_BASE}/workspace/cpp_odbc/Library/
