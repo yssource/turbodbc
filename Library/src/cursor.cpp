@@ -26,12 +26,7 @@ void cursor::execute(std::string const & sql)
 	statement->execute(sql);
 	std::size_t const columns = statement->number_of_columns();
 	if (columns != 0) {
-		result = std::make_shared<result_set>(columns);
-
-		for (std::size_t zero_based_index = 0; zero_based_index != columns; ++zero_based_index) {
-			auto const one_based_index = zero_based_index + 1;
-			statement->bind_column(one_based_index, SQL_C_SBIGINT, result->columns[zero_based_index]);
-		}
+		result = std::make_shared<result_set>(statement);
 	}
 }
 
