@@ -24,6 +24,11 @@ class TestConnect(TestCase):
             # after closing a connection, all calls should raise an Error or subclass
             connection.connect("Oh Boy!")
 
+    def test_connect_error(self):
+        self.assertRaises(pydbc.Error, pydbc.connect, "Oh Boy!")
+        
+ 
+
     def test_cursor_setup_teardown(self):
         connection = pydbc.connect(dsn)
         cursor = connection.cursor()
