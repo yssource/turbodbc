@@ -11,11 +11,11 @@ class TestConnect(TestCase):
        connection = pydbc.connect(dsn)
 
        self.assertTrue(hasattr(connection, 'close') and callable(getattr(connection, 'close'))
-                  , "close method mising")
+                  , "close method missing")
        self.assertTrue(hasattr(connection, 'commit') and callable(getattr(connection, 'commit'))
-                  , "commit method mising")
+                  , "commit method missing")
        self.assertTrue(hasattr(connection, 'cursor') and callable(getattr(connection, 'cursor'))
-                  , "cursor method mising")
+                  , "cursor method missing")
 
        connection.close()
 
@@ -60,8 +60,8 @@ class TestResultSet(TestCase):
         self.connection.close()
 
     def test_single_row_integer_result(self):
-        result = self.cursor.execute("select 42")
-        row = result.fetchone()
+        self.cursor.execute("select 42")
+        row = self.cursor.fetchone()
         self.assertItemsEqual(row, [42])
 
 if __name__ == '__main__':
