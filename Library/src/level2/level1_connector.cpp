@@ -252,10 +252,15 @@ void level1_connector::do_execute_statement(statement_handle const & handle, std
 	impl::throw_on_error(return_code, *this, handle);
 }
 
-void level1_connector::do_fetch_scroll(statement_handle const & handle, SQLSMALLINT fetch_orientation, SQLLEN fetch_offset) const
+bool level1_connector::do_fetch_scroll(statement_handle const & handle, SQLSMALLINT fetch_orientation, SQLLEN fetch_offset) const
 {
 	auto const return_code = level1_api_->fetch_scroll(handle.handle, fetch_orientation, fetch_offset);
-	impl::throw_on_error(return_code, *this, handle);
+	if (return_code == SQL_NO_DATA) {
+		return false;
+	} else {
+		impl::throw_on_error(return_code, *this, handle);
+		return true;
+	}
 }
 
 void level1_connector::do_free_statement(statement_handle const & handle, SQLUSMALLINT option) const

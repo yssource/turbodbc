@@ -112,9 +112,9 @@ void api::execute_statement(statement_handle const & handle, std::string const &
 	do_execute_statement(handle, sql);
 }
 
-void api::fetch_scroll(statement_handle const & statement_handle, SQLSMALLINT fetch_orientation, SQLLEN fetch_offset) const
+bool api::fetch_scroll(statement_handle const & statement_handle, SQLSMALLINT fetch_orientation, SQLLEN fetch_offset) const
 {
-	do_fetch_scroll(statement_handle, fetch_orientation, fetch_offset);
+	return do_fetch_scroll(statement_handle, fetch_orientation, fetch_offset);
 }
 
 void api::free_statement(statement_handle const & handle, SQLUSMALLINT option) const

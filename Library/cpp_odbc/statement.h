@@ -83,8 +83,9 @@ public:
 	/**
 	 * @brief Fetch the next elements of the result of the previously executed statement and
 	 *        store it in previously bound buffers
+	 * @return true if fetch retrieved data, else false
 	 */
-	void fetch_next() const;
+	bool fetch_next() const;
 
 	/**
 	 * @brief Close the currently open cursor
@@ -118,7 +119,7 @@ private:
 
 	virtual short int do_number_of_columns() const = 0;
 	virtual void do_bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp_odbc::multi_value_buffer & column_buffer) const = 0;
-	virtual void do_fetch_next() const = 0;
+	virtual bool do_fetch_next() const = 0;
 	virtual void do_close_cursor() const = 0;
 
 	virtual long do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;

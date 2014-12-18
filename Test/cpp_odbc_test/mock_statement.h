@@ -26,7 +26,7 @@ public:
 	MOCK_CONST_METHOD0( do_execute_prepared, void());
 	MOCK_CONST_METHOD0( do_number_of_columns, short int());
 	MOCK_CONST_METHOD3( do_bind_column, void(SQLUSMALLINT, SQLSMALLINT, cpp_odbc::multi_value_buffer &));
-	MOCK_CONST_METHOD0( do_fetch_next, void());
+	MOCK_CONST_METHOD0( do_fetch_next, bool());
 	MOCK_CONST_METHOD0( do_close_cursor, void());
 	MOCK_CONST_METHOD2( do_get_integer_column_attribute, long(SQLUSMALLINT, SQLUSMALLINT));
 	MOCK_CONST_METHOD2( do_get_string_column_attribute, std::string(SQLUSMALLINT, SQLUSMALLINT));

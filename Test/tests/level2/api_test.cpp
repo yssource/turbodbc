@@ -367,11 +367,12 @@ void level2_api_test::fetch_scroll_forwards()
 	level2::statement_handle const handle = {&value_a};
 	SQLSMALLINT const orientation = SQL_FETCH_NEXT;
 	SQLLEN const offset = 17;
+	bool const expected = true;
 
 	level2_mock_api api;
-	EXPECT_CALL(api, do_fetch_scroll(handle, orientation, offset)).Times(1);
+	EXPECT_CALL(api, do_fetch_scroll(handle, orientation, offset)).WillOnce(testing::Return(expected));
 
-	api.fetch_scroll(handle, orientation, offset);
+	CPPUNIT_ASSERT_EQUAL(expected, api.fetch_scroll(handle, orientation, offset));
 }
 
 void level2_api_test::free_statement_forwards()

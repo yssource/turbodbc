@@ -71,10 +71,10 @@ void raii_statement::do_bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_t
 	api_->bind_column(handle_, column_id, column_type, column_buffer);
 }
 
-void raii_statement::do_fetch_next() const
+bool raii_statement::do_fetch_next() const
 {
 	SQLSMALLINT const offset = 0;
-	api_->fetch_scroll(handle_, SQL_FETCH_NEXT, offset);
+	return api_->fetch_scroll(handle_, SQL_FETCH_NEXT, offset);
 }
 
 void raii_statement::do_close_cursor() const

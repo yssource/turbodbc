@@ -58,9 +58,9 @@ void statement::bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp
 	do_bind_column(column_id, column_type, column_buffer);
 }
 
-void statement::fetch_next() const
+bool statement::fetch_next() const
 {
-	do_fetch_next();
+	return do_fetch_next();
 }
 
 void statement::close_cursor() const

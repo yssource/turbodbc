@@ -51,7 +51,7 @@ private:
 
 	short int do_number_of_columns() const final;
 	void do_bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp_odbc::multi_value_buffer & column_buffer) const final;
-	void do_fetch_next() const final;
+	bool do_fetch_next() const final;
 	void do_close_cursor() const final;
 
 	long do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;

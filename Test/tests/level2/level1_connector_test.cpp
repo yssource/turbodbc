@@ -80,6 +80,7 @@ CPPUNIT_TEST_SUITE( level1_connector_test );
 	CPPUNIT_TEST( execute_statement_fails );
 	CPPUNIT_TEST( fetch_scroll_calls_api );
 	CPPUNIT_TEST( fetch_scroll_fails );
+	CPPUNIT_TEST( fetch_scroll_has_no_more_data );
 	CPPUNIT_TEST( free_statement_calls_api );
 	CPPUNIT_TEST( free_statement_fails );
 	CPPUNIT_TEST( get_integer_column_attribute_calls_api );
@@ -153,6 +154,7 @@ public:
 	void execute_statement_fails();
 	void fetch_scroll_calls_api();
 	void fetch_scroll_fails();
+	void fetch_scroll_has_no_more_data();
 	void free_statement_calls_api();
 	void free_statement_fails();
 	void get_integer_column_attribute_calls_api();
@@ -751,7 +753,7 @@ void level1_connector_test::fetch_scroll_calls_api()
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
 	level1_connector const connector(api);
-	connector.fetch_scroll(handle, orientation, offset);
+	CPPUNIT_ASSERT(connector.fetch_scroll(handle, orientation, offset));
 }
 
 void level1_connector_test::fetch_scroll_fails()
@@ -767,6 +769,20 @@ void level1_connector_test::fetch_scroll_fails()
 
 	level1_connector const connector(api);
 	CPPUNIT_ASSERT_THROW( connector.fetch_scroll(handle, orientation, offset), cpp_odbc::error );
+}
+
+void level1_connector_test::fetch_scroll_has_no_more_data()
+{
+	level2::statement_handle handle = {&value_a};
+	SQLSMALLINT const orientation = 42;
+	SQLLEN const offset = 17;
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_fetch_scroll(handle.handle, orientation, offset))
+		.WillOnce(testing::Return(SQL_NO_DATA));
+
+	level1_connector const connector(api);
+	CPPUNIT_ASSERT(not connector.fetch_scroll(handle, orientation, offset));
 }
 
 void level1_connector_test::free_statement_calls_api()

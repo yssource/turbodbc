@@ -57,7 +57,7 @@ private:
 	void do_bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, multi_value_buffer & parameter_values) const final;
 	void do_execute_prepared_statement(statement_handle const & handle) const final;
 	void do_execute_statement(statement_handle const & handle, std::string const & sql) const final;
-	void do_fetch_scroll(statement_handle const & statement_handle, SQLSMALLINT fetch_orientation, SQLLEN fetch_offset) const final;
+	bool do_fetch_scroll(statement_handle const & statement_handle, SQLSMALLINT fetch_orientation, SQLLEN fetch_offset) const final;
 	void do_free_statement(statement_handle const & handle, SQLUSMALLINT option) const final;
 	long do_get_integer_column_attribute(statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
 	long do_get_integer_statement_attribute(statement_handle const & handle, SQLINTEGER attribute) const final;

@@ -159,10 +159,11 @@ void statement_test::bind_column_forwards()
 
 void statement_test::fetch_next_forwards()
 {
+	bool const expected = false;
 	mock_statement statement;
-	EXPECT_CALL( statement, do_fetch_next()).Times(1);
+	EXPECT_CALL( statement, do_fetch_next()).WillOnce(testing::Return(expected));
 
-	statement.fetch_next();
+	CPPUNIT_ASSERT_EQUAL(expected, statement.fetch_next());
 }
 
 void statement_test::close_cursor_forwards()

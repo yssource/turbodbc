@@ -39,7 +39,7 @@ namespace cpp_odbc_test {
 		MOCK_CONST_METHOD5(do_bind_input_parameter, void(cpp_odbc::level2::statement_handle const &, SQLUSMALLINT, SQLSMALLINT, SQLSMALLINT, cpp_odbc::multi_value_buffer &));
 		MOCK_CONST_METHOD1(do_execute_prepared_statement, void(cpp_odbc::level2::statement_handle const &));
 		MOCK_CONST_METHOD2(do_execute_statement, void(cpp_odbc::level2::statement_handle const &, std::string const &));
-		MOCK_CONST_METHOD3(do_fetch_scroll, void(cpp_odbc::level2::statement_handle const &, SQLSMALLINT, SQLLEN));
+		MOCK_CONST_METHOD3(do_fetch_scroll, bool(cpp_odbc::level2::statement_handle const &, SQLSMALLINT, SQLLEN));
 		MOCK_CONST_METHOD2(do_free_statement, void(cpp_odbc::level2::statement_handle const &, SQLUSMALLINT));
 		MOCK_CONST_METHOD3(do_get_integer_column_attribute, long(cpp_odbc::level2::statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier));
 		MOCK_CONST_METHOD2(do_get_integer_statement_attribute, long(cpp_odbc::level2::statement_handle const &, SQLINTEGER));
