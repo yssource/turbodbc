@@ -13,6 +13,7 @@
 
 #include <cpp_odbc/statement.h>
 #include <memory>
+#include <vector>
 
 namespace pydbc {
 
@@ -20,6 +21,7 @@ struct cursor {
 	std::shared_ptr<cpp_odbc::statement> statement;
 
 	void execute(std::string const & sql);
+	std::vector<int> fetch_one();
 };
 
 }

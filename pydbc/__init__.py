@@ -8,6 +8,9 @@ class cursor():
     def execute(self, sql):
         """Execute an SQL query"""
         self.impl.execute(sql)
+        
+    def fetchone(self):
+        return self.impl.fetchone() 
 
 class connection():
     def __init__(self, impl):

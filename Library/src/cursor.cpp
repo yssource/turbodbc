@@ -19,4 +19,9 @@ void cursor::execute(std::string const & sql)
 	statement->execute(sql);
 }
 
+std::vector<int> cursor::fetch_one()
+{
+	return {17};
+}
+
 }
