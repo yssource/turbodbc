@@ -11,7 +11,7 @@ if [ -z "$label" ]; then
         fi
 fi
 
-CENTRAL_SOFTWARE_REPOSTORY=/data/software/${label}
+CENTRAL_SOFTWARE_REPOSITORY=/data/software/${label}
 source ${CENTRAL_SOFTWARE_REPOSITORY}/gcc/gcc4.7.2/use_gcc.sh
 source ${CENTRAL_SOFTWARE_REPOSITORY}/boost/1.55_gcc4.7.2_python2.7.3/use_boost.sh
 source /data/software/foundation/release/cppunit_toolbox/${label}/cppunit_toolbox_0_3_0/use_cppunit_toolbox.sh
