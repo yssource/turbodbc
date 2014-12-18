@@ -20,7 +20,7 @@ namespace pydbc { namespace bindings {
 
 } }
 
-BOOST_PYTHON_MODULE(pydbc)
+BOOST_PYTHON_MODULE(pydbc_intern)
 {
 	using namespace pydbc;
 	bindings::for_connect();

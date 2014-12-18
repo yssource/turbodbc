@@ -1,14 +1,14 @@
 file(GLOB_RECURSE LIBRARY_FILES "src/*.cpp")
 
-add_library(pydbc ${LIBRARY_FILES})
+add_library(pydbc_intern ${LIBRARY_FILES})
 
-SET_TARGET_PROPERTIES(pydbc PROPERTIES PREFIX "")
+SET_TARGET_PROPERTIES(pydbc_intern PROPERTIES PREFIX "")
 
-add_dependencies(pydbc
+add_dependencies(pydbc_intern
     refresh_cmake_configuration
 )
 
-target_link_libraries(pydbc
+target_link_libraries(pydbc_intern
 	${Boost_LIBRARIES}
 	${Odbc_LIBRARIES}
 	${Psapp_core_LIB}
@@ -18,12 +18,12 @@ target_link_libraries(pydbc
 
 
 install(
-    TARGETS pydbc
+    TARGETS pydbc_intern
     LIBRARY DESTINATION lib
 )
 
 install(
-	DIRECTORY pydbc
+	DIRECTORY pydbc_intern
 	DESTINATION include
 	FILES_MATCHING PATTERN "*.h"
 	PATTERN ".git" EXCLUDE
@@ -34,3 +34,7 @@ install(
     FILES ${USE_SCRIPTS}
     DESTINATION .
 )
+
+add_custom_command(TARGET pydbc_intern POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy
+                   pydbc_intern.so ../pydbc)

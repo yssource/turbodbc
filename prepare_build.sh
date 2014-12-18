@@ -1,4 +1,4 @@
 mkdir -p ../pydbc_build
 cd ../pydbc_build 
-cmake -DCMAKE_MODULE_PATH="/localdata/mkoenig/workspace/cmake_scripts;/localdata/mkoenig/workspace/pydbc/" ../pydbc
+cmake -DCMAKE_MODULE_PATH="/localdata/klaemke/workspace/build_environment/cmake_scripts;/localdata/klaemke/workspace/git/pydbc/" ../pydbc
 ln -s ../pydbc/PyTest PyTest

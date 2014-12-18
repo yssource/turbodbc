@@ -1,4 +1,4 @@
-project(pydbc CXX)
+project(pydbc_intern CXX)
 cmake_minimum_required(VERSION 2.8.7)
 
 include(default_build_setup)
@@ -26,3 +26,5 @@ if(BUILD_TESTING)
     find_package(cppunit_toolbox)
     add_subdirectory(Test)
 endif()
+
+file(COPY pydbc DESTINATION .)
