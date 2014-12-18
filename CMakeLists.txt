@@ -1,6 +1,8 @@
 project(pydbc CXX)
 cmake_minimum_required(VERSION 2.8.7)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
+
 include(default_build_setup)
 
 find_package(UsePsapp REQUIRED)
