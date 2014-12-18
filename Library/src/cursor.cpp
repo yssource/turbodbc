@@ -16,13 +16,6 @@
 
 namespace pydbc {
 
-std::size_t const cached_rows = 10;
-
-result_set::result_set(std::size_t number_of_columns) :
-	columns(number_of_columns, cpp_odbc::multi_value_buffer(sizeof(long), cached_rows))
-{
-}
-
 cursor::cursor(std::shared_ptr<cpp_odbc::statement> statement) :
 	statement(statement)
 {
@@ -31,7 +24,7 @@ cursor::cursor(std::shared_ptr<cpp_odbc::statement> statement) :
 void cursor::execute(std::string const & sql)
 {
 	statement->execute(sql);
-	auto columns = statement->number_of_columns();
+	std::size_t const columns = statement->number_of_columns();
 	if (columns != 0) {
 		result = std::make_shared<result_set>(columns);
 
