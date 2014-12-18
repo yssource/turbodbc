@@ -19,10 +19,9 @@ class TestConnect(TestCase):
 
        connection.close()
 
-       #FIXME: according to PEP249 this should throw an Error or subclass
-       with self.assertRaises(BaseException):
+       with self.assertRaises(pydbc.Error):
             # after closing a connection, all calls should raise an Error or subclass
-            connection.connect("Oh Boy!")
+            connection.cursor()
 
     def test_connect_error(self):
         self.assertRaises(pydbc.Error, pydbc.connect, "Oh Boy!")
@@ -39,8 +38,7 @@ class TestConnect(TestCase):
 
         cursor.close()
 
-        #FIXME: according to PEP249 this should throw an Error or subclass
-        with self.assertRaises(BaseException):
+        with self.assertRaises(pydbc.Error):
             cursor.execute("Oh Boy!")
 
         connection.close()
@@ -50,9 +48,8 @@ class TestConnect(TestCase):
         cursor = connection.cursor()
         connection.close()
 
-        #FIXME: according to PEP249 this should throw an Error or subclass
-        with self.assertRaises(BaseException):
-            connection.execute("Oh Boy!")
+        with self.assertRaises(pydbc.Error):
+            cursor.execute("Oh Boy!")
 
 class TestDQL(TestCase):
 

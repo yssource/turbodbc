@@ -41,6 +41,9 @@ class cursor():
         self._assert_valid()
         self.impl = None
 
+    def is_closed(self):
+        return self.impl == None
+
 class connection():
     def _assert_valid(self):
         if self.impl is None:
@@ -48,11 +51,14 @@ class connection():
     
     def __init__(self, impl):
         self.impl = impl
+        self.cursors = []
         
     def cursor(self):
         """Create a cursor object"""
         self._assert_valid()
-        return cursor(self.impl.cursor())
+        c = cursor(self.impl.cursor())
+        self.cursors.append(c)
+        return c
     
     def commit(self):
         self._assert_valid()
@@ -60,6 +66,11 @@ class connection():
         
     def close(self):
         self._assert_valid()
+        #TODO: connection needs impl knowledge on cursor. :(
+        for c in self.cursors:
+            if not c.is_closed():
+                c.close()
+        self.cursors = []
         self.impl = None
 
 
