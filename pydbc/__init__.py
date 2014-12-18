@@ -18,21 +18,40 @@ def translate_exceptions(f):
 class cursor():
     def __init__(self, impl):
         self.impl = impl
+    
+    def _assert_valid(self):
+        if self.impl is None:
+            raise Error("Cursor already closed")
         
     def execute(self, sql):
         """Execute an SQL query"""
+        self._assert_valid()
         self.impl.execute(sql)
 
+    def close(self):
+        self._assert_valid()
+        self.impl = None
+
 class connection():
+    def _assert_valid(self):
+        if self.impl is None:
+            raise Error("Connection already closed")
+    
     def __init__(self, impl):
         self.impl = impl
         
     def cursor(self):
         """Create a cursor object"""
+        self._assert_valid()
         return cursor(self.impl.cursor())
     
     def commit(self):
+        self._assert_valid()
         self.impl.commit()
+        
+    def close(self):
+        self._assert_valid()
+        self.impl = None
 
 
 @translate_exceptions
