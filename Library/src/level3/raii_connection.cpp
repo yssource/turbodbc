@@ -85,7 +85,7 @@ private:
 
 
 raii_connection::raii_connection(psapp::valid_ptr<raii_environment const> environment, std::string const & connection_string) :
-	impl_(environment, connection_string)
+	impl_(new raii_connection::intern(environment, connection_string))
 {
 }
 
@@ -124,5 +124,7 @@ std::string raii_connection::do_get_string_info(SQLUSMALLINT info_type) const
 {
 	return impl_->api->get_string_connection_info(impl_->handle.handle, info_type);
 }
+
+raii_connection::~raii_connection() = default;
 
 } }

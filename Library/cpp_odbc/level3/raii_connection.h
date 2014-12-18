@@ -15,10 +15,10 @@
 #include "cpp_odbc/level2/handles.h"
 #include "cpp_odbc/connection.h"
 
-#include "psapp/pattern/pimpl.h"
 #include "psapp/valid_ptr_core.h"
 
 #include <string>
+#include <memory>
 
 namespace cpp_odbc { namespace level2 {
 	class api;
@@ -56,6 +56,8 @@ public:
 	 */
 	level2::connection_handle const & get_handle() const;
 
+	virtual ~raii_connection();
+
 private:
 	std::shared_ptr<statement> do_make_statement() const final;
 	void do_set_attribute(SQLINTEGER attribute, long value) const final;
@@ -64,7 +66,7 @@ private:
 	std::string do_get_string_info(SQLUSMALLINT info_type) const final;
 
 	struct intern;
-	psapp::pattern::pimpl<raii_connection> impl_;
+	std::unique_ptr<intern> impl_;
 };
 
 } }

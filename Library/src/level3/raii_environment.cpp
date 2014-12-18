@@ -37,7 +37,7 @@ struct raii_environment::intern {
 };
 
 raii_environment::raii_environment(psapp::valid_ptr<level2::api const> api) :
-	impl_(std::move(api))
+	impl_(new raii_environment::intern(std::move(api)))
 {
 }
 
@@ -62,5 +62,6 @@ void raii_environment::do_set_attribute(SQLINTEGER attribute, long value) const
 	impl_->api->set_environment_attribute(impl_->handle, attribute, value);
 }
 
+raii_environment::~raii_environment() = default;
 
 } }

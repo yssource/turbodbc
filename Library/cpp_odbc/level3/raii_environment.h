@@ -13,8 +13,9 @@
 
 #include "cpp_odbc/environment.h"
 
-#include "psapp/pattern/pimpl.h"
 #include "psapp/valid_ptr_core.h"
+
+#include <memory>
 
 namespace cpp_odbc {
 	class environment;
@@ -51,12 +52,14 @@ public:
 	 */
 	level2::environment_handle const & get_handle() const;
 
+	virtual ~raii_environment();
+
 private:
 	std::shared_ptr<connection> do_make_connection(std::string const & connection_string) const final;
 	void do_set_attribute(SQLINTEGER attribute, long value) const final;
 
 	struct intern;
-	psapp::pattern::pimpl<raii_environment> impl_;
+	std::unique_ptr<intern> impl_;
 };
 
 } }
