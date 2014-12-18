@@ -16,5 +16,5 @@
 pydbc::connection pydbc::connect(std::string const & data_source_name)
 {
 	auto environment = cpp_odbc::make_environment();
-	return {psapp::to_valid(environment->make_connection("dsn=" + data_source_name))};
+	return {environment->make_connection("dsn=" + data_source_name)};
 }

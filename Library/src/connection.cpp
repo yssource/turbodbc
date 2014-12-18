@@ -21,7 +21,7 @@ void connection::commit()
 
 cursor connection::make_cursor()
 {
-	return {psapp::to_valid(connection->make_statement())};
+	return {connection->make_statement()};
 }
 
 }

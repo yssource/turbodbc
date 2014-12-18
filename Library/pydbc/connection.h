@@ -13,12 +13,12 @@
 
 #include "pydbc/cursor.h"
 #include <cpp_odbc/connection.h>
-#include <psapp/valid_ptr.h>
+#include <memory>
 
 namespace pydbc {
 
 struct connection {
-	psapp::valid_ptr<cpp_odbc::connection> connection;
+	std::shared_ptr<cpp_odbc::connection> connection;
 
 	void commit();
 
