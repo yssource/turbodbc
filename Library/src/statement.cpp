@@ -78,4 +78,9 @@ std::string statement::get_string_column_attribute(SQLUSMALLINT column_id, SQLUS
 	return do_get_string_column_attribute(column_id, field_identifier);
 }
 
+SQLLEN statement::row_count() const
+{
+	return do_row_count();
+}
+
 }

@@ -106,6 +106,11 @@ public:
 	 */
 	std::string get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const;
 
+	/**
+	 * @brief Return number of rows in result set
+	 */
+	SQLLEN row_count() const;
+
 	virtual ~statement();
 protected:
 	statement();
@@ -124,6 +129,7 @@ private:
 
 	virtual long do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;
 	virtual std::string do_get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;
+	virtual SQLLEN do_row_count() const = 0;
 };
 
 }

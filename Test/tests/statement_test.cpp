@@ -36,6 +36,7 @@ CPPUNIT_TEST_SUITE( statement_test );
 	CPPUNIT_TEST( close_cursor_forwards );
 	CPPUNIT_TEST( get_integer_column_attribute_forwards );
 	CPPUNIT_TEST( get_string_column_attribute_forwards );
+	CPPUNIT_TEST( row_count_forwards );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -54,6 +55,7 @@ public:
 	void close_cursor_forwards();
 	void get_integer_column_attribute_forwards();
 	void get_string_column_attribute_forwards();
+	void row_count_forwards();
 
 };
 
@@ -198,4 +200,15 @@ void statement_test::get_string_column_attribute_forwards()
 		.WillOnce(testing::Return(expected));
 
 	CPPUNIT_ASSERT_EQUAL( expected, statement.get_string_column_attribute(column, field_identifier));
+}
+
+void statement_test::row_count_forwards()
+{
+	SQLLEN const expected = 42;
+
+	mock_statement statement;
+	EXPECT_CALL( statement, do_row_count())
+		.WillOnce(testing::Return(expected));
+
+	CPPUNIT_ASSERT_EQUAL( expected, statement.row_count() );
 }

@@ -56,6 +56,7 @@ private:
 
 	long do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
 	std::string do_get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
+	SQLLEN do_row_count() const final;
 
 	std::shared_ptr<raii_connection const> connection_;
 	std::shared_ptr<level2::api const> api_;

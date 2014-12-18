@@ -39,6 +39,7 @@ CPPUNIT_TEST_SUITE( raii_statement_test );
 	CPPUNIT_TEST( close_cursor );
 	CPPUNIT_TEST( get_integer_column_attribute );
 	CPPUNIT_TEST( get_string_column_attribute );
+	CPPUNIT_TEST( row_count );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -59,6 +60,7 @@ public:
 	void close_cursor();
 	void get_integer_column_attribute();
 	void get_string_column_attribute();
+	void row_count();
 
 };
 
@@ -306,4 +308,18 @@ void raii_statement_test::get_string_column_attribute()
 
 	raii_statement statement(connection);
 	CPPUNIT_ASSERT_EQUAL( expected, statement.get_string_column_attribute(column_id, field_identifier));
+}
+
+void raii_statement_test::row_count()
+{
+	SQLLEN const expected = 23;
+
+	auto api = make_default_api();
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
+	EXPECT_CALL(*api, do_row_count(default_s_handle))
+		.WillOnce(testing::Return(expected));
+
+	raii_statement statement(connection);
+	CPPUNIT_ASSERT_EQUAL( expected, statement.row_count());
 }

@@ -92,4 +92,9 @@ std::string raii_statement::do_get_string_column_attribute(SQLUSMALLINT column_i
 	return api_->get_string_column_attribute(handle_, column_id, field_identifier);
 }
 
+SQLLEN raii_statement::do_row_count() const
+{
+	return api_->row_count(handle_);
+}
+
 } }
