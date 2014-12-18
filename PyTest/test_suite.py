@@ -1,8 +1,9 @@
 from unittest import TestCase
-#from pydbc import connect
 import pyodbc as pydbc
+#import pydbc
 
 dsn = "DSN=PostgreSQL R&D test database"
+#dsn = "PostgreSQL R&D test database"
 
 class TestConnect(TestCase):
 
@@ -48,6 +49,20 @@ class TestConnect(TestCase):
         with self.assertRaises(BaseException):
             connection.execute("Oh Boy!")
 
+class TestResultSet(TestCase):
+
+    def setUp(self):
+        self.connection = pydbc.connect(dsn)
+        self.cursor = self.connection.cursor()
+
+    def tearDown(self):
+        self.cursor.close()
+        self.connection.close()
+
+    def test_single_row_integer_result(self):
+        result = self.cursor.execute("select 42")
+        row = result.fetchone()
+        self.assertItemsEqual(row, [42])
 
 if __name__ == '__main__':
     from unittest import main
