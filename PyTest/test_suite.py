@@ -24,6 +24,11 @@ class TestConnect(TestCase):
             # after closing a connection, all calls should raise an Error or subclass
             connection.connect("Oh Boy!")
 
+    def test_connect_error(self):
+        self.assertRaises(pydbc.Error, pydbc.connect, "Oh Boy!")
+        
+ 
+
     def test_cursor_setup_teardown(self):
         connection = pydbc.connect(dsn)
         cursor = connection.cursor()
@@ -49,7 +54,7 @@ class TestConnect(TestCase):
         with self.assertRaises(BaseException):
             connection.execute("Oh Boy!")
 
-class TestResultSet(TestCase):
+class TestDQL(TestCase):
 
     def setUp(self):
         self.connection = pydbc.connect(dsn)
@@ -72,6 +77,25 @@ class TestResultSet(TestCase):
         self.assertItemsEqual(row, [40, 41, 42, 43])
         row = self.cursor.fetchone()
         self.assertIsNone(row)
+
+
+class TestDML(TestCase):
+
+    def setUp(self):
+        self.connection = pydbc.connect(dsn)
+        self.cursor = self.connection.cursor()
+
+    def tearDown(self):
+        self.cursor.close()
+        self.connection.close()
+
+    def test_delete_insert_select(self):
+        self.cursor.execute("delete from python_test")
+        self.cursor.execute("insert into python_test values (42)")
+        self.cursor.execute("select * from python_test")
+        row = self.cursor.fetchone()
+        self.assertItemsEqual(row, [42])
+
 
 if __name__ == '__main__':
     from unittest import main
