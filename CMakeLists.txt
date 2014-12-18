@@ -5,9 +5,6 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 
 include(default_build_setup)
 
-find_package(UsePsapp REQUIRED)
-exclude_from_coverage(psapp)
-
 find_package(Boost REQUIRED COMPONENTS python system)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
