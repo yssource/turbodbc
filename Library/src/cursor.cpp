@@ -39,4 +39,9 @@ std::vector<long> cursor::fetch_one()
 	}
 }
 
+long cursor::get_rowcount()
+{
+	return statement->row_count();
+}
+
 }

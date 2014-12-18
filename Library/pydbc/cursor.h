@@ -26,6 +26,7 @@ struct cursor {
 
 	void execute(std::string const & sql);
 	std::vector<long> fetch_one();
+	long get_rowcount();
 };
 
 }
