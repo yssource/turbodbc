@@ -3,9 +3,6 @@ cmake_minimum_required(VERSION 2.8.7)
 
 include(default_build_setup)
 
-find_package(UsePsapp REQUIRED)
-exclude_from_coverage(psapp)
-
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 find_package(odbc)
