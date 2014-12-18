@@ -18,4 +18,4 @@ target_link_libraries(pydbc_test
     ${Psapp_core_LIB}
 )
 
-add_test(Library cpp_odbc_test)
+add_test(Library pydbc_test)
