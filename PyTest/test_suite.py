@@ -62,6 +62,7 @@ class TestDQL(TestCase):
 
     def test_single_row_integer_result(self):
         self.cursor.execute("select 42")
+        self.assertEqual(self.cursor.rowcount, 1)
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [42])
         row = self.cursor.fetchone()
@@ -69,6 +70,7 @@ class TestDQL(TestCase):
 
     def test_single_row_multiple_integer_result(self):
         self.cursor.execute("select 40, 41, 42, 43")
+        self.assertEqual(self.cursor.rowcount, 1)
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [40, 41, 42, 43])
         row = self.cursor.fetchone()
@@ -79,6 +81,7 @@ class TestDQL(TestCase):
         self.cursor.execute("insert into test_integer values (1)")
         self.cursor.execute("insert into test_integer values (2)")
         self.cursor.execute("select * from test_integer order by a")
+        self.assertEqual(self.cursor.rowcount, 2)
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [1])
         row = self.cursor.fetchone()
@@ -99,6 +102,7 @@ class TestDML(TestCase):
         self.cursor.execute("delete from test_integer")
         self.cursor.execute("insert into test_integer values (42)")
         self.cursor.execute("select * from test_integer")
+        self.assertEqual(self.cursor.rowcount, 1)
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [42])
 
