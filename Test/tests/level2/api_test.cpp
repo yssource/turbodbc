@@ -51,6 +51,7 @@ CPPUNIT_TEST_SUITE( level2_api_test );
 	CPPUNIT_TEST( number_of_result_columns_forwards );
 	CPPUNIT_TEST( prepare_statement_forwards );
 	CPPUNIT_TEST( set_statement_attribute_forwards );
+	CPPUNIT_TEST( row_count_forwards );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -84,6 +85,7 @@ public:
 	void number_of_result_columns_forwards();
 	void prepare_statement_forwards();
 	void set_statement_attribute_forwards();
+	void row_count_forwards();
 
 };
 
@@ -432,4 +434,15 @@ void level2_api_test::set_statement_attribute_forwards()
 	EXPECT_CALL(api, do_set_statement_attribute(handle, attribute, value)).Times(1);
 
 	api.set_statement_attribute(handle, attribute, value);
+}
+
+void level2_api_test::row_count_forwards()
+{
+	level2::statement_handle const handle = {&value_a};
+	SQLLEN const expected = 23;
+
+	level2_mock_api api;
+	EXPECT_CALL(api, do_row_count(handle)).WillOnce(testing::Return(23));
+
+	CPPUNIT_ASSERT_EQUAL(expected, api.row_count(handle));
 }

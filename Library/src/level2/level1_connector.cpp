@@ -1,5 +1,4 @@
-/**
- *  @file level1_connector.cpp
+/** *  @file level1_connector.cpp
  *  @date 07.03.2014
  *  @author mkoenig
  *  @brief 
@@ -343,6 +342,16 @@ void level1_connector::do_set_statement_attribute(statement_handle const & handl
 	auto value_as_pointer = reinterpret_cast<void*>(value); // damn C API
 	auto const return_code = level1_api_->set_statement_attribute(handle.handle, attribute, value_as_pointer, SQL_IS_INTEGER);
 	impl::throw_on_error(return_code, *this, handle);
+}
+
+SQLLEN level1_connector::do_row_count(statement_handle const & handle) const
+{
+	SQLLEN count = 0;
+	auto const return_code = level1_api_->row_count(handle.handle, &count);
+
+	impl::throw_on_error(return_code, *this, handle);
+
+	return count;
 }
 
 

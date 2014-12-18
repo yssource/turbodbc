@@ -152,5 +152,10 @@ void api::set_statement_attribute(statement_handle const & handle, SQLINTEGER at
 	do_set_statement_attribute(handle, attribute, value);
 }
 
+SQLLEN api::row_count(statement_handle const & handle) const
+{
+	return do_row_count(handle);
+}
+
 
 } }
