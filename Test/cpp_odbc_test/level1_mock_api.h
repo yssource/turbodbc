@@ -44,6 +44,7 @@ struct level1_mock_api : public cpp_odbc::level1::api {
 	MOCK_CONST_METHOD2(do_number_of_result_columns, SQLRETURN(SQLHSTMT, SQLSMALLINT *));
 	MOCK_CONST_METHOD3(do_prepare_statement, SQLRETURN(SQLHSTMT, SQLCHAR *, SQLINTEGER));
 	MOCK_CONST_METHOD4(do_set_statement_attribute, SQLRETURN(SQLHSTMT, SQLINTEGER, SQLPOINTER, SQLINTEGER));
+	MOCK_CONST_METHOD2(do_row_count, SQLRETURN(SQLHSTMT, SQLLEN *));
 };
 
 

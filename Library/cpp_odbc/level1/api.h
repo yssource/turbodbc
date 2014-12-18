@@ -127,6 +127,11 @@ public:
 	 */
 	SQLRETURN set_statement_attribute(SQLHSTMT statement_handle, SQLINTEGER attribute, SQLPOINTER value_ptr, SQLINTEGER string_length) const;
 
+	/**
+	 * @brief see unixodbc's SQLRowCount() function
+	 */
+    SQLRETURN row_count(SQLHSTMT statement_handle, SQLLEN * count) const;
+
 protected:
 
 	api();
@@ -154,6 +159,7 @@ private:
 	virtual SQLRETURN do_number_of_result_columns(SQLHSTMT statement_handle, SQLSMALLINT * destination) const = 0;
 	virtual SQLRETURN do_prepare_statement(SQLHSTMT statement_handle, SQLCHAR * statement_text, SQLINTEGER text_length) const = 0;
 	virtual SQLRETURN do_set_statement_attribute(SQLHSTMT statement_handle, SQLINTEGER attribute, SQLPOINTER value_ptr, SQLINTEGER string_length) const = 0;
+	virtual SQLRETURN do_row_count(SQLHSTMT statement_handle, SQLLEN * count) const = 0;
 };
 
 

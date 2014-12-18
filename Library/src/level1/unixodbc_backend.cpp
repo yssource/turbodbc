@@ -116,5 +116,10 @@ SQLRETURN unixodbc_backend::do_set_statement_attribute(SQLHSTMT statement_handle
 	return SQLSetStmtAttr(statement_handle, attribute, value_ptr, string_length);
 }
 
+SQLRETURN unixodbc_backend::do_row_count(SQLHSTMT statement_handle, SQLLEN * count) const
+{
+	return SQLRowCount(statement_handle, count);
+}
+
 
 } }

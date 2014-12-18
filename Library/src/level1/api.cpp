@@ -117,4 +117,9 @@ SQLRETURN api::set_statement_attribute(SQLHSTMT statement_handle, SQLINTEGER att
 	return do_set_statement_attribute(statement_handle, attribute, value_ptr, string_length);
 }
 
+SQLRETURN api::row_count(SQLHSTMT statement_handle, SQLLEN * count) const
+{
+	return do_row_count(statement_handle, count);
+}
+
 } }
