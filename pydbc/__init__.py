@@ -18,6 +18,8 @@ def translate_exceptions(f):
 class cursor():
     def __init__(self, impl):
         self.impl = impl
+        self.rowcount = -1
+        self.description = None
     
     def _assert_valid(self):
         if self.impl is None:
