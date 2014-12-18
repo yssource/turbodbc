@@ -4,6 +4,7 @@ import pydbc
 
 #dsn = "DSN=PostgreSQL R&D test database"
 dsn = "PostgreSQL R&D test database"
+dsn = "Exasol R&D test database"
 
 class TestConnect(TestCase):
 
@@ -75,6 +76,16 @@ class TestDQL(TestCase):
         row = self.cursor.fetchone()
         self.assertIsNone(row)
 
+    def test_multiple_row_single_integer_result(self):
+        self.cursor.execute("delete from test_integer")
+        self.cursor.execute("insert into test_integer values (1)")
+        self.cursor.execute("insert into test_integer values (2)")
+        self.cursor.execute("select * from test_integer order by a")
+        row = self.cursor.fetchone()
+        self.assertItemsEqual(row, [1])
+        row = self.cursor.fetchone()
+        self.assertItemsEqual(row, [2])
+
 
 class TestDML(TestCase):
 
@@ -87,9 +98,9 @@ class TestDML(TestCase):
         self.connection.close()
 
     def test_delete_insert_select(self):
-        self.cursor.execute("delete from python_test")
-        self.cursor.execute("insert into python_test values (42)")
-        self.cursor.execute("select * from python_test")
+        self.cursor.execute("delete from test_integer")
+        self.cursor.execute("insert into test_integer values (42)")
+        self.cursor.execute("select * from test_integer")
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [42])
 
