@@ -29,6 +29,7 @@ class cursor():
         """Execute an SQL query"""
         self._assert_valid()
         self.impl.execute(sql)
+        self.rowcount = self.impl.get_rowcount()
         
     def fetchone(self):
         result = self.impl.fetchone()
