@@ -63,6 +63,8 @@ class TestResultSet(TestCase):
         self.cursor.execute("select 42")
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [42])
+        row = self.cursor.fetchone()
+        self.assertIsNone(row)
 
 if __name__ == '__main__':
     from unittest import main
