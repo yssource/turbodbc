@@ -66,6 +66,13 @@ class TestResultSet(TestCase):
         row = self.cursor.fetchone()
         self.assertIsNone(row)
 
+    def test_single_row_multiple_integer_result(self):
+        self.cursor.execute("select 40, 41, 42, 43")
+        row = self.cursor.fetchone()
+        self.assertItemsEqual(row, [40, 41, 42, 43])
+        row = self.cursor.fetchone()
+        self.assertIsNone(row)
+
 if __name__ == '__main__':
     from unittest import main
     main()
