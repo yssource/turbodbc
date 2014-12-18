@@ -27,12 +27,16 @@ void cursor::execute(std::string const & sql)
 	}
 }
 
-std::vector<int> cursor::fetch_one()
+std::vector<long> cursor::fetch_one()
 {
 	if (buffer) {
-		statement->fetch_next();
-		auto value_ptr = reinterpret_cast<long *>((*buffer)[0].data_pointer);
-		return {*value_ptr};
+		auto const has_results = statement->fetch_next();
+		if (has_results) {
+			auto value_ptr = reinterpret_cast<long *>((*buffer)[0].data_pointer);
+			return {*value_ptr};
+		} else {
+			return {};
+		}
 	} else {
 		throw std::runtime_error("No active result set");
 	}

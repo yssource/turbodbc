@@ -23,7 +23,7 @@ struct cursor {
 	std::shared_ptr<cpp_odbc::multi_value_buffer> buffer;
 
 	void execute(std::string const & sql);
-	std::vector<int> fetch_one();
+	std::vector<long> fetch_one();
 };
 
 }

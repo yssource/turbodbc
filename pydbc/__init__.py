@@ -31,7 +31,11 @@ class cursor():
         self.impl.execute(sql)
         
     def fetchone(self):
-        return self.impl.fetchone() 
+        result = self.impl.fetchone()
+        if len(result) == 0:
+            return None 
+        else:
+            return result  
 
     def close(self):
         self._assert_valid()

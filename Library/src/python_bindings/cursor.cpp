@@ -19,8 +19,8 @@ namespace pydbc { namespace bindings {
 
 void for_cursor()
 {
-	boost::python::class_<std::vector<int>>("vector_of_ints")
-    .def(boost::python::vector_indexing_suite<std::vector<int>>() );
+	boost::python::class_<std::vector<long>>("vector_of_ints")
+    .def(boost::python::vector_indexing_suite<std::vector<long>>() );
 
 	boost::python::class_<pydbc::cursor>("Cursor", boost::python::no_init)
     		.def("execute", &pydbc::cursor::execute)
