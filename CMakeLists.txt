@@ -1,5 +1,7 @@
-project(pydbc CXX)
+project(pydbc_intern CXX)
 cmake_minimum_required(VERSION 2.8.7)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 
 include(default_build_setup)
 
@@ -12,10 +14,10 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 find_package(python REQUIRED)
 include_directories(SYSTEM ${Python_INCLUDE_DIR})
 
-find_package(odbc)
+find_package(odbc REQUIRED)
 include_directories(SYSTEM ${Odbc_INCLUDE_DIR})
 
-find_package(cpp_odbc)
+find_package(cpp_odbc REQUIRED)
 
 include_directories(Library)
 add_subdirectory(Library)
@@ -26,3 +28,5 @@ if(BUILD_TESTING)
     find_package(cppunit_toolbox)
     add_subdirectory(Test)
 endif()
+
+file(COPY pydbc DESTINATION .)

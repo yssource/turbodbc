@@ -9,7 +9,7 @@ add_dependencies(pydbc_test
 )
 
 target_link_libraries(pydbc_test
-	pydbc
+	pydbc_intern
 	cpp_odbc
     cppunit_toolbox
     cppunit_runner_gmock

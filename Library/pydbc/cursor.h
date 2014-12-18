@@ -12,12 +12,12 @@
  */
 
 #include <cpp_odbc/statement.h>
-#include <psapp/valid_ptr.h>
+#include <memory>
 
 namespace pydbc {
 
 struct cursor {
-	psapp::valid_ptr<cpp_odbc::statement> statement;
+	std::shared_ptr<cpp_odbc::statement> statement;
 
 	void execute(std::string const & sql);
 };
