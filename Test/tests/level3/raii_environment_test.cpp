@@ -65,9 +65,9 @@ namespace {
 	environment_handle const default_e_handle = {&value_a};
 	connection_handle const default_c_handle = {&value_b};
 
-	psapp::valid_ptr<testing::NiceMock<level2_mock_api> const> make_default_api()
+	std::shared_ptr<testing::NiceMock<level2_mock_api> const> make_default_api()
 	{
-		auto api = psapp::make_valid_ptr<testing::NiceMock<level2_mock_api> const>();
+		auto api = std::make_shared<testing::NiceMock<level2_mock_api> const>();
 
 		ON_CALL(*api, do_allocate_environment_handle())
 			.WillByDefault(testing::Return(default_e_handle));
@@ -89,7 +89,7 @@ void raii_environment_test::resource_management()
 {
 	environment_handle internal_handle = {&value_a};
 
-	auto api = psapp::make_valid_ptr<testing::NiceMock<cpp_odbc_test::level2_mock_api> const>();
+	auto api = std::make_shared<testing::NiceMock<cpp_odbc_test::level2_mock_api> const>();
 
 	EXPECT_CALL(*api, do_allocate_environment_handle()).
 			WillOnce(testing::Return(internal_handle));

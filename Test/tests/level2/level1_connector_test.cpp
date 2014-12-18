@@ -209,7 +209,7 @@ void level1_connector_test::allocate_statement_handle_calls_api()
 	level2::connection_handle input_handle = {&value_a};
 	level2::statement_handle const expected_output_handle = {&value_b};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_allocate_handle(SQL_HANDLE_STMT, input_handle.handle, testing::_) )
 		.WillOnce(testing::DoAll(
 				testing::SetArgPointee<2>(expected_output_handle.handle),
@@ -227,7 +227,7 @@ void level1_connector_test::allocate_connection_handle_calls_api()
 	level2::environment_handle input_handle = {&value_a};
 	level2::connection_handle const expected_output_handle = {&value_b};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_allocate_handle(SQL_HANDLE_DBC, input_handle.handle, testing::_) )
 		.WillOnce(testing::DoAll(
 				testing::SetArgPointee<2>(expected_output_handle.handle),
@@ -244,7 +244,7 @@ void level1_connector_test::allocate_environment_handle_calls_api()
 {
 	level2::environment_handle const expected_output_handle = {&value_a};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_allocate_handle(SQL_HANDLE_ENV, nullptr, testing::_) )
 		.WillOnce(testing::DoAll(
 				testing::SetArgPointee<2>(expected_output_handle.handle),
@@ -262,7 +262,7 @@ void level1_connector_test::allocate_statement_handle_fails()
 {
 	level2::connection_handle input_handle = {&value_a};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_allocate_handle(testing::_, testing::_, testing::_) )
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -276,7 +276,7 @@ void level1_connector_test::allocate_connection_handle_fails()
 {
 	level2::environment_handle input_handle = {&value_a};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_allocate_handle(testing::_, testing::_, testing::_) )
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -288,7 +288,7 @@ void level1_connector_test::allocate_connection_handle_fails()
 
 void level1_connector_test::allocate_environment_handle_fails()
 {
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_allocate_handle(testing::_, testing::_, testing::_) )
 		.WillOnce(testing::Return(SQL_ERROR));
 
@@ -303,7 +303,7 @@ namespace {
 	{
 		Handle handle = {&value_a};
 
-		auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+		auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 		EXPECT_CALL(*api, do_free_handle(expected_handle_type, handle.handle) )
 			.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -334,7 +334,7 @@ namespace {
 	{
 		Handle handle = {&value_a};
 
-		auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+		auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 		EXPECT_CALL(*api, do_free_handle(testing::_, testing::_) )
 			.WillOnce(testing::Return(SQL_ERROR));
 		expect_error(*api, expected_error);
@@ -370,7 +370,7 @@ namespace {
 		SQLINTEGER const expected_native_error = 23;
 		std::string const expected_message = "This is a test error message";
 
-		auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+		auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 		EXPECT_CALL(*api, do_get_diagnostic_record(expected_type, handle.handle, 1, testing::_, testing::_, testing::_, 1024, testing::_))
 			.WillOnce(testing::DoAll(
 						testing::SetArrayArgument<3>(expected_status_code.begin(), expected_status_code.end()),
@@ -413,7 +413,7 @@ namespace {
 	{
 		Handle const handle = {&value_a};
 
-		auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+		auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 		EXPECT_CALL(*api, do_get_diagnostic_record(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 			.WillOnce(testing::Return(SQL_ERROR));
 
@@ -445,7 +445,7 @@ void level1_connector_test::set_environment_attribute_calls_api()
 	SQLINTEGER const attribute = SQL_ATTR_ODBC_VERSION;
 	long const value = 42;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_environment_attribute(handle.handle, attribute, reinterpret_cast<SQLPOINTER>(value), 0))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -457,7 +457,7 @@ void level1_connector_test::set_environment_attribute_fails()
 {
 	level2::environment_handle const handle = {&value_a};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_environment_attribute(testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -472,7 +472,7 @@ void level1_connector_test::set_connection_attribute_calls_api()
 	SQLINTEGER const attribute = SQL_ATTR_AUTOCOMMIT;
 	long const value = 42;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_connection_attribute(handle.handle, attribute, reinterpret_cast<SQLPOINTER>(value), 0))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -484,7 +484,7 @@ void level1_connector_test::set_connection_attribute_fails()
 {
 	level2::connection_handle const handle = {&value_a};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_connection_attribute(testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -498,7 +498,7 @@ void level1_connector_test::establish_connection_calls_api()
 	level2::connection_handle handle = {&value_a};
 	std::string const connection_string = "dummy connection string";
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_establish_connection(handle.handle, nullptr, testing::_, connection_string.length(), testing::_, 1024, testing::_, SQL_DRIVER_NOPROMPT))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -510,7 +510,7 @@ void level1_connector_test::establish_connection_fails()
 {
 	level2::connection_handle handle = {&value_a};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_establish_connection(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -523,7 +523,7 @@ void level1_connector_test::disconnect_calls_api()
 {
 	level2::connection_handle handle = {&value_a};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_disconnect(handle.handle))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -535,7 +535,7 @@ void level1_connector_test::disconnect_fails()
 {
 	level2::connection_handle handle = {&value_a};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_disconnect(testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -549,7 +549,7 @@ void level1_connector_test::end_transaction_calls_api()
 	level2::connection_handle handle = {&value_a};
 	SQLSMALLINT const completion_type = SQL_COMMIT;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_end_transaction(SQL_HANDLE_DBC, handle.handle, completion_type))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -562,7 +562,7 @@ void level1_connector_test::end_transaction_fails()
 	level2::connection_handle handle = {&value_a};
 	SQLSMALLINT const completion_type = SQL_COMMIT;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_end_transaction(testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -581,7 +581,7 @@ void level1_connector_test::get_string_connection_info_calls_api()
 		memcpy(destination, expected_info.data(), expected_info.size());
 	};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_get_connection_info(handle.handle, info_type, testing::_, 1024, testing::_))
 		.WillOnce(testing::DoAll(
 					testing::Invoke(copy_string_to_void_pointer),
@@ -599,7 +599,7 @@ void level1_connector_test::get_string_connection_info_fails()
 	SQLUSMALLINT const info_type = SQL_ODBC_VER;
 	std::string const expected_info = "test info";
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_get_connection_info(testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -615,7 +615,7 @@ void level1_connector_test::bind_column_calls_api()
 	SQLSMALLINT const column_type = 17;
 	cpp_odbc::multi_value_buffer column_buffer(23, 2);
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_bind_column(handle.handle, column_id, column_type, column_buffer.data_pointer(), column_buffer.capacity_per_element(), column_buffer.indicator_pointer()))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -629,7 +629,7 @@ void level1_connector_test::bind_column_fails()
 	SQLSMALLINT const column_type = 17;
 	cpp_odbc::multi_value_buffer column_buffer(23, 2);
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_bind_column(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -645,7 +645,7 @@ void level1_connector_test::bind_input_parameter_calls_api()
 	SQLSMALLINT const parameter_type = 51;
 	cpp_odbc::multi_value_buffer buffer(23, 2);
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_bind_parameter(handle.handle, parameter_id, SQL_PARAM_INPUT, value_type, parameter_type, buffer.capacity_per_element(), 0, buffer.data_pointer(), buffer.capacity_per_element(), buffer.indicator_pointer()))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -660,7 +660,7 @@ void level1_connector_test::bind_input_parameter_fails()
 	SQLSMALLINT const parameter_type = 51;
 	cpp_odbc::multi_value_buffer buffer(23, 2);
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_bind_parameter(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -673,7 +673,7 @@ void level1_connector_test::execute_prepared_statement_calls_api()
 {
 	level2::statement_handle handle = {&value_a};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_execute_prepared_statement(handle.handle))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -685,7 +685,7 @@ void level1_connector_test::execute_prepared_statement_fails()
 {
 	level2::statement_handle handle = {&value_a};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_execute_prepared_statement(testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -718,7 +718,7 @@ void level1_connector_test::execute_statement_calls_api()
 	level2::statement_handle handle = {&value_a};
 	std::string const sql = "XXX";
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_execute_statement(handle.handle, testing::Truly(matches_string(sql)), sql.size()))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -731,7 +731,7 @@ void level1_connector_test::execute_statement_fails()
 	level2::statement_handle handle = {&value_a};
 	std::string const sql = "XXX";
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_execute_statement(testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -746,7 +746,7 @@ void level1_connector_test::fetch_scroll_calls_api()
 	SQLSMALLINT const orientation = 42;
 	SQLLEN const offset = 17;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_fetch_scroll(handle.handle, orientation, offset))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -760,7 +760,7 @@ void level1_connector_test::fetch_scroll_fails()
 	SQLSMALLINT const orientation = 42;
 	SQLLEN const offset = 17;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_fetch_scroll(testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -774,7 +774,7 @@ void level1_connector_test::free_statement_calls_api()
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const option = 42;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_free_statement(handle.handle, option))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -787,7 +787,7 @@ void level1_connector_test::free_statement_fails()
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const option = 42;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_free_statement(testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -803,7 +803,7 @@ void level1_connector_test::get_integer_column_attribute_calls_api()
 	SQLUSMALLINT const field_identifier = 23;
 	long const expected = 12345;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_column_attribute(handle.handle, column_id, field_identifier, nullptr, 0, nullptr, testing::_))
 		.WillOnce(testing::DoAll(
 					testing::SetArgPointee<6>(expected),
@@ -820,7 +820,7 @@ void level1_connector_test::get_integer_column_attribute_fails()
 	SQLUSMALLINT const column_id = 17;
 	SQLUSMALLINT const field_identifier = 23;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_column_attribute(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -839,7 +839,7 @@ void level1_connector_test::get_integer_statement_attribute_calls_api()
 		*reinterpret_cast<long *>(destination) = expected;
 	};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_get_statement_attribute(handle.handle, attribute, testing::_, 0, nullptr))
 		.WillOnce(testing::DoAll(
 					testing::Invoke(copy_long_to_void_pointer),
@@ -855,7 +855,7 @@ void level1_connector_test::get_integer_statement_attribute_fails()
 	level2::statement_handle handle = {&value_a};
 	SQLINTEGER const attribute = 23;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_get_statement_attribute(testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -875,7 +875,7 @@ void level1_connector_test::get_string_column_attribute_calls_api()
 		memcpy(destination, expected.data(), expected.size());
 	};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_column_attribute(handle.handle, column_id, field_identifier, testing::_, 1024, testing::_, nullptr))
 		.WillOnce(testing::DoAll(
 					testing::Invoke(copy_string_to_void_pointer),
@@ -893,7 +893,7 @@ void level1_connector_test::get_string_column_attribute_fails()
 	SQLUSMALLINT const column_id = 17;
 	SQLUSMALLINT const field_identifier = 23;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_column_attribute(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -907,7 +907,7 @@ void level1_connector_test::number_of_result_columns_calls_api()
 	level2::statement_handle handle = {&value_a};
 	short int const expected = 42;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_number_of_result_columns(handle.handle, testing::_))
 		.WillOnce(testing::DoAll(
 					testing::SetArgPointee<1>(expected),
@@ -922,7 +922,7 @@ void level1_connector_test::number_of_result_columns_fails()
 {
 	level2::statement_handle handle = {&value_a};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_number_of_result_columns(testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -936,7 +936,7 @@ void level1_connector_test::prepare_statement_calls_api()
 	level2::statement_handle handle = {&value_a};
 	std::string const sql = "XXX";
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_prepare_statement(handle.handle, testing::Truly(matches_string(sql)), sql.size()))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -949,7 +949,7 @@ void level1_connector_test::prepare_statement_fails()
 	level2::statement_handle handle = {&value_a};
 	std::string const sql = "XXX";
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_prepare_statement(testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
@@ -968,7 +968,7 @@ void level1_connector_test::set_statement_attribute_calls_api()
 		return reinterpret_cast<long>(pointer) == value;
 	};
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_statement_attribute(handle.handle, attribute, testing::Truly(matches_pointer_as_value), SQL_IS_INTEGER))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
@@ -982,7 +982,7 @@ void level1_connector_test::set_statement_attribute_fails()
 	SQLINTEGER const attribute = 42;
 	long const value = 23;
 
-	auto api = psapp::make_valid_ptr<cpp_odbc_test::level1_mock_api const>();
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_statement_attribute(testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);

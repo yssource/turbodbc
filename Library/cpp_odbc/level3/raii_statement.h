@@ -15,7 +15,7 @@
 
 #include "cpp_odbc/level2/handles.h"
 
-#include "psapp/valid_ptr_core.h"
+#include <memory>
 
 namespace cpp_odbc { namespace level2 {
 	class api;
@@ -38,7 +38,7 @@ public:
 	 *                   the life time of this object. The connection also contains the level2 API
 	 *                   to which all calls are forwarded.
 	 */
-	raii_statement(psapp::valid_ptr<raii_connection const> connection);
+	raii_statement(std::shared_ptr<raii_connection const> connection);
 
 	virtual ~raii_statement();
 private:
@@ -57,8 +57,8 @@ private:
 	long do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
 	std::string do_get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
 
-	psapp::valid_ptr<raii_connection const> connection_;
-	psapp::valid_ptr<level2::api const> api_;
+	std::shared_ptr<raii_connection const> connection_;
+	std::shared_ptr<level2::api const> api_;
 	level2::statement_handle handle_;
 };
 

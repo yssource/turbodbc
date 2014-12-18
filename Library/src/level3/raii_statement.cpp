@@ -19,7 +19,7 @@
 
 namespace cpp_odbc { namespace level3 {
 
-raii_statement::raii_statement(psapp::valid_ptr<raii_connection const> connection) :
+raii_statement::raii_statement(std::shared_ptr<raii_connection const> connection) :
 		connection_(connection),
 		api_(connection_->get_api()),
 		handle_(api_->allocate_statement_handle(connection->get_handle()))

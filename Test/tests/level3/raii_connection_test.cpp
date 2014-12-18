@@ -77,9 +77,9 @@ namespace {
 	statement_handle const default_s_handle = {&value_c};
 
 
-	psapp::valid_ptr<testing::NiceMock<level2_mock_api> const> make_default_api()
+	std::shared_ptr<testing::NiceMock<level2_mock_api> const> make_default_api()
 	{
-		auto api = psapp::make_valid_ptr<testing::NiceMock<level2_mock_api> const>();
+		auto api = std::make_shared<testing::NiceMock<level2_mock_api> const>();
 
 		ON_CALL(*api, do_allocate_environment_handle())
 			.WillByDefault(testing::Return(default_e_handle));
@@ -100,10 +100,10 @@ void raii_connection_test::is_connection()
 
 void raii_connection_test::raii_connect_and_disconnect()
 {
-	auto api = psapp::make_valid_ptr<testing::NiceMock<level2_mock_api> const>();
+	auto api = std::make_shared<testing::NiceMock<level2_mock_api> const>();
 	ON_CALL(*api, do_allocate_environment_handle()).
 			WillByDefault(testing::Return(default_e_handle));
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
+	auto environment = std::make_shared<raii_environment const>(api);
 	connection_handle c_handle = {&value_a};
 
 	std::string const connection_string = "my DSN";
@@ -122,11 +122,11 @@ void raii_connection_test::raii_connect_and_disconnect()
 void raii_connection_test::keeps_environment_alive()
 {
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
+	auto environment = std::make_shared<raii_environment const>(api);
 
-	auto const use_count_before = environment.get().use_count();
+	auto const use_count_before = environment.use_count();
 	raii_connection connection(environment, "dummy");
-	auto const use_count_after = environment.get().use_count();
+	auto const use_count_after = environment.use_count();
 
 	CPPUNIT_ASSERT_EQUAL(1, use_count_after - use_count_before);
 }
@@ -134,7 +134,7 @@ void raii_connection_test::keeps_environment_alive()
 void raii_connection_test::get_api()
 {
 	auto expected_api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(expected_api);
+	auto environment = std::make_shared<raii_environment const>(expected_api);
 
 	raii_connection instance(environment, "dummy");
 	CPPUNIT_ASSERT( expected_api == instance.get_api());
@@ -143,7 +143,7 @@ void raii_connection_test::get_api()
 void raii_connection_test::get_handle()
 {
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
+	auto environment = std::make_shared<raii_environment const>(api);
 
 	std::string const connection_string = "my DSN";
 	raii_connection instance(environment, connection_string);
@@ -157,7 +157,7 @@ void raii_connection_test::get_handle()
 void raii_connection_test::make_statement()
 {
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
+	auto environment = std::make_shared<raii_environment const>(api);
 
 	auto connection = std::make_shared<raii_connection>(environment, "dummy");
 	EXPECT_CALL(*api, do_allocate_statement_handle(default_c_handle))
@@ -174,7 +174,7 @@ void raii_connection_test::set_attribute()
 	long const value = 1234;
 
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
+	auto environment = std::make_shared<raii_environment const>(api);
 	raii_connection connection(environment, "dummy");
 	EXPECT_CALL(*api, do_set_connection_attribute(default_c_handle, attribute, value))
 		.Times(1);
@@ -185,7 +185,7 @@ void raii_connection_test::set_attribute()
 void raii_connection_test::commit()
 {
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
+	auto environment = std::make_shared<raii_environment const>(api);
 	raii_connection connection(environment, "dummy");
 	EXPECT_CALL(*api, do_end_transaction(default_c_handle, SQL_COMMIT))
 		.Times(1);
@@ -196,7 +196,7 @@ void raii_connection_test::commit()
 void raii_connection_test::rollback()
 {
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
+	auto environment = std::make_shared<raii_environment const>(api);
 	raii_connection connection(environment, "dummy");
 	EXPECT_CALL(*api, do_end_transaction(default_c_handle, SQL_ROLLBACK))
 		.Times(1);
@@ -210,7 +210,7 @@ void raii_connection_test::get_string_info()
 	std::string const expected("dummy");
 
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
+	auto environment = std::make_shared<raii_environment const>(api);
 	raii_connection connection(environment, "dummy");
 	EXPECT_CALL(*api, do_get_string_connection_info(default_c_handle, info_type))
 		.WillOnce(testing::Return(expected));

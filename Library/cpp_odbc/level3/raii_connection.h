@@ -15,8 +15,6 @@
 #include "cpp_odbc/level2/handles.h"
 #include "cpp_odbc/connection.h"
 
-#include "psapp/valid_ptr_core.h"
-
 #include <string>
 #include <memory>
 
@@ -42,13 +40,13 @@ public:
 	 *                    to which all calls are forwarded.
 	 * @param connection_string The connection is created using this connection string.
 	 */
-	raii_connection(psapp::valid_ptr<raii_environment const> environment, std::string const & connection_string);
+	raii_connection(std::shared_ptr<raii_environment const> environment, std::string const & connection_string);
 
 	/**
 	 * @brief Retrieve the API instance associated with this environment.
 	 * @return The associated API instance
 	 */
-	psapp::valid_ptr<level2::api const> get_api() const;
+	std::shared_ptr<level2::api const> get_api() const;
 
 	/**
 	 * @brief Retrieve the non-raii connection_handle which you can use in level 2 API calls.

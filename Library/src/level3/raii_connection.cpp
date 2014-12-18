@@ -28,12 +28,12 @@ namespace {
 
 	// raii just for connection handle
 	struct raii_handle {
-		psapp::valid_ptr<cpp_odbc::level2::api const> api;
+		std::shared_ptr<cpp_odbc::level2::api const> api;
 		cpp_odbc::level2::connection_handle handle;
 
-		raii_handle(psapp::valid_ptr<cpp_odbc::level2::api const> api,
+		raii_handle(std::shared_ptr<cpp_odbc::level2::api const> api,
 				cpp_odbc::level2::environment_handle const & environment) :
-			api(std::move(api)),
+			api(api),
 			handle(api->allocate_connection_handle(environment))
 		{
 		}
@@ -48,12 +48,12 @@ namespace {
 namespace cpp_odbc { namespace level3 {
 
 struct raii_connection::intern {
-	psapp::valid_ptr<raii_environment const> environment;
-	psapp::valid_ptr<cpp_odbc::level2::api const> api;
+	std::shared_ptr<raii_environment const> environment;
+	std::shared_ptr<cpp_odbc::level2::api const> api;
 	raii_handle handle;
 
 	intern(
-			psapp::valid_ptr<raii_environment const> environment,
+			std::shared_ptr<raii_environment const> environment,
 			std::string const & connection_string
 		) :
 		environment(environment),
@@ -84,12 +84,12 @@ private:
 };
 
 
-raii_connection::raii_connection(psapp::valid_ptr<raii_environment const> environment, std::string const & connection_string) :
+raii_connection::raii_connection(std::shared_ptr<raii_environment const> environment, std::string const & connection_string) :
 	impl_(new raii_connection::intern(environment, connection_string))
 {
 }
 
-psapp::valid_ptr<level2::api const> raii_connection::get_api() const
+std::shared_ptr<level2::api const> raii_connection::get_api() const
 {
 	return impl_->api;
 }
@@ -101,8 +101,8 @@ level2::connection_handle const & raii_connection::get_handle() const
 
 std::shared_ptr<statement> raii_connection::do_make_statement() const
 {
-	auto as_valid_raii_connection = psapp::to_valid(std::dynamic_pointer_cast<raii_connection const>(shared_from_this()));
-	return std::make_shared<raii_statement>(as_valid_raii_connection);
+	auto as_raii_connection = std::dynamic_pointer_cast<raii_connection const>(shared_from_this());
+	return std::make_shared<raii_statement>(as_raii_connection);
 }
 
 void raii_connection::do_set_attribute(SQLINTEGER attribute, long value) const

@@ -13,8 +13,6 @@
 
 #include "cpp_odbc/environment.h"
 
-#include "psapp/valid_ptr_core.h"
-
 #include <memory>
 
 namespace cpp_odbc {
@@ -38,13 +36,13 @@ public:
 	 * @brief Initialize the environment with the given level 2 API instance
 	 * @param api All API calls made by raii_environment will be delegated to this instance.
 	 */
-	raii_environment(psapp::valid_ptr<level2::api const> api);
+	raii_environment(std::shared_ptr<level2::api const> api);
 
 	/**
 	 * @brief Retrieve the API instance associated with this environment.
 	 * @return The associated API instance
 	 */
-	psapp::valid_ptr<level2::api const> get_api() const;
+	std::shared_ptr<level2::api const> get_api() const;
 
 	/**
 	 * @brief Retrieve the non-raii environment_handle which you can use in level 2 API calls.

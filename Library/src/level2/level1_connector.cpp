@@ -86,7 +86,7 @@ namespace impl {
 
 namespace cpp_odbc { namespace level2 {
 
-level1_connector::level1_connector(psapp::valid_ptr<level1::api const> level1_api) :
+level1_connector::level1_connector(std::shared_ptr<level1::api const> level1_api) :
 	level1_api_(std::move(level1_api))
 {
 }

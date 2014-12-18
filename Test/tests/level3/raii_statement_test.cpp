@@ -18,7 +18,6 @@
 #include "cpp_odbc/level3/raii_environment.h"
 #include "cpp_odbc/level3/raii_connection.h"
 #include "cpp_odbc_test/level2_mock_api.h"
-#include "psapp/valid_ptr_core.h"
 
 #include <type_traits>
 
@@ -85,9 +84,9 @@ namespace {
 	connection_handle const default_c_handle = {&value_b};
 	statement_handle const default_s_handle = {&value_c};
 
-	psapp::valid_ptr<testing::NiceMock<level2_mock_api> const> make_default_api()
+	std::shared_ptr<testing::NiceMock<level2_mock_api> const> make_default_api()
 	{
-		auto api = psapp::make_valid_ptr<testing::NiceMock<level2_mock_api>>();
+		auto api = std::make_shared<testing::NiceMock<level2_mock_api>>();
 
 		ON_CALL(*api, do_allocate_environment_handle())
 			.WillByDefault(testing::Return(default_e_handle));
@@ -109,14 +108,14 @@ void raii_statement_test::is_statement()
 
 void raii_statement_test::resource_management()
 {
-	auto api = psapp::make_valid_ptr<testing::NiceMock<level2_mock_api> const>();
+	auto api = std::make_shared<testing::NiceMock<level2_mock_api> const>();
 	ON_CALL(*api, do_allocate_environment_handle())
 		.WillByDefault(testing::Return(default_e_handle));
 	ON_CALL(*api, do_allocate_connection_handle(testing::_))
 		.WillByDefault(testing::Return(default_c_handle));
 
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 
 	statement_handle s_handle = {&value_b};
 
@@ -134,12 +133,12 @@ void raii_statement_test::resource_management()
 void raii_statement_test::keeps_connection_alive()
 {
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 
-	auto const use_count_before = connection.get().use_count();
+	auto const use_count_before = connection.use_count();
 	raii_statement statement(connection);
-	auto const use_count_after = connection.get().use_count();
+	auto const use_count_after = connection.use_count();
 
 	CPPUNIT_ASSERT_EQUAL(1, use_count_after - use_count_before);
 }
@@ -150,8 +149,8 @@ void raii_statement_test::get_integer_statement_attribute()
 	long const expected = 12345;
 
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_get_integer_statement_attribute(default_s_handle, attribute))
 		.WillOnce(testing::Return(expected));
 
@@ -165,8 +164,8 @@ void raii_statement_test::set_integer_statement_attribute()
 	long const value = 12345;
 
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_set_statement_attribute(default_s_handle, attribute, value)).Times(1);
 
 	raii_statement statement(connection);
@@ -178,8 +177,8 @@ void raii_statement_test::execute()
 	std::string const sql = "SELECT dummy FROM test";
 
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_execute_statement(default_s_handle, sql)).Times(1);
 
 	raii_statement statement(connection);
@@ -191,8 +190,8 @@ void raii_statement_test::prepare()
 	std::string const sql = "SELECT dummy FROM test";
 
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_prepare_statement(default_s_handle, sql)).Times(1);
 
 	raii_statement statement(connection);
@@ -207,8 +206,8 @@ void raii_statement_test::bind_input_parameter()
 	cpp_odbc::multi_value_buffer parameter_values(3, 4);
 
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_bind_input_parameter(default_s_handle, parameter_id, value_type, parameter_type, testing::Ref(parameter_values))).Times(1);
 
 	raii_statement statement(connection);
@@ -218,8 +217,8 @@ void raii_statement_test::bind_input_parameter()
 void raii_statement_test::execute_prepared()
 {
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_execute_prepared_statement(default_s_handle)).Times(1);
 
 	raii_statement statement(connection);
@@ -231,8 +230,8 @@ void raii_statement_test::number_of_columns()
 	short int const expected = 23;
 
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_number_of_result_columns(default_s_handle))
 		.WillOnce(testing::Return(expected));
 
@@ -247,8 +246,8 @@ void raii_statement_test::bind_column()
 	cpp_odbc::multi_value_buffer column_buffer(3, 4);
 
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_bind_column(default_s_handle, column_id, column_type, testing::Ref(column_buffer))).Times(1);
 
 	raii_statement statement(connection);
@@ -258,8 +257,8 @@ void raii_statement_test::bind_column()
 void raii_statement_test::fetch_next()
 {
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_fetch_scroll(default_s_handle, SQL_FETCH_NEXT, 0)).Times(1);
 
 	raii_statement statement(connection);
@@ -269,8 +268,8 @@ void raii_statement_test::fetch_next()
 void raii_statement_test::close_cursor()
 {
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_free_statement(default_s_handle, SQL_CLOSE)).Times(1);
 
 	raii_statement statement(connection);
@@ -284,8 +283,8 @@ void raii_statement_test::get_integer_column_attribute()
 	long const expected = 23;
 
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_get_integer_column_attribute(default_s_handle, column_id, field_identifier))
 		.WillOnce(testing::Return(expected));
 
@@ -300,8 +299,8 @@ void raii_statement_test::get_string_column_attribute()
 	std::string const expected = "test value";
 
 	auto api = make_default_api();
-	auto environment = psapp::make_valid_ptr<raii_environment const>(api);
-	auto connection = psapp::make_valid_ptr<raii_connection const>(environment, "dummy");
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
 	EXPECT_CALL(*api, do_get_string_column_attribute(default_s_handle, column_id, field_identifier))
 		.WillOnce(testing::Return(expected));
 
