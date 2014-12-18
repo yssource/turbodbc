@@ -14,10 +14,10 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 find_package(python REQUIRED)
 include_directories(SYSTEM ${Python_INCLUDE_DIR})
 
-find_package(odbc)
+find_package(odbc REQUIRED)
 include_directories(SYSTEM ${Odbc_INCLUDE_DIR})
 
-find_package(cpp_odbc)
+find_package(cpp_odbc REQUIRED)
 
 include_directories(Library)
 add_subdirectory(Library)
