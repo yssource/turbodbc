@@ -11,7 +11,6 @@ add_dependencies(pydbc_intern
 target_link_libraries(pydbc_intern
 	${Boost_LIBRARIES}
 	${Odbc_LIBRARIES}
-	${Psapp_core_LIB}
 	${Python_LIBRARIES}
 	cpp_odbc
 )
