@@ -93,6 +93,14 @@ class TestDQL(TestCase):
         row = self.cursor.fetchone()
         self.assertIsNone(row)
 
+    def test_multiple_row_iterate_result(self):
+        self.cursor.execute("delete from test_integer")
+        for i in xrange(1,10):
+            self.cursor.execute("insert into test_integer values("+str(i)+")")
+        self.cursor.execute("select * from test_integer order by a")
+        for element in enumerate(self.cursor, start=1):
+            self.assertItemsEqual([element[0]], element[1])
+
 class TestDML(TestCase):
 
     def setUp(self):
