@@ -4,17 +4,18 @@ import pydbc
 dsn = "PostgreSQL R&D test database"
 #dsn = "Exasol R&D test database"
 
+def has_method(_object, method_name):
+    return hasattr(_object, method_name) and callable(getattr(_object, method_name))
+
+
 class TestConnect(TestCase):
 
     def test_connect(self):
        connection = pydbc.connect(dsn)
 
-       self.assertTrue(hasattr(connection, 'close') and callable(getattr(connection, 'close'))
-                  , "close method missing")
-       self.assertTrue(hasattr(connection, 'commit') and callable(getattr(connection, 'commit'))
-                  , "commit method missing")
-       self.assertTrue(hasattr(connection, 'cursor') and callable(getattr(connection, 'cursor'))
-                  , "cursor method missing")
+       self.assertTrue(has_method(connection, 'close'), "close method missing")
+       self.assertTrue(has_method(connection, 'commit'), "commit method missing")
+       self.assertTrue(has_method(connection, 'cursor'), "cursor method missing")
 
        connection.close()
 
