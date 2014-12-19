@@ -45,7 +45,7 @@ class cursor():
     def is_closed(self):
         return self.impl == None
 
-class connection():
+class Connection():
     def _assert_valid(self):
         if self.impl is None:
             raise Error("Connection already closed")
@@ -78,5 +78,5 @@ class connection():
 @translate_exceptions
 def connect(dsn):
     """Create ODBC connection"""
-    return connection(intern.connect(dsn))
+    return Connection(intern.connect(dsn))
     
