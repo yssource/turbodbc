@@ -1,0 +1,25 @@
+# encoding=utf-8
+
+from setuptools import setup
+from glob import glob
+import os
+
+bins = filter(os.path.isfile, glob('@CMAKE_INSTALL_PREFIX@/bin/*'))
+libs = glob('@CMAKE_INSTALL_PREFIX@/lib/*.so')
+cfgs = glob('@CMAKE_INSTALL_PREFIX@/etc/*')
+
+
+setup(
+      name='cpp_odbc',
+      version='@cpp_odbc_VERSION@',
+      author='Michael König',
+      url='http://jira.phi-tps.local',
+      author_email='michael.koenig@blue-yonder.com',
+      install_requires=['gcc-cpp==4.7.2', 'boost==1.55', 'unixodbc==2.2.14'],
+      include_package_data=True,
+      data_files=[
+        ('bin', bins),
+        ('lib', libs),
+        ('etc', cfgs)
+        ],
+)

@@ -1,5 +1,6 @@
-project(cpp_odbc CXX)
 cmake_minimum_required(VERSION 2.8.7)
+project(cpp_odbc CXX)
+set(cpp_odbc_VERSION 0.1)
 
 include(default_build_setup)
 
@@ -17,3 +18,5 @@ if(BUILD_TESTING)
     find_package(cppunit_toolbox)
     add_subdirectory(Test)
 endif()
+
+add_subdirectory(Wheel)
