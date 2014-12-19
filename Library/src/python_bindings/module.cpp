@@ -18,6 +18,7 @@ namespace pydbc { namespace bindings {
 	void for_connection();
 	void for_cursor();
 	void for_error();
+	void for_field();
 
 } }
 
@@ -28,4 +29,5 @@ BOOST_PYTHON_MODULE(pydbc_intern)
 	bindings::for_connection();
 	bindings::for_cursor();
 	bindings::for_error();
+	bindings::for_field();
 }

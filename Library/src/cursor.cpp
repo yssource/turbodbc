@@ -30,7 +30,7 @@ void cursor::execute(std::string const & sql)
 	}
 }
 
-std::vector<long> cursor::fetch_one()
+std::vector<field> cursor::fetch_one()
 {
 	if (result) {
 		return result->fetch_one();
