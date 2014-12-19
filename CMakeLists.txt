@@ -1,5 +1,6 @@
-project(pydbc_intern CXX)
 cmake_minimum_required(VERSION 2.8.7)
+project(pydbc_intern CXX)
+set(pydbc_VERSION 0.1)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 
@@ -27,3 +28,5 @@ if(BUILD_TESTING)
 endif()
 
 file(COPY pydbc DESTINATION .)
+
+add_subdirectory(Wheel)

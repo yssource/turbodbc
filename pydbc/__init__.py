@@ -21,6 +21,16 @@ class cursor():
         self.rowcount = -1
         self.description = None
         self._arraysize = 1
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        element = self.fetchone()
+        if element is None:
+            raise StopIteration
+        else:
+            return element
     
     def _assert_valid(self):
         if self.impl is None:
