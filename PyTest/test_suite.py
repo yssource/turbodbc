@@ -123,15 +123,17 @@ class TestDML(TestCase):
         self.assertItemsEqual(row, [2])
 
     def test_multiple_row_single_string_result(self):
+        value_1 = 'Oh Boy!'
+        value_2 = 'py(o)dbc'
         self.cursor.execute("delete from test_string")
-        self.cursor.execute("insert into test_string values ('Oh Boy!')")
-        self.cursor.execute("insert into test_string values ('py(o)dbc')")
+        self.cursor.execute("insert into test_string values ('{}')".format(value_1))
+        self.cursor.execute("insert into test_string values ('{}')".format(value_2))
         self.cursor.execute("select * from test_string order by a")
         self.assertEqual(self.cursor.rowcount, 2)
         row = self.cursor.fetchone()
-        self.assertItemsEqual(row, [1])
+        self.assertItemsEqual(row, [value_1])
         row = self.cursor.fetchone()
-        self.assertItemsEqual(row, [2])
+        self.assertItemsEqual(row, [value_2])
 
 
 if __name__ == '__main__':

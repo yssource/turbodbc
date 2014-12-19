@@ -35,12 +35,14 @@ class cursor():
         if self.impl is None:
             raise Error("Cursor already closed")
         
+    @translate_exceptions
     def execute(self, sql):
         """Execute an SQL query"""
         self._assert_valid()
         self.impl.execute(sql)
         self.rowcount = self.impl.get_rowcount()
         
+    @translate_exceptions
     def fetchone(self):
         result = self.impl.fetchone()
         if len(result) == 0:
@@ -53,7 +55,7 @@ class cursor():
         self.impl = None
 
     def is_closed(self):
-        return self.impl == None
+        return self.impl is None
 
 class Connection():
     def _assert_valid(self):
@@ -64,6 +66,7 @@ class Connection():
         self.impl = impl
         self.cursors = []
         
+    @translate_exceptions
     def cursor(self):
         """Create a cursor object"""
         self._assert_valid()
@@ -71,6 +74,7 @@ class Connection():
         self.cursors.append(c)
         return c
     
+    @translate_exceptions
     def commit(self):
         self._assert_valid()
         self.impl.commit()
