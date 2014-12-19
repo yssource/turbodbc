@@ -68,6 +68,14 @@ class TestDQL(TestCase):
         row = self.cursor.fetchone()
         self.assertIsNone(row)
 
+    def test_single_row_string_result(self):
+        self.cursor.execute("select 'Oh Boy!'")
+        self.assertEqual(self.cursor.rowcount, 1)
+        row = self.cursor.fetchone()
+        self.assertItemsEqual(row, ['Oh Boy!'])
+        row = self.cursor.fetchone()
+        self.assertIsNone(row)
+
     def test_single_row_multiple_integer_result(self):
         self.cursor.execute("select 40, 41, 42, 43")
         self.assertEqual(self.cursor.rowcount, 1)
@@ -75,6 +83,16 @@ class TestDQL(TestCase):
         self.assertItemsEqual(row, [40, 41, 42, 43])
         row = self.cursor.fetchone()
         self.assertIsNone(row)
+
+class TestDML(TestCase):
+
+    def setUp(self):
+        self.connection = pydbc.connect(dsn)
+        self.cursor = self.connection.cursor()
+
+    def tearDown(self):
+        self.cursor.close()
+        self.connection.close()
 
     def test_multiple_row_single_integer_result(self):
         self.cursor.execute("delete from test_integer")
@@ -87,24 +105,16 @@ class TestDQL(TestCase):
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [2])
 
-
-class TestDML(TestCase):
-
-    def setUp(self):
-        self.connection = pydbc.connect(dsn)
-        self.cursor = self.connection.cursor()
-
-    def tearDown(self):
-        self.cursor.close()
-        self.connection.close()
-
-    def test_delete_insert_select(self):
-        self.cursor.execute("delete from test_integer")
-        self.cursor.execute("insert into test_integer values (42)")
-        self.cursor.execute("select * from test_integer")
-        self.assertEqual(self.cursor.rowcount, 1)
+    def test_multiple_row_single_string_result(self):
+        self.cursor.execute("delete from test_string")
+        self.cursor.execute("insert into test_string values ('Oh Boy!')")
+        self.cursor.execute("insert into test_string values ('py(o)dbc')")
+        self.cursor.execute("select * from test_string order by a")
+        self.assertEqual(self.cursor.rowcount, 2)
         row = self.cursor.fetchone()
-        self.assertItemsEqual(row, [42])
+        self.assertItemsEqual(row, [1])
+        row = self.cursor.fetchone()
+        self.assertItemsEqual(row, [2])
 
 
 if __name__ == '__main__':
