@@ -35,6 +35,7 @@ class TestConnect(TestCase):
         # https://www.python.org/dev/peps/pep-0249/#rowcount
         self.assertEqual(cursor.rowcount, -1 , 'no query has been performed, rowcount expected to be -1')
         self.assertIsNone(cursor.description, 'no query has been performed, description expected to be None')
+        self.assertEqual(cursor.arraysize, 1, 'wrong default for attribute arraysize')
 
         cursor.close()
 
@@ -134,6 +135,16 @@ class TestDML(TestCase):
         rows = self.cursor.fetchall()
         self.assertItemsEqual([[1],[2],[3]], (list(r) for r in rows))
         
+    def test_fetchmany_rows_single_integer_result(self):
+        self.cursor.execute("delete from test_integer")
+        self.cursor.execute("insert into test_integer values (1)")
+        self.cursor.execute("insert into test_integer values (2)")
+        self.cursor.execute("insert into test_integer values (3)")
+        self.cursor.execute("select * from test_integer order by a")
+        rows = self.cursor.fetchmany(2)
+        self.assertItemsEqual([[1],[2]], (list(r) for r in rows))
+        rows = self.cursor.fetchmany(2)
+        self.assertItemsEqual([[3]], (list(r) for r in rows))
 
 if __name__ == '__main__':
     from unittest import main

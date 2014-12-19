@@ -20,11 +20,20 @@ class cursor():
         self.impl = impl
         self.rowcount = -1
         self.description = None
+        self._arraysize = 1
     
     def _assert_valid(self):
         if self.impl is None:
             raise Error("Cursor already closed")
-        
+    
+    @property
+    def arraysize(self):
+        return self._arraysize
+    
+    @arraysize.setter
+    def arraysize(self, value):
+        self._arraysize = value
+    
     @translate_exceptions
     def execute(self, sql):
         """Execute an SQL query"""
@@ -52,7 +61,22 @@ class cursor():
                 row = self.fetchone()
         return [row for row in rows()]
     
-    
+    @translate_exceptions    
+    def fetchmany(self, size=arraysize):
+        def rows(maxrows):
+            rowcount = 1
+            row = self.fetchone()
+            yield row
+            while rowcount<size:
+                rowcount+=1
+                row = self.fetchone()
+                if not row:
+                    break
+                yield row
+                
+        if (size<=0):
+            return []
+        return [row for row in rows(size)]
 
     def close(self):
         self._assert_valid()
