@@ -42,12 +42,17 @@ class cursor():
     
     @translate_exceptions    
     def fetchall(self):
+        #can be optimized by implementing it in C++. 
+        #But has to make sure that really all remaining rows are fetched,
+        #thereby finishing and closing the associated internal result set buffer.
         def rows():
             row = self.fetchone()
             while (row):
                 yield row
                 row = self.fetchone()
-        return rows()
+        return [row for row in rows()]
+    
+    
 
     def close(self):
         self._assert_valid()
