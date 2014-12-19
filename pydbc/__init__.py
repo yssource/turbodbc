@@ -39,6 +39,15 @@ class cursor():
             return None 
         else:
             return result  
+    
+    @translate_exceptions    
+    def fetchall(self):
+        def rows():
+            row = self.fetchone()
+            while (row):
+                yield row
+                row = self.fetchone()
+        return rows()
 
     def close(self):
         self._assert_valid()
