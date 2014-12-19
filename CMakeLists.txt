@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.7)
 project(pydbc_intern CXX)
-set(pydbc_VERSION 0.1)
+set(pydbc_VERSION 0.1-dev)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 
