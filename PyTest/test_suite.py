@@ -60,6 +60,14 @@ class TestDQL(TestCase):
         self.cursor.close()
         self.connection.close()
 
+    def test_single_row_NULL_result(self):
+        self.cursor.execute("select NULL")
+        self.assertEqual(self.cursor.rowcount, 1)
+        row = self.cursor.fetchone()
+        self.assertItemsEqual(row, [None])
+        row = self.cursor.fetchone()
+        self.assertIsNone(row)
+
     def test_single_row_integer_result(self):
         self.cursor.execute("select 42")
         self.assertEqual(self.cursor.rowcount, 1)
