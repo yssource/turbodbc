@@ -30,14 +30,14 @@ result_set::result_set(std::shared_ptr<cpp_odbc::statement> statement) :
 	}
 }
 
-std::vector<long> result_set::fetch_one()
+std::vector<field> result_set::fetch_one()
 {
 	auto const has_results = statement->fetch_next();
 	if (has_results) {
-		std::vector<long> row;
+		std::vector<field> row;
 		for (auto const & column : columns) {
 			auto value_ptr = reinterpret_cast<long const *>(column[0].data_pointer);
-			row.push_back(*value_ptr);
+			row.push_back({*value_ptr});
 		}
 		return row;
 	} else {

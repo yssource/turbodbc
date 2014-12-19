@@ -25,7 +25,7 @@ struct cursor {
 	cursor(std::shared_ptr<cpp_odbc::statement> statement);
 
 	void execute(std::string const & sql);
-	std::vector<long> fetch_one();
+	std::vector<field> fetch_one();
 	long get_rowcount();
 };
 

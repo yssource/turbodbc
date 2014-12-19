@@ -13,6 +13,7 @@
 
 #include <cpp_odbc/statement.h>
 #include <cpp_odbc/multi_value_buffer.h>
+#include <pydbc/field.h>
 #include <vector>
 #include <memory>
 
@@ -24,7 +25,7 @@ struct result_set {
 
 	result_set(std::shared_ptr<cpp_odbc::statement> statement);
 
-	std::vector<long> fetch_one();
+	std::vector<field> fetch_one();
 };
 
 }
