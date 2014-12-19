@@ -2,7 +2,10 @@ file(GLOB_RECURSE LIBRARY_FILES "src/*.cpp")
 
 add_library(pydbc_intern ${LIBRARY_FILES})
 
-SET_TARGET_PROPERTIES(pydbc_intern PROPERTIES PREFIX "")
+set_target_properties(pydbc_intern PROPERTIES 
+    PREFIX ""
+    INSTALL_RPATH "../../.."
+)
 
 add_dependencies(pydbc_intern
     refresh_cmake_configuration
@@ -14,6 +17,7 @@ target_link_libraries(pydbc_intern
 	${Python_LIBRARIES}
 	cpp_odbc
 )
+
 
 
 install(

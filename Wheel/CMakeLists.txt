@@ -5,7 +5,6 @@ configure_file(build_wheel.sh build_wheel.sh @ONLY)
 file(COPY "${CMAKE_SOURCE_DIR}/pydbc" DESTINATION ".")
 
 add_custom_target(wheel
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Library/pydbc_intern.so ${CMAKE_CURRENT_BINARY_DIR}/pydbc
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_INSTALL_PREFIX}/lib/pydbc_intern.so ${CMAKE_CURRENT_BINARY_DIR}/pydbc
     COMMAND ./build_wheel.sh
-    DEPENDS pydbc_intern
 )
