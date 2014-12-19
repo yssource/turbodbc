@@ -13,7 +13,7 @@
 
 #include <cpp_odbc/statement.h>
 #include <cpp_odbc/multi_value_buffer.h>
-#include <pydbc/field.h>
+#include <pydbc/column.h>
 #include <vector>
 #include <memory>
 
@@ -21,7 +21,7 @@ namespace pydbc {
 
 struct result_set {
 	std::shared_ptr<cpp_odbc::statement> statement;
-	std::vector<cpp_odbc::multi_value_buffer> columns;
+	std::vector<std::unique_ptr<column>> columns;
 
 	result_set(std::shared_ptr<cpp_odbc::statement> statement);
 

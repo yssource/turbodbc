@@ -16,17 +16,13 @@
 
 namespace pydbc {
 
-std::size_t const cached_rows = 10;
-
 result_set::result_set(std::shared_ptr<cpp_odbc::statement> statement) :
 	statement(statement)
 {
 	std::size_t const n_columns = statement->number_of_columns();
 
 	for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
-		columns.emplace_back(sizeof(long), cached_rows);
-		auto & new_column = columns.back();
-		statement->bind_column(one_based_index, SQL_C_SBIGINT, new_column);
+		columns.emplace_back(new long_column(*statement, one_based_index));
 	}
 }
 
@@ -36,8 +32,7 @@ std::vector<field> result_set::fetch_one()
 	if (has_results) {
 		std::vector<field> row;
 		for (auto const & column : columns) {
-			auto value_ptr = reinterpret_cast<long const *>(column[0].data_pointer);
-			row.push_back({*value_ptr});
+			row.push_back(column->get_field());
 		}
 		return row;
 	} else {
