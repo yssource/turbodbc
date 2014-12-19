@@ -30,4 +30,12 @@ private:
 };
 
 
+struct string_column : public column {
+	string_column(cpp_odbc::statement & statement, std::size_t one_based_index);
+private:
+	field do_get_field() const final;
+	cpp_odbc::multi_value_buffer buffer_;
+};
+
+
 }

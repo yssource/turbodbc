@@ -16,13 +16,39 @@
 
 namespace pydbc {
 
+namespace {
+
+	bool is_string_type(long type)
+	{
+		switch (type) {
+			case SQL_VARCHAR:
+			case SQL_LONGVARCHAR:
+			case SQL_WVARCHAR:
+			case SQL_CHAR:
+			case SQL_WLONGVARCHAR:
+			case SQL_WCHAR:
+				return true;
+			default:
+				return false;
+		}
+
+	}
+
+}
+
 result_set::result_set(std::shared_ptr<cpp_odbc::statement> statement) :
 	statement(statement)
 {
 	std::size_t const n_columns = statement->number_of_columns();
 
 	for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
-		columns.emplace_back(new long_column(*statement, one_based_index));
+		auto const type = statement->get_integer_column_attribute(one_based_index, SQL_DESC_TYPE);
+
+		if (is_string_type(type)) {
+			columns.emplace_back(new string_column(*statement, one_based_index));
+		} else {
+			columns.emplace_back(new long_column(*statement, one_based_index));
+		}
 	}
 }
 
