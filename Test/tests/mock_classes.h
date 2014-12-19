@@ -10,6 +10,8 @@
 #include "gmock/gmock.h"
 
 #include "cpp_odbc/connection.h"
+#include "pydbc/column.h"
+
 
 namespace pydbc_test {
 
@@ -39,6 +41,8 @@ namespace pydbc_test {
 		MOCK_CONST_METHOD2( do_get_string_column_attribute, std::string(SQLUSMALLINT, SQLUSMALLINT));
 		MOCK_CONST_METHOD0( do_row_count, SQLLEN());
 	};
+
+
 
 
 }
