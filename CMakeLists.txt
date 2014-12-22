@@ -30,7 +30,7 @@ if(BUILD_TESTING)
     add_test(
         NAME PyTest
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        COMMAND ${PYTHON_EXECUTABLE} "PyTest/test_suite.py"
+        COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_SOURCE_DIR}/PyTest/test_suite.py"
     )
 endif()
 
