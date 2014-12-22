@@ -14,7 +14,7 @@ add_dependencies(pydbc_intern
 target_link_libraries(pydbc_intern
 	${Boost_LIBRARIES}
 	${Odbc_LIBRARIES}
-	${Python_LIBRARIES}
+	${PYTHON_LIBRARIES}
 	cpp_odbc
 )
 
@@ -30,12 +30,6 @@ install(
 	DESTINATION include
 	FILES_MATCHING PATTERN "*.h"
 	PATTERN ".git" EXCLUDE
-)
-
-file(GLOB USE_SCRIPTS "use_*.sh")
-install(
-    FILES ${USE_SCRIPTS}
-    DESTINATION .
 )
 
 add_custom_command(TARGET pydbc_intern POST_BUILD
