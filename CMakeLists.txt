@@ -25,8 +25,15 @@ if(BUILD_TESTING)
 
     find_package(cppunit_toolbox)
     add_subdirectory(Test)
+
+    find_package(PythonInterp REQUIRED)
+    add_test(
+        NAME PyTest
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND ${PYTHON_EXECUTABLE} "PyTest/test_suite.py"
+    )
 endif()
 
-file(COPY pydbc DESTINATION .)
+file(COPY pydbc DESTINATION ${CMAKE_BINARY_DIR})
 
 add_subdirectory(Wheel)

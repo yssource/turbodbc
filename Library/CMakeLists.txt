@@ -40,4 +40,4 @@ install(
 
 add_custom_command(TARGET pydbc_intern POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
-                   pydbc_intern.so ../pydbc)
+                   ${CMAKE_CURRENT_BINARY_DIR}/pydbc_intern.so ${CMAKE_BINARY_DIR}/pydbc)
