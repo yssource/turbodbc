@@ -26,12 +26,7 @@ if(BUILD_TESTING)
     find_package(cppunit_toolbox)
     add_subdirectory(Test)
 
-    find_package(PythonInterp REQUIRED)
-    add_test(
-        NAME PyTest
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_SOURCE_DIR}/PyTest/test_suite.py"
-    )
+    add_subdirectory(PyTest PyTest)
 endif()
 
 file(COPY pydbc DESTINATION ${CMAKE_BINARY_DIR})
