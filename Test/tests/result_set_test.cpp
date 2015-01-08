@@ -12,6 +12,7 @@
 
 
 #include <cppunit/extensions/HelperMacros.h>
+#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
 #include "cpp_odbc/connection.h"
 #include "pydbc/connection.h"
 #include "mock_classes.h"
@@ -49,47 +50,57 @@ void result_set_test::test_constructor_empty()
 	auto statement = std::make_shared<mock_statement>();
 
 	EXPECT_CALL(*statement, do_number_of_columns()).WillOnce(testing::Return(0));
-	auto result_set=pydbc::result_set(statement);
+	auto result_set = pydbc::result_set(statement);
 
-	CPPUNIT_ASSERT_EQUAL(0, static_cast<int>(result_set.columns.size()));
-
-
-
+	CPPUNIT_ASSERT_EQUAL(0, result_set.columns.size());
 }
+
+
 void result_set_test::test_constructor_one_string_type()
 {
 	auto statement = std::make_shared<mock_statement>();
 
-	EXPECT_CALL(*statement, do_number_of_columns()).WillOnce(testing::Return(1));
-	EXPECT_CALL(*statement, do_get_integer_column_attribute(1,SQL_DESC_TYPE) ).WillOnce(testing::Return(SQL_VARCHAR));
+	EXPECT_CALL(*statement, do_number_of_columns())
+		.WillOnce(testing::Return(1));
+	EXPECT_CALL(*statement, do_get_integer_column_attribute(1, SQL_DESC_TYPE))
+		.WillOnce(testing::Return(SQL_VARCHAR));
 	EXPECT_CALL(*statement, do_bind_column(1, SQL_CHAR, testing::_)).Times(1);
-	auto result_set=pydbc::result_set(statement);
-	CPPUNIT_ASSERT_EQUAL(1, static_cast<int>(result_set.columns.size()));
+
+	auto result_set = pydbc::result_set(statement);
+	CPPUNIT_ASSERT_EQUAL(1, result_set.columns.size());
 }
+
+
 void result_set_test::test_constructor_one_non_string_type(){
 
 	auto statement = std::make_shared<mock_statement>();
 
-	EXPECT_CALL(*statement, do_number_of_columns()).WillOnce(testing::Return(1));
-	EXPECT_CALL(*statement, do_get_integer_column_attribute(1,SQL_DESC_TYPE) ).WillOnce(testing::Return(SQL_INTEGER));
-	EXPECT_CALL(*statement, do_bind_column(1, SQL_C_SBIGINT, testing::_)).Times(1);
-	auto result_set=pydbc::result_set(statement);
-	CPPUNIT_ASSERT_EQUAL(1, static_cast<int>(result_set.columns.size()));
+	EXPECT_CALL(*statement, do_number_of_columns())
+		.WillOnce(testing::Return(1));
+	EXPECT_CALL(*statement, do_get_integer_column_attribute(1, SQL_DESC_TYPE))
+		.WillOnce(testing::Return(SQL_INTEGER));
+	EXPECT_CALL(*statement, do_bind_column(1, SQL_C_SBIGINT, testing::_))
+		.Times(1);
 
-
-
+	auto result_set = pydbc::result_set(statement);
+	CPPUNIT_ASSERT_EQUAL(1, result_set.columns.size());
 }
+
+
 void result_set_test::test_constructor_both_types()
 {
 	auto statement = std::make_shared<mock_statement>();
-	EXPECT_CALL(*statement, do_number_of_columns()).WillOnce(testing::Return(2));
-	EXPECT_CALL(*statement, do_get_integer_column_attribute(1,SQL_DESC_TYPE) ).WillOnce(testing::Return(SQL_VARCHAR));
-	EXPECT_CALL(*statement, do_get_integer_column_attribute(2,SQL_DESC_TYPE) ).WillOnce(testing::Return(SQL_INTEGER));
+
+	EXPECT_CALL(*statement, do_number_of_columns())
+		.WillOnce(testing::Return(2));
+	EXPECT_CALL(*statement, do_get_integer_column_attribute(1,SQL_DESC_TYPE))
+		.WillOnce(testing::Return(SQL_VARCHAR));
+	EXPECT_CALL(*statement, do_get_integer_column_attribute(2,SQL_DESC_TYPE))
+		.WillOnce(testing::Return(SQL_INTEGER));
 	EXPECT_CALL(*statement, do_bind_column(1, SQL_CHAR, testing::_)).Times(1);
 	EXPECT_CALL(*statement, do_bind_column(2, SQL_C_SBIGINT, testing::_)).Times(1);
-	auto result_set=pydbc::result_set(statement);
-	CPPUNIT_ASSERT_EQUAL(2, static_cast<int>(result_set.columns.size()));
 
-
-
+	auto result_set = pydbc::result_set(statement);
+	CPPUNIT_ASSERT_EQUAL(2, result_set.columns.size());
 }
+
