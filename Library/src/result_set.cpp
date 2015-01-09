@@ -11,6 +11,7 @@
  */
 
 #include <pydbc/cursor.h>
+#include <pydbc/column_types.h>
 #include <sqlext.h>
 #include <stdexcept>
 
