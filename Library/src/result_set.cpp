@@ -37,27 +37,27 @@ namespace {
 }
 
 result_set::result_set(std::shared_ptr<cpp_odbc::statement const> statement) :
-	statement(statement)
+	statement_(statement)
 {
-	std::size_t const n_columns = statement->number_of_columns();
+	std::size_t const n_columns = statement_->number_of_columns();
 
 	for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
-		auto const type = statement->get_integer_column_attribute(one_based_index, SQL_DESC_TYPE);
+		auto const type = statement_->get_integer_column_attribute(one_based_index, SQL_DESC_TYPE);
 
 		if (is_string_type(type)) {
-			columns.emplace_back(new string_column(*statement, one_based_index));
+			columns_.emplace_back(new string_column(*statement_, one_based_index));
 		} else {
-			columns.emplace_back(new long_column(*statement, one_based_index));
+			columns_.emplace_back(new long_column(*statement_, one_based_index));
 		}
 	}
 }
 
 std::vector<field> result_set::fetch_one()
 {
-	auto const has_results = statement->fetch_next();
+	auto const has_results = statement_->fetch_next();
 	if (has_results) {
 		std::vector<field> row;
-		for (auto const & column : columns) {
+		for (auto const & column : columns_) {
 			row.push_back(column->get_field());
 		}
 		return row;

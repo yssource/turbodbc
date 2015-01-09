@@ -8,7 +8,13 @@ namespace pydbc {
 
 std::size_t const cached_rows = 10;
 
+/**
+ * @brief This interface represents a single column of a result set.
+ */
 struct column {
+	/**
+	 * @brief Retrieve the field of the current result set row associated with this column
+	 */
 	field get_field() const;
 
 	column(column const &) = delete;
@@ -22,6 +28,9 @@ private:
 };
 
 
+/**
+ * @brief This concrete class represents a column of integers
+ */
 struct long_column : public column {
 	long_column(cpp_odbc::statement const & statement, std::size_t one_based_index);
 private:
@@ -29,7 +38,9 @@ private:
 	cpp_odbc::multi_value_buffer buffer_;
 };
 
-
+/**
+ * @brief This concrete class represents a column of strings
+ */
 struct string_column : public column {
 	string_column(cpp_odbc::statement const & statement, std::size_t one_based_index);
 private:

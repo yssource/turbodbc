@@ -19,13 +19,14 @@
 
 namespace pydbc {
 
-struct result_set {
-	std::shared_ptr<cpp_odbc::statement const> statement;
-	std::vector<std::unique_ptr<column>> columns;
-
+class result_set {
+public:
 	result_set(std::shared_ptr<cpp_odbc::statement const> statement);
 
 	std::vector<field> fetch_one();
+private:
+	std::shared_ptr<cpp_odbc::statement const> statement_;
+	std::vector<std::unique_ptr<column>> columns_;
 };
 
 }
