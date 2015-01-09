@@ -28,7 +28,7 @@ CPPUNIT_TEST_SUITE( result_set_test );
 	CPPUNIT_TEST( fetch_without_columns );
 	CPPUNIT_TEST( fetch_with_single_string_column );
 	CPPUNIT_TEST( fetch_with_single_integer_column );
-	CPPUNIT_TEST( constructor_both_types );
+	CPPUNIT_TEST( fetch_with_multiple_columns );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -37,7 +37,7 @@ public:
 	void fetch_without_columns();
 	void fetch_with_single_string_column();
 	void fetch_with_single_integer_column();
-	void constructor_both_types();
+	void fetch_with_multiple_columns();
 
 };
 
@@ -167,21 +167,24 @@ void result_set_test::fetch_with_single_integer_column()
 }
 
 
-void result_set_test::constructor_both_types()
+void result_set_test::fetch_with_multiple_columns()
 {
-	auto statement = std::make_shared<testing::NiceMock<mock_statement>>();
-
-	EXPECT_CALL(*statement, do_number_of_columns())
-		.WillOnce(testing::Return(2));
-	EXPECT_CALL(*statement, do_get_integer_column_attribute(1,SQL_DESC_TYPE))
-		.WillOnce(testing::Return(SQL_VARCHAR));
-	EXPECT_CALL(*statement, do_get_integer_column_attribute(2,SQL_DESC_TYPE))
-		.WillOnce(testing::Return(SQL_INTEGER));
-	EXPECT_CALL(*statement, do_bind_column(1, SQL_CHAR, testing::_)).Times(1);
-	EXPECT_CALL(*statement, do_bind_column(2, SQL_C_SBIGINT, testing::_)).Times(1);
+	auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_INTEGER});
+	auto buffers = expect_calls_to_bind_buffer(*statement, {SQL_C_SBIGINT, SQL_C_SBIGINT});
 
 	auto result_set = pydbc::result_set(statement);
-//	CPPUNIT_ASSERT_EQUAL(2, result_set.columns.size());
-	CPPUNIT_FAIL("not implemented yet!");
+
+	std::vector<long> expected_values = {42, 17};
+	EXPECT_CALL(*statement, do_fetch_next())
+		.WillOnce(testing::DoAll(
+					put_binary_value_in_buffer(buffers[0], expected_values[0]),
+					put_binary_value_in_buffer(buffers[1], expected_values[1]),
+					testing::Return(true)
+				));
+
+	auto row = result_set.fetch_one();
+	CPPUNIT_ASSERT_EQUAL(2, row.size());
+	CPPUNIT_ASSERT_EQUAL(expected_values[0], boost::get<long>(row[0]));
+	CPPUNIT_ASSERT_EQUAL(expected_values[1], boost::get<long>(row[1]));
 }
 
