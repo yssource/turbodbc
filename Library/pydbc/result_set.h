@@ -19,10 +19,20 @@
 
 namespace pydbc {
 
+/**
+ * @brief This class represents a result set as created by database queries.
+ */
 class result_set {
 public:
+	/**
+	 * @brief Create a new result set. All necessary data structures and buffers
+	 *        are created and bound to the given statement
+	 */
 	result_set(std::shared_ptr<cpp_odbc::statement const> statement);
 
+	/**
+	 * @brief Fetch the next row of the result set
+	 */
 	std::vector<field> fetch_one();
 private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;

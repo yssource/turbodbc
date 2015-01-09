@@ -210,5 +210,5 @@ void result_set_test::fetch_with_multiple_rows()
 				));
 
 	CPPUNIT_ASSERT_EQUAL(expected_values[0], boost::get<long>(result_set.fetch_one()[0]));
-	CPPUNIT_ASSERT_EQUAL(expected_values[0], boost::get<long>(result_set.fetch_one()[0]));
+	CPPUNIT_ASSERT_EQUAL(expected_values[1], boost::get<long>(result_set.fetch_one()[0]));
 }
