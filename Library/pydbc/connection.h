@@ -27,7 +27,7 @@ public:
 	/**
 	 * @brief Construct a new connection based on the given low-level connection
 	 */
-	connection(std::shared_ptr<cpp_odbc::connection> low_level_connection);
+	connection(std::shared_ptr<cpp_odbc::connection const> low_level_connection);
 
 	/**
 	 * @brief Commit all operations which have been performed since the last commit
@@ -46,7 +46,7 @@ public:
 	 */
 	pydbc::cursor make_cursor() const;
 private:
-	std::shared_ptr<cpp_odbc::connection> connection_;
+	std::shared_ptr<cpp_odbc::connection const> connection_;
 };
 
 }

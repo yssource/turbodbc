@@ -20,10 +20,10 @@
 namespace pydbc {
 
 struct result_set {
-	std::shared_ptr<cpp_odbc::statement> statement;
+	std::shared_ptr<cpp_odbc::statement const> statement;
 	std::vector<std::unique_ptr<column>> columns;
 
-	result_set(std::shared_ptr<cpp_odbc::statement> statement);
+	result_set(std::shared_ptr<cpp_odbc::statement const> statement);
 
 	std::vector<field> fetch_one();
 };

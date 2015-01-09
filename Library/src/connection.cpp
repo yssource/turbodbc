@@ -15,7 +15,7 @@
 
 namespace pydbc {
 
-connection::connection(std::shared_ptr<cpp_odbc::connection> low_level_connection) :
+connection::connection(std::shared_ptr<cpp_odbc::connection const> low_level_connection) :
 	connection_(low_level_connection)
 {
 	connection_->set_attribute(SQL_ATTR_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF);

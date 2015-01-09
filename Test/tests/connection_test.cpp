@@ -76,12 +76,12 @@ void connection_test::rollback()
 void connection_test::test_make_cursor_forwards()
 {
 	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
-	auto statement = std::make_shared<mock_statement>();
+	auto statement = std::make_shared<mock_statement const>();
 	EXPECT_CALL(*connection, do_make_statement())
 		.WillOnce(testing::Return(statement));
 
 	pydbc::connection test_connection(connection);
 	auto result_cursor = test_connection.make_cursor();
-	CPPUNIT_ASSERT_EQUAL( statement, std::dynamic_pointer_cast<mock_statement>(result_cursor.statement));
+	CPPUNIT_ASSERT_EQUAL( statement, std::dynamic_pointer_cast<mock_statement const>(result_cursor.get_statement()));
 
 }

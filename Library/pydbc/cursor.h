@@ -18,15 +18,19 @@
 
 namespace pydbc {
 
-struct cursor {
-	std::shared_ptr<cpp_odbc::statement> statement;
-	std::shared_ptr<result_set> result;
-
-	cursor(std::shared_ptr<cpp_odbc::statement> statement);
+class cursor {
+public:
+	cursor(std::shared_ptr<cpp_odbc::statement const> statement);
 
 	void execute(std::string const & sql);
 	std::vector<field> fetch_one();
 	long get_rowcount();
+
+	std::shared_ptr<cpp_odbc::statement const> get_statement() const;
+
+private:
+	std::shared_ptr<cpp_odbc::statement const> statement_;
+	std::shared_ptr<result_set> result_;
 };
 
 }

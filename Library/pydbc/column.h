@@ -23,7 +23,7 @@ private:
 
 
 struct long_column : public column {
-	long_column(cpp_odbc::statement & statement, std::size_t one_based_index);
+	long_column(cpp_odbc::statement const & statement, std::size_t one_based_index);
 private:
 	field do_get_field() const final;
 	cpp_odbc::multi_value_buffer buffer_;
@@ -31,7 +31,7 @@ private:
 
 
 struct string_column : public column {
-	string_column(cpp_odbc::statement & statement, std::size_t one_based_index);
+	string_column(cpp_odbc::statement const & statement, std::size_t one_based_index);
 private:
 	field do_get_field() const final;
 	cpp_odbc::multi_value_buffer buffer_;

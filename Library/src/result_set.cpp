@@ -36,7 +36,7 @@ namespace {
 
 }
 
-result_set::result_set(std::shared_ptr<cpp_odbc::statement> statement) :
+result_set::result_set(std::shared_ptr<cpp_odbc::statement const> statement) :
 	statement(statement)
 {
 	std::size_t const n_columns = statement->number_of_columns();

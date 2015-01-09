@@ -16,24 +16,24 @@
 
 namespace pydbc {
 
-cursor::cursor(std::shared_ptr<cpp_odbc::statement> statement) :
-	statement(statement)
+cursor::cursor(std::shared_ptr<cpp_odbc::statement const> statement) :
+	statement_(statement)
 {
 }
 
 void cursor::execute(std::string const & sql)
 {
-	statement->execute(sql);
-	std::size_t const columns = statement->number_of_columns();
+	statement_->execute(sql);
+	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
-		result = std::make_shared<result_set>(statement);
+		result_ = std::make_shared<result_set>(statement_);
 	}
 }
 
 std::vector<field> cursor::fetch_one()
 {
-	if (result) {
-		return result->fetch_one();
+	if (result_) {
+		return result_->fetch_one();
 	} else {
 		throw std::runtime_error("No active result set");
 	}
@@ -41,7 +41,12 @@ std::vector<field> cursor::fetch_one()
 
 long cursor::get_rowcount()
 {
-	return statement->row_count();
+	return statement_->row_count();
+}
+
+std::shared_ptr<cpp_odbc::statement const> cursor::get_statement() const
+{
+	return statement_;
 }
 
 }

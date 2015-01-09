@@ -13,7 +13,7 @@ field column::get_field() const
 }
 
 
-long_column::long_column(cpp_odbc::statement & statement, std::size_t one_based_index) :
+long_column::long_column(cpp_odbc::statement const & statement, std::size_t one_based_index) :
 		buffer_(sizeof(long), cached_rows)
 {
 	statement.bind_column(one_based_index, SQL_C_SBIGINT, buffer_);
@@ -30,7 +30,7 @@ namespace {
 	std::size_t const maximum_string_size = 1024;
 }
 
-string_column::string_column(cpp_odbc::statement & statement, std::size_t one_based_index) :
+string_column::string_column(cpp_odbc::statement const & statement, std::size_t one_based_index) :
 		buffer_(maximum_string_size, cached_rows)
 {
 	statement.bind_column(one_based_index, SQL_CHAR, buffer_);
