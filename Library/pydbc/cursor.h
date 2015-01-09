@@ -18,6 +18,9 @@
 
 namespace pydbc {
 
+/**
+ * TODO: Cursor needs proper unit tests
+ */
 class cursor {
 public:
 	cursor(std::shared_ptr<cpp_odbc::statement const> statement);
