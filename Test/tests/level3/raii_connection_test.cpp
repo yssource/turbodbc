@@ -164,7 +164,7 @@ void raii_connection_test::make_statement()
 		.WillOnce(testing::Return(default_s_handle));
 
 	auto statement = connection->make_statement();
-	bool const is_raii_statement = (std::dynamic_pointer_cast<raii_statement>(statement) != nullptr);
+	bool const is_raii_statement = (std::dynamic_pointer_cast<raii_statement const>(statement) != nullptr);
 	CPPUNIT_ASSERT( is_raii_statement );
 }
 

@@ -32,7 +32,7 @@ public:
 	 * @brief Create and return a new statement
 	 * @return A pointer to a new statement
 	 */
-	std::shared_ptr<statement> make_statement() const;
+	std::shared_ptr<statement const> make_statement() const;
 
 	/**
 	 * @brief Set the attribute to the given long value
@@ -62,7 +62,7 @@ public:
 protected:
 	connection();
 private:
-	virtual std::shared_ptr<statement> do_make_statement() const = 0;
+	virtual std::shared_ptr<statement const> do_make_statement() const = 0;
 	virtual void do_set_attribute(SQLINTEGER attribute, long value) const = 0;
 	virtual void do_commit() const = 0;
 	virtual void do_rollback() const = 0;

@@ -57,7 +57,7 @@ public:
 	virtual ~raii_connection();
 
 private:
-	std::shared_ptr<statement> do_make_statement() const final;
+	std::shared_ptr<statement const> do_make_statement() const final;
 	void do_set_attribute(SQLINTEGER attribute, long value) const final;
 	void do_commit() const final;
 	void do_rollback() const final;

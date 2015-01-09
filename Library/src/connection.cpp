@@ -17,7 +17,7 @@ namespace cpp_odbc {
 connection::connection() = default;
 connection::~connection() = default;
 
-std::shared_ptr<statement> connection::make_statement() const
+std::shared_ptr<statement const> connection::make_statement() const
 {
 	return do_make_statement();
 }

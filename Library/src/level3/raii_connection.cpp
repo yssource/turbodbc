@@ -99,10 +99,10 @@ level2::connection_handle const & raii_connection::get_handle() const
 	return impl_->handle.handle;
 }
 
-std::shared_ptr<statement> raii_connection::do_make_statement() const
+std::shared_ptr<statement const> raii_connection::do_make_statement() const
 {
 	auto as_raii_connection = std::dynamic_pointer_cast<raii_connection const>(shared_from_this());
-	return std::make_shared<raii_statement>(as_raii_connection);
+	return std::make_shared<raii_statement const>(as_raii_connection);
 }
 
 void raii_connection::do_set_attribute(SQLINTEGER attribute, long value) const

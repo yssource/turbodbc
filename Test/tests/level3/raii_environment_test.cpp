@@ -143,7 +143,7 @@ void raii_environment_test::make_connection()
 		.Times(1);
 
 	auto connection = environment->make_connection(connection_string);
-	bool const is_raii_connection = (std::dynamic_pointer_cast<raii_connection>(connection) != nullptr);
+	bool const is_raii_connection = (std::dynamic_pointer_cast<raii_connection const>(connection) != nullptr);
 	CPPUNIT_ASSERT( is_raii_connection );
 }
 
