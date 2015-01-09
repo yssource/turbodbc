@@ -17,6 +17,8 @@ namespace pydbc_test {
 
 	class mock_connection : public cpp_odbc::connection {
 	public:
+		mock_connection();
+		~mock_connection();
 		MOCK_CONST_METHOD0( do_make_statement, std::shared_ptr<cpp_odbc::statement const>());
 		MOCK_CONST_METHOD2( do_set_attribute, void(SQLINTEGER, long));
 		MOCK_CONST_METHOD0( do_commit, void());
@@ -27,6 +29,8 @@ namespace pydbc_test {
 
 	class mock_statement : public cpp_odbc::statement {
 	public:
+		mock_statement();
+		~mock_statement();
 		MOCK_CONST_METHOD1( do_get_integer_statement_attribute, long(SQLINTEGER));
 		MOCK_CONST_METHOD2( do_set_statement_attribute, void(SQLINTEGER, long));
 		MOCK_CONST_METHOD1( do_execute, void(std::string const &));
