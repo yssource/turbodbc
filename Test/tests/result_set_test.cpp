@@ -29,6 +29,7 @@ CPPUNIT_TEST_SUITE( result_set_test );
 	CPPUNIT_TEST( fetch_with_single_string_column );
 	CPPUNIT_TEST( fetch_with_single_integer_column );
 	CPPUNIT_TEST( fetch_with_multiple_columns );
+	CPPUNIT_TEST( fetch_with_multiple_rows );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -38,6 +39,7 @@ public:
 	void fetch_with_single_string_column();
 	void fetch_with_single_integer_column();
 	void fetch_with_multiple_columns();
+	void fetch_with_multiple_rows();
 
 };
 
@@ -188,3 +190,25 @@ void result_set_test::fetch_with_multiple_columns()
 	CPPUNIT_ASSERT_EQUAL(expected_values[1], boost::get<long>(row[1]));
 }
 
+
+void result_set_test::fetch_with_multiple_rows()
+{
+	auto statement = prepare_mock_with_columns({SQL_INTEGER});
+	auto buffers = expect_calls_to_bind_buffer(*statement, {SQL_C_SBIGINT});
+
+	auto result_set = pydbc::result_set(statement);
+
+	std::vector<long> const expected_values = {42, 17};
+	EXPECT_CALL(*statement, do_fetch_next())
+		.WillOnce(testing::DoAll(
+					put_binary_value_in_buffer(buffers[0], expected_values[0]),
+					testing::Return(true)
+				))
+		.WillOnce(testing::DoAll(
+					put_binary_value_in_buffer(buffers[0], expected_values[1]),
+					testing::Return(true)
+				));
+
+	CPPUNIT_ASSERT_EQUAL(expected_values[0], boost::get<long>(result_set.fetch_one()[0]));
+	CPPUNIT_ASSERT_EQUAL(expected_values[0], boost::get<long>(result_set.fetch_one()[0]));
+}
