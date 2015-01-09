@@ -14,14 +14,19 @@
 
 namespace pydbc {
 
+connection::connection(std::shared_ptr<cpp_odbc::connection> low_level_connection) :
+	connection_(low_level_connection)
+{
+}
+
 void connection::commit()
 {
-	connection->commit();
+	connection_->commit();
 }
 
 cursor connection::make_cursor()
 {
-	return {connection->make_statement()};
+	return {connection_->make_statement()};
 }
 
 }
