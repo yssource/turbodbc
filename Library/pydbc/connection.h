@@ -33,12 +33,18 @@ public:
 	 * @brief Commit all operations which have been performed since the last commit
 	 *        or rollback
 	 */
-	void commit();
+	void commit() const;
+
+	/**
+	 * @brief Roll back all operations which have been performed since the last commit
+	 *        or rollback
+	 */
+	void rollback() const;
 
 	/**
 	 * @brief Create a new cursor object associated with this connection
 	 */
-	pydbc::cursor make_cursor();
+	pydbc::cursor make_cursor() const;
 private:
 	std::shared_ptr<cpp_odbc::connection> connection_;
 };

@@ -21,12 +21,17 @@ connection::connection(std::shared_ptr<cpp_odbc::connection> low_level_connectio
 	connection_->set_attribute(SQL_ATTR_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF);
 }
 
-void connection::commit()
+void connection::commit() const
 {
 	connection_->commit();
 }
 
-cursor connection::make_cursor()
+void connection::rollback() const
+{
+	connection_->rollback();
+}
+
+cursor connection::make_cursor() const
 {
 	return {connection_->make_statement()};
 }
