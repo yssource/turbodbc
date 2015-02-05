@@ -20,12 +20,14 @@ class input_string_buffer_test : public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( input_string_buffer_test );
 
 	CPPUNIT_TEST( copies_value );
+	CPPUNIT_TEST( has_trailing_slask_zero );
 
 CPPUNIT_TEST_SUITE_END();
 
 public:
 
 	void copies_value();
+	void has_trailing_slask_zero();
 
 };
 
@@ -42,4 +44,12 @@ void input_string_buffer_test::copies_value()
 	for (std::size_t i = 0; i < data.size(); ++i) {
 		CPPUNIT_ASSERT_EQUAL( data[i], buffer.data_pointer()[i] );
 	}
+}
+
+void input_string_buffer_test::has_trailing_slask_zero()
+{
+	std::string const data("dummy data");
+	cpp_odbc::level2::input_string_buffer buffer(data);
+
+	CPPUNIT_ASSERT_EQUAL(static_cast<unsigned char>('\0'), *(buffer.data_pointer() + buffer.size()));
 }
