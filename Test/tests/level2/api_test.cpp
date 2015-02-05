@@ -52,6 +52,7 @@ CPPUNIT_TEST_SUITE( level2_api_test );
 	CPPUNIT_TEST( prepare_statement_forwards );
 	CPPUNIT_TEST( set_statement_attribute_forwards );
 	CPPUNIT_TEST( row_count_forwards );
+	CPPUNIT_TEST( describe_column_forwards );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -86,6 +87,7 @@ public:
 	void prepare_statement_forwards();
 	void set_statement_attribute_forwards();
 	void row_count_forwards();
+	void describe_column_forwards();
 
 };
 
@@ -442,7 +444,19 @@ void level2_api_test::row_count_forwards()
 	SQLLEN const expected = 23;
 
 	level2_mock_api api;
-	EXPECT_CALL(api, do_row_count(handle)).WillOnce(testing::Return(23));
+	EXPECT_CALL(api, do_row_count(handle)).WillOnce(testing::Return(expected));
 
 	CPPUNIT_ASSERT_EQUAL(expected, api.row_count(handle));
+}
+
+void level2_api_test::describe_column_forwards()
+{
+	level2::statement_handle const handle = {&value_a};
+	SQLUSMALLINT const column_id = 42;
+	cpp_odbc::column_description const expected = {"dummy", 1, 2, 3, false};
+
+	level2_mock_api api;
+	EXPECT_CALL(api, do_describe_column(handle, column_id)).WillOnce(testing::Return(expected));
+
+	CPPUNIT_ASSERT(expected == api.describe_column(handle, column_id));
 }

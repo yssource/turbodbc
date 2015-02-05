@@ -97,6 +97,8 @@ CPPUNIT_TEST_SUITE( level1_connector_test );
 	CPPUNIT_TEST( set_statement_attribute_fails );
 	CPPUNIT_TEST( row_count_calls_api );
 	CPPUNIT_TEST( row_count_fails );
+	CPPUNIT_TEST( describe_column_calls_api );
+	CPPUNIT_TEST( describe_column_fails );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -174,6 +176,9 @@ public:
 
 	void row_count_calls_api();
 	void row_count_fails();
+
+	void describe_column_calls_api();
+	void describe_column_fails();
 
 };
 
@@ -1039,4 +1044,56 @@ void level1_connector_test::row_count_fails()
 
 	level1_connector const connector(api);
 	CPPUNIT_ASSERT_THROW( connector.row_count(handle), cpp_odbc::error );
+}
+
+namespace {
+
+	void test_describe_column(bool expected_nullable, SQLSMALLINT sql_nullable, std::string const & message)
+	{
+		level2::statement_handle handle = {&value_a};
+		SQLUSMALLINT const column_id = 17;
+
+		cpp_odbc::column_description const expected = {"value", 123, 456, 666, expected_nullable};
+
+		auto copy_string_to_void_pointer = [&expected](testing::Unused, testing::Unused, void * destination, testing::Unused, testing::Unused, testing::Unused, testing::Unused, testing::Unused, testing::Unused) {
+			memcpy(destination, expected.name.data(), expected.name.size());
+		};
+
+		auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+		EXPECT_CALL(*api, do_describe_column(handle.handle, column_id, testing::_, 256, testing::_, testing::_, testing::_, testing::_, testing::_))
+			.WillOnce(testing::DoAll(
+						testing::Invoke(copy_string_to_void_pointer),
+						testing::SetArgPointee<4>(expected.name.size()),
+						testing::SetArgPointee<5>(expected.data_type),
+						testing::SetArgPointee<6>(expected.size),
+						testing::SetArgPointee<7>(expected.decimal_digits),
+						testing::SetArgPointee<8>(sql_nullable),
+						testing::Return(SQL_SUCCESS)
+					));
+
+		level1_connector const connector(api);
+		CPPUNIT_ASSERT_MESSAGE( message, expected == connector.describe_column(handle, column_id));
+	}
+
+}
+
+void level1_connector_test::describe_column_calls_api()
+{
+	test_describe_column(true, SQL_NULLABLE, "SQL_NULLABLE");
+	test_describe_column(false, SQL_NO_NULLS, "SQL_NO_NULLS");
+	test_describe_column(true, SQL_NULLABLE_UNKNOWN, "SQL_NULLABLE_UNKNOWN");
+}
+
+void level1_connector_test::describe_column_fails()
+{
+	level2::statement_handle handle = {&value_a};
+	SQLUSMALLINT const column_id = 17;
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_describe_column(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
+		.WillOnce(testing::Return(SQL_ERROR));
+	expect_error(*api, expected_error);
+
+	level1_connector const connector(api);
+	CPPUNIT_ASSERT_THROW( connector.describe_column(handle, column_id), cpp_odbc::error );
 }
