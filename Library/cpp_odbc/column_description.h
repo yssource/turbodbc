@@ -18,5 +18,10 @@ struct column_description {
 	bool allows_null_values;	///< True if NULL values are allowed in the column
 };
 
+/**
+ * @brief Equality operator for column_description
+ */
+bool operator==(column_description const & lhs, column_description const & rhs);
+
 
 }
