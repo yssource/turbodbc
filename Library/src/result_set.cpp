@@ -32,11 +32,12 @@ namespace {
 			case SQL_WLONGVARCHAR:
 			case SQL_WCHAR:
 				return std::unique_ptr<column>(new string_column(statement, one_based_index));
-			case SQL_DECIMAL: // bad, never mid yet
 			case SQL_INTEGER:
 			case SQL_SMALLINT:
 			case SQL_BIGINT:
 			case SQL_BIT:
+				return std::unique_ptr<column>(new long_column(statement, one_based_index));
+			case SQL_DECIMAL:
 				return std::unique_ptr<column>(new long_column(statement, one_based_index));
 			default:
 				std::ostringstream message;
@@ -63,7 +64,7 @@ std::vector<field> result_set::fetch_one()
 	if (has_results) {
 		std::vector<field> row;
 		for (auto const & column : columns_) {
-			row.push_back(column->get_field());
+			row.push_back(*column->get_field());
 		}
 		return row;
 	} else {

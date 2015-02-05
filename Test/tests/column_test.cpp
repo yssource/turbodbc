@@ -33,7 +33,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( column_test );
 namespace {
 
 	struct mock_column : public pydbc::column {
-		MOCK_CONST_METHOD0(do_get_field, pydbc::field());
+		MOCK_CONST_METHOD0(do_get_field, boost::optional<pydbc::field>());
 	};
 
 }

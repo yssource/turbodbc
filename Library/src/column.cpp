@@ -6,7 +6,7 @@ column::column() = default;
 
 column::~column() = default;
 
-field column::get_field() const
+boost::optional<field> column::get_field() const
 {
 	return do_get_field();
 }

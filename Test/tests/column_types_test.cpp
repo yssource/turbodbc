@@ -71,7 +71,7 @@ void column_types_test::long_column_get_field()
 	CPPUNIT_ASSERT( buffer != nullptr);
 
 	fill_buffer_with_value(*buffer, expected);
-	CPPUNIT_ASSERT_EQUAL(expected, boost::get<long>(column.get_field()));
+	CPPUNIT_ASSERT_EQUAL(expected, boost::get<long>(*column.get_field()));
 }
 
 
@@ -98,6 +98,6 @@ void column_types_test::string_column_get_field()
 	CPPUNIT_ASSERT( buffer != nullptr);
 
 	fill_buffer_with_value(*buffer, expected);
-	CPPUNIT_ASSERT_EQUAL(expected, boost::get<std::string>(column.get_field()));
+	CPPUNIT_ASSERT_EQUAL(expected, boost::get<std::string>(*column.get_field()));
 }
 
