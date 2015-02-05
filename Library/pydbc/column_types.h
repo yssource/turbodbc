@@ -14,7 +14,7 @@ std::size_t const cached_rows = 10;
 struct long_column : public column {
 	long_column(cpp_odbc::statement const & statement, std::size_t one_based_index);
 private:
-	boost::optional<field> do_get_field() const final;
+	nullable_field do_get_field() const final;
 	cpp_odbc::multi_value_buffer buffer_;
 };
 
@@ -24,7 +24,7 @@ private:
 struct string_column : public column {
 	string_column(cpp_odbc::statement const & statement, std::size_t one_based_index);
 private:
-	boost::optional<field> do_get_field() const final;
+	nullable_field do_get_field() const final;
 	cpp_odbc::multi_value_buffer buffer_;
 };
 

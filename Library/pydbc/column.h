@@ -12,7 +12,7 @@ struct column {
 	/**
 	 * @brief Retrieve the field of the current result set row associated with this column
 	 */
-	boost::optional<field> get_field() const;
+	nullable_field get_field() const;
 
 	column(column const &) = delete;
 	column & operator=(column const &) = delete;
@@ -21,7 +21,7 @@ struct column {
 protected:
 	column();
 private:
-	virtual boost::optional<field> do_get_field() const = 0;
+	virtual nullable_field do_get_field() const = 0;
 };
 
 
