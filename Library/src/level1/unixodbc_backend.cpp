@@ -121,5 +121,10 @@ SQLRETURN unixodbc_backend::do_row_count(SQLHSTMT statement_handle, SQLLEN * cou
 	return SQLRowCount(statement_handle, count);
 }
 
+SQLRETURN unixodbc_backend::do_describe_column(SQLHSTMT statement_handle, SQLUSMALLINT column_number, SQLCHAR * column_name, SQLSMALLINT buffer_length, SQLSMALLINT * name_length, SQLSMALLINT * data_type, SQLULEN * column_size, SQLSMALLINT * decimal_digits, SQLSMALLINT * nullable) const
+{
+	return SQLDescribeCol(statement_handle, column_number, column_name, buffer_length, name_length, data_type, column_size, decimal_digits, nullable);
+}
+
 
 } }

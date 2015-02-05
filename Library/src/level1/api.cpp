@@ -122,4 +122,9 @@ SQLRETURN api::row_count(SQLHSTMT statement_handle, SQLLEN * count) const
 	return do_row_count(statement_handle, count);
 }
 
+SQLRETURN api::describe_column(SQLHSTMT statement_handle, SQLUSMALLINT column_number, SQLCHAR * column_name, SQLSMALLINT buffer_length, SQLSMALLINT * name_length, SQLSMALLINT * data_type, SQLULEN * column_size, SQLSMALLINT * decimal_digits, SQLSMALLINT * nullable) const
+{
+	return do_describe_column(statement_handle, column_number, column_name, buffer_length, name_length, data_type, column_size, decimal_digits, nullable);
+}
+
 } }
