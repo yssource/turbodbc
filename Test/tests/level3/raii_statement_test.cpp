@@ -40,6 +40,7 @@ CPPUNIT_TEST_SUITE( raii_statement_test );
 	CPPUNIT_TEST( get_integer_column_attribute );
 	CPPUNIT_TEST( get_string_column_attribute );
 	CPPUNIT_TEST( row_count );
+	CPPUNIT_TEST( describe_column );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -61,6 +62,7 @@ public:
 	void get_integer_column_attribute();
 	void get_string_column_attribute();
 	void row_count();
+	void describe_column();
 
 };
 
@@ -322,4 +324,19 @@ void raii_statement_test::row_count()
 
 	raii_statement statement(connection);
 	CPPUNIT_ASSERT_EQUAL( expected, statement.row_count());
+}
+
+void raii_statement_test::describe_column()
+{
+	SQLUSMALLINT const column_id = 23;
+	cpp_odbc::column_description const expected = {"dummy", 1, 2, 3, false};
+
+	auto api = make_default_api();
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
+	EXPECT_CALL(*api, do_describe_column(default_s_handle, column_id))
+		.WillOnce(testing::Return(expected));
+
+	raii_statement statement(connection);
+	CPPUNIT_ASSERT( expected == statement.describe_column(column_id));
 }
