@@ -22,9 +22,9 @@ namespace {
 
 	std::unique_ptr<column> make_column(cpp_odbc::statement const & statement, std::size_t one_based_index)
 	{
-		auto const type = statement.get_integer_column_attribute(one_based_index, SQL_DESC_TYPE);
+		auto const description = statement.describe_column(one_based_index);
 
-		switch (type) {
+		switch (description.data_type) {
 			case SQL_VARCHAR:
 			case SQL_LONGVARCHAR:
 			case SQL_WVARCHAR:
@@ -32,6 +32,7 @@ namespace {
 			case SQL_WLONGVARCHAR:
 			case SQL_WCHAR:
 				return std::unique_ptr<column>(new string_column(statement, one_based_index));
+			case SQL_DECIMAL: // bad, never mid yet
 			case SQL_INTEGER:
 			case SQL_SMALLINT:
 			case SQL_BIGINT:
@@ -39,7 +40,7 @@ namespace {
 				return std::unique_ptr<column>(new long_column(statement, one_based_index));
 			default:
 				std::ostringstream message;
-				message << "Error! Unsupported type identifier '" << type << "'";
+				message << "Error! Unsupported type identifier '" << description.data_type << "'";
 				throw std::runtime_error(message.str());
 		}
 	}

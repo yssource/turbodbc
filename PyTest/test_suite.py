@@ -2,7 +2,7 @@ from unittest import TestCase
 import pydbc
 
 dsn = "PostgreSQL R&D test database"
-#dsn = "Exasol R&D test database"
+dsn = "Exasol R&D test database"
 
 def has_method(_object, method_name):
     return hasattr(_object, method_name) and callable(getattr(_object, method_name))
@@ -24,9 +24,7 @@ class TestConnect(TestCase):
             connection.cursor()
 
     def test_connect_error(self):
-        self.assertRaises(pydbc.Error, pydbc.connect, "Oh Boy!")
-        
- 
+        self.assertRaises(pydbc.Error, pydbc.connect, "Oh Boy!")   
 
     def test_cursor_setup_teardown(self):
         connection = pydbc.connect(dsn)
@@ -51,6 +49,7 @@ class TestConnect(TestCase):
 
         with self.assertRaises(pydbc.Error):
             cursor.execute("Oh Boy!")
+
 
 class TestDQL(TestCase):
 
@@ -101,6 +100,7 @@ class TestDQL(TestCase):
         self.cursor.execute("select * from test_integer order by a")
         for element in enumerate(self.cursor, start=1):
             self.assertItemsEqual([element[0]], element[1])
+
 
 class TestDML(TestCase):
 

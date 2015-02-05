@@ -51,7 +51,7 @@ using pydbc_test::mock_statement;
 
 namespace {
 
-	std::shared_ptr<testing::NiceMock<mock_statement>> prepare_mock_with_columns(std::vector<long> const & column_types)
+	std::shared_ptr<testing::NiceMock<mock_statement>> prepare_mock_with_columns(std::vector<SQLSMALLINT> const & column_types)
 	{
 		auto statement = std::make_shared<testing::NiceMock<mock_statement>>();
 
@@ -59,8 +59,9 @@ namespace {
 			.WillByDefault(testing::Return(column_types.size()));
 
 		for (std::size_t i = 0; i != column_types.size(); ++i) {
-			ON_CALL(*statement, do_get_integer_column_attribute(i + 1, SQL_DESC_TYPE))
-				.WillByDefault(testing::Return(column_types[i]));
+			cpp_odbc::column_description const value = {"dummy_name", column_types[i], 42, 17, true};
+			ON_CALL(*statement, do_describe_column(i + 1))
+				.WillByDefault(testing::Return(value));
 		}
 		return statement;
 	}
