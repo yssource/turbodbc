@@ -12,6 +12,7 @@
  */
 
 #include "cpp_odbc/multi_value_buffer.h"
+#include "cpp_odbc/column_description.h"
 
 #include "sql.h"
 
@@ -103,6 +104,7 @@ public:
 	 * @brief Retrieve the value of a column attribute as a string
 	 * @param column_id The column identifier
 	 * @param field_identifier A constant representing the requested attribute
+	 * @return The attribute's value
 	 */
 	std::string get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const;
 
@@ -110,6 +112,13 @@ public:
 	 * @brief Return number of rows in result set
 	 */
 	SQLLEN row_count() const;
+
+	/**
+	 * @brief Retrieve the description of a column
+	 * @param column_id The column identifier
+	 * @return A description of the column
+	 */
+	column_description describe_column(SQLUSMALLINT column_id) const;
 
 	virtual ~statement();
 protected:
@@ -130,6 +139,7 @@ private:
 	virtual long do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;
 	virtual std::string do_get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;
 	virtual SQLLEN do_row_count() const = 0;
+	virtual column_description do_describe_column(SQLUSMALLINT column_id) const = 0;
 };
 
 }

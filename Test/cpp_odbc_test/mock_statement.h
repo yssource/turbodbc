@@ -31,6 +31,7 @@ public:
 	MOCK_CONST_METHOD2( do_get_integer_column_attribute, long(SQLUSMALLINT, SQLUSMALLINT));
 	MOCK_CONST_METHOD2( do_get_string_column_attribute, std::string(SQLUSMALLINT, SQLUSMALLINT));
 	MOCK_CONST_METHOD0( do_row_count, SQLLEN());
+	MOCK_CONST_METHOD1( do_describe_column, cpp_odbc::column_description(SQLUSMALLINT));
 };
 
 }

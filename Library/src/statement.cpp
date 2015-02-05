@@ -83,4 +83,9 @@ SQLLEN statement::row_count() const
 	return do_row_count();
 }
 
+column_description statement::describe_column(SQLUSMALLINT column_id) const
+{
+	return do_describe_column(column_id);
+}
+
 }

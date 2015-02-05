@@ -97,4 +97,9 @@ SQLLEN raii_statement::do_row_count() const
 	return api_->row_count(handle_);
 }
 
+column_description raii_statement::do_describe_column(SQLUSMALLINT column_id) const
+{
+	return api_->describe_column(handle_, column_id);
+}
+
 } }

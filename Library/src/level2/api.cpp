@@ -157,5 +157,10 @@ SQLLEN api::row_count(statement_handle const & handle) const
 	return do_row_count(handle);
 }
 
+column_description api::describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const
+{
+	return do_describe_column(handle, column_id);
+}
+
 
 } }

@@ -15,6 +15,7 @@
 #include "cpp_odbc/level2/diagnostic_record.h"
 #include "cpp_odbc/level2/handles.h"
 #include "cpp_odbc/multi_value_buffer.h"
+#include "cpp_odbc/column_description.h"
 
 namespace cpp_odbc { namespace level2 {
 
@@ -255,6 +256,8 @@ public:
 	 */
 	SQLLEN row_count(statement_handle const & handle) const;
 
+	column_description describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const;
+
 protected:
 
 	api();
@@ -292,6 +295,7 @@ private:
 	virtual void do_prepare_statement(statement_handle const & handle, std::string const & sql) const = 0;
 	virtual void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, long value) const = 0;
 	virtual SQLLEN do_row_count(statement_handle const & handle) const = 0;
+	virtual column_description do_describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const = 0;
 };
 
 } }
