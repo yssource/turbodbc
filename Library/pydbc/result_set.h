@@ -33,7 +33,7 @@ public:
 	/**
 	 * @brief Fetch the next row of the result set
 	 */
-	std::vector<field> fetch_one();
+	std::vector<nullable_field> fetch_one();
 private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	std::vector<std::unique_ptr<column>> columns_;

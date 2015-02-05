@@ -26,7 +26,7 @@ public:
 	cursor(std::shared_ptr<cpp_odbc::statement const> statement);
 
 	void execute(std::string const & sql);
-	std::vector<field> fetch_one();
+	std::vector<nullable_field> fetch_one();
 	long get_rowcount();
 
 	std::shared_ptr<cpp_odbc::statement const> get_statement() const;

@@ -133,7 +133,7 @@ void result_set_test::fetch_with_single_string_column()
 
 	auto row = result_set.fetch_one();
 	CPPUNIT_ASSERT_EQUAL(1, row.size());
-	CPPUNIT_ASSERT_EQUAL(expected_value, boost::get<std::string>(row[0]));
+	CPPUNIT_ASSERT_EQUAL(expected_value, boost::get<std::string>(*row[0]));
 }
 
 
@@ -166,7 +166,7 @@ void result_set_test::fetch_with_single_integer_column()
 
 	auto row = result_set.fetch_one();
 	CPPUNIT_ASSERT_EQUAL(1, row.size());
-	CPPUNIT_ASSERT_EQUAL(expected_value, boost::get<long>(row[0]));
+	CPPUNIT_ASSERT_EQUAL(expected_value, boost::get<long>(*row[0]));
 }
 
 
@@ -187,8 +187,8 @@ void result_set_test::fetch_with_multiple_columns()
 
 	auto row = result_set.fetch_one();
 	CPPUNIT_ASSERT_EQUAL(2, row.size());
-	CPPUNIT_ASSERT_EQUAL(expected_values[0], boost::get<long>(row[0]));
-	CPPUNIT_ASSERT_EQUAL(expected_values[1], boost::get<long>(row[1]));
+	CPPUNIT_ASSERT_EQUAL(expected_values[0], boost::get<long>(*row[0]));
+	CPPUNIT_ASSERT_EQUAL(expected_values[1], boost::get<long>(*row[1]));
 }
 
 
@@ -210,6 +210,6 @@ void result_set_test::fetch_with_multiple_rows()
 					testing::Return(true)
 				));
 
-	CPPUNIT_ASSERT_EQUAL(expected_values[0], boost::get<long>(result_set.fetch_one()[0]));
-	CPPUNIT_ASSERT_EQUAL(expected_values[1], boost::get<long>(result_set.fetch_one()[0]));
+	CPPUNIT_ASSERT_EQUAL(expected_values[0], boost::get<long>(*result_set.fetch_one()[0]));
+	CPPUNIT_ASSERT_EQUAL(expected_values[1], boost::get<long>(*result_set.fetch_one()[0]));
 }

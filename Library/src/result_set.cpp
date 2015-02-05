@@ -58,13 +58,13 @@ result_set::result_set(std::shared_ptr<cpp_odbc::statement const> statement) :
 	}
 }
 
-std::vector<field> result_set::fetch_one()
+std::vector<nullable_field> result_set::fetch_one()
 {
 	auto const has_results = statement_->fetch_next();
 	if (has_results) {
-		std::vector<field> row;
+		std::vector<nullable_field> row;
 		for (auto const & column : columns_) {
-			row.push_back(*column->get_field());
+			row.push_back(column->get_field());
 		}
 		return row;
 	} else {
