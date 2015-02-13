@@ -17,6 +17,7 @@ CPPUNIT_TEST_SUITE( description_types_test );
 	CPPUNIT_TEST( integer );
 	CPPUNIT_TEST( string );
 	CPPUNIT_TEST( boolean );
+	CPPUNIT_TEST( floating_point );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -25,6 +26,7 @@ public:
 	void integer();
 	void string();
 	void boolean();
+	void floating_point();
 
 };
 
@@ -63,4 +65,14 @@ void description_types_test::boolean()
 	CPPUNIT_ASSERT_EQUAL(pydbc::field{false}, description.make_field(&as_bool));
 	as_bool = 1;
 	CPPUNIT_ASSERT_EQUAL(pydbc::field{true}, description.make_field(&as_bool));
+}
+
+void description_types_test::floating_point()
+{
+	double const expected = 3.14;
+	pydbc::floating_point_description const description;
+
+	CPPUNIT_ASSERT_EQUAL(sizeof(expected), description.element_size());
+	CPPUNIT_ASSERT_EQUAL(SQL_C_DOUBLE, description.column_type());
+	CPPUNIT_ASSERT_EQUAL(pydbc::field{expected}, description.make_field(reinterpret_cast<char const *>(&expected)));
 }

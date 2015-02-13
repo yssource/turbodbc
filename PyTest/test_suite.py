@@ -2,7 +2,7 @@ from unittest import TestCase
 import pydbc
 
 dsn = "PostgreSQL R&D test database"
-#dsn = "Exasol R&D test database"
+dsn = "Exasol R&D test database"
 
 def has_method(_object, method_name):
     return hasattr(_object, method_name) and callable(getattr(_object, method_name))
@@ -82,6 +82,22 @@ class TestDQL(TestCase):
         self.assertEqual(self.cursor.rowcount, 1)
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, ['Oh Boy!'])
+        row = self.cursor.fetchone()
+        self.assertIsNone(row)
+        
+    def test_single_row_double_result(self):
+        self.cursor.execute("select a from test_read_double")
+        self.assertEqual(self.cursor.rowcount, 1)
+        row = self.cursor.fetchone()
+        self.assertItemsEqual(row, [3.14])
+        row = self.cursor.fetchone()
+        self.assertIsNone(row)
+        
+    def test_single_row_large_numeric_result(self):
+        self.cursor.execute("select -1234567890123.123456789")
+        self.assertEqual(self.cursor.rowcount, 1)
+        row = self.cursor.fetchone()
+        self.assertItemsEqual(row, ['-1234567890123.123456789'])
         row = self.cursor.fetchone()
         self.assertIsNone(row)
 
