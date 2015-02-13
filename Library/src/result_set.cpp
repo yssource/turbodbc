@@ -39,7 +39,7 @@ result_set::result_set(std::shared_ptr<cpp_odbc::statement const> statement) :
 		columns_.push_back(make_column(*statement, one_based_index));
 	}
 
-	statement_->set_statement_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 1);
+	statement_->set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 1);
 }
 
 std::vector<nullable_field> result_set::fetch_one()

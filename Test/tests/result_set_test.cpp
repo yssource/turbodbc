@@ -97,7 +97,7 @@ void result_set_test::enables_fetching_multiple_rows()
 {
 	auto statement = prepare_mock_with_columns({});
 
-	EXPECT_CALL(*statement, do_set_statement_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 1)).Times(1);
+	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 1)).Times(1);
 
 	pydbc::result_set result_set(statement);
 }

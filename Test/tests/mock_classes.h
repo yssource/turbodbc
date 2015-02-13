@@ -31,8 +31,9 @@ namespace pydbc_test {
 	public:
 		mock_statement();
 		~mock_statement();
-		MOCK_CONST_METHOD1( do_get_integer_statement_attribute, long(SQLINTEGER));
-		MOCK_CONST_METHOD2( do_set_statement_attribute, void(SQLINTEGER, long));
+		MOCK_CONST_METHOD1( do_get_integer_attribute, long(SQLINTEGER));
+		MOCK_CONST_METHOD2( do_set_attribute, void(SQLINTEGER, long));
+		MOCK_CONST_METHOD2( do_set_attribute, void(SQLINTEGER, SQLULEN *));
 		MOCK_CONST_METHOD1( do_execute, void(std::string const &));
 		MOCK_CONST_METHOD1( do_prepare, void(std::string const &));
 		MOCK_CONST_METHOD4( do_bind_input_parameter, void(SQLUSMALLINT, SQLSMALLINT, SQLSMALLINT, cpp_odbc::multi_value_buffer &));
