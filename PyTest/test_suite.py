@@ -2,7 +2,7 @@ from unittest import TestCase
 import pydbc
 
 dsn = "PostgreSQL R&D test database"
-dsn = "Exasol R&D test database"
+#dsn = "Exasol R&D test database"
 
 def has_method(_object, method_name):
     return hasattr(_object, method_name) and callable(getattr(_object, method_name))
@@ -122,6 +122,17 @@ class TestDML(TestCase):
         self.assertItemsEqual(row, [1])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [2])
+        
+    def test_multiple_row_single_boolean_result(self):
+        self.cursor.execute("delete from test_bool")
+        self.cursor.execute("insert into test_bool values (FALSE)")
+        self.cursor.execute("insert into test_bool values (TRUE)")
+        self.cursor.execute("select * from test_bool order by a")
+        self.assertEqual(self.cursor.rowcount, 2)
+        row = self.cursor.fetchone()
+        self.assertItemsEqual(row, [False])
+        row = self.cursor.fetchone()
+        self.assertItemsEqual(row, [True])
 
     def test_multiple_row_single_string_result(self):
         value_1 = 'Oh Boy!'

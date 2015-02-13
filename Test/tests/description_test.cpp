@@ -74,7 +74,7 @@ void description_test::column_type_forwards()
 
 void description_test::make_field_forwards()
 {
-	pydbc::field const expected(42);
+	pydbc::field const expected(42l);
 	char const * data = nullptr;
 
 	mock_description description;

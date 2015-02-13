@@ -17,7 +17,7 @@ public:
 	 * @param one_based_index One-based column index for bind command
 	 * @param desription Description concerning data type of column
 	 */
-	column(cpp_odbc::statement const & statement, std::size_t one_based_index, std::unique_ptr<description> description);
+	column(cpp_odbc::statement const & statement, std::size_t one_based_index, std::unique_ptr<description const> description);
 
 	/**
 	 * @brief Retrieve the field of the current result set row associated with this column
@@ -26,7 +26,7 @@ public:
 
 	~column();
 private:
-	std::unique_ptr<description> description_;
+	std::unique_ptr<description const> description_;
 	cpp_odbc::multi_value_buffer buffer_;
 };
 

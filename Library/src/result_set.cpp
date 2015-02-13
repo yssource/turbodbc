@@ -12,7 +12,7 @@
 
 #include <pydbc/cursor.h>
 #include <pydbc/column.h>
-#include <pydbc/description_types.h>
+#include <pydbc/make_description.h>
 #include <sqlext.h>
 #include <stdexcept>
 #include <sstream>
@@ -24,27 +24,7 @@ namespace {
 	std::unique_ptr<column> make_column(cpp_odbc::statement const & statement, std::size_t one_based_index)
 	{
 		auto const column_description = statement.describe_column(one_based_index);
-
-		switch (column_description.data_type) {
-			case SQL_VARCHAR:
-			case SQL_LONGVARCHAR:
-			case SQL_WVARCHAR:
-			case SQL_CHAR:
-			case SQL_WLONGVARCHAR:
-			case SQL_WCHAR:
-				return std::unique_ptr<column>(new column(statement, one_based_index, std::unique_ptr<description>(new string_description(1024))));
-			case SQL_INTEGER:
-			case SQL_SMALLINT:
-			case SQL_BIGINT:
-			case SQL_BIT:
-				return std::unique_ptr<column>(new column(statement, one_based_index, std::unique_ptr<description>(new integer_description)));
-			case SQL_DECIMAL:
-				return std::unique_ptr<column>(new column(statement, one_based_index, std::unique_ptr<description>(new integer_description)));
-			default:
-				std::ostringstream message;
-				message << "Error! Unsupported type identifier '" << column_description.data_type << "'";
-				throw std::runtime_error(message.str());
-		}
+		return std::unique_ptr<column>(new column(statement, one_based_index, make_description(column_description)));
 	}
 
 }

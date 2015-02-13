@@ -16,6 +16,7 @@ CPPUNIT_TEST_SUITE( description_types_test );
 
 	CPPUNIT_TEST( integer );
 	CPPUNIT_TEST( string );
+	CPPUNIT_TEST( boolean );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -23,6 +24,7 @@ public:
 
 	void integer();
 	void string();
+	void boolean();
 
 };
 
@@ -46,6 +48,19 @@ void description_types_test::string()
 	pydbc::string_description const description(size);
 
 	CPPUNIT_ASSERT_EQUAL(size + 1, description.element_size());
-	CPPUNIT_ASSERT_EQUAL(SQL_CHAR, description.column_type());
+	CPPUNIT_ASSERT_EQUAL(SQL_C_CHAR, description.column_type());
 	CPPUNIT_ASSERT_EQUAL(pydbc::field{expected}, description.make_field(expected.c_str()));
+}
+
+void description_types_test::boolean()
+{
+	pydbc::boolean_description const description;
+
+	CPPUNIT_ASSERT_EQUAL(1, description.element_size());
+	CPPUNIT_ASSERT_EQUAL(SQL_C_BIT, description.column_type());
+
+	char as_bool = 0;
+	CPPUNIT_ASSERT_EQUAL(pydbc::field{false}, description.make_field(&as_bool));
+	as_bool = 1;
+	CPPUNIT_ASSERT_EQUAL(pydbc::field{true}, description.make_field(&as_bool));
 }

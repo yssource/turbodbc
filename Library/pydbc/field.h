@@ -10,7 +10,7 @@ namespace pydbc {
  * @brief This type represents a single field in a table, i.e., the data associated
  *        with a given row and column
  */
-using field = boost::variant<long, std::string>;
+using field = boost::variant<long, std::string, bool>;
 
 /**
  * @brief This type represents a single nullable field in a table, i.e., the data associated

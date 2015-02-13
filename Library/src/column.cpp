@@ -2,7 +2,7 @@
 
 namespace pydbc {
 
-column::column(cpp_odbc::statement const & statement, std::size_t one_based_index, std::unique_ptr<description> description) :
+column::column(cpp_odbc::statement const & statement, std::size_t one_based_index, std::unique_ptr<description const> description) :
 	description_(std::move(description)),
 	buffer_(description_->element_size(), 10)
 {
