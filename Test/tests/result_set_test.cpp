@@ -25,6 +25,7 @@
 class result_set_test : public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( result_set_test );
 
+	CPPUNIT_TEST( enables_fetching_multiple_rows );
 	CPPUNIT_TEST( fetch_without_columns );
 	CPPUNIT_TEST( fetch_with_single_string_column );
 	CPPUNIT_TEST( fetch_with_single_integer_column );
@@ -35,6 +36,7 @@ CPPUNIT_TEST_SUITE_END();
 
 public:
 
+	void enables_fetching_multiple_rows();
 	void fetch_without_columns();
 	void fetch_with_single_string_column();
 	void fetch_with_single_integer_column();
@@ -91,6 +93,15 @@ namespace {
 
 }
 
+void result_set_test::enables_fetching_multiple_rows()
+{
+	auto statement = prepare_mock_with_columns({});
+
+	EXPECT_CALL(*statement, do_set_statement_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 1)).Times(1);
+
+	pydbc::result_set result_set(statement);
+}
+
 void result_set_test::fetch_without_columns()
 {
 	auto statement = prepare_mock_with_columns({});
@@ -98,7 +109,7 @@ void result_set_test::fetch_without_columns()
 	ON_CALL(*statement, do_fetch_next())
 		.WillByDefault(testing::Return(true));
 
-	auto result_set = pydbc::result_set(statement);
+	pydbc::result_set result_set(statement);
 	CPPUNIT_ASSERT_EQUAL(0, result_set.fetch_one().size());
 }
 

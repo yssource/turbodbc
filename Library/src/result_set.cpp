@@ -30,13 +30,16 @@ namespace {
 }
 
 result_set::result_set(std::shared_ptr<cpp_odbc::statement const> statement) :
-	statement_(statement)
+	statement_(statement),
+	rows_fetched_(0)
 {
 	std::size_t const n_columns = statement_->number_of_columns();
 
 	for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
 		columns_.push_back(make_column(*statement, one_based_index));
 	}
+
+	statement_->set_statement_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 1);
 }
 
 std::vector<nullable_field> result_set::fetch_one()

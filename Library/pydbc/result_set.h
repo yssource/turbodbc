@@ -37,6 +37,7 @@ public:
 private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	std::vector<std::unique_ptr<column>> columns_;
+	std::size_t rows_fetched_;
 };
 
 }
