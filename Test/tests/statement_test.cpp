@@ -24,8 +24,9 @@ class statement_test : public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( statement_test );
 
 	CPPUNIT_TEST( is_suitable_as_base_class );
-	CPPUNIT_TEST( get_integer_statement_attribute_forwards );
-	CPPUNIT_TEST( set_integer_statement_attribute_forwards );
+	CPPUNIT_TEST( get_integer_attribute_forwards );
+	CPPUNIT_TEST( set_integer_attribute_forwards );
+	CPPUNIT_TEST( set_pointer_attribute_forwards );
 	CPPUNIT_TEST( execute_forwards );
 	CPPUNIT_TEST( prepare_forwards );
 	CPPUNIT_TEST( bind_input_parameter_forwards );
@@ -44,8 +45,9 @@ CPPUNIT_TEST_SUITE_END();
 public:
 
 	void is_suitable_as_base_class();
-	void get_integer_statement_attribute_forwards();
-	void set_integer_statement_attribute_forwards();
+	void get_integer_attribute_forwards();
+	void set_integer_attribute_forwards();
+	void set_pointer_attribute_forwards();
 	void execute_forwards();
 	void prepare_forwards();
 	void bind_input_parameter_forwards();
@@ -73,27 +75,38 @@ void statement_test::is_suitable_as_base_class()
 	CPPUNIT_ASSERT( is_base );
 }
 
-void statement_test::get_integer_statement_attribute_forwards()
+void statement_test::get_integer_attribute_forwards()
 {
 	SQLINTEGER const attribute = 23;
 	long const expected = 42;
 
 	mock_statement statement;
-	EXPECT_CALL( statement, do_get_integer_statement_attribute(attribute))
+	EXPECT_CALL( statement, do_get_integer_attribute(attribute))
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT_EQUAL( expected, statement.get_integer_statement_attribute(attribute));
+	CPPUNIT_ASSERT_EQUAL( expected, statement.get_integer_attribute(attribute));
 }
 
-void statement_test::set_integer_statement_attribute_forwards()
+void statement_test::set_integer_attribute_forwards()
 {
 	SQLINTEGER const attribute = 23;
 	long const value = 42;
 
 	mock_statement statement;
-	EXPECT_CALL( statement, do_set_statement_attribute(attribute, value)).Times(1);
+	EXPECT_CALL( statement, do_set_attribute(attribute, value)).Times(1);
 
-	statement.set_statement_attribute(attribute, value);
+	statement.set_attribute(attribute, value);
+}
+
+void statement_test::set_pointer_attribute_forwards()
+{
+	SQLINTEGER const attribute = 23;
+	SQLULEN value = 42;
+
+	mock_statement statement;
+	EXPECT_CALL( statement, do_set_attribute(attribute, &value)).Times(1);
+
+	statement.set_attribute(attribute, &value);
 }
 
 void statement_test::execute_forwards()

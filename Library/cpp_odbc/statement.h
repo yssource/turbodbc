@@ -32,14 +32,21 @@ public:
 	 * @brief Retrieve the value of statement attribute as an integer
 	 * @param attribute A constant representing the requested attribute
 	 */
-	long get_integer_statement_attribute(SQLINTEGER attribute) const;
+	long get_integer_attribute(SQLINTEGER attribute) const;
 
 	/**
 	 * @brief Set the value of statement attribute
 	 * @param attribute A constant representing the requested attribute
 	 * @param value The new value for this attribute
 	 */
-	void set_statement_attribute(SQLINTEGER attribute, long value) const;
+	void set_attribute(SQLINTEGER attribute, long value) const;
+
+	/**
+	 * @brief Set the pointer of the given statement attribute
+	 * @param attribute A constant representing the requested attribute
+	 * @param pointer The new pointer for this attribute
+	 */
+	void set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const;
 
 	/**
 	 * @brief Execute the given SQL string directly without preparing it on the client side.
@@ -124,8 +131,9 @@ public:
 protected:
 	statement();
 private:
-	virtual long do_get_integer_statement_attribute(SQLINTEGER attribute) const = 0;
-	virtual void do_set_statement_attribute(SQLINTEGER attribute, long value) const = 0;
+	virtual long do_get_integer_attribute(SQLINTEGER attribute) const = 0;
+	virtual void do_set_attribute(SQLINTEGER attribute, long value) const = 0;
+	virtual void do_set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const = 0;
 	virtual void do_execute(std::string const & sql) const = 0;
 	virtual void do_prepare(std::string const & sql) const = 0;
 	virtual void do_bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, cpp_odbc::multi_value_buffer & parameter_values) const = 0;

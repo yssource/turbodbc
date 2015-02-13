@@ -31,14 +31,19 @@ raii_statement::~raii_statement()
 	api_->free_handle(handle_);
 }
 
-long raii_statement::do_get_integer_statement_attribute(SQLINTEGER attribute) const
+long raii_statement::do_get_integer_attribute(SQLINTEGER attribute) const
 {
 	return api_->get_integer_statement_attribute(handle_, attribute);
 }
 
-void raii_statement::do_set_statement_attribute(SQLINTEGER attribute, long value) const
+void raii_statement::do_set_attribute(SQLINTEGER attribute, long value) const
 {
 	api_->set_statement_attribute(handle_, attribute, value);
+}
+
+void raii_statement::do_set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const
+{
+	api_->set_statement_attribute(handle_, attribute, pointer);
 }
 
 void raii_statement::do_execute(std::string const & sql) const

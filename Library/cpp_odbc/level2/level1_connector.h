@@ -65,6 +65,7 @@ private:
 	short int do_number_of_result_columns(statement_handle const & handle) const final;
 	void do_prepare_statement(statement_handle const & handle, std::string const & sql) const final;
 	void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, long value) const final;
+	void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, SQLULEN * pointer) const final;
 	SQLLEN do_row_count(statement_handle const & handle) const final;
 	column_description do_describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const final;
 

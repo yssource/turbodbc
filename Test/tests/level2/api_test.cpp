@@ -50,7 +50,8 @@ CPPUNIT_TEST_SUITE( level2_api_test );
 	CPPUNIT_TEST( get_integer_statement_attribute_forwards );
 	CPPUNIT_TEST( number_of_result_columns_forwards );
 	CPPUNIT_TEST( prepare_statement_forwards );
-	CPPUNIT_TEST( set_statement_attribute_forwards );
+	CPPUNIT_TEST( set_long_statement_attribute_forwards );
+	CPPUNIT_TEST( set_pointer_statement_attribute_forwards );
 	CPPUNIT_TEST( row_count_forwards );
 	CPPUNIT_TEST( describe_column_forwards );
 
@@ -85,7 +86,8 @@ public:
 	void get_integer_statement_attribute_forwards();
 	void number_of_result_columns_forwards();
 	void prepare_statement_forwards();
-	void set_statement_attribute_forwards();
+	void set_long_statement_attribute_forwards();
+	void set_pointer_statement_attribute_forwards();
 	void row_count_forwards();
 	void describe_column_forwards();
 
@@ -426,7 +428,7 @@ void level2_api_test::prepare_statement_forwards()
 	api.prepare_statement(handle, query);
 }
 
-void level2_api_test::set_statement_attribute_forwards()
+void level2_api_test::set_long_statement_attribute_forwards()
 {
 	level2::statement_handle const handle = {&value_a};
 	SQLINTEGER const attribute = 23;
@@ -436,6 +438,18 @@ void level2_api_test::set_statement_attribute_forwards()
 	EXPECT_CALL(api, do_set_statement_attribute(handle, attribute, value)).Times(1);
 
 	api.set_statement_attribute(handle, attribute, value);
+}
+
+void level2_api_test::set_pointer_statement_attribute_forwards()
+{
+	level2::statement_handle const handle = {&value_a};
+	SQLINTEGER const attribute = 23;
+	SQLULEN value = 42;
+
+	level2_mock_api api;
+	EXPECT_CALL(api, do_set_statement_attribute(handle, attribute, &value)).Times(1);
+
+	api.set_statement_attribute(handle, attribute, &value);
 }
 
 void level2_api_test::row_count_forwards()

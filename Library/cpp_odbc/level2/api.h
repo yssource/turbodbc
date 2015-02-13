@@ -250,6 +250,14 @@ public:
 	void set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, long value) const;
 
 	/**
+	 * @brief Set an attribute of the statement to a pointer to a SQLULEN value
+	 * @param handle Set an attribute for this statement
+	 * @param attribute Set this attribute. See unixODBC's SQLSetStmtAttr() documentation
+	 * @param pointer The pointer which shall be set for this attribute
+	 */
+	void set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, SQLULEN * pointer) const;
+
+	/**
 	 * @brief Determine the number of rows in the result set associated with the statement
 	 * @param handle The statement which holds the result set
 	 * @return The number of rows in the result set
@@ -294,6 +302,7 @@ private:
 	virtual short int do_number_of_result_columns(statement_handle const & handle) const = 0;
 	virtual void do_prepare_statement(statement_handle const & handle, std::string const & sql) const = 0;
 	virtual void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, long value) const = 0;
+	virtual void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, SQLULEN * pointer) const = 0;
 	virtual SQLLEN do_row_count(statement_handle const & handle) const = 0;
 	virtual column_description do_describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const = 0;
 };

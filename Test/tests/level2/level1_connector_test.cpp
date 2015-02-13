@@ -93,8 +93,10 @@ CPPUNIT_TEST_SUITE( level1_connector_test );
 	CPPUNIT_TEST( number_of_result_columns_fails );
 	CPPUNIT_TEST( prepare_statement_calls_api );
 	CPPUNIT_TEST( prepare_statement_fails );
-	CPPUNIT_TEST( set_statement_attribute_calls_api );
-	CPPUNIT_TEST( set_statement_attribute_fails );
+	CPPUNIT_TEST( set_long_statement_attribute_calls_api );
+	CPPUNIT_TEST( set_long_statement_attribute_fails );
+	CPPUNIT_TEST( set_pointer_statement_attribute_calls_api );
+	CPPUNIT_TEST( set_pointer_statement_attribute_fails );
 	CPPUNIT_TEST( row_count_calls_api );
 	CPPUNIT_TEST( row_count_fails );
 	CPPUNIT_TEST( describe_column_calls_api );
@@ -171,8 +173,10 @@ public:
 	void number_of_result_columns_fails();
 	void prepare_statement_calls_api();
 	void prepare_statement_fails();
-	void set_statement_attribute_calls_api();
-	void set_statement_attribute_fails();
+	void set_long_statement_attribute_calls_api();
+	void set_long_statement_attribute_fails();
+	void set_pointer_statement_attribute_calls_api();
+	void set_pointer_statement_attribute_fails();
 
 	void row_count_calls_api();
 	void row_count_fails();
@@ -984,7 +988,7 @@ void level1_connector_test::prepare_statement_fails()
 	CPPUNIT_ASSERT_THROW( connector.prepare_statement(handle, sql), cpp_odbc::error );
 }
 
-void level1_connector_test::set_statement_attribute_calls_api()
+void level1_connector_test::set_long_statement_attribute_calls_api()
 {
 	level2::statement_handle handle = {&value_a};
 	SQLINTEGER const attribute = 42;
@@ -1002,7 +1006,7 @@ void level1_connector_test::set_statement_attribute_calls_api()
 	connector.set_statement_attribute(handle, attribute, value);
 }
 
-void level1_connector_test::set_statement_attribute_fails()
+void level1_connector_test::set_long_statement_attribute_fails()
 {
 	level2::statement_handle handle = {&value_a};
 	SQLINTEGER const attribute = 42;
@@ -1015,6 +1019,35 @@ void level1_connector_test::set_statement_attribute_fails()
 
 	level1_connector const connector(api);
 	CPPUNIT_ASSERT_THROW( connector.set_statement_attribute(handle, attribute, value), cpp_odbc::error );
+}
+
+void level1_connector_test::set_pointer_statement_attribute_calls_api()
+{
+	level2::statement_handle handle = {&value_a};
+	SQLINTEGER const attribute = 42;
+	SQLULEN value = 23;
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_set_statement_attribute(handle.handle, attribute, &value, SQL_IS_POINTER))
+		.WillOnce(testing::Return(SQL_SUCCESS));
+
+	level1_connector const connector(api);
+	connector.set_statement_attribute(handle, attribute, &value);
+}
+
+void level1_connector_test::set_pointer_statement_attribute_fails()
+{
+	level2::statement_handle handle = {&value_a};
+	SQLINTEGER const attribute = 42;
+	SQLULEN value = 23;
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_set_statement_attribute(testing::_, testing::_, testing::_, testing::_))
+		.WillOnce(testing::Return(SQL_ERROR));
+	expect_error(*api, expected_error);
+
+	level1_connector const connector(api);
+	CPPUNIT_ASSERT_THROW( connector.set_statement_attribute(handle, attribute, &value), cpp_odbc::error );
 }
 
 void level1_connector_test::row_count_calls_api()

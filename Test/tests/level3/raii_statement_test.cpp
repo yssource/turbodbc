@@ -27,8 +27,9 @@ CPPUNIT_TEST_SUITE( raii_statement_test );
 	CPPUNIT_TEST( is_statement );
 	CPPUNIT_TEST( resource_management );
 	CPPUNIT_TEST( keeps_connection_alive );
-	CPPUNIT_TEST( get_integer_statement_attribute );
-	CPPUNIT_TEST( set_integer_statement_attribute );
+	CPPUNIT_TEST( get_integer_attribute );
+	CPPUNIT_TEST( set_integer_attribute );
+	CPPUNIT_TEST( set_pointer_attribute );
 	CPPUNIT_TEST( execute );
 	CPPUNIT_TEST( prepare );
 	CPPUNIT_TEST( bind_input_parameter );
@@ -49,8 +50,9 @@ public:
 	void is_statement();
 	void resource_management();
 	void keeps_connection_alive();
-	void get_integer_statement_attribute();
-	void set_integer_statement_attribute();
+	void get_integer_attribute();
+	void set_integer_attribute();
+	void set_pointer_attribute();
 	void execute();
 	void prepare();
 	void bind_input_parameter();
@@ -147,7 +149,7 @@ void raii_statement_test::keeps_connection_alive()
 	CPPUNIT_ASSERT_EQUAL(1, use_count_after - use_count_before);
 }
 
-void raii_statement_test::get_integer_statement_attribute()
+void raii_statement_test::get_integer_attribute()
 {
 	SQLINTEGER const attribute = 42;
 	long const expected = 12345;
@@ -159,10 +161,10 @@ void raii_statement_test::get_integer_statement_attribute()
 		.WillOnce(testing::Return(expected));
 
 	raii_statement statement(connection);
-	CPPUNIT_ASSERT_EQUAL( expected, statement.get_integer_statement_attribute(attribute));
+	CPPUNIT_ASSERT_EQUAL( expected, statement.get_integer_attribute(attribute));
 }
 
-void raii_statement_test::set_integer_statement_attribute()
+void raii_statement_test::set_integer_attribute()
 {
 	SQLINTEGER const attribute = 42;
 	long const value = 12345;
@@ -173,7 +175,21 @@ void raii_statement_test::set_integer_statement_attribute()
 	EXPECT_CALL(*api, do_set_statement_attribute(default_s_handle, attribute, value)).Times(1);
 
 	raii_statement statement(connection);
-	statement.set_statement_attribute(attribute, value);
+	statement.set_attribute(attribute, value);
+}
+
+void raii_statement_test::set_pointer_attribute()
+{
+	SQLINTEGER const attribute = 42;
+	SQLULEN value = 12345;
+
+	auto api = make_default_api();
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
+	EXPECT_CALL(*api, do_set_statement_attribute(default_s_handle, attribute, &value)).Times(1);
+
+	raii_statement statement(connection);
+	statement.set_attribute(attribute, &value);
 }
 
 void raii_statement_test::execute()

@@ -344,6 +344,12 @@ void level1_connector::do_set_statement_attribute(statement_handle const & handl
 	impl::throw_on_error(return_code, *this, handle);
 }
 
+void level1_connector::do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, SQLULEN * pointer) const
+{
+	auto const return_code = level1_api_->set_statement_attribute(handle.handle, attribute, pointer, SQL_IS_POINTER);
+	impl::throw_on_error(return_code, *this, handle);
+}
+
 SQLLEN level1_connector::do_row_count(statement_handle const & handle) const
 {
 	SQLLEN count = 0;

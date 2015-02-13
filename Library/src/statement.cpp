@@ -18,14 +18,19 @@ namespace cpp_odbc {
 statement::statement() = default;
 statement::~statement() = default;
 
-long statement::get_integer_statement_attribute(SQLINTEGER attribute) const
+long statement::get_integer_attribute(SQLINTEGER attribute) const
 {
-	return do_get_integer_statement_attribute(attribute);
+	return do_get_integer_attribute(attribute);
 }
 
-void statement::set_statement_attribute(SQLINTEGER attribute, long value) const
+void statement::set_attribute(SQLINTEGER attribute, long value) const
 {
-	do_set_statement_attribute(attribute, value);
+	do_set_attribute(attribute, value);
+}
+
+void statement::set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const
+{
+	do_set_attribute(attribute, pointer);
 }
 
 void statement::execute(std::string const & sql) const
