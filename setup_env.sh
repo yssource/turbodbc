@@ -12,7 +12,14 @@ if [ -z "$label" ]; then
 fi
 
 CENTRAL_SOFTWARE_REPOSITORY=/data/software/${label}
-source ${CENTRAL_SOFTWARE_REPOSITORY}/gcc/gcc4.7.2/use_gcc.sh
-source ${CENTRAL_SOFTWARE_REPOSITORY}/boost/1.55_gcc4.7.2_python2.7.3/use_boost.sh
+
+if [ ! -n "$ENVIRONMENT_ROOT" ]
+then
+	ENVIRONMENT_ROOT=${CENTRAL_SOFTWARE_REPOSITORY}
+fi
+
+source $ENVIRONMENT_ROOT/gcc/gcc4.7.2/use_gcc.sh
+source $ENVIRONMENT_ROOT/boost/1.55_gcc4.7.2_python2.7.3/use_boost.sh
+
 source /data/software/foundation/release/cppunit_toolbox/${label}/cppunit_toolbox_0_3_0/use_cppunit_toolbox.sh
 source ${CENTRAL_SOFTWARE_REPOSITORY}/unixODBC/unixODBC-2.2.14/use_unixodbc.sh
