@@ -1,7 +1,9 @@
 BY_HOME_BASE=/home/localdata/${USER}
 
-export CPP_ODBC_LIB_DIR=${BY_HOME_BASE}/workspace/cpp_odbc_build//Library
-export CPP_ODBC_INCLUDE_DIR=${BY_HOME_BASE}/workspace/cpp_odbc/Library/
+if [ ! -n "$CPP_ODBC_LIB_DIR" ]; then
+	export CPP_ODBC_LIB_DIR=${BY_HOME_BASE}/workspace/cpp_odbc_build/Library
+	export CPP_ODBC_INCLUDE_DIR=${BY_HOME_BASE}/workspace/cpp_odbc/Library/
+fi
 
 if [ -z "$label" ]; then 
         if grep -q Ubuntu /etc/issue; then
