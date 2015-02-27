@@ -63,7 +63,7 @@ class TestDQL(TestCase):
 
     def test_single_row_NULL_result(self):
         self.cursor.execute("select NULL")
-        self.assertEqual(self.cursor.rowcount, 1)
+        self.assertIn(self.cursor.rowcount, [-1, 1])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [None])
         row = self.cursor.fetchone()
@@ -71,7 +71,7 @@ class TestDQL(TestCase):
 
     def test_single_row_integer_result(self):
         self.cursor.execute("select 42")
-        self.assertEqual(self.cursor.rowcount, 1)
+        self.assertIn(self.cursor.rowcount, [-1, 1])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [42])
         row = self.cursor.fetchone()
@@ -79,7 +79,7 @@ class TestDQL(TestCase):
 
     def test_single_row_string_result(self):
         self.cursor.execute("select 'Oh Boy!'")
-        self.assertEqual(self.cursor.rowcount, 1)
+        self.assertIn(self.cursor.rowcount, [-1, 1])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, ['Oh Boy!'])
         row = self.cursor.fetchone()
@@ -87,7 +87,7 @@ class TestDQL(TestCase):
         
     def test_single_row_double_result(self):
         self.cursor.execute("select a from test_read_double")
-        self.assertEqual(self.cursor.rowcount, 1)
+        self.assertIn(self.cursor.rowcount, [-1, 1])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [3.14])
         row = self.cursor.fetchone()
@@ -95,7 +95,7 @@ class TestDQL(TestCase):
         
     def test_single_row_large_numeric_result(self):
         self.cursor.execute("select -1234567890123.123456789")
-        self.assertEqual(self.cursor.rowcount, 1)
+        self.assertIn(self.cursor.rowcount, [-1, 1])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, ['-1234567890123.123456789'])
         row = self.cursor.fetchone()
@@ -103,7 +103,7 @@ class TestDQL(TestCase):
 
     def test_single_row_multiple_integer_result(self):
         self.cursor.execute("select 40, 41, 42, 43")
-        self.assertEqual(self.cursor.rowcount, 1)
+        self.assertIn(self.cursor.rowcount, [-1, 1])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [40, 41, 42, 43])
         row = self.cursor.fetchone()
@@ -133,7 +133,7 @@ class TestDML(TestCase):
         self.cursor.execute("insert into test_integer values (1)")
         self.cursor.execute("insert into test_integer values (2)")
         self.cursor.execute("select * from test_integer order by a")
-        self.assertEqual(self.cursor.rowcount, 2)
+        self.assertIn(self.cursor.rowcount, [-1, 2])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [1])
         row = self.cursor.fetchone()
@@ -144,7 +144,7 @@ class TestDML(TestCase):
         self.cursor.execute("insert into test_bool values (FALSE)")
         self.cursor.execute("insert into test_bool values (TRUE)")
         self.cursor.execute("select * from test_bool order by a")
-        self.assertEqual(self.cursor.rowcount, 2)
+        self.assertIn(self.cursor.rowcount, [-1, 2])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [False])
         row = self.cursor.fetchone()
@@ -157,7 +157,7 @@ class TestDML(TestCase):
         self.cursor.execute("insert into test_string values ('{}')".format(value_1))
         self.cursor.execute("insert into test_string values ('{}')".format(value_2))
         self.cursor.execute("select * from test_string order by a")
-        self.assertEqual(self.cursor.rowcount, 2)
+        self.assertIn(self.cursor.rowcount, [-1, 2])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [value_1])
         row = self.cursor.fetchone()

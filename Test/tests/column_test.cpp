@@ -33,16 +33,16 @@ public:
 CPPUNIT_TEST_SUITE_REGISTRATION( column_test );
 
 namespace {
-	void fill_buffer_with_value(cpp_odbc::multi_value_buffer & buffer, std::string const & value)
+	void fill_buffer_with_value(cpp_odbc::multi_value_buffer & buffer, std::size_t row_index, std::string const & value)
 	{
-		auto element = buffer[0];
+		auto element = buffer[row_index];
 		memcpy(element.data_pointer, value.data(), value.size() + 1);
 		element.indicator = value.size();
 	}
 
-	void set_buffer_element_to_null(cpp_odbc::multi_value_buffer & buffer)
+	void set_buffer_element_to_null(cpp_odbc::multi_value_buffer & buffer, std::size_t row_index)
 	{
-		auto element = buffer[0];
+		auto element = buffer[row_index];
 		element.indicator = SQL_NULL_DATA;
 	}
 
@@ -69,11 +69,13 @@ void column_test::get_field_non_nullable()
 	EXPECT_CALL(statement, do_bind_column(column_index, buffer_type, testing::_))
 		.WillOnce(store_pointer_to_buffer_in(&buffer));
 
-	pydbc::column column(statement, column_index, std::move(description));
+	auto const buffered_rows = 100;
+	pydbc::column column(statement, column_index, buffered_rows, std::move(description));
 	CPPUNIT_ASSERT( buffer != nullptr);
 
-	fill_buffer_with_value(*buffer, expected);
-	CPPUNIT_ASSERT_EQUAL(expected, boost::get<std::string>(*column.get_field()));
+	auto const row_index = 42;
+	fill_buffer_with_value(*buffer, row_index, expected);
+	CPPUNIT_ASSERT_EQUAL(expected, boost::get<std::string>(*column.get_field(row_index)));
 }
 
 void column_test::get_field_nullable()
@@ -86,9 +88,11 @@ void column_test::get_field_nullable()
 	EXPECT_CALL(statement, do_bind_column(column_index, testing::_, testing::_))
 		.WillOnce(store_pointer_to_buffer_in(&buffer));
 
-	pydbc::column column(statement, column_index, std::move(description));
+	auto const buffered_rows = 100;
+	pydbc::column column(statement, column_index, buffered_rows, std::move(description));
 	CPPUNIT_ASSERT( buffer != nullptr);
 
-	set_buffer_element_to_null(*buffer);
-	CPPUNIT_ASSERT(not static_cast<bool>(column.get_field()));
+	auto const row_index = 42;
+	set_buffer_element_to_null(*buffer, row_index);
+	CPPUNIT_ASSERT(not static_cast<bool>(column.get_field(row_index)));
 }

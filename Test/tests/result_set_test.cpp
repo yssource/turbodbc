@@ -91,6 +91,19 @@ namespace {
 		return buffers;
 	}
 
+	/**
+	* Change the address of the given target_pointer to point to the second argument of the mocked function
+	*/
+	ACTION_P(store_length_buffer_address_in, target_pointer) {
+		*target_pointer = arg1;
+	}
+
+	void expect_rows_fetched_pointer_set(mock_statement & statement, SQLULEN * & rows_fetched)
+	{
+		EXPECT_CALL(statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>()))
+				.WillOnce(store_length_buffer_address_in(&rows_fetched));
+	}
+
 }
 
 void result_set_test::enables_fetching_multiple_rows()
@@ -98,6 +111,7 @@ void result_set_test::enables_fetching_multiple_rows()
 	auto statement = prepare_mock_with_columns({});
 
 	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 1)).Times(1);
+	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>())).Times(1);
 
 	pydbc::result_set result_set(statement);
 }
@@ -124,6 +138,10 @@ namespace {
 		std::memcpy(element.data_pointer, value.data(), value.size() + 1);
 		element.indicator = value.size();
 	}
+
+	ACTION_P2(set_rows_fetched, pointer_to_buffer, value) {
+		*pointer_to_buffer = value;
+	}
 }
 
 
@@ -132,6 +150,9 @@ void result_set_test::fetch_with_single_string_column()
 	auto statement = prepare_mock_with_columns({SQL_VARCHAR});
 	auto buffers = expect_calls_to_bind_buffer(*statement, {SQL_CHAR});
 
+	SQLULEN * rows_fetched = nullptr;
+	expect_rows_fetched_pointer_set(*statement, rows_fetched);
+
 	auto result_set = pydbc::result_set(statement);
 	CPPUNIT_ASSERT(buffers[0] != nullptr);
 
@@ -139,6 +160,7 @@ void result_set_test::fetch_with_single_string_column()
 	EXPECT_CALL(*statement, do_fetch_next())
 		.WillOnce(testing::DoAll(
 					put_string_value_in_buffer(buffers[0], expected_value),
+					set_rows_fetched(rows_fetched, 1),
 					testing::Return(true)
 				));
 
@@ -155,8 +177,21 @@ namespace {
 	 */
 	ACTION_P2(put_binary_value_in_buffer, pointer_to_buffer, value) {
 		auto element = (*pointer_to_buffer)[0];
-		std::memcpy(element.data_pointer, &value, sizeof(value));
+		std::memcpy(pointer_to_buffer->data_pointer(), &value, sizeof(value));
 		element.indicator = sizeof(value);
+	}
+
+	/**
+	 * @brief Store the given binary values as the first values in
+	 *        the buffer pointed to by pointer_to_buffer
+	 */
+	ACTION_P2(put_binary_values_in_buffer, pointer_to_buffer, values) {
+		for (std::size_t i = 0; i != values.size(); ++i) {
+			auto element = (*pointer_to_buffer)[i];
+			auto const element_size = sizeof(values[i]);
+			std::memcpy(element.data_pointer, &values[i], element_size);
+			element.indicator = element_size;
+		}
 	}
 }
 
@@ -165,6 +200,9 @@ void result_set_test::fetch_with_single_integer_column()
 	auto statement = prepare_mock_with_columns({SQL_INTEGER});
 	auto buffers = expect_calls_to_bind_buffer(*statement, {SQL_C_SBIGINT});
 
+	SQLULEN * rows_fetched = nullptr;
+	expect_rows_fetched_pointer_set(*statement, rows_fetched);
+
 	auto result_set = pydbc::result_set(statement);
 	CPPUNIT_ASSERT(buffers[0] != nullptr);
 
@@ -172,6 +210,7 @@ void result_set_test::fetch_with_single_integer_column()
 	EXPECT_CALL(*statement, do_fetch_next())
 		.WillOnce(testing::DoAll(
 					put_binary_value_in_buffer(buffers[0], expected_value),
+					set_rows_fetched(rows_fetched, 1),
 					testing::Return(true)
 				));
 
@@ -186,6 +225,9 @@ void result_set_test::fetch_with_multiple_columns()
 	auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_INTEGER});
 	auto buffers = expect_calls_to_bind_buffer(*statement, {SQL_C_SBIGINT, SQL_C_SBIGINT});
 
+	SQLULEN * rows_fetched = nullptr;
+	expect_rows_fetched_pointer_set(*statement, rows_fetched);
+
 	auto result_set = pydbc::result_set(statement);
 
 	std::vector<long> expected_values = {42, 17};
@@ -193,6 +235,7 @@ void result_set_test::fetch_with_multiple_columns()
 		.WillOnce(testing::DoAll(
 					put_binary_value_in_buffer(buffers[0], expected_values[0]),
 					put_binary_value_in_buffer(buffers[1], expected_values[1]),
+					set_rows_fetched(rows_fetched, 1),
 					testing::Return(true)
 				));
 
@@ -208,18 +251,23 @@ void result_set_test::fetch_with_multiple_rows()
 	auto statement = prepare_mock_with_columns({SQL_INTEGER});
 	auto buffers = expect_calls_to_bind_buffer(*statement, {SQL_C_SBIGINT});
 
+	SQLULEN * rows_fetched = nullptr;
+	expect_rows_fetched_pointer_set(*statement, rows_fetched);
+
 	auto result_set = pydbc::result_set(statement);
 
 	std::vector<long> const expected_values = {42, 17};
 	EXPECT_CALL(*statement, do_fetch_next())
 		.WillOnce(testing::DoAll(
-					put_binary_value_in_buffer(buffers[0], expected_values[0]),
-					testing::Return(true)
-				))
-		.WillOnce(testing::DoAll(
-					put_binary_value_in_buffer(buffers[0], expected_values[1]),
+					put_binary_values_in_buffer(buffers[0], expected_values),
+					set_rows_fetched(rows_fetched, 2),
 					testing::Return(true)
 				));
+//		.WillOnce(testing::DoAll(
+//					put_binary_value_in_buffer(buffers[0], expected_values[1]),
+//					set_rows_fetched(rows_fetched, 1),
+//					testing::Return(true)
+//				));
 
 	CPPUNIT_ASSERT_EQUAL(expected_values[0], boost::get<long>(*result_set.fetch_one()[0]));
 	CPPUNIT_ASSERT_EQUAL(expected_values[1], boost::get<long>(*result_set.fetch_one()[0]));

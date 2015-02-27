@@ -24,14 +24,15 @@ namespace {
 	std::unique_ptr<column> make_column(cpp_odbc::statement const & statement, std::size_t one_based_index)
 	{
 		auto const column_description = statement.describe_column(one_based_index);
-		return std::unique_ptr<column>(new column(statement, one_based_index, make_description(column_description)));
+		return std::unique_ptr<column>(new column(statement, one_based_index, 10, make_description(column_description)));
 	}
 
 }
 
 result_set::result_set(std::shared_ptr<cpp_odbc::statement const> statement) :
 	statement_(statement),
-	rows_fetched_(0)
+	rows_fetched_(0),
+	current_fetched_row_(0)
 {
 	std::size_t const n_columns = statement_->number_of_columns();
 
@@ -40,20 +41,26 @@ result_set::result_set(std::shared_ptr<cpp_odbc::statement const> statement) :
 	}
 
 	statement_->set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 1);
+	statement_->set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, &rows_fetched_);
 }
 
 std::vector<nullable_field> result_set::fetch_one()
 {
-	auto const has_results = statement_->fetch_next();
-	if (has_results) {
-		std::vector<nullable_field> row;
-		for (auto const & column : columns_) {
-			row.push_back(column->get_field());
+	auto const no_fetched_results_left = (current_fetched_row_ == rows_fetched_);
+	if (no_fetched_results_left) {
+		auto const has_more_results = statement_->fetch_next();
+		current_fetched_row_ = 0;
+		if (not has_more_results) {
+			return {};
 		}
-		return row;
-	} else {
-		return {};
 	}
+
+	std::vector<nullable_field> row;
+	for (auto const & column : columns_) {
+		row.push_back(column->get_field(current_fetched_row_));
+	}
+	++current_fetched_row_;
+	return row;
 }
 
 
