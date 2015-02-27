@@ -29,7 +29,7 @@ namespace {
 
 }
 
-result_set::result_set(std::shared_ptr<cpp_odbc::statement const> statement) :
+result_set::result_set(std::shared_ptr<cpp_odbc::statement const> statement, std::size_t buffered_rows) :
 	statement_(statement),
 	rows_fetched_(0),
 	current_fetched_row_(0)
@@ -40,7 +40,7 @@ result_set::result_set(std::shared_ptr<cpp_odbc::statement const> statement) :
 		columns_.push_back(make_column(*statement, one_based_index));
 	}
 
-	statement_->set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 1);
+	statement_->set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffered_rows);
 	statement_->set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, &rows_fetched_);
 }
 

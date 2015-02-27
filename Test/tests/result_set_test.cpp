@@ -109,11 +109,12 @@ namespace {
 void result_set_test::enables_fetching_multiple_rows()
 {
 	auto statement = prepare_mock_with_columns({});
+	std::size_t const buffered_rows = 42;
 
-	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 1)).Times(1);
+	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffered_rows)).Times(1);
 	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>())).Times(1);
 
-	pydbc::result_set result_set(statement);
+	pydbc::result_set result_set(statement, buffered_rows);
 }
 
 void result_set_test::fetch_without_columns()
@@ -123,7 +124,7 @@ void result_set_test::fetch_without_columns()
 	ON_CALL(*statement, do_fetch_next())
 		.WillByDefault(testing::Return(true));
 
-	pydbc::result_set result_set(statement);
+	pydbc::result_set result_set(statement, 1);
 	CPPUNIT_ASSERT_EQUAL(0, result_set.fetch_one().size());
 }
 
@@ -153,7 +154,7 @@ void result_set_test::fetch_with_single_string_column()
 	SQLULEN * rows_fetched = nullptr;
 	expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
-	auto result_set = pydbc::result_set(statement);
+	auto result_set = pydbc::result_set(statement, 1);
 	CPPUNIT_ASSERT(buffers[0] != nullptr);
 
 	std::string const expected_value = "this is a test string";
@@ -203,7 +204,7 @@ void result_set_test::fetch_with_single_integer_column()
 	SQLULEN * rows_fetched = nullptr;
 	expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
-	auto result_set = pydbc::result_set(statement);
+	auto result_set = pydbc::result_set(statement, 1);
 	CPPUNIT_ASSERT(buffers[0] != nullptr);
 
 	long const expected_value = 42;
@@ -228,7 +229,7 @@ void result_set_test::fetch_with_multiple_columns()
 	SQLULEN * rows_fetched = nullptr;
 	expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
-	auto result_set = pydbc::result_set(statement);
+	auto result_set = pydbc::result_set(statement, 1);
 
 	std::vector<long> expected_values = {42, 17};
 	EXPECT_CALL(*statement, do_fetch_next())
@@ -254,7 +255,7 @@ void result_set_test::fetch_with_multiple_rows()
 	SQLULEN * rows_fetched = nullptr;
 	expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
-	auto result_set = pydbc::result_set(statement);
+	auto result_set = pydbc::result_set(statement, 1);
 
 	std::vector<long> const expected_values = {42, 17};
 	EXPECT_CALL(*statement, do_fetch_next())
@@ -263,11 +264,6 @@ void result_set_test::fetch_with_multiple_rows()
 					set_rows_fetched(rows_fetched, 2),
 					testing::Return(true)
 				));
-//		.WillOnce(testing::DoAll(
-//					put_binary_value_in_buffer(buffers[0], expected_values[1]),
-//					set_rows_fetched(rows_fetched, 1),
-//					testing::Return(true)
-//				));
 
 	CPPUNIT_ASSERT_EQUAL(expected_values[0], boost::get<long>(*result_set.fetch_one()[0]));
 	CPPUNIT_ASSERT_EQUAL(expected_values[1], boost::get<long>(*result_set.fetch_one()[0]));

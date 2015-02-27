@@ -26,7 +26,7 @@ void cursor::execute(std::string const & sql)
 	statement_->execute(sql);
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
-		result_ = std::make_shared<result_set>(statement_);
+		result_ = std::make_shared<result_set>(statement_, 10);
 	}
 }
 

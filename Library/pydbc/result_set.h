@@ -28,7 +28,7 @@ public:
 	 * @brief Create a new result set. All necessary data structures and buffers
 	 *        are created and bound to the given statement
 	 */
-	result_set(std::shared_ptr<cpp_odbc::statement const> statement);
+	result_set(std::shared_ptr<cpp_odbc::statement const> statement, std::size_t buffered_rows);
 
 	/**
 	 * @brief Fetch the next row of the result set
