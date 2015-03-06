@@ -1143,7 +1143,7 @@ namespace {
 					));
 
 		level1_connector const connector(api);
-		CPPUNIT_ASSERT_MESSAGE( message, expected == connector.describe_column(handle, column_id));
+		CPPUNIT_ASSERT_EQUAL_MESSAGE( message, expected, connector.describe_column(handle, column_id));
 	}
 
 }
@@ -1191,7 +1191,7 @@ namespace {
 					));
 
 		level1_connector const connector(api);
-		CPPUNIT_ASSERT_MESSAGE( message, expected == connector.describe_parameter(handle, parameter_id));
+		CPPUNIT_ASSERT_EQUAL_MESSAGE( message, expected, connector.describe_parameter(handle, parameter_id));
 	}
 
 }

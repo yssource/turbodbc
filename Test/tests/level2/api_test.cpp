@@ -488,7 +488,7 @@ void level2_api_test::describe_column_forwards()
 	level2_mock_api api;
 	EXPECT_CALL(api, do_describe_column(handle, column_id)).WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT(expected == api.describe_column(handle, column_id));
+	CPPUNIT_ASSERT_EQUAL(expected, api.describe_column(handle, column_id));
 }
 
 void level2_api_test::describe_parameter_forwards()
@@ -500,5 +500,5 @@ void level2_api_test::describe_parameter_forwards()
 	level2_mock_api api;
 	EXPECT_CALL(api, do_describe_parameter(handle, parameter_id)).WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT(expected == api.describe_parameter(handle, parameter_id));
+	CPPUNIT_ASSERT_EQUAL(expected, api.describe_parameter(handle, parameter_id));
 }

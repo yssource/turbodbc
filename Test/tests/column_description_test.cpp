@@ -2,6 +2,9 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include <sstream>
+#include <sqlext.h>
+
 using cpp_odbc::column_description;
 
 class column_description_test : public CppUnit::TestFixture {
@@ -9,6 +12,8 @@ CPPUNIT_TEST_SUITE( column_description_test );
 
 	CPPUNIT_TEST( members );
 	CPPUNIT_TEST( equality );
+	CPPUNIT_TEST( output_known_type );
+	CPPUNIT_TEST( output_unknown_type );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -61,6 +66,34 @@ public:
 		column_description different_null(original);
 		different_null.allows_null_values = not original.allows_null_values;
 		CPPUNIT_ASSERT( not (original == different_null) );
+	}
+
+	void test_output(std::string const & expected, column_description const & description)
+	{
+		std::ostringstream actual;
+		actual << description;
+		CPPUNIT_ASSERT_EQUAL(expected, actual.str());
+	}
+
+	void output_known_type()
+	{
+		test_output(
+				"test_name @ SQL_INTEGER (precision 2, scale 3)",
+				{"test_name", SQL_INTEGER, 2, 3, false}
+			);
+
+		test_output(
+				"test_name @ NULLABLE SQL_INTEGER (precision 2, scale 3)",
+				{"test_name", SQL_INTEGER, 2, 3, true}
+			);
+	}
+
+	void output_unknown_type()
+	{
+		test_output(
+				"test_name @ UNKNOWN TYPE (precision 2, scale 3)",
+				{"test_name", 666, 2, 3, false}
+			);
 	}
 
 };

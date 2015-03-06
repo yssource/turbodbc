@@ -3,6 +3,7 @@
 #include "sqltypes.h"
 
 #include <string>
+#include <iosfwd>
 
 namespace cpp_odbc {
 
@@ -22,6 +23,11 @@ struct column_description {
  * @brief Equality operator for column_description
  */
 bool operator==(column_description const & lhs, column_description const & rhs);
+
+/**
+ * @brief Output operator for column_description
+ */
+std::ostream & operator<<(std::ostream & destination, column_description const & source);
 
 
 }

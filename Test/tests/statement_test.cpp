@@ -252,7 +252,7 @@ void statement_test::describe_column_forwards()
 	EXPECT_CALL( statement, do_describe_column(column_id))
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT( expected == statement.describe_column(column_id) );
+	CPPUNIT_ASSERT_EQUAL( expected, statement.describe_column(column_id) );
 }
 
 void statement_test::describe_parameter_forwards()
@@ -264,5 +264,5 @@ void statement_test::describe_parameter_forwards()
 	EXPECT_CALL( statement, do_describe_parameter(parameter_id))
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT( expected == statement.describe_parameter(parameter_id) );
+	CPPUNIT_ASSERT_EQUAL( expected, statement.describe_parameter(parameter_id) );
 }

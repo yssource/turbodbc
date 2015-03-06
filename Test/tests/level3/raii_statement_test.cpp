@@ -372,7 +372,7 @@ void raii_statement_test::describe_column()
 		.WillOnce(testing::Return(expected));
 
 	raii_statement statement(connection);
-	CPPUNIT_ASSERT( expected == statement.describe_column(column_id));
+	CPPUNIT_ASSERT_EQUAL( expected, statement.describe_column(column_id));
 }
 
 void raii_statement_test::describe_parameter()
@@ -387,5 +387,5 @@ void raii_statement_test::describe_parameter()
 		.WillOnce(testing::Return(expected));
 
 	raii_statement statement(connection);
-	CPPUNIT_ASSERT( expected == statement.describe_parameter(parameter_id));
+	CPPUNIT_ASSERT_EQUAL( expected, statement.describe_parameter(parameter_id));
 }
