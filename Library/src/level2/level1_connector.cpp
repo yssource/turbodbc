@@ -19,6 +19,8 @@
 
 #include "sqlext.h"
 
+#include <sstream>
+
 namespace impl {
 
 	template <typename Output_Handle, typename Input_Handle>
@@ -377,5 +379,22 @@ column_description level1_connector::do_describe_column(statement_handle const &
 	return {static_cast<std::string>(name), data_type, size, decimal_digits, allows_nullable};
 }
 
+column_description level1_connector::do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const
+{
+	SQLSMALLINT data_type = 0;
+	SQLULEN size = 0;
+	SQLSMALLINT decimal_digits = 0;
+	SQLSMALLINT nullable = 0;
+
+	auto const return_code = level1_api_->describe_parameter(handle.handle, parameter_id, &data_type, &size, &decimal_digits, &nullable);
+
+	bool const allows_nullable = (nullable == SQL_NO_NULLS) ? false : true;
+
+	impl::throw_on_error(return_code, *this, handle);
+
+	std::ostringstream name;
+	name << "parameter_" << parameter_id;
+	return {name.str(), data_type, size, decimal_digits, allows_nullable};
+}
 
 } }

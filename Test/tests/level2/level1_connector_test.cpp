@@ -101,6 +101,8 @@ CPPUNIT_TEST_SUITE( level1_connector_test );
 	CPPUNIT_TEST( row_count_fails );
 	CPPUNIT_TEST( describe_column_calls_api );
 	CPPUNIT_TEST( describe_column_fails );
+	CPPUNIT_TEST( describe_parameter_calls_api );
+	CPPUNIT_TEST( describe_parameter_fails );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -183,6 +185,9 @@ public:
 
 	void describe_column_calls_api();
 	void describe_column_fails();
+
+	void describe_parameter_calls_api();
+	void describe_parameter_fails();
 
 };
 
@@ -1129,4 +1134,52 @@ void level1_connector_test::describe_column_fails()
 
 	level1_connector const connector(api);
 	CPPUNIT_ASSERT_THROW( connector.describe_column(handle, column_id), cpp_odbc::error );
+}
+
+
+
+namespace {
+
+	void test_describe_parameter(bool expected_nullable, SQLSMALLINT sql_nullable, std::string const & message)
+	{
+		level2::statement_handle handle = {&value_a};
+		SQLUSMALLINT const parameter_id = 17;
+
+		cpp_odbc::column_description const expected = {"parameter_17", 123, 456, 666, expected_nullable};
+
+		auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+		EXPECT_CALL(*api, do_describe_parameter(handle.handle, parameter_id, testing::_, testing::_, testing::_, testing::_))
+			.WillOnce(testing::DoAll(
+						testing::SetArgPointee<2>(expected.data_type),
+						testing::SetArgPointee<3>(expected.size),
+						testing::SetArgPointee<4>(expected.decimal_digits),
+						testing::SetArgPointee<5>(sql_nullable),
+						testing::Return(SQL_SUCCESS)
+					));
+
+		level1_connector const connector(api);
+		CPPUNIT_ASSERT_MESSAGE( message, expected == connector.describe_parameter(handle, parameter_id));
+	}
+
+}
+
+void level1_connector_test::describe_parameter_calls_api()
+{
+	test_describe_parameter(true, SQL_NULLABLE, "SQL_NULLABLE");
+	test_describe_parameter(false, SQL_NO_NULLS, "SQL_NO_NULLS");
+	test_describe_parameter(true, SQL_NULLABLE_UNKNOWN, "SQL_NULLABLE_UNKNOWN");
+}
+
+void level1_connector_test::describe_parameter_fails()
+{
+	level2::statement_handle handle = {&value_a};
+	SQLUSMALLINT const parameter_id = 17;
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_describe_parameter(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
+		.WillOnce(testing::Return(SQL_ERROR));
+	expect_error(*api, expected_error);
+
+	level1_connector const connector(api);
+	CPPUNIT_ASSERT_THROW( connector.describe_parameter(handle, parameter_id), cpp_odbc::error );
 }

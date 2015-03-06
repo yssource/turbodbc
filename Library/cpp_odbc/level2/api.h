@@ -264,7 +264,21 @@ public:
 	 */
 	SQLLEN row_count(statement_handle const & handle) const;
 
+	/**
+	 * @brief Retrieve the description of a column
+	 * @param handle The statement which holds the result set with the column
+	 * @param column_id One-based index of the column within the result set
+	 * @return A description of the column
+	 */
 	column_description describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const;
+
+	/**
+	 * @brief Retrieve the description of a parameter
+	 * @param handle The statement which holds the prepared statement with the parameter
+	 * @param parameter_id One-based index of the parameter within the prepared statement
+	 * @return A description of the parameter
+	 */
+	column_description describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const;
 
 protected:
 
@@ -305,6 +319,7 @@ private:
 	virtual void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, SQLULEN * pointer) const = 0;
 	virtual SQLLEN do_row_count(statement_handle const & handle) const = 0;
 	virtual column_description do_describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const = 0;
+	virtual column_description do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const = 0;
 };
 
 } }
