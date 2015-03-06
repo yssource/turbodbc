@@ -91,6 +91,8 @@ CPPUNIT_TEST_SUITE( level1_connector_test );
 	CPPUNIT_TEST( get_string_column_attribute_fails );
 	CPPUNIT_TEST( number_of_result_columns_calls_api );
 	CPPUNIT_TEST( number_of_result_columns_fails );
+	CPPUNIT_TEST( number_of_parameters_calls_api );
+	CPPUNIT_TEST( number_of_parameters_fails );
 	CPPUNIT_TEST( prepare_statement_calls_api );
 	CPPUNIT_TEST( prepare_statement_fails );
 	CPPUNIT_TEST( set_long_statement_attribute_calls_api );
@@ -173,6 +175,8 @@ public:
 	void get_string_column_attribute_fails();
 	void number_of_result_columns_calls_api();
 	void number_of_result_columns_fails();
+	void number_of_parameters_calls_api();
+	void number_of_parameters_fails();
 	void prepare_statement_calls_api();
 	void prepare_statement_fails();
 	void set_long_statement_attribute_calls_api();
@@ -964,6 +968,35 @@ void level1_connector_test::number_of_result_columns_fails()
 
 	level1_connector const connector(api);
 	CPPUNIT_ASSERT_THROW( connector.number_of_result_columns(handle), cpp_odbc::error );
+}
+
+void level1_connector_test::number_of_parameters_calls_api()
+{
+	level2::statement_handle handle = {&value_a};
+	short int const expected = 42;
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_number_of_parameters(handle.handle, testing::_))
+		.WillOnce(testing::DoAll(
+					testing::SetArgPointee<1>(expected),
+					testing::Return(SQL_SUCCESS)
+				));
+
+	level1_connector const connector(api);
+	CPPUNIT_ASSERT_EQUAL( expected, connector.number_of_parameters(handle) );
+}
+
+void level1_connector_test::number_of_parameters_fails()
+{
+	level2::statement_handle handle = {&value_a};
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_number_of_parameters(testing::_, testing::_))
+		.WillOnce(testing::Return(SQL_ERROR));
+	expect_error(*api, expected_error);
+
+	level1_connector const connector(api);
+	CPPUNIT_ASSERT_THROW( connector.number_of_parameters(handle), cpp_odbc::error );
 }
 
 void level1_connector_test::prepare_statement_calls_api()

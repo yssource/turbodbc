@@ -107,6 +107,11 @@ SQLRETURN api::number_of_result_columns(SQLHSTMT statement_handle, SQLSMALLINT *
 	return do_number_of_result_columns(statement_handle, destination);
 }
 
+SQLRETURN api::number_of_parameters(SQLHSTMT statement_handle, SQLSMALLINT * destination) const
+{
+	return do_number_of_parameters(statement_handle, destination);
+}
+
 SQLRETURN api::prepare_statement(SQLHSTMT statement_handle, SQLCHAR * statement_text, SQLINTEGER text_length) const
 {
 	return do_prepare_statement(statement_handle, statement_text, text_length);

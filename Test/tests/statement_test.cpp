@@ -32,6 +32,7 @@ CPPUNIT_TEST_SUITE( statement_test );
 	CPPUNIT_TEST( bind_input_parameter_forwards );
 	CPPUNIT_TEST( execute_prepared_forwards );
 	CPPUNIT_TEST( number_of_columns_forwards );
+	CPPUNIT_TEST( number_of_parameters_forwards );
 	CPPUNIT_TEST( bind_column_forwards );
 	CPPUNIT_TEST( fetch_next_forwards );
 	CPPUNIT_TEST( close_cursor_forwards );
@@ -54,6 +55,7 @@ public:
 	void bind_input_parameter_forwards();
 	void execute_prepared_forwards();
 	void number_of_columns_forwards();
+	void number_of_parameters_forwards();
 	void bind_column_forwards();
 	void fetch_next_forwards();
 	void close_cursor_forwards();
@@ -162,6 +164,17 @@ void statement_test::number_of_columns_forwards()
 		.WillOnce(testing::Return(expected));
 
 	CPPUNIT_ASSERT_EQUAL( expected, statement.number_of_columns() );
+}
+
+void statement_test::number_of_parameters_forwards()
+{
+	short int const expected = 42;
+
+	mock_statement statement;
+	EXPECT_CALL( statement, do_number_of_parameters())
+		.WillOnce(testing::Return(expected));
+
+	CPPUNIT_ASSERT_EQUAL( expected, statement.number_of_parameters() );
 }
 
 void statement_test::bind_column_forwards()

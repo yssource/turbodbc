@@ -63,6 +63,7 @@ private:
 	long do_get_integer_statement_attribute(statement_handle const & handle, SQLINTEGER attribute) const final;
 	std::string do_get_string_column_attribute(statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
 	short int do_number_of_result_columns(statement_handle const & handle) const final;
+	short int do_number_of_parameters(statement_handle const & handle) const final;
 	void do_prepare_statement(statement_handle const & handle, std::string const & sql) const final;
 	void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, long value) const final;
 	void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, SQLULEN * pointer) const final;

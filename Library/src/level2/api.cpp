@@ -142,6 +142,11 @@ short int api::number_of_result_columns(statement_handle const & handle) const
 	return do_number_of_result_columns(handle);
 }
 
+short int api::number_of_parameters(statement_handle const & handle) const
+{
+	return do_number_of_parameters(handle);
+}
+
 void api::prepare_statement(statement_handle const & handle, std::string const & sql) const
 {
 	do_prepare_statement(handle, sql);

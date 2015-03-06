@@ -49,6 +49,7 @@ CPPUNIT_TEST_SUITE( level2_api_test );
 	CPPUNIT_TEST( free_statement_forwards );
 	CPPUNIT_TEST( get_integer_statement_attribute_forwards );
 	CPPUNIT_TEST( number_of_result_columns_forwards );
+	CPPUNIT_TEST( number_of_parameters_forwards );
 	CPPUNIT_TEST( prepare_statement_forwards );
 	CPPUNIT_TEST( set_long_statement_attribute_forwards );
 	CPPUNIT_TEST( set_pointer_statement_attribute_forwards );
@@ -86,6 +87,7 @@ public:
 	void free_statement_forwards();
 	void get_integer_statement_attribute_forwards();
 	void number_of_result_columns_forwards();
+	void number_of_parameters_forwards();
 	void prepare_statement_forwards();
 	void set_long_statement_attribute_forwards();
 	void set_pointer_statement_attribute_forwards();
@@ -417,6 +419,18 @@ void level2_api_test::number_of_result_columns_forwards()
 		.WillOnce(testing::Return(expected));
 
 	CPPUNIT_ASSERT_EQUAL( expected, api.number_of_result_columns(handle));
+}
+
+void level2_api_test::number_of_parameters_forwards()
+{
+	level2::statement_handle const handle = {&value_a};
+	short int const expected = 42;
+
+	level2_mock_api api;
+	EXPECT_CALL(api, do_number_of_parameters(handle))
+		.WillOnce(testing::Return(expected));
+
+	CPPUNIT_ASSERT_EQUAL( expected, api.number_of_parameters(handle));
 }
 
 void level2_api_test::prepare_statement_forwards()

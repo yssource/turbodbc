@@ -332,6 +332,16 @@ short int level1_connector::do_number_of_result_columns(statement_handle const &
 	return columns;
 }
 
+short int level1_connector::do_number_of_parameters(statement_handle const & handle) const
+{
+	SQLSMALLINT columns = 0;
+	auto const return_code = level1_api_->number_of_parameters(handle.handle, &columns);
+
+	impl::throw_on_error(return_code, *this, handle);
+
+	return columns;
+}
+
 void level1_connector::do_prepare_statement(statement_handle const & handle, std::string const & sql) const
 {
 	cpp_odbc::level2::input_string_buffer buffered(sql);

@@ -35,6 +35,7 @@ CPPUNIT_TEST_SUITE( raii_statement_test );
 	CPPUNIT_TEST( bind_input_parameter );
 	CPPUNIT_TEST( execute_prepared );
 	CPPUNIT_TEST( number_of_columns );
+	CPPUNIT_TEST( number_of_parameters );
 	CPPUNIT_TEST( bind_column );
 	CPPUNIT_TEST( fetch_next );
 	CPPUNIT_TEST( close_cursor );
@@ -59,6 +60,7 @@ public:
 	void bind_input_parameter();
 	void execute_prepared();
 	void number_of_columns();
+	void number_of_parameters();
 	void bind_column();
 	void fetch_next();
 	void close_cursor();
@@ -259,6 +261,20 @@ void raii_statement_test::number_of_columns()
 
 	raii_statement statement(connection);
 	CPPUNIT_ASSERT_EQUAL( expected, statement.number_of_columns());
+}
+
+void raii_statement_test::number_of_parameters()
+{
+	short int const expected = 23;
+
+	auto api = make_default_api();
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
+	EXPECT_CALL(*api, do_number_of_parameters(default_s_handle))
+		.WillOnce(testing::Return(expected));
+
+	raii_statement statement(connection);
+	CPPUNIT_ASSERT_EQUAL( expected, statement.number_of_parameters());
 }
 
 void raii_statement_test::bind_column()

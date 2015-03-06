@@ -106,6 +106,11 @@ SQLRETURN unixodbc_backend::do_number_of_result_columns(SQLHSTMT statement_handl
 	return SQLNumResultCols(statement_handle, destination);
 }
 
+SQLRETURN unixodbc_backend::do_number_of_parameters(SQLHSTMT statement_handle, SQLSMALLINT * destination) const
+{
+	return SQLNumParams(statement_handle, destination);
+}
+
 SQLRETURN unixodbc_backend::do_prepare_statement(SQLHSTMT statement_handle, SQLCHAR * statement_text, SQLINTEGER text_length) const
 {
 	return SQLPrepare(statement_handle, statement_text, text_length);

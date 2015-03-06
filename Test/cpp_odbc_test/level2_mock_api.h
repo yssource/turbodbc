@@ -45,6 +45,7 @@ namespace cpp_odbc_test {
 		MOCK_CONST_METHOD2(do_get_integer_statement_attribute, long(cpp_odbc::level2::statement_handle const &, SQLINTEGER));
 		MOCK_CONST_METHOD3(do_get_string_column_attribute, std::string(cpp_odbc::level2::statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier));
 		MOCK_CONST_METHOD1(do_number_of_result_columns, short int(cpp_odbc::level2::statement_handle const &));
+		MOCK_CONST_METHOD1(do_number_of_parameters, short int(cpp_odbc::level2::statement_handle const &));
 		MOCK_CONST_METHOD2(do_prepare_statement, void(cpp_odbc::level2::statement_handle const &, std::string const &));
 		MOCK_CONST_METHOD3(do_set_statement_attribute, void(cpp_odbc::level2::statement_handle const &, SQLINTEGER, long));
 		MOCK_CONST_METHOD3(do_set_statement_attribute, void(cpp_odbc::level2::statement_handle const &, SQLINTEGER, SQLULEN *));

@@ -118,6 +118,11 @@ public:
 	SQLRETURN number_of_result_columns(SQLHSTMT statement_handle, SQLSMALLINT * destination) const;
 
 	/**
+	 * @brief see unixodbc's SQLNumParams() function
+	 */
+	SQLRETURN number_of_parameters(SQLHSTMT statement_handle, SQLSMALLINT * destination) const;
+
+	/**
 	 * @brief see unixodbc's SQLPrepare() function
 	 */
 	SQLRETURN prepare_statement(SQLHSTMT statement_handle, SQLCHAR * statement_text, SQLINTEGER text_length) const;
@@ -167,6 +172,7 @@ private:
 	virtual SQLRETURN do_free_statement(SQLHSTMT statement_handle, SQLUSMALLINT option) const = 0;
 	virtual SQLRETURN do_get_statement_attribute(SQLHSTMT statement_handle, SQLINTEGER attribute, SQLPOINTER value_ptr, SQLINTEGER buffer_length, SQLINTEGER * string_length_ptr) const = 0;
 	virtual SQLRETURN do_number_of_result_columns(SQLHSTMT statement_handle, SQLSMALLINT * destination) const = 0;
+	virtual SQLRETURN do_number_of_parameters(SQLHSTMT statement_handle, SQLSMALLINT * destination) const = 0;
 	virtual SQLRETURN do_prepare_statement(SQLHSTMT statement_handle, SQLCHAR * statement_text, SQLINTEGER text_length) const = 0;
 	virtual SQLRETURN do_set_statement_attribute(SQLHSTMT statement_handle, SQLINTEGER attribute, SQLPOINTER value_ptr, SQLINTEGER string_length) const = 0;
 	virtual SQLRETURN do_row_count(SQLHSTMT statement_handle, SQLLEN * count) const = 0;

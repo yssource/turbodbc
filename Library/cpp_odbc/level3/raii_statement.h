@@ -51,6 +51,7 @@ private:
 	void do_execute_prepared() const final;
 
 	short int do_number_of_columns() const final;
+	short int do_number_of_parameters() const final;
 	void do_bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp_odbc::multi_value_buffer & column_buffer) const final;
 	bool do_fetch_next() const final;
 	void do_close_cursor() const final;

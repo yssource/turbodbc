@@ -235,6 +235,13 @@ public:
 	short int number_of_result_columns(statement_handle const & handle) const;
 
 	/**
+	 * @brief Retrieve the number of parameters associated with the statement
+	 * @param handle The statement which holds the prepared statement
+	 * @return The number of parameters in the prepared statement
+	 */
+	short int number_of_parameters(statement_handle const & handle) const;
+
+	/**
 	 * @brief Prepares an SQL query
 	 * @param handle The statement handle which shall be prepared
 	 * @param sql The SQL query
@@ -314,6 +321,7 @@ private:
 	virtual long do_get_integer_statement_attribute(statement_handle const & handle, SQLINTEGER attribute) const = 0;
 	virtual std::string do_get_string_column_attribute(statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;
 	virtual short int do_number_of_result_columns(statement_handle const & handle) const = 0;
+	virtual short int do_number_of_parameters(statement_handle const & handle) const = 0;
 	virtual void do_prepare_statement(statement_handle const & handle, std::string const & sql) const = 0;
 	virtual void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, long value) const = 0;
 	virtual void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, SQLULEN * pointer) const = 0;

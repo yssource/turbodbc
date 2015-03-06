@@ -58,6 +58,11 @@ short int statement::number_of_columns() const
 	return do_number_of_columns();
 }
 
+short int statement::number_of_parameters() const
+{
+	return do_number_of_parameters();
+}
+
 void statement::bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp_odbc::multi_value_buffer & column_buffer) const
 {
 	do_bind_column(column_id, column_type, column_buffer);

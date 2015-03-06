@@ -71,6 +71,11 @@ short int raii_statement::do_number_of_columns() const
 	return api_->number_of_result_columns(handle_);
 }
 
+short int raii_statement::do_number_of_parameters() const
+{
+	return api_->number_of_parameters(handle_);
+}
+
 void raii_statement::do_bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp_odbc::multi_value_buffer & column_buffer) const
 {
 	api_->bind_column(handle_, column_id, column_type, column_buffer);

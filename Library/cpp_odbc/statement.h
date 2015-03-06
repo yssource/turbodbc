@@ -81,6 +81,12 @@ public:
 	short int number_of_columns() const;
 
 	/**
+	 * @brief Retrieve the number of parameters in the prepared statement. Call after prepare(), but before execute_prepared()
+	 * @return The number of parameters in the prepared statement
+	 */
+	short int number_of_parameters() const;
+
+	/**
 	 * @brief Bind a buffer to a column of the statement
 	 * @param column_id The column identifier with which we want to associate the buffer
 	 * @param column_type The identifier of the C data type of the column. See unixODBC's SQLBindCol() documentation.
@@ -147,6 +153,7 @@ private:
 	virtual void do_execute_prepared() const = 0;
 
 	virtual short int do_number_of_columns() const = 0;
+	virtual short int do_number_of_parameters() const = 0;
 	virtual void do_bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp_odbc::multi_value_buffer & column_buffer) const = 0;
 	virtual bool do_fetch_next() const = 0;
 	virtual void do_close_cursor() const = 0;
