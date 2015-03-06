@@ -107,4 +107,9 @@ column_description raii_statement::do_describe_column(SQLUSMALLINT column_id) co
 	return api_->describe_column(handle_, column_id);
 }
 
+column_description raii_statement::do_describe_parameter(SQLUSMALLINT parameter_id) const
+{
+	return api_->describe_parameter(handle_, parameter_id);
+}
+
 } }

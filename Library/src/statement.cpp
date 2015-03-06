@@ -93,4 +93,9 @@ column_description statement::describe_column(SQLUSMALLINT column_id) const
 	return do_describe_column(column_id);
 }
 
+column_description statement::describe_parameter(SQLUSMALLINT parameter_id) const
+{
+	return do_describe_parameter(parameter_id);
+}
+
 }

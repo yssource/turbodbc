@@ -39,6 +39,7 @@ CPPUNIT_TEST_SUITE( statement_test );
 	CPPUNIT_TEST( get_string_column_attribute_forwards );
 	CPPUNIT_TEST( row_count_forwards );
 	CPPUNIT_TEST( describe_column_forwards );
+	CPPUNIT_TEST( describe_parameter_forwards );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -60,6 +61,7 @@ public:
 	void get_string_column_attribute_forwards();
 	void row_count_forwards();
 	void describe_column_forwards();
+	void describe_parameter_forwards();
 
 };
 
@@ -238,4 +240,16 @@ void statement_test::describe_column_forwards()
 		.WillOnce(testing::Return(expected));
 
 	CPPUNIT_ASSERT( expected == statement.describe_column(column_id) );
+}
+
+void statement_test::describe_parameter_forwards()
+{
+	SQLUSMALLINT const parameter_id = 23;
+	cpp_odbc::column_description const expected = {"dummy", 1, 2, 3, false};
+
+	mock_statement statement;
+	EXPECT_CALL( statement, do_describe_parameter(parameter_id))
+		.WillOnce(testing::Return(expected));
+
+	CPPUNIT_ASSERT( expected == statement.describe_parameter(parameter_id) );
 }
