@@ -126,5 +126,10 @@ SQLRETURN unixodbc_backend::do_describe_column(SQLHSTMT statement_handle, SQLUSM
 	return SQLDescribeCol(statement_handle, column_number, column_name, buffer_length, name_length, data_type, column_size, decimal_digits, nullable);
 }
 
+SQLRETURN unixodbc_backend::do_describe_parameter(SQLHSTMT statement_handle, SQLUSMALLINT parameter_number, SQLSMALLINT * data_type, SQLULEN * column_size, SQLSMALLINT * decimal_digits, SQLSMALLINT * nullable) const
+{
+	return SQLDescribeParam(statement_handle, parameter_number, data_type, column_size, decimal_digits, nullable);
+}
+
 
 } }
