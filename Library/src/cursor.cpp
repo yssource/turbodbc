@@ -23,7 +23,8 @@ cursor::cursor(std::shared_ptr<cpp_odbc::statement const> statement) :
 
 void cursor::execute(std::string const & sql)
 {
-	statement_->execute(sql);
+	statement_->prepare(sql);
+	statement_->execute_prepared();
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
 		result_ = std::make_shared<result_set>(statement_, 10);
