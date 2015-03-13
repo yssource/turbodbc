@@ -23,9 +23,13 @@ cursor::cursor(std::shared_ptr<cpp_odbc::statement const> statement) :
 {
 }
 
-void cursor::execute(std::string const & sql)
+void cursor::prepare(std::string const & sql)
 {
 	statement_->prepare(sql);
+}
+
+void cursor::execute()
+{
 	statement_->execute_prepared();
 
 	std::size_t const columns = statement_->number_of_columns();

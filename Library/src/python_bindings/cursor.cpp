@@ -19,6 +19,7 @@ namespace pydbc { namespace bindings {
 void for_cursor()
 {
 	boost::python::class_<pydbc::cursor>("Cursor", boost::python::no_init)
+			.def("prepare", &pydbc::cursor::prepare)
     		.def("execute", &pydbc::cursor::execute)
     		.def("execute_many", &pydbc::cursor::execute_many)
     		.def("fetchone", &pydbc::cursor::fetch_one)

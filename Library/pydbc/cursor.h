@@ -25,7 +25,8 @@ class cursor {
 public:
 	cursor(std::shared_ptr<cpp_odbc::statement const> statement);
 
-	void execute(std::string const & sql);
+	void prepare(std::string const & sql);
+	void execute();
 	void execute_many(std::string const & sql);
 	std::vector<nullable_field> fetch_one();
 	long get_rowcount();

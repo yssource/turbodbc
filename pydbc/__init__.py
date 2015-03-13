@@ -48,7 +48,8 @@ class cursor():
     def execute(self, sql):
         """Execute an SQL query"""
         self._assert_valid()
-        self.impl.execute(sql)
+        self.impl.prepare(sql)
+        self.impl.execute()
         self.rowcount = self.impl.get_rowcount()
         
     @translate_exceptions
