@@ -52,6 +52,13 @@ class cursor():
         self.rowcount = self.impl.get_rowcount()
         
     @translate_exceptions
+    def execute_many(self, sql):
+        """Execute an SQL query"""
+        self._assert_valid()
+        self.impl.execute_many(sql)
+        self.rowcount = self.impl.get_rowcount()
+        
+    @translate_exceptions
     def fetchone(self):
         result = self.impl.fetchone()
         if len(result) == 0:
