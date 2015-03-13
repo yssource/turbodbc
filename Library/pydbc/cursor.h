@@ -27,6 +27,8 @@ public:
 
 	void prepare(std::string const & sql);
 	void execute();
+	void bind_parameters();
+	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
 	void execute_many();
 	std::vector<nullable_field> fetch_one();
 	long get_rowcount();
@@ -35,7 +37,9 @@ public:
 
 private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;
+	std::shared_ptr<std::vector<cpp_odbc::multi_value_buffer>> parameters_;
 	std::shared_ptr<result_set> result_;
+	std::size_t current_parameter_set_;
 };
 
 }
