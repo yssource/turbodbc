@@ -51,6 +51,7 @@ void cursor::bind_parameters()
 			statement_->bind_input_parameter(p + 1, SQL_C_SBIGINT, SQL_BIGINT, parameters_->back());
 		}
 	}
+	statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
 }
 
 void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set)
@@ -63,15 +64,6 @@ void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set
 	}
 	++current_parameter_set_;
 	statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
-}
-
-void cursor::execute_many()
-{
-	for (unsigned int i = 0; i != 3; ++i) {
-		add_parameter_set({{pydbc::field(static_cast<long>(i + 1))}});
-	}
-
-	execute();
 }
 
 std::vector<nullable_field> cursor::fetch_one()

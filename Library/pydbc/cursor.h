@@ -29,7 +29,7 @@ public:
 	void execute();
 	void bind_parameters();
 	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
-	void execute_many();
+
 	std::vector<nullable_field> fetch_one();
 	long get_rowcount();
 

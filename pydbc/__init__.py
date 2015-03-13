@@ -58,7 +58,10 @@ class cursor():
         self._assert_valid()
         self.impl.prepare(sql)
         self.impl.bind_parameters()
-        self.impl.execute_many()
+        self.impl.add_parameter_set([1])
+        self.impl.add_parameter_set([2])
+        self.impl.add_parameter_set([3])
+        self.impl.execute()
         self.rowcount = self.impl.get_rowcount()
         
     @translate_exceptions

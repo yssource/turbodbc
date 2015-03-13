@@ -23,7 +23,6 @@ void for_cursor()
     		.def("execute", &pydbc::cursor::execute)
     		.def("bind_parameters", &pydbc::cursor::bind_parameters)
     		.def("add_parameter_set", &pydbc::cursor::add_parameter_set)
-    		.def("execute_many", &pydbc::cursor::execute_many)
     		.def("fetchone", &pydbc::cursor::fetch_one)
     		.def("get_rowcount", &pydbc::cursor::get_rowcount)
     	;
