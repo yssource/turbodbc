@@ -67,8 +67,6 @@ void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set
 
 void cursor::execute_many()
 {
-	bind_parameters();
-
 	for (unsigned int i = 0; i != 3; ++i) {
 		add_parameter_set({{pydbc::field(static_cast<long>(i + 1))}});
 	}

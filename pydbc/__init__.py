@@ -57,6 +57,7 @@ class cursor():
         """Execute an SQL query"""
         self._assert_valid()
         self.impl.prepare(sql)
+        self.impl.bind_parameters()
         self.impl.execute_many()
         self.rowcount = self.impl.get_rowcount()
         
