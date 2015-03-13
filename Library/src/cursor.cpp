@@ -38,9 +38,8 @@ void cursor::execute()
 	}
 }
 
-void cursor::execute_many(std::string const & sql)
+void cursor::execute_many()
 {
-	statement_->prepare(sql);
 	std::vector<cpp_odbc::multi_value_buffer> parameters;
 	if (statement_->number_of_parameters() != 0) {
 

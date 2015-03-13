@@ -56,7 +56,8 @@ class cursor():
     def execute_many(self, sql):
         """Execute an SQL query"""
         self._assert_valid()
-        self.impl.execute_many(sql)
+        self.impl.prepare(sql)
+        self.impl.execute_many()
         self.rowcount = self.impl.get_rowcount()
         
     @translate_exceptions

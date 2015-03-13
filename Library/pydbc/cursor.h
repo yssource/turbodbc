@@ -27,7 +27,7 @@ public:
 
 	void prepare(std::string const & sql);
 	void execute();
-	void execute_many(std::string const & sql);
+	void execute_many();
 	std::vector<nullable_field> fetch_one();
 	long get_rowcount();
 
