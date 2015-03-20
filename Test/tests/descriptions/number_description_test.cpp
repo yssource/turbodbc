@@ -2,6 +2,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
+#include <boost/variant/get.hpp>
 #include <sqlext.h>
 #include <limits.h>
 #include <stdexcept>
@@ -14,7 +15,9 @@ CPPUNIT_TEST_SUITE( number_description_test );
 	CPPUNIT_TEST( negative_integer );
 	CPPUNIT_TEST( max_positive_integer );
 	CPPUNIT_TEST( min_negative_integer );
-	CPPUNIT_TEST( larger_than_max_positive_overflows );
+	CPPUNIT_TEST( larger_than_max_overflows );
+	CPPUNIT_TEST( smaller_than_min_overflows );
+	CPPUNIT_TEST( floating_point );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -24,7 +27,9 @@ public:
 	void negative_integer();
 	void max_positive_integer();
 	void min_negative_integer();
-	void larger_than_max_positive_overflows();
+	void larger_than_max_overflows();
+	void smaller_than_min_overflows();
+	void floating_point();
 
 };
 
@@ -99,7 +104,7 @@ void number_description_test::min_negative_integer()
 	CPPUNIT_ASSERT_EQUAL(pydbc::field{expected}, actual);
 }
 
-void number_description_test::larger_than_max_positive_overflows()
+void number_description_test::larger_than_max_overflows()
 {
 	SQL_NUMERIC_STRUCT data = {
 				18,
@@ -110,6 +115,36 @@ void number_description_test::larger_than_max_positive_overflows()
 			};
 
 	pydbc::number_description description;
-	std::cout << "\n\n" << description.make_field(reinterpret_cast<char const *>(&data)) << "\n\n";
 	CPPUNIT_ASSERT_THROW(description.make_field(reinterpret_cast<char const *>(&data)), std::overflow_error);
+}
+
+void number_description_test::smaller_than_min_overflows()
+{
+	SQL_NUMERIC_STRUCT data = {
+				18,
+				0,
+				0, // - sign
+				// binary representation of 2^63 + 1
+				{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+			};
+
+	pydbc::number_description description;
+	CPPUNIT_ASSERT_THROW(description.make_field(reinterpret_cast<char const *>(&data)), std::overflow_error);
+}
+
+void number_description_test::floating_point()
+{
+	SQL_NUMERIC_STRUCT data = {
+				18,
+				2, // 2 digits after decimal point
+				1, // + sign
+				// binary representation of 314
+				{0x3a, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+			};
+
+	double const expected = 3.14;
+	pydbc::number_description description;
+	auto const actual = description.make_field(reinterpret_cast<char const *>(&data));
+
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, boost::get<double>(actual), 1e-12);
 }
