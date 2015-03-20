@@ -1,6 +1,6 @@
 #include <pydbc/make_description.h>
 
-#include <pydbc/description_types.h>
+#include <pydbc/descriptions.h>
 #include <sqlext.h>
 
 #include <stdexcept>
@@ -52,6 +52,7 @@ std::unique_ptr<description const> make_description(cpp_odbc::column_description
 		case SQL_NUMERIC:
 		case SQL_DECIMAL:
 			return make_decimal_description(source);
+//			return std::unique_ptr<description>(new number_description);
 		default:
 			std::ostringstream message;
 			message << "Error! Unsupported type identifier '" << source.data_type << "'";

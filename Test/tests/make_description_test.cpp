@@ -8,7 +8,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <pydbc/description_types.h>
+#include <pydbc/descriptions.h>
 
 #include <sqlext.h>
 #include <sstream>

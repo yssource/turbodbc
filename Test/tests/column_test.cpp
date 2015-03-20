@@ -10,7 +10,7 @@
 
 #include "mock_classes.h"
 
-#include <pydbc/description_types.h>
+#include <pydbc/descriptions/string_description.h>
 #include <boost/variant/get.hpp>
 
 

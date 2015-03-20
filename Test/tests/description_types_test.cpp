@@ -4,7 +4,7 @@
  *  @author mkoenig
  */
 
-#include "pydbc/description_types.h"
+#include "pydbc/descriptions.h"
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
