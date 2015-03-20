@@ -198,11 +198,12 @@ class TestParameterBasedInsert(TestCase):
 
     def test_multiple_row_single_integer_result(self):
         self.cursor.execute("delete from test_integer")
-        self.cursor.execute_many("insert into test_integer values (?)")
+        expected = [[1], [2], [3]]
+        self.cursor.execute_many("insert into test_integer values (?)", expected)
         
         self.cursor.execute("select * from test_integer order by a")
         rows = self.cursor.fetchall()
-        self.assertItemsEqual([[1], [2], [3]], (list(r) for r in rows))
+        self.assertItemsEqual(expected, (list(r) for r in rows))
 
 
 if __name__ == '__main__':
