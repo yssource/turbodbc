@@ -45,15 +45,18 @@ class cursor():
         self._arraysize = value
     
     @translate_exceptions
-    def execute(self, sql):
+    def execute(self, sql, parameters=None):
         """Execute an SQL query"""
         self._assert_valid()
         self.impl.prepare(sql)
+        self.impl.bind_parameters()
+        if parameters:
+            self.impl.add_parameter_set(parameters)
         self.impl.execute()
         self.rowcount = self.impl.get_rowcount()
         
     @translate_exceptions
-    def execute_many(self, sql, parameters):
+    def execute_many(self, sql, parameters=None):
         """Execute an SQL query"""
         self._assert_valid()
         self.impl.prepare(sql)
