@@ -25,4 +25,9 @@ field description::make_field(char const * data_pointer) const
 	return do_make_field(data_pointer);
 }
 
+void description::set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
+{
+	do_set_field(element, value);
+}
+
 }

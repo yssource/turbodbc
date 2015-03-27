@@ -213,6 +213,15 @@ class TestParameterBasedInsert(TestCase):
         self.cursor.execute("select * from test_integer order by a")
         rows = self.cursor.fetchall()
         self.assertItemsEqual(expected, (list(r) for r in rows))
+        
+    def test_multiple_rows_single_double_column(self):
+        self.cursor.execute("delete from test_double")
+        expected = [[1.23], [2.71], [3.14]]
+        self.cursor.execute_many("insert into test_double values (?)", expected)
+        
+        self.cursor.execute("select * from test_double order by a")
+        rows = self.cursor.fetchall()
+        self.assertItemsEqual(expected, (list(r) for r in rows))
 
 
 if __name__ == '__main__':

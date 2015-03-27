@@ -13,6 +13,7 @@
 
 #include <cpp_odbc/statement.h>
 #include <pydbc/result_set.h>
+#include <pydbc/parameter.h>
 #include <memory>
 #include <vector>
 
@@ -35,9 +36,11 @@ public:
 
 	std::shared_ptr<cpp_odbc::statement const> get_statement() const;
 
+	~cursor();
+
 private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;
-	std::shared_ptr<std::vector<cpp_odbc::multi_value_buffer>> parameters_;
+	std::vector<std::shared_ptr<pydbc::parameter>> parameters_;
 	std::shared_ptr<result_set> result_;
 	std::size_t current_parameter_set_;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pydbc/field.h"
+#include <cpp_odbc/multi_value_buffer.h>
 #include <sqltypes.h>
 
 namespace pydbc {
@@ -31,6 +32,11 @@ public:
 	 */
 	field make_field(char const * data_pointer) const;
 
+	/**
+	 * @brief Set a buffer element to the value of a field
+	 */
+	void set_field(cpp_odbc::writable_buffer_element & element, field const & value) const;
+
 	description (description const &) = delete;
 	description & operator=(description const &) = delete;
 
@@ -42,6 +48,7 @@ private:
 	virtual SQLSMALLINT do_column_c_type() const = 0;
 	virtual SQLSMALLINT do_column_sql_type() const = 0;
 	virtual field do_make_field(char const * data_pointer) const = 0;
+	virtual void do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const = 0;
 };
 
 }

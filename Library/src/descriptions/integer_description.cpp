@@ -2,6 +2,9 @@
 
 #include <sqlext.h>
 
+#include <boost/variant/get.hpp>
+#include <cstring>
+
 namespace pydbc {
 
 integer_description::integer_description() = default;
@@ -25,6 +28,13 @@ SQLSMALLINT integer_description::do_column_sql_type() const
 field integer_description::do_make_field(char const * data_pointer) const
 {
 	return {*reinterpret_cast<long const *>(data_pointer)};
+}
+
+void integer_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
+{
+	auto const as_long = boost::get<long>(value);
+	memcpy(element.data_pointer, &as_long, element_size());
+	element.indicator = element_size();
 }
 
 }

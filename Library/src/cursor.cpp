@@ -21,11 +21,23 @@
 
 namespace pydbc {
 
+namespace {
+
+	std::shared_ptr<parameter> make_parameter(cpp_odbc::statement const & statement, std::size_t one_based_index)
+	{
+		auto const description = statement.describe_parameter(one_based_index);
+		return std::make_shared<parameter>(statement, one_based_index, 10, make_description(description));
+	}
+
+}
+
 cursor::cursor(std::shared_ptr<cpp_odbc::statement const> statement) :
 	statement_(statement),
 	current_parameter_set_(0)
 {
 }
+
+cursor::~cursor() = default;
 
 void cursor::prepare(std::string const & sql)
 {
@@ -45,13 +57,9 @@ void cursor::execute()
 void cursor::bind_parameters()
 {
 	if (statement_->number_of_parameters() != 0) {
-		parameters_ = std::make_shared<std::vector<cpp_odbc::multi_value_buffer>>();
-
-		for (SQLSMALLINT p = 0; p != statement_->number_of_parameters(); ++p) {
-			auto description = make_description(statement_->describe_parameter(p + 1));
-
-			parameters_->emplace_back(description->element_size(), 10);
-			statement_->bind_input_parameter(p + 1, description->column_c_type(), SQL_BIGINT, parameters_->back());
+		std::size_t const n_parameters = statement_->number_of_parameters();
+		for (std::size_t one_based_index = 1; one_based_index <= n_parameters; ++one_based_index) {
+			parameters_.push_back(make_parameter(*statement_, one_based_index));
 		}
 	}
 	statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
@@ -60,10 +68,11 @@ void cursor::bind_parameters()
 void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set)
 {
 	for (unsigned int parameter = 0; parameter != parameter_set.size(); ++parameter) {
-		auto element = (*parameters_)[parameter][current_parameter_set_];
-		auto value = boost::get<long>(*parameter_set[parameter]);
-		memcpy(element.data_pointer, &value, sizeof(value));
-		element.indicator = sizeof(value);
+		parameters_[parameter]->set(current_parameter_set_, *parameter_set[parameter]);
+//		description->set_field(element, *parameter_set[parameter]);
+//		auto value = boost::get<long>(*parameter_set[parameter]);
+//		memcpy(element.data_pointer, &value, sizeof(value));
+//		element.indicator = sizeof(value);
 	}
 	++current_parameter_set_;
 	statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
