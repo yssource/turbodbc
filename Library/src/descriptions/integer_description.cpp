@@ -12,7 +12,7 @@ std::size_t integer_description::do_element_size() const
 	return sizeof(long);
 }
 
-SQLSMALLINT integer_description::do_column_type() const
+SQLSMALLINT integer_description::do_column_c_type() const
 {
 	return SQL_C_SBIGINT;
 }

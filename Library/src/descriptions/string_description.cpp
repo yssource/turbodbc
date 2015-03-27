@@ -16,7 +16,7 @@ std::size_t string_description::do_element_size() const
 	return maximum_length_ + 1;
 }
 
-SQLSMALLINT string_description::do_column_type() const
+SQLSMALLINT string_description::do_column_c_type() const
 {
 	return SQL_C_CHAR;
 }

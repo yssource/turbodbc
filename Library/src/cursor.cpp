@@ -51,7 +51,7 @@ void cursor::bind_parameters()
 			auto description = make_description(statement_->describe_parameter(p + 1));
 
 			parameters_->emplace_back(description->element_size(), 10);
-			statement_->bind_input_parameter(p + 1, description->column_type(), SQL_BIGINT, parameters_->back());
+			statement_->bind_input_parameter(p + 1, description->column_c_type(), SQL_BIGINT, parameters_->back());
 		}
 	}
 	statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);

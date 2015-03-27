@@ -28,7 +28,7 @@ void string_description_test::test()
 	pydbc::string_description const description(size);
 
 	CPPUNIT_ASSERT_EQUAL(size + 1, description.element_size());
-	CPPUNIT_ASSERT_EQUAL(SQL_C_CHAR, description.column_type());
+	CPPUNIT_ASSERT_EQUAL(SQL_C_CHAR, description.column_c_type());
 	CPPUNIT_ASSERT_EQUAL(SQL_VARCHAR, description.column_sql_type());
 	CPPUNIT_ASSERT_EQUAL(pydbc::field{expected}, description.make_field(expected.c_str()));
 }

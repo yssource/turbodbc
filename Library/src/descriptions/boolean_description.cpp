@@ -12,7 +12,7 @@ std::size_t boolean_description::do_element_size() const
 	return sizeof(char);
 }
 
-SQLSMALLINT boolean_description::do_column_type() const
+SQLSMALLINT boolean_description::do_column_c_type() const
 {
 	return SQL_C_BIT;
 }

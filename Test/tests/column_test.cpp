@@ -62,7 +62,7 @@ void column_test::get_field_non_nullable()
 	std::string const expected("this is a test string");
 	std::unique_ptr<pydbc::string_description> description(new pydbc::string_description(128));
 
-	auto const buffer_type = description->column_type();
+	auto const buffer_type = description->column_c_type();
 	pydbc_test::mock_statement statement;
 
 	cpp_odbc::multi_value_buffer * buffer = nullptr;

@@ -47,7 +47,7 @@ std::size_t number_description::do_element_size() const
 	return sizeof(SQL_NUMERIC_STRUCT);
 }
 
-SQLSMALLINT number_description::do_column_type() const
+SQLSMALLINT number_description::do_column_c_type() const
 {
 	return SQL_C_NUMERIC;
 }

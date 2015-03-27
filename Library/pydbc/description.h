@@ -19,7 +19,7 @@ public:
 	/**
 	 * @brief Returns the type code for the associated C data type
 	 */
-	SQLSMALLINT column_type() const;
+	SQLSMALLINT column_c_type() const;
 
 	/**
 	 * @brief Returns the type code for the associated SQL column data type
@@ -39,7 +39,7 @@ protected:
 	description();
 private:
 	virtual std::size_t do_element_size() const = 0;
-	virtual SQLSMALLINT do_column_type() const = 0;
+	virtual SQLSMALLINT do_column_c_type() const = 0;
 	virtual SQLSMALLINT do_column_sql_type() const = 0;
 	virtual field do_make_field(char const * data_pointer) const = 0;
 };

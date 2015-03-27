@@ -6,7 +6,7 @@ column::column(cpp_odbc::statement const & statement, std::size_t one_based_inde
 	description_(std::move(description)),
 	buffer_(description_->element_size(), buffered_rows)
 {
-	statement.bind_column(one_based_index, description_->column_type(), buffer_);
+	statement.bind_column(one_based_index, description_->column_c_type(), buffer_);
 }
 
 column::~column() = default;

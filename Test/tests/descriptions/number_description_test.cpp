@@ -42,7 +42,7 @@ void number_description_test::basic_properties()
 {
 	pydbc::number_description description;
 	CPPUNIT_ASSERT_EQUAL(sizeof(SQL_NUMERIC_STRUCT), description.element_size());
-	CPPUNIT_ASSERT_EQUAL(SQL_C_NUMERIC, description.column_type());
+	CPPUNIT_ASSERT_EQUAL(SQL_C_NUMERIC, description.column_c_type());
 	CPPUNIT_ASSERT_EQUAL(SQL_NUMERIC, description.column_sql_type());
 }
 
