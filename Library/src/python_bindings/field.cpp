@@ -45,14 +45,30 @@ struct nullable_field_to_object : boost::static_visitor<PyObject *> {
 struct nullable_field_from_object{
 	static bool is_convertible (PyObject * object)
 	{
-		return PyInt_Check(object);
+		return
+				boost::python::extract<long>(object).check()
+			or	boost::python::extract<double>(object).check();
 	}
 
 	static nullable_field convert(PyObject * object)
 	{
 		boost::python::object python_value{boost::python::handle<>{boost::python::borrowed(object)}};
-		long value = PyInt_AsLong(object);
-		return {pydbc::field(value)};
+
+		{
+			boost::python::extract<long> extractor(object);
+			if (extractor.check()) {
+				return pydbc::field(extractor());
+			}
+		}
+
+		{
+			boost::python::extract<double> extractor(object);
+			if (extractor.check()) {
+				return pydbc::field(extractor());
+			}
+		}
+
+		throw std::runtime_error("Could not convert python value to C++");
 	}
 };
 

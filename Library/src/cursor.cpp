@@ -11,6 +11,7 @@
  */
 
 #include <pydbc/cursor.h>
+#include <pydbc/make_description.h>
 
 #include <boost/variant/get.hpp>
 #include <sqlext.h>
@@ -47,8 +48,10 @@ void cursor::bind_parameters()
 		parameters_ = std::make_shared<std::vector<cpp_odbc::multi_value_buffer>>();
 
 		for (SQLSMALLINT p = 0; p != statement_->number_of_parameters(); ++p) {
-			parameters_->emplace_back(sizeof(long), 10);
-			statement_->bind_input_parameter(p + 1, SQL_C_SBIGINT, SQL_BIGINT, parameters_->back());
+			auto description = make_description(statement_->describe_parameter(p + 1));
+
+			parameters_->emplace_back(description->element_size(), 10);
+			statement_->bind_input_parameter(p + 1, description->column_type(), SQL_BIGINT, parameters_->back());
 		}
 	}
 	statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);

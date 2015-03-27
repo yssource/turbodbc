@@ -15,6 +15,11 @@ SQLSMALLINT description::column_type() const
 	return do_column_type();
 }
 
+SQLSMALLINT description::column_sql_type() const
+{
+	return do_column_sql_type();
+}
+
 field description::make_field(char const * data_pointer) const
 {
 	return do_make_field(data_pointer);

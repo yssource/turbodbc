@@ -18,7 +18,12 @@ std::size_t string_description::do_element_size() const
 
 SQLSMALLINT string_description::do_column_type() const
 {
-	return SQL_CHAR;
+	return SQL_C_CHAR;
+}
+
+SQLSMALLINT string_description::do_column_sql_type() const
+{
+	return SQL_VARCHAR;
 }
 
 field string_description::do_make_field(char const * data_pointer) const

@@ -18,6 +18,7 @@ CPPUNIT_TEST_SUITE( description_test );
 	CPPUNIT_TEST( is_base_class );
 	CPPUNIT_TEST( element_size_forwards );
 	CPPUNIT_TEST( column_type_forwards );
+	CPPUNIT_TEST( column_sql_type_forwards );
 	CPPUNIT_TEST( make_field_forwards );
 
 CPPUNIT_TEST_SUITE_END();
@@ -27,6 +28,7 @@ public:
 	void is_base_class();
 	void element_size_forwards();
 	void column_type_forwards();
+	void column_sql_type_forwards();
 	void make_field_forwards();
 
 };
@@ -39,6 +41,7 @@ namespace {
 	struct mock_description : public pydbc::description {
 		MOCK_CONST_METHOD0(do_element_size, std::size_t());
 		MOCK_CONST_METHOD0(do_column_type, SQLSMALLINT());
+		MOCK_CONST_METHOD0(do_column_sql_type, SQLSMALLINT());
 		MOCK_CONST_METHOD1(do_make_field, pydbc::field(char const *));
 	};
 
@@ -70,6 +73,17 @@ void description_test::column_type_forwards()
 		.WillOnce(testing::Return(expected));
 
 	CPPUNIT_ASSERT(expected == description.column_type());
+}
+
+void description_test::column_sql_type_forwards()
+{
+	SQLSMALLINT const expected = 42;
+
+	mock_description description;
+	EXPECT_CALL(description, do_column_sql_type())
+		.WillOnce(testing::Return(expected));
+
+	CPPUNIT_ASSERT(expected == description.column_sql_type());
 }
 
 void description_test::make_field_forwards()

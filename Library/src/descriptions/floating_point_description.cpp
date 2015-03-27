@@ -17,6 +17,11 @@ SQLSMALLINT floating_point_description::do_column_type() const
 	return SQL_C_DOUBLE;
 }
 
+SQLSMALLINT floating_point_description::do_column_sql_type() const
+{
+	return SQL_DOUBLE;
+}
+
 field floating_point_description::do_make_field(char const * data_pointer) const
 {
 	return {*reinterpret_cast<double const *>(data_pointer)};

@@ -28,5 +28,6 @@ void integer_description_test::test()
 
 	CPPUNIT_ASSERT_EQUAL(sizeof(expected), description.element_size());
 	CPPUNIT_ASSERT_EQUAL(SQL_C_SBIGINT, description.column_type());
+	CPPUNIT_ASSERT_EQUAL(SQL_BIGINT, description.column_sql_type());
 	CPPUNIT_ASSERT_EQUAL(pydbc::field{expected}, description.make_field(reinterpret_cast<char const *>(&expected)));
 }

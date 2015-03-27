@@ -27,6 +27,7 @@ void boolean_description_test::test()
 
 	CPPUNIT_ASSERT_EQUAL(1, description.element_size());
 	CPPUNIT_ASSERT_EQUAL(SQL_C_BIT, description.column_type());
+	CPPUNIT_ASSERT_EQUAL(SQL_BIT, description.column_sql_type());
 
 	char as_bool = 0;
 	CPPUNIT_ASSERT_EQUAL(pydbc::field{false}, description.make_field(&as_bool));

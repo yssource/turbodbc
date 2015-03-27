@@ -17,6 +17,11 @@ SQLSMALLINT boolean_description::do_column_type() const
 	return SQL_C_BIT;
 }
 
+SQLSMALLINT boolean_description::do_column_sql_type() const
+{
+	return SQL_BIT;
+}
+
 field boolean_description::do_make_field(char const * data_pointer) const
 {
 	return {static_cast<bool>(*data_pointer)};

@@ -49,9 +49,13 @@ std::size_t number_description::do_element_size() const
 
 SQLSMALLINT number_description::do_column_type() const
 {
-	return SQL_NUMERIC;
+	return SQL_C_NUMERIC;
 }
 
+SQLSMALLINT number_description::do_column_sql_type() const
+{
+	return SQL_NUMERIC;
+}
 
 field number_description::do_make_field(char const * data_pointer) const
 {
