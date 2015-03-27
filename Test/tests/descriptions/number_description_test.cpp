@@ -11,6 +11,7 @@
 class number_description_test : public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( number_description_test );
 
+	CPPUNIT_TEST( basic_properties );
 	CPPUNIT_TEST( positive_integer );
 	CPPUNIT_TEST( negative_integer );
 	CPPUNIT_TEST( max_positive_integer );
@@ -23,6 +24,7 @@ CPPUNIT_TEST_SUITE_END();
 
 public:
 
+	void basic_properties();
 	void positive_integer();
 	void negative_integer();
 	void max_positive_integer();
@@ -35,6 +37,13 @@ public:
 
 // Registers the fixture with the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( number_description_test );
+
+void number_description_test::basic_properties()
+{
+	pydbc::number_description description;
+	CPPUNIT_ASSERT_EQUAL(sizeof(SQL_NUMERIC_STRUCT), description.element_size());
+	CPPUNIT_ASSERT_EQUAL(SQL_NUMERIC, description.column_type());
+}
 
 void number_description_test::positive_integer()
 {
