@@ -19,6 +19,11 @@ CPPUNIT_TEST_SUITE( number_description_test );
 	CPPUNIT_TEST( larger_than_max_overflows );
 	CPPUNIT_TEST( smaller_than_min_overflows );
 	CPPUNIT_TEST( floating_point );
+	CPPUNIT_TEST( set_zero );
+	CPPUNIT_TEST( set_positive_integer );
+	CPPUNIT_TEST( set_negative_integer );
+	CPPUNIT_TEST( set_max_positive_integer );
+	CPPUNIT_TEST( set_min_negative_integer );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -32,6 +37,11 @@ public:
 	void larger_than_max_overflows();
 	void smaller_than_min_overflows();
 	void floating_point();
+	void set_zero();
+	void set_positive_integer();
+	void set_negative_integer();
+	void set_max_positive_integer();
+	void set_min_negative_integer();
 
 };
 
@@ -157,4 +167,48 @@ void number_description_test::floating_point()
 	auto const actual = description.make_field(reinterpret_cast<char const *>(&data));
 
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, boost::get<double>(actual), 1e-12);
+}
+
+namespace {
+
+	void test_set_field(long expected)
+	{
+		pydbc::number_description description;
+
+		cpp_odbc::multi_value_buffer buffer(description.element_size(), 1);
+		auto element = buffer[0];
+
+		description.set_field(element, pydbc::field{expected});
+		CPPUNIT_ASSERT_EQUAL(description.element_size(), element.indicator);
+
+		// test via roundtrip
+		auto const actual = description.make_field(element.data_pointer);
+		CPPUNIT_ASSERT_EQUAL(expected, boost::get<long>(actual));
+	}
+
+}
+
+void number_description_test::set_zero()
+{
+	test_set_field(0);
+}
+
+void number_description_test::set_positive_integer()
+{
+	test_set_field(1234567890);
+}
+
+void number_description_test::set_negative_integer()
+{
+	test_set_field(-1234567890);
+}
+
+void number_description_test::set_max_positive_integer()
+{
+	test_set_field(std::numeric_limits<long>::max());
+}
+
+void number_description_test::set_min_negative_integer()
+{
+	test_set_field(std::numeric_limits<long>::min());
 }

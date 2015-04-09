@@ -3,6 +3,7 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
+#include <boost/variant/get.hpp>
 #include <sqlext.h>
 
 namespace pydbc {
@@ -26,6 +27,26 @@ namespace {
 		}
 
 		return mantissa;
+	}
+
+	void set_signed_mantissa(SQL_NUMERIC_STRUCT & value, boost::multiprecision::cpp_int & mantissa)
+	{
+		boost::multiprecision::cpp_int const byte_limit(256);
+		std::memset(value.val, 0, SQL_MAX_NUMERIC_LEN);
+
+		if (mantissa.sign() < 0) {
+			mantissa *= -1;
+			value.sign = 0;
+		} else {
+			value.sign = 1;
+		}
+
+		for (unsigned int i = 0; i != SQL_MAX_NUMERIC_LEN; ++i) {
+			unsigned char & byte = value.val[i];
+			boost::multiprecision::cpp_int const diff = (mantissa % byte_limit);
+			byte = diff.convert_to<long>();
+			mantissa >>= 8;
+		}
 	}
 
 	using floating = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<36>>;
@@ -74,7 +95,10 @@ field number_description::do_make_field(char const * data_pointer) const
 
 void number_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
 {
-	throw 42;
+	auto numeric_ptr = reinterpret_cast<SQL_NUMERIC_STRUCT *>(element.data_pointer);
+	boost::multiprecision::cpp_int mantissa(boost::get<long>(value));
+	set_signed_mantissa(*numeric_ptr, mantissa);
+	element.indicator = element_size();
 }
 
 }
