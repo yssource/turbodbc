@@ -69,10 +69,6 @@ void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set
 {
 	for (unsigned int parameter = 0; parameter != parameter_set.size(); ++parameter) {
 		parameters_[parameter]->set(current_parameter_set_, *parameter_set[parameter]);
-//		description->set_field(element, *parameter_set[parameter]);
-//		auto value = boost::get<long>(*parameter_set[parameter]);
-//		memcpy(element.data_pointer, &value, sizeof(value));
-//		element.indicator = sizeof(value);
 	}
 	++current_parameter_set_;
 	statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);

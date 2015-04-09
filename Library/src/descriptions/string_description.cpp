@@ -1,6 +1,9 @@
 #include <pydbc/descriptions/string_description.h>
 
+#include <boost/variant/get.hpp>
+
 #include <sqlext.h>
+#include <cstring>
 
 namespace pydbc {
 
@@ -33,7 +36,17 @@ field string_description::do_make_field(char const * data_pointer) const
 
 void string_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
 {
-	throw 42;
+	auto const as_string = boost::get<std::string>(value);
+
+	if (as_string.size() <= maximum_length_) {
+		auto const length_with_null_termination = as_string.size() + 1;
+		std::memcpy(element.data_pointer, as_string.c_str(), length_with_null_termination);
+		element.indicator = as_string.size();
+	} else {
+		std::memcpy(element.data_pointer, as_string.c_str(), maximum_length_);
+		element.data_pointer[maximum_length_] = '\0';
+		element.indicator = maximum_length_;
+	}
 }
 
 }

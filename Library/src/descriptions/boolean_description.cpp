@@ -1,5 +1,6 @@
 #include <pydbc/descriptions/boolean_description.h>
 
+#include <boost/variant/get.hpp>
 #include <sqlext.h>
 
 namespace pydbc {
@@ -29,7 +30,8 @@ field boolean_description::do_make_field(char const * data_pointer) const
 
 void boolean_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
 {
-	throw 42;
+	*element.data_pointer = boost::get<bool>(value) ? 1 : 0;
+	element.indicator = 1;
 }
 
 }
