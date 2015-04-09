@@ -24,6 +24,7 @@ CPPUNIT_TEST_SUITE( number_description_test );
 	CPPUNIT_TEST( set_negative_integer );
 	CPPUNIT_TEST( set_max_positive_integer );
 	CPPUNIT_TEST( set_min_negative_integer );
+	CPPUNIT_TEST( set_floating_point );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -42,6 +43,7 @@ public:
 	void set_negative_integer();
 	void set_max_positive_integer();
 	void set_min_negative_integer();
+	void set_floating_point();
 
 };
 
@@ -171,7 +173,8 @@ void number_description_test::floating_point()
 
 namespace {
 
-	void test_set_field(long expected)
+	template <typename Value>
+	void test_set_field(Value expected)
 	{
 		pydbc::number_description description;
 
@@ -183,24 +186,24 @@ namespace {
 
 		// test via roundtrip
 		auto const actual = description.make_field(element.data_pointer);
-		CPPUNIT_ASSERT_EQUAL(expected, boost::get<long>(actual));
+		CPPUNIT_ASSERT_EQUAL(expected, boost::get<Value>(actual));
 	}
 
 }
 
 void number_description_test::set_zero()
 {
-	test_set_field(0);
+	test_set_field(0l);
 }
 
 void number_description_test::set_positive_integer()
 {
-	test_set_field(1234567890);
+	test_set_field(1234567890l);
 }
 
 void number_description_test::set_negative_integer()
 {
-	test_set_field(-1234567890);
+	test_set_field(-1234567890l);
 }
 
 void number_description_test::set_max_positive_integer()
@@ -211,4 +214,9 @@ void number_description_test::set_max_positive_integer()
 void number_description_test::set_min_negative_integer()
 {
 	test_set_field(std::numeric_limits<long>::min());
+}
+
+void number_description_test::set_floating_point()
+{
+	test_set_field(3.14);
 }
