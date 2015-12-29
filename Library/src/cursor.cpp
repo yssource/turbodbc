@@ -61,8 +61,8 @@ void cursor::bind_parameters()
 		for (std::size_t one_based_index = 1; one_based_index <= n_parameters; ++one_based_index) {
 			parameters_.push_back(make_parameter(*statement_, one_based_index));
 		}
+		statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
 	}
-	statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
 }
 
 void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set)
