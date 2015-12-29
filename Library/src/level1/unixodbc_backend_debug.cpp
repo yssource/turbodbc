@@ -35,7 +35,7 @@ SQLRETURN unixodbc_backend_debug::do_free_handle(SQLSMALLINT handle_type, SQLHAN
 
 SQLRETURN unixodbc_backend_debug::do_get_diagnostic_record(SQLSMALLINT handle_type, SQLHANDLE handle, SQLSMALLINT record_id, SQLCHAR * status_code_ptr, SQLINTEGER * native_error_ptr, SQLCHAR * message_text, SQLSMALLINT buffer_length, SQLSMALLINT * text_length_ptr) const
 {
-	std::cout << " *DEBUG* get_diagnostic_record";
+	std::cout << " *DEBUG* get_diagnostic_record (handle_type = " << handle_type << ")";
 	auto const return_code = SQLGetDiagRec(handle_type, handle, record_id, status_code_ptr, native_error_ptr, message_text, buffer_length, text_length_ptr);
 	std::cout << " (return code " << return_code << ")" << std::endl;
 	return return_code;

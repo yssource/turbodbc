@@ -21,4 +21,10 @@ namespace cpp_odbc {
  */
 std::shared_ptr<environment> make_environment();
 
+/**
+ * @brief Returns an environment which fires calls using the unixODBC API
+ *        including debugging output
+ */
+std::shared_ptr<environment> make_debug_environment();
+
 }
