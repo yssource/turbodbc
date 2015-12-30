@@ -12,11 +12,14 @@ class SelectBaseTestCase(object):
     
     self.dsn
     self.supports_row_count
+    self.fixture_file_name
     """
 
     def setUp(self):
         self.connection = pydbc.connect(self.dsn)
         self.cursor = self.connection.cursor()
+        with open(self.fixture_file_name, 'r') as f:
+            self.fixtures = json.load(f)
 
     def tearDown(self):
         self.cursor.close()
@@ -55,7 +58,7 @@ class SelectBaseTestCase(object):
         self._test_single_row_result_set("SELECT 40, 41, 42, 43", [40, 41, 42, 43])
 
     def test_single_row_double_result(self):
-        with query_fixture(self.cursor, self.schema_file, 'SELECT DOUBLE') as query:
+        with query_fixture(self.cursor, self.fixtures, 'SELECT DOUBLE') as query:
             self.cursor.execute(query)
             row = self.cursor.fetchone()
             self.assertItemsEqual(row, [3.14])
@@ -74,16 +77,16 @@ class SelectBaseTestCase(object):
 class TestSelectExasol(SelectBaseTestCase, TestCase):
     dsn = "Exasol R&D test database"
     supports_row_count = True
-    schema_file = 'query_fixtures_exasol.json'
+    fixture_file_name = 'query_fixtures_exasol.json'
 
 
 class TestSelectPostgreSQL(SelectBaseTestCase, TestCase):
     dsn = "PostgreSQL R&D test database"
     supports_row_count = False
-    schema_file = 'query_fixtures_postgresql.json'
+    fixture_file_name = 'query_fixtures_postgresql.json'
 
 
 class TestSelectMySQL(SelectBaseTestCase, TestCase):
     dsn = "MySQL R&D test database"
     supports_row_count = True
-    schema_file = 'query_fixtures_mysql.json'
+    fixture_file_name = 'query_fixtures_mysql.json'

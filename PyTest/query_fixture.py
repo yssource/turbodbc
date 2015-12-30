@@ -1,14 +1,14 @@
 from contextlib import contextmanager
 
-import json
 import random
 
 
 @contextmanager
-def query_fixture(cursor, file_name, fixture_key):
+def query_fixture(cursor, fixtures, fixture_key):
     """
     Context manager used to set up fixtures for setting up queries.
-    :param file_name: Name of file which contains fixtures in JSON format
+    :param cursor: This cursor is used to execute queries
+    :param fixtures: A dictionary of fixtures
     :param fixture_key: Identifies the fixture
     
     The context manager performs the following tasks:
@@ -16,7 +16,7 @@ def query_fixture(cursor, file_name, fixture_key):
     * Return the query listed in the fixture's "payload" section
     * Execute all queries listed in the fixture's "teardown" section
     
-    The fixture file should have the following format:
+    The fixtures dictionary should have the following format:
     
     {
         "my_fixture_key": {
@@ -29,9 +29,7 @@ def query_fixture(cursor, file_name, fixture_key):
     Setup and teardown sections are optional. Queries may contain
     "{table_name}" to be replaced with a random table name.
     """
-    with open(file_name, 'r') as file:
-        fixture = json.load(file)[fixture_key]
-
+    fixture = fixtures[fixture_key]
     table_name = table_name = 'test_{}'.format(random.randint(0, 1000000000))
     
     def _execute_queries(section_key):
