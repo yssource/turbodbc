@@ -43,7 +43,7 @@ class SelectBaseTestCase(object):
         self._test_single_row_result_set("SELECT 'value'", ["value"])
 
     def test_single_row_unicode_result(self):
-        self._test_single_row_result_set(u"SELECT 'value'", [u"value"])
+        self._test_single_row_result_set(u"SELECT 'value \u2665'", [u"value \u2665"])
 
     def test_single_row_large_numeric_result_as_string(self):
         self._test_single_row_result_set("SELECT -1234567890123.123456789", ['-1234567890123.123456789'])

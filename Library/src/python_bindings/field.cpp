@@ -25,6 +25,10 @@ struct field_to_object : boost::static_visitor<PyObject *> {
 		return apply_visitor(field_to_object(), f);
 	}
 
+	result_type operator()(std::string const & value) const {
+		return PyUnicode_DecodeUTF8(value.c_str(), value.size(), nullptr);
+	}
+
 	template<typename Value>
 	result_type operator()(Value const & value) const {
 		return boost::python::incref(boost::python::object(value).ptr());
@@ -47,9 +51,11 @@ struct utf8_from_unicode_object {
 	{
 		return PyUnicode_Check(object);
 	}
+
 	static std::string convert(PyObject * object)
 	{
-		return PyString_AsString(object);
+		auto utf8 = boost::python::handle<>{PyUnicode_AsUTF8String(object)};
+		return PyString_AsString(utf8.get());
 	}
 };
 
