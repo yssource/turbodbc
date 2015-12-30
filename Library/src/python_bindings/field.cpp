@@ -1,15 +1,3 @@
-/**
- *  @file field.cpp
- *  @date 19.12.2014
- *  @author mkoenig
- *  @brief
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
-
 #include <pydbc/field.h>
 
 #include <boost/python/to_python_converter.hpp>
@@ -18,7 +6,36 @@
 
 #include <vector>
 
+#include <datetime.h> // Python header
+
 namespace pydbc { namespace bindings {
+
+
+struct utf8_from_unicode_object {
+	static bool is_convertible(PyObject * object)
+	{
+		return PyUnicode_Check(object);
+	}
+
+	static std::string convert(PyObject * object)
+	{
+		auto utf8 = boost::python::handle<>{PyUnicode_AsUTF8String(object)};
+		return PyString_AsString(utf8.get());
+	}
+};
+
+
+struct date_to_object : boost::static_visitor<PyObject *> {
+	static result_type convert(boost::gregorian::date const & d) {
+		return PyDate_FromDate(d.year(), d.month(), d.day());
+	}
+
+	template<typename Value>
+	result_type operator()(Value const & value) const {
+		return boost::python::incref(boost::python::object(value).ptr());
+	}
+};
+
 
 struct field_to_object : boost::static_visitor<PyObject *> {
 	static result_type convert(field const & f) {
@@ -35,6 +52,7 @@ struct field_to_object : boost::static_visitor<PyObject *> {
 	}
 };
 
+
 struct nullable_field_to_object : boost::static_visitor<PyObject *> {
 	static result_type convert(nullable_field const & field) {
 		if (field) {
@@ -42,20 +60,6 @@ struct nullable_field_to_object : boost::static_visitor<PyObject *> {
 		} else {
 			return boost::python::incref(boost::python::object().ptr());
 		}
-	}
-};
-
-
-struct utf8_from_unicode_object {
-	static bool is_convertible(PyObject * object)
-	{
-		return PyUnicode_Check(object);
-	}
-
-	static std::string convert(PyObject * object)
-	{
-		auto utf8 = boost::python::handle<>{PyUnicode_AsUTF8String(object)};
-		return PyString_AsString(utf8.get());
 	}
 };
 
@@ -132,6 +136,8 @@ template<typename Converter> struct boost_python_converter
 
 void for_field()
 {
+	PyDateTime_IMPORT;
+
 	boost::python::converter::registry::push_back(
 		& boost_python_converter<utf8_from_unicode_object>::is_convertible,
 		& boost_python_converter<utf8_from_unicode_object>::convert,
@@ -150,6 +156,7 @@ void for_field()
 		boost::python::type_id<typename boost_python_converter<vector_nullable_field_from_object>::target>()
 	);
 
+	boost::python::to_python_converter<boost::gregorian::date, date_to_object>();
 	boost::python::to_python_converter<field, field_to_object>();
 	boost::python::to_python_converter<nullable_field, nullable_field_to_object>();
 	boost::python::implicitly_convertible<long, field>();

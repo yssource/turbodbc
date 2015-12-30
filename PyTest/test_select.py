@@ -4,6 +4,7 @@ from query_fixture import query_fixture
 
 import pydbc
 import json
+import datetime
 
 
 class SelectBaseTestCase(object):
@@ -58,17 +59,21 @@ class SelectBaseTestCase(object):
     def test_single_row_unicode_result(self):
         self._test_single_row_result_set(u"SELECT 'value \u2665'", [u"value \u2665"])
 
-    def test_single_row_large_numeric_result_as_string(self):
-        self._test_single_row_result_set("SELECT -1234567890123.123456789", ['-1234567890123.123456789'])
-
-    def test_single_row_multiple_integer_result(self):
-        self._test_single_row_result_set("SELECT 40, 41, 42, 43", [40, 41, 42, 43])
-
     def test_single_row_double_result(self):
         with query_fixture(self.cursor, self.fixtures, 'SELECT DOUBLE') as query:
             self.cursor.execute(query)
             row = self.cursor.fetchone()
             self.assertItemsEqual(row, [3.14])
+
+    def test_single_row_date_result(self):
+        self._test_single_row_result_set("SELECT CAST('2015-12-31' AS DATE) AS a",
+                                         [datetime.date(2015, 12, 31)])
+
+    def test_single_row_large_numeric_result_as_string(self):
+        self._test_single_row_result_set("SELECT -1234567890123.123456789", ['-1234567890123.123456789'])
+
+    def test_single_row_multiple_columns(self):
+        self._test_single_row_result_set("SELECT 40, 41, 42, 43", [40, 41, 42, 43])
 
     def test_multiple_rows(self):
         with query_fixture(self.cursor, self.fixtures, 'SELECT MULTIPLE INTEGERS') as query:
