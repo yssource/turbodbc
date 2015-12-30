@@ -15,11 +15,14 @@ class SelectBaseTestCase(object):
     self.fixture_file_name
     """
 
+    @classmethod
+    def setUpClass(cls):
+        with open(cls.fixture_file_name, 'r') as f:
+            cls.fixtures = json.load(f)
+
     def setUp(self):
         self.connection = pydbc.connect(self.dsn)
         self.cursor = self.connection.cursor()
-        with open(self.fixture_file_name, 'r') as f:
-            self.fixtures = json.load(f)
 
     def tearDown(self):
         self.cursor.close()
