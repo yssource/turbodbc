@@ -29,10 +29,15 @@ struct date_to_object : boost::static_visitor<PyObject *> {
 	static result_type convert(boost::gregorian::date const & d) {
 		return PyDate_FromDate(d.year(), d.month(), d.day());
 	}
+};
 
-	template<typename Value>
-	result_type operator()(Value const & value) const {
-		return boost::python::incref(boost::python::object(value).ptr());
+
+struct ptime_to_object : boost::static_visitor<PyObject *> {
+	static result_type convert(boost::posix_time::ptime const & ts) {
+		auto const & date = ts.date();
+		auto const & time = ts.time_of_day();
+		return PyDateTime_FromDateAndTime(date.year(), date.month(), date.day(),
+										  time.hours(), time.minutes(), time.seconds(), time.fractional_seconds());
 	}
 };
 
@@ -157,6 +162,7 @@ void for_field()
 	);
 
 	boost::python::to_python_converter<boost::gregorian::date, date_to_object>();
+	boost::python::to_python_converter<boost::posix_time::ptime, ptime_to_object>();
 	boost::python::to_python_converter<field, field_to_object>();
 	boost::python::to_python_converter<nullable_field, nullable_field_to_object>();
 	boost::python::implicitly_convertible<long, field>();

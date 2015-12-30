@@ -19,5 +19,9 @@
 		],
 		"payload": "SELECT a FROM {table_name} ORDER BY a ASC",
 		"teardown": "DROP TABLE {table_name}"
+	},
+	
+	"SELECT TIMESTAMP": {
+		"payload": "SELECT CAST('2015-12-31 01:02:03' AS DATETIME) AS a"
 	}
 }
