@@ -3,6 +3,7 @@
 #include <boost/variant/variant.hpp>
 #include <boost/optional.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <string>
 
 namespace pydbc {
@@ -15,7 +16,8 @@ using field = boost::variant<	long,
 								std::string,
 								bool,
 								double,
-								boost::gregorian::date>;
+								boost::gregorian::date,
+								boost::posix_time::ptime>;
 
 /**
  * @brief This type represents a single nullable field in a table, i.e., the data associated
