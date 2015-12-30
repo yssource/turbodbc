@@ -48,6 +48,10 @@ class SelectBaseTestCase(object):
     def test_single_row_integer_result(self):
         self._test_single_row_result_set("SELECT 42", [42])
 
+    def test_single_row_bool_result(self):
+        self._test_single_row_result_set("SELECT True", [True])
+        self._test_single_row_result_set("SELECT False", [False])
+
     def test_single_row_string_result(self):
         self._test_single_row_result_set("SELECT 'value'", ["value"])
 
