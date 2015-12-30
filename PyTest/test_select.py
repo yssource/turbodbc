@@ -1,8 +1,58 @@
 from unittest import TestCase
 
+from contextlib import contextmanager
+
 import pydbc
 import json
 import random
+
+
+@contextmanager
+def query_fixture(cursor, file_name, fixture_key):
+    """
+    Context manager used to set up fixtures for setting up queries.
+    :param file_name: Name of file which contains fixtures in JSON format
+    :param fixture_key: Identifies the fixture
+    
+    The context manager performs the following tasks:
+    * Execute all queries listed in the fixture's "setup" section
+    * Return the query listed in the fixture's "payload" section
+    * Execute all queries listed in the fixture's "teardown" section
+    
+    The fixture file should have the following format:
+    
+    {
+        "my_fixture_key": {
+            "setup": ["A POTENTIALLY EMPTY LIST OF SQL QUERIES"],
+            "payload": "SELECT 42",
+            "teardown": ["MAY INCLUDE", "MULTIPLE QUERIES"]
+        }
+    }
+    
+    Setup and teardown sections are optional. Queries may contain
+    "{table_name}" to be replaced with a random table name.
+    """
+    with open(file_name, 'r') as file:
+        fixture = json.load(file)[fixture_key]
+
+    table_name = table_name = 'test_{}'.format(random.randint(0, 1000000000))
+    
+    def _execute_queries(section_key):
+        queries = fixture.get(section_key, [])
+        if not isinstance(queries, list):
+            queries = [queries]
+
+        for query in queries:
+            try:
+                cursor.execute(query.format(table_name=table_name))
+            except Exception as error:
+                raise type(error)('Error during {} of query fixture "{}": {}'.format(section_key, fixture_key, error))
+
+    _execute_queries("setup")
+    try:
+        yield fixture['payload'].format(table_name=table_name)
+    finally:
+        _execute_queries("teardown")
 
 
 class SelectBaseTestCase(object):
@@ -53,29 +103,11 @@ class SelectBaseTestCase(object):
     def test_single_row_multiple_integer_result(self):
         self._test_single_row_result_set("SELECT 40, 41, 42, 43", [40, 41, 42, 43])
 
-    def test_single_row_double_table(self):
-        with open(self.schema_file, 'r') as file:
-            db_queries = json.load(file)['SELECT DOUBLE']
-            table_name = table_name = 'test_{}'.format(random.randint(0, 1000000000))
-
-            for query in db_queries['setup']:
-                self.cursor.execute(query.format(table_name=table_name))
-
-            self.cursor.execute(db_queries['payload'].format(table_name=table_name))
+    def test_single_row_double_result(self):
+        with query_fixture(self.cursor, self.schema_file, 'SELECT DOUBLE') as query:
+            self.cursor.execute(query)
             row = self.cursor.fetchone()
             self.assertItemsEqual(row, [3.14])
-
-            for query in db_queries['teardown']:
-                self.cursor.execute(query.format(table_name=table_name))
-
-
-    def test_single_row_double_result(self):
-        self.cursor.execute("select a from test_read_double")
-        self.assertIn(self.cursor.rowcount, [-1, 1])
-        row = self.cursor.fetchone()
-        self.assertItemsEqual(row, [3.14])
-        row = self.cursor.fetchone()
-        self.assertIsNone(row)
 
     def test_multiple_row_iterate_result(self):
         self.cursor.execute("delete from test_integer")
