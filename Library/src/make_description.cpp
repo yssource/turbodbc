@@ -53,6 +53,8 @@ std::unique_ptr<description const> make_description(cpp_odbc::column_description
 		case SQL_DECIMAL:
 			return make_decimal_description(source);
 //			return std::unique_ptr<description>(new number_description);
+		case SQL_TYPE_DATE:
+			return std::unique_ptr<description>(new date_description);
 		default:
 			std::ostringstream message;
 			message << "Error! Unsupported type identifier '" << source.data_type << "'";

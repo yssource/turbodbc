@@ -23,6 +23,7 @@ CPPUNIT_TEST_SUITE( make_description_test );
 	CPPUNIT_TEST( string_types );
 	CPPUNIT_TEST( floating_point_types );
 	CPPUNIT_TEST( bit_type );
+	CPPUNIT_TEST( date_type );
 	CPPUNIT_TEST( decimal_as_integer );
 	CPPUNIT_TEST( decimal_as_floating_point );
 	CPPUNIT_TEST( decimal_as_string );
@@ -36,6 +37,7 @@ public:
 	void string_types();
 	void floating_point_types();
 	void bit_type();
+	void date_type();
 	void decimal_as_integer();
 	void decimal_as_floating_point();
 	void decimal_as_string();
@@ -134,6 +136,15 @@ void make_description_test::bit_type()
 	cpp_odbc::column_description column_description = {"dummy", type, 0, 0, false};
 	auto const description = make_description(column_description);
 	CPPUNIT_ASSERT( dynamic_cast<pydbc::boolean_description const *>(description.get()) );
+}
+
+void make_description_test::date_type()
+{
+	SQLSMALLINT const type = SQL_TYPE_DATE;
+
+	cpp_odbc::column_description column_description = {"dummy", type, 0, 0, false};
+	auto const description = make_description(column_description);
+	CPPUNIT_ASSERT( dynamic_cast<pydbc::date_description const *>(description.get()) );
 }
 
 namespace {
