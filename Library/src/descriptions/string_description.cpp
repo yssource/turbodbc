@@ -36,7 +36,7 @@ field string_description::do_make_field(char const * data_pointer) const
 
 void string_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
 {
-	auto const as_string = boost::get<std::string>(value);
+	auto const & as_string = boost::get<std::string>(value);
 
 	if (as_string.size() <= maximum_length_) {
 		auto const length_with_null_termination = as_string.size() + 1;
