@@ -66,13 +66,18 @@ class SelectBaseTestCase(object):
             row = self.cursor.fetchone()
             self.assertItemsEqual(row, [3.14])
 
-    def test_multiple_row_iterate_result(self):
-        self.cursor.execute("delete from test_integer")
-        for i in xrange(1,10):
-            self.cursor.execute("insert into test_integer values("+str(i)+")")
-        self.cursor.execute("select * from test_integer order by a")
-        for element in enumerate(self.cursor, start=1):
-            self.assertItemsEqual([element[0]], element[1])
+    def test_multiple_rows(self):
+        with query_fixture(self.cursor, self.fixtures, 'SELECT MULTIPLE INTEGERS') as query:
+            self.cursor.execute(query)
+            row = self.cursor.fetchone()
+            self.assertItemsEqual(row, [42])
+            row = self.cursor.fetchone()
+            self.assertItemsEqual(row, [43])
+            row = self.cursor.fetchone()
+            self.assertItemsEqual(row, [44])
+
+            row = self.cursor.fetchone()
+            self.assertIsNone(row)
 
 
 # Actual test cases

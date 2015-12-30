@@ -7,5 +7,17 @@
 		],
 		"payload": "SELECT a FROM {table_name}",
 		"teardown": ["DROP TABLE {table_name}"]
+	},
+	
+	"SELECT MULTIPLE INTEGERS": {
+		"setup": [
+			"DROP TABLE IF EXISTS {table_name}",
+			"CREATE TABLE {table_name} (a INTEGER) engine=innodb",
+			"INSERT INTO {table_name} VALUES (42)",
+			"INSERT INTO {table_name} VALUES (43)",
+			"INSERT INTO {table_name} VALUES (44)"
+		],
+		"payload": "SELECT a FROM {table_name} ORDER BY a ASC",
+		"teardown": "DROP TABLE {table_name}"
 	}
 }
