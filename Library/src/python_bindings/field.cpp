@@ -42,6 +42,18 @@ struct nullable_field_to_object : boost::static_visitor<PyObject *> {
 };
 
 
+struct utf8_from_unicode_object {
+	static bool is_convertible(PyObject * object)
+	{
+		return PyUnicode_Check(object);
+	}
+	static std::string convert(PyObject * object)
+	{
+		return PyString_AsString(object);
+	}
+};
+
+
 struct nullable_field_from_object{
 	static bool is_convertible (PyObject * object)
 	{
@@ -114,6 +126,12 @@ template<typename Converter> struct boost_python_converter
 
 void for_field()
 {
+	boost::python::converter::registry::push_back(
+		& boost_python_converter<utf8_from_unicode_object>::is_convertible,
+		& boost_python_converter<utf8_from_unicode_object>::convert,
+		boost::python::type_id<typename boost_python_converter<utf8_from_unicode_object>::target>()
+	);
+
 	boost::python::converter::registry::push_back(
 		& boost_python_converter<nullable_field_from_object>::is_convertible,
 		& boost_python_converter<nullable_field_from_object>::convert,

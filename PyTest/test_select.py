@@ -1,4 +1,5 @@
 from unittest import TestCase
+
 import pydbc
 
 
@@ -41,6 +42,9 @@ class SelectBaseTestCase(object):
     def test_single_row_string_result(self):
         self._test_single_row_result_set("SELECT 'value'", ["value"])
 
+    def test_single_row_unicode_result(self):
+        self._test_single_row_result_set(u"SELECT 'value'", [u"value"])
+
     def test_single_row_large_numeric_result_as_string(self):
         self._test_single_row_result_set("SELECT -1234567890123.123456789", ['-1234567890123.123456789'])
 
@@ -69,13 +73,16 @@ class SelectBaseTestCase(object):
 class TestSelectExasol(SelectBaseTestCase, TestCase):
     dsn = "Exasol R&D test database"
     supports_row_count = True
+    schema_file = 'db_scripts_exasol.json'
 
 
 class TestSelectPostgreSQL(SelectBaseTestCase, TestCase):
     dsn = "PostgreSQL R&D test database"
     supports_row_count = False
+    schema_file = 'db_scripts_exasol.json'
 
 
 class TestSelectMySQL(SelectBaseTestCase, TestCase):
     dsn = "MySQL R&D test database"
     supports_row_count = True
+    schema_file = 'db_scripts_exasol.json'
