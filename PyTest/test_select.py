@@ -74,16 +74,16 @@ class SelectBaseTestCase(object):
 class TestSelectExasol(SelectBaseTestCase, TestCase):
     dsn = "Exasol R&D test database"
     supports_row_count = True
-    schema_file = 'db_scripts_exasol.json'
+    schema_file = 'query_fixtures_exasol.json'
 
 
 class TestSelectPostgreSQL(SelectBaseTestCase, TestCase):
     dsn = "PostgreSQL R&D test database"
     supports_row_count = False
-    schema_file = 'db_scripts_postgresql.json'
+    schema_file = 'query_fixtures_postgresql.json'
 
 
 class TestSelectMySQL(SelectBaseTestCase, TestCase):
     dsn = "MySQL R&D test database"
     supports_row_count = True
-    schema_file = 'db_scripts_mysql.json'
+    schema_file = 'query_fixtures_mysql.json'
