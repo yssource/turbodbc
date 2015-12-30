@@ -1,6 +1,8 @@
 from unittest import TestCase
 
 import pydbc
+import json
+import random
 
 
 class SelectBaseTestCase(object):
@@ -51,6 +53,22 @@ class SelectBaseTestCase(object):
     def test_single_row_multiple_integer_result(self):
         self._test_single_row_result_set("SELECT 40, 41, 42, 43", [40, 41, 42, 43])
 
+    def test_single_row_double_table(self):
+        with open(self.schema_file, 'r') as file:
+            db_queries = json.load(file)['SELECT DOUBLE']
+            table_name = table_name = 'test_{}'.format(random.randint(0, 1000000000))
+
+            for query in db_queries['setup']:
+                self.cursor.execute(query.format(table_name=table_name))
+
+            self.cursor.execute(db_queries['payload'].format(table_name=table_name))
+            row = self.cursor.fetchone()
+            self.assertItemsEqual(row, [3.14])
+
+            for query in db_queries['teardown']:
+                self.cursor.execute(query.format(table_name=table_name))
+
+
     def test_single_row_double_result(self):
         self.cursor.execute("select a from test_read_double")
         self.assertIn(self.cursor.rowcount, [-1, 1])
@@ -79,10 +97,10 @@ class TestSelectExasol(SelectBaseTestCase, TestCase):
 class TestSelectPostgreSQL(SelectBaseTestCase, TestCase):
     dsn = "PostgreSQL R&D test database"
     supports_row_count = False
-    schema_file = 'db_scripts_exasol.json'
+    schema_file = 'db_scripts_postgresql.json'
 
 
 class TestSelectMySQL(SelectBaseTestCase, TestCase):
     dsn = "MySQL R&D test database"
     supports_row_count = True
-    schema_file = 'db_scripts_exasol.json'
+    schema_file = 'db_scripts_mysql.json'

@@ -1,0 +1,11 @@
+{
+	"SELECT DOUBLE": {
+		"setup": [
+			"DROP TABLE IF EXISTS {table_name}",
+			"CREATE TABLE {table_name} (a DOUBLE) engine=innodb",
+			"INSERT INTO {table_name} (a) values (3.14)"
+		],
+		"payload": "SELECT a FROM {table_name}",
+		"teardown": ["DROP TABLE {table_name}"]
+	}
+}

@@ -1,0 +1,7 @@
+{
+	"SELECT DOUBLE": {
+		"setup": ["CREATE OR REPLACE VIEW {table_name} AS SELECT CAST(3.14 AS DOUBLE PRECISION) a FROM DUAL"],
+		"payload": "SELECT a FROM {table_name}",
+		"teardown": ["DROP VIEW {table_name}"]
+	}
+}

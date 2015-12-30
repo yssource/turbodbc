@@ -41,6 +41,7 @@ cursor::~cursor() = default;
 
 void cursor::prepare(std::string const & sql)
 {
+	statement_->close_cursor();
 	statement_->prepare(sql);
 }
 
