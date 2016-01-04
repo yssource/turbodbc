@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from pydbc import connect, Error
+from pydbc import connect, DatabaseError
 from pydbc.connection import Connection
 
 
@@ -16,5 +16,5 @@ class TestConnect(TestCase):
 
     def test_raises_on_error(self):
         invalid_dsn = 'This data source does not exist'
-        with self.assertRaises(Error):
+        with self.assertRaises(DatabaseError):
             connect(invalid_dsn)

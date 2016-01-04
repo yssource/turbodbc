@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from pydbc import connect, Error
+from pydbc import connect, InterfaceError
 
 
 dsn = "Exasol R&D test database"
@@ -23,22 +23,22 @@ class TestCursorBasics(TestCase):
 
         cursor.close()
 
-        with self.assertRaises(Error):
+        with self.assertRaises(InterfaceError):
             cursor.execute("SELECT 42")
 
-        with self.assertRaises(Error):
+        with self.assertRaises(InterfaceError):
             cursor.execute_many("SELECT 42")
 
-        with self.assertRaises(Error):
+        with self.assertRaises(InterfaceError):
             cursor.fetchone()
 
-        with self.assertRaises(Error):
+        with self.assertRaises(InterfaceError):
             cursor.fetchmany()
 
-        with self.assertRaises(Error):
+        with self.assertRaises(InterfaceError):
             cursor.fetchall()
 
-        with self.assertRaises(Error):
+        with self.assertRaises(InterfaceError):
             cursor.next()
 
     def test_closing_twice_is_ok(self):
@@ -47,11 +47,3 @@ class TestCursorBasics(TestCase):
 
         cursor.close()
         cursor.close()
-
-    def test_close_connection_before_cursor(self):
-        connection = connect(dsn)
-        cursor = connection.cursor()
-        connection.close()
-
-        with self.assertRaises(Error):
-            cursor.execute("Oh Boy!")

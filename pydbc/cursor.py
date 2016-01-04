@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from .exceptions import translate_exceptions, Error
+from .exceptions import translate_exceptions, InterfaceError
 
 
 class Cursor(object):
@@ -22,7 +22,7 @@ class Cursor(object):
 
     def _assert_valid(self):
         if self.impl is None:
-            raise Error("Cursor already closed")
+            raise InterfaceError("Cursor already closed")
 
     @property
     def arraysize(self):

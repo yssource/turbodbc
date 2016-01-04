@@ -10,11 +10,19 @@ class Error(StandardError):
     pass
 
 
+class InterfaceError(Error):
+    pass
+
+
+class DatabaseError(Error):
+    pass 
+
+
 def translate_exceptions(f):
     @wraps(f)
     def wrapper(*args, **kwds):
         try:
             return f(*args, **kwds)
         except InternError as e:
-            raise Error(str(e))
+            raise DatabaseError(str(e))
     return wrapper
