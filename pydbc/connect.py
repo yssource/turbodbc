@@ -1,10 +1,12 @@
-from exception_types import translate_exceptions
-from connection import Connection
+from __future__ import absolute_import
 
-import pydbc_intern as intern
+from .pydbc_intern import connect as intern_connect
+
+from .exceptions import translate_exceptions
+from .connection import Connection
 
 
 @translate_exceptions
 def connect(dsn):
     """Create ODBC connection"""
-    return Connection(intern.connect(dsn))
+    return Connection(intern_connect(dsn))

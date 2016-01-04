@@ -1,6 +1,7 @@
-from exception_types import translate_exceptions, Error
+from __future__ import absolute_import
 
-from cursor import Cursor
+from .exceptions import translate_exceptions, Error
+from .cursor import Cursor
 
 
 class Connection(object):
@@ -27,7 +28,6 @@ class Connection(object):
 
     def close(self):
         self._assert_valid()
-        #TODO: connection needs impl knowledge on cursor. :(
         for c in self.cursors:
             if not c.is_closed():
                 c.close()

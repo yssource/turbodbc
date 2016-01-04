@@ -1,7 +1,9 @@
-import pydbc_intern as intern
+from __future__ import absolute_import
 
 from functools import wraps
 from exceptions import StandardError
+
+from .pydbc_intern import Error as InternError
 
 
 class Error(StandardError):
@@ -13,6 +15,6 @@ def translate_exceptions(f):
     def wrapper(*args, **kwds):
         try:
             return f(*args, **kwds)
-        except intern.Error as e:
+        except InternError as e:
             raise Error(str(e))
     return wrapper

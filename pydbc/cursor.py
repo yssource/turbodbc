@@ -1,4 +1,7 @@
-from exception_types import translate_exceptions, Error
+from __future__ import absolute_import
+
+from .exceptions import translate_exceptions, Error
+
 
 class Cursor(object):
     def __init__(self, impl):
