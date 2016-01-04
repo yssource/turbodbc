@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+from .api_constants import apilevel, threadsafety, paramstyle
 from .connect import connect
 from .constructors import Date, Time, Timestamp
 from .exceptions import Error, InterfaceError, DatabaseError
