@@ -1,34 +1,15 @@
-from unittest import TestCase
-
-from query_fixture import query_fixture
-
-import pydbc
-import json
 import datetime
 
+import pydbc
 
-class SelectBaseTestCase(object):
+from query_fixture import query_fixture
+from cursor_test_case import CursorTestCase
+
+
+class SelectTests(object):
     """
-    Children are expected to provide the following attributes:
-    
-    self.dsn
-    self.supports_row_count
-    self.fixture_file_name
+    Parent class for database-specific SELECT tests
     """
-
-    @classmethod
-    def setUpClass(cls):
-        with open(cls.fixture_file_name, 'r') as f:
-            cls.fixtures = json.load(f)
-
-    def setUp(self):
-        self.connection = pydbc.connect(self.dsn)
-        self.cursor = self.connection.cursor()
-
-    def tearDown(self):
-        self.cursor.close()
-        self.connection.close()
-
     def _test_single_row_result_set(self, query, expected_row):
         self.cursor.execute(query)
 
@@ -97,19 +78,19 @@ class SelectBaseTestCase(object):
 
 # Actual test cases
 
-class TestSelectExasol(SelectBaseTestCase, TestCase):
+class TestCursorSelectExasol(SelectTests, CursorTestCase):
     dsn = "Exasol R&D test database"
     supports_row_count = True
     fixture_file_name = 'query_fixtures_exasol.json'
 
 
-class TestSelectPostgreSQL(SelectBaseTestCase, TestCase):
+class TestCursorSelectPostgreSQL(SelectTests, CursorTestCase):
     dsn = "PostgreSQL R&D test database"
     supports_row_count = False
     fixture_file_name = 'query_fixtures_postgresql.json'
 
 
-class TestSelectMySQL(SelectBaseTestCase, TestCase):
+class TestCursorSelectMySQL(SelectTests, CursorTestCase):
     dsn = "MySQL R&D test database"
     supports_row_count = True
     fixture_file_name = 'query_fixtures_mysql.json'
