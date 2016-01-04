@@ -1,4 +1,6 @@
 from __future__ import absolute_import
 
-from .exceptions import Error, InterfaceError, DatabaseError
 from .connect import connect
+from .exceptions import Error, InterfaceError, DatabaseError
+from .data_types import STRING, BINARY, NUMBER, DATETIME, ROWID
+
