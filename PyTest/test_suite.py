@@ -5,52 +5,6 @@ import pydbc
 dsn = "Exasol R&D test database"
 #dsn = "MySQL R&D test database"
 
-def has_method(_object, method_name):
-    return hasattr(_object, method_name) and callable(getattr(_object, method_name))
-
-
-class TestConnect(TestCase):
-
-    def test_connect(self):
-        connection = pydbc.connect(dsn)
-
-        self.assertTrue(has_method(connection, 'close'), "close method missing")
-        self.assertTrue(has_method(connection, 'commit'), "commit method missing")
-        self.assertTrue(has_method(connection, 'cursor'), "cursor method missing")
-
-        connection.close()
-
-        with self.assertRaises(pydbc.Error):
-            # after closing a connection, all calls should raise an Error or subclass
-            connection.cursor()
-
-    def test_connect_error(self):
-        self.assertRaises(pydbc.Error, pydbc.connect, "Oh Boy!")
-
-    def test_cursor_setup_teardown(self):
-        connection = pydbc.connect(dsn)
-        cursor = connection.cursor()
-
-        # https://www.python.org/dev/peps/pep-0249/#rowcount
-        self.assertEqual(cursor.rowcount, -1 , 'no query has been performed, rowcount expected to be -1')
-        self.assertIsNone(cursor.description, 'no query has been performed, description expected to be None')
-        self.assertEqual(cursor.arraysize, 1, 'wrong default for attribute arraysize')
-
-        cursor.close()
-
-        with self.assertRaises(pydbc.Error):
-            cursor.execute("Oh Boy!")
-
-        connection.close()
-
-    def test_close_connection_before_cursor(self):
-        connection = pydbc.connect(dsn)
-        cursor = connection.cursor()
-        connection.close()
-
-        with self.assertRaises(pydbc.Error):
-            cursor.execute("Oh Boy!")
-
 
 class TestDML(TestCase):
 
