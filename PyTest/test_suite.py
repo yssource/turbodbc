@@ -10,58 +10,58 @@ def has_method(_object, method_name):
 
 
 class TestConnect(TestCase):
- 
+
     def test_connect(self):
-       connection = pydbc.connect(dsn)
- 
-       self.assertTrue(has_method(connection, 'close'), "close method missing")
-       self.assertTrue(has_method(connection, 'commit'), "commit method missing")
-       self.assertTrue(has_method(connection, 'cursor'), "cursor method missing")
- 
-       connection.close()
- 
-       with self.assertRaises(pydbc.Error):
+        connection = pydbc.connect(dsn)
+
+        self.assertTrue(has_method(connection, 'close'), "close method missing")
+        self.assertTrue(has_method(connection, 'commit'), "commit method missing")
+        self.assertTrue(has_method(connection, 'cursor'), "cursor method missing")
+
+        connection.close()
+
+        with self.assertRaises(pydbc.Error):
             # after closing a connection, all calls should raise an Error or subclass
             connection.cursor()
- 
+
     def test_connect_error(self):
-        self.assertRaises(pydbc.Error, pydbc.connect, "Oh Boy!")   
- 
+        self.assertRaises(pydbc.Error, pydbc.connect, "Oh Boy!")
+
     def test_cursor_setup_teardown(self):
         connection = pydbc.connect(dsn)
         cursor = connection.cursor()
- 
+
         # https://www.python.org/dev/peps/pep-0249/#rowcount
         self.assertEqual(cursor.rowcount, -1 , 'no query has been performed, rowcount expected to be -1')
         self.assertIsNone(cursor.description, 'no query has been performed, description expected to be None')
         self.assertEqual(cursor.arraysize, 1, 'wrong default for attribute arraysize')
- 
+
         cursor.close()
- 
+
         with self.assertRaises(pydbc.Error):
             cursor.execute("Oh Boy!")
- 
+
         connection.close()
- 
+
     def test_close_connection_before_cursor(self):
         connection = pydbc.connect(dsn)
         cursor = connection.cursor()
         connection.close()
- 
+
         with self.assertRaises(pydbc.Error):
             cursor.execute("Oh Boy!")
 
 
 class TestDML(TestCase):
- 
+
     def setUp(self):
         self.connection = pydbc.connect(dsn)
         self.cursor = self.connection.cursor()
- 
+
     def tearDown(self):
         self.cursor.close()
         self.connection.close()
- 
+
     def test_multiple_row_single_integer_result(self):
         self.cursor.execute("delete from test_integer")
         self.cursor.execute("insert into test_integer values (1)")
@@ -72,7 +72,7 @@ class TestDML(TestCase):
         self.assertItemsEqual(row, [1])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [2])
-         
+
     def test_multiple_row_single_boolean_result(self):
         self.cursor.execute("delete from test_bool")
         self.cursor.execute("insert into test_bool values (FALSE)")
@@ -83,7 +83,7 @@ class TestDML(TestCase):
         self.assertItemsEqual(row, [False])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [True])
- 
+
     def test_multiple_row_single_string_result(self):
         value_1 = 'Oh Boy!'
         value_2 = 'py(o)dbc'
@@ -96,7 +96,7 @@ class TestDML(TestCase):
         self.assertItemsEqual(row, [value_1])
         row = self.cursor.fetchone()
         self.assertItemsEqual(row, [value_2])
- 
+
     def test_fetchall_rows_single_integer_result(self):
         self.cursor.execute("delete from test_integer")
         self.cursor.execute("insert into test_integer values (1)")
@@ -105,7 +105,7 @@ class TestDML(TestCase):
         self.cursor.execute("select * from test_integer order by a")
         rows = self.cursor.fetchall()
         self.assertItemsEqual([[1],[2],[3]], (list(r) for r in rows))
-         
+
     def test_fetchmany_rows_single_integer_result(self):
         self.cursor.execute("delete from test_integer")
         self.cursor.execute("insert into test_integer values (1)")
@@ -132,7 +132,7 @@ class TestParameterBasedInsert(TestCase):
         self.cursor.execute("delete from test_integer")
         parameters = [1]
         self.cursor.execute("insert into test_integer values (?)", parameters)
-         
+
         self.cursor.execute("select * from test_integer order by a")
         rows = self.cursor.fetchall()
         self.assertItemsEqual([parameters], (list(r) for r in rows))
@@ -141,16 +141,16 @@ class TestParameterBasedInsert(TestCase):
         self.cursor.execute("delete from test_integer")
         expected = [[1], [2], [3]]
         self.cursor.execute_many("insert into test_integer values (?)", expected)
-        
+
         self.cursor.execute("select * from test_integer order by a")
         rows = self.cursor.fetchall()
         self.assertItemsEqual(expected, (list(r) for r in rows))
-        
+
     def test_multiple_rows_single_double_column(self):
         self.cursor.execute("delete from test_double")
         expected = [[1.23], [2.71], [3.14]]
         self.cursor.execute_many("insert into test_double values (?)", expected)
-        
+
         self.cursor.execute("select * from test_double order by a")
         rows = self.cursor.fetchall()
         self.assertItemsEqual(expected, (list(r) for r in rows))
