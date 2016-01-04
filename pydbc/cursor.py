@@ -59,6 +59,7 @@ class Cursor(object):
 
     @translate_exceptions
     def fetchone(self):
+        self._assert_valid()
         result = self.impl.fetchone()
         if len(result) == 0:
             return None 
@@ -95,8 +96,4 @@ class Cursor(object):
         return [row for row in rows(size)]
 
     def close(self):
-        self._assert_valid()
         self.impl = None
-
-    def is_closed(self):
-        return self.impl is None

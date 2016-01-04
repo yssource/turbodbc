@@ -29,7 +29,6 @@ class Connection(object):
     def close(self):
         self._assert_valid()
         for c in self.cursors:
-            if not c.is_closed():
-                c.close()
+            c.close()
         self.cursors = []
         self.impl = None
