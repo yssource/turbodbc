@@ -8,7 +8,10 @@ from cursor_test_case import CursorTestCase
 
 class SelectTests(object):
     """
-    Parent class for database-specific SELECT tests
+    Parent class for database-specific SELECT tests. Children are expected to provide
+    the following attributes:
+
+    self.supports_row_count
     """
     def _test_single_row_result_set(self, query, expected_row):
         self.cursor.execute(query)
@@ -80,17 +83,17 @@ class SelectTests(object):
 
 class TestCursorSelectExasol(SelectTests, CursorTestCase):
     dsn = "Exasol R&D test database"
-    supports_row_count = True
     fixture_file_name = 'query_fixtures_exasol.json'
+    supports_row_count = True
 
 
 class TestCursorSelectPostgreSQL(SelectTests, CursorTestCase):
     dsn = "PostgreSQL R&D test database"
-    supports_row_count = False
     fixture_file_name = 'query_fixtures_postgresql.json'
+    supports_row_count = False
 
 
 class TestCursorSelectMySQL(SelectTests, CursorTestCase):
     dsn = "MySQL R&D test database"
-    supports_row_count = True
     fixture_file_name = 'query_fixtures_mysql.json'
+    supports_row_count = True

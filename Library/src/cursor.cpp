@@ -41,7 +41,12 @@ cursor::~cursor() = default;
 
 void cursor::prepare(std::string const & sql)
 {
+	statement_->unbind_all_columns();
+	statement_->unbind_all_parameters();
 	statement_->close_cursor();
+	current_parameter_set_ = 0;
+	parameters_.clear();
+
 	statement_->prepare(sql);
 }
 

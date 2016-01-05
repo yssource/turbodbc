@@ -72,44 +72,6 @@ class TestDML(TestCase):
         self.assertItemsEqual([[3]], (list(r) for r in rows))
 
 
-class TestParameterBasedInsert(TestCase):
-
-    def setUp(self):
-        self.connection = pydbc.connect(dsn)
-        self.cursor = self.connection.cursor()
-
-    def tearDown(self):
-        self.cursor.close()
-        self.connection.close()
-
-    def test_single_row_single_integer_column(self):
-        self.cursor.execute("delete from test_integer")
-        parameters = [1]
-        self.cursor.execute("insert into test_integer values (?)", parameters)
-
-        self.cursor.execute("select * from test_integer order by a")
-        rows = self.cursor.fetchall()
-        self.assertItemsEqual([parameters], (list(r) for r in rows))
-
-    def test_multiple_rows_single_integer_column(self):
-        self.cursor.execute("delete from test_integer")
-        expected = [[1], [2], [3]]
-        self.cursor.execute_many("insert into test_integer values (?)", expected)
-
-        self.cursor.execute("select * from test_integer order by a")
-        rows = self.cursor.fetchall()
-        self.assertItemsEqual(expected, (list(r) for r in rows))
-
-    def test_multiple_rows_single_double_column(self):
-        self.cursor.execute("delete from test_double")
-        expected = [[1.23], [2.71], [3.14]]
-        self.cursor.execute_many("insert into test_double values (?)", expected)
-
-        self.cursor.execute("select * from test_double order by a")
-        rows = self.cursor.fetchall()
-        self.assertItemsEqual(expected, (list(r) for r in rows))
-
-
 if __name__ == '__main__':
     from unittest import main
     main()

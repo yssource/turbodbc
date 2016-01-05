@@ -12,9 +12,10 @@ def query_fixture(cursor, fixtures, fixture_key):
     :param fixture_key: Identifies the fixture
     
     The context manager performs the following tasks:
-    * Execute all queries listed in the fixture's "setup" section
-    * Return the query listed in the fixture's "payload" section
-    * Execute all queries listed in the fixture's "teardown" section
+    * If present, execute all queries listed in the fixture's "setup" section
+    * If present, return the query listed in the fixture's "payload" section;
+      else return the name of a temporary table
+    * If present, execute all queries listed in the fixture's "teardown" section
     
     The fixtures dictionary should have the following format:
     
@@ -26,7 +27,7 @@ def query_fixture(cursor, fixtures, fixture_key):
         }
     }
     
-    Setup and teardown sections are optional. Queries may contain
+    Setup, payload, and teardown sections are optional. Queries may contain
     "{table_name}" to be replaced with a random table name.
     """
     fixture = fixtures[fixture_key]
@@ -45,6 +46,9 @@ def query_fixture(cursor, fixtures, fixture_key):
 
     _execute_queries("setup")
     try:
-        yield fixture['payload'].format(table_name=table_name)
+        if 'payload' in fixture:
+            yield fixture['payload'].format(table_name=table_name)
+        else:
+            yield table_name
     finally:
         _execute_queries("teardown")

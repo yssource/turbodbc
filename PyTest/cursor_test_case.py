@@ -10,7 +10,6 @@ class CursorTestCase(TestCase):
     Children are expected to provide the following attributes:
     
     self.dsn
-    self.supports_row_count
     self.fixture_file_name
     """
 
