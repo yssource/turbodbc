@@ -70,6 +70,11 @@ public:
 	void bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, cpp_odbc::multi_value_buffer & parameter_values) const;
 
 	/**
+	 * @brief Unbind all parameters currently bound to the statement
+	 */
+	void unbind_all_parameters() const;
+
+	/**
 	 * @brief Executes an SQL query which has previously been prepared. Call after prepare()
 	 */
 	void execute_prepared() const;
@@ -93,6 +98,11 @@ public:
 	 * @param column_buffer A buffer which will be filled with data whenever fetch_scroll() is called.
 	 */
 	void bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp_odbc::multi_value_buffer & column_buffer) const;
+
+	/**
+	 * @brief Unbind all columns currently bound to the statement
+	 */
+	void unbind_all_columns() const;
 
 	/**
 	 * @brief Fetch the next elements of the result of the previously executed statement and
@@ -150,11 +160,13 @@ private:
 	virtual void do_execute(std::string const & sql) const = 0;
 	virtual void do_prepare(std::string const & sql) const = 0;
 	virtual void do_bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, cpp_odbc::multi_value_buffer & parameter_values) const = 0;
+	virtual void do_unbind_all_parameters() const = 0;
 	virtual void do_execute_prepared() const = 0;
 
 	virtual short int do_number_of_columns() const = 0;
 	virtual short int do_number_of_parameters() const = 0;
 	virtual void do_bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp_odbc::multi_value_buffer & column_buffer) const = 0;
+	virtual void do_unbind_all_columns() const = 0;
 	virtual bool do_fetch_next() const = 0;
 	virtual void do_close_cursor() const = 0;
 

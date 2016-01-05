@@ -48,6 +48,11 @@ void statement::bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT valu
 	do_bind_input_parameter(parameter_id, value_type, parameter_type, parameter_values);
 }
 
+void statement::unbind_all_parameters() const
+{
+	do_unbind_all_parameters();
+}
+
 void statement::execute_prepared() const
 {
 	do_execute_prepared();
@@ -66,6 +71,11 @@ short int statement::number_of_parameters() const
 void statement::bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp_odbc::multi_value_buffer & column_buffer) const
 {
 	do_bind_column(column_id, column_type, column_buffer);
+}
+
+void statement::unbind_all_columns() const
+{
+	do_unbind_all_columns();
 }
 
 bool statement::fetch_next() const

@@ -61,6 +61,11 @@ void raii_statement::do_bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALL
 	api_->bind_input_parameter(handle_, parameter_id, value_type, parameter_type, parameter_values);
 }
 
+void raii_statement::do_unbind_all_parameters() const
+{
+	api_->free_statement(handle_, SQL_RESET_PARAMS);
+}
+
 void raii_statement::do_execute_prepared() const
 {
 	api_->execute_prepared_statement(handle_);
@@ -79,6 +84,11 @@ short int raii_statement::do_number_of_parameters() const
 void raii_statement::do_bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp_odbc::multi_value_buffer & column_buffer) const
 {
 	api_->bind_column(handle_, column_id, column_type, column_buffer);
+}
+
+void raii_statement::do_unbind_all_columns() const
+{
+	api_->free_statement(handle_, SQL_UNBIND);
 }
 
 bool raii_statement::do_fetch_next() const

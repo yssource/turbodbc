@@ -33,10 +33,12 @@ CPPUNIT_TEST_SUITE( raii_statement_test );
 	CPPUNIT_TEST( execute );
 	CPPUNIT_TEST( prepare );
 	CPPUNIT_TEST( bind_input_parameter );
+	CPPUNIT_TEST( unbind_all_parameters );
 	CPPUNIT_TEST( execute_prepared );
 	CPPUNIT_TEST( number_of_columns );
 	CPPUNIT_TEST( number_of_parameters );
 	CPPUNIT_TEST( bind_column );
+	CPPUNIT_TEST( unbind_all_columns );
 	CPPUNIT_TEST( fetch_next );
 	CPPUNIT_TEST( close_cursor );
 	CPPUNIT_TEST( get_integer_column_attribute );
@@ -58,10 +60,12 @@ public:
 	void execute();
 	void prepare();
 	void bind_input_parameter();
+	void unbind_all_parameters();
 	void execute_prepared();
 	void number_of_columns();
 	void number_of_parameters();
 	void bind_column();
+	void unbind_all_columns();
 	void fetch_next();
 	void close_cursor();
 	void get_integer_column_attribute();
@@ -238,6 +242,17 @@ void raii_statement_test::bind_input_parameter()
 	statement.bind_input_parameter(parameter_id, value_type, parameter_type, parameter_values);
 }
 
+void raii_statement_test::unbind_all_parameters()
+{
+	auto api = make_default_api();
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
+	EXPECT_CALL(*api, do_free_statement(default_s_handle, SQL_RESET_PARAMS)).Times(1);
+
+	raii_statement statement(connection);
+	statement.unbind_all_parameters();
+}
+
 void raii_statement_test::execute_prepared()
 {
 	auto api = make_default_api();
@@ -290,6 +305,17 @@ void raii_statement_test::bind_column()
 
 	raii_statement statement(connection);
 	statement.bind_column(column_id, column_type, column_buffer);
+}
+
+void raii_statement_test::unbind_all_columns()
+{
+	auto api = make_default_api();
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
+	EXPECT_CALL(*api, do_free_statement(default_s_handle, SQL_UNBIND)).Times(1);
+
+	raii_statement statement(connection);
+	statement.unbind_all_columns();
 }
 
 void raii_statement_test::fetch_next()

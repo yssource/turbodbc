@@ -30,10 +30,12 @@ CPPUNIT_TEST_SUITE( statement_test );
 	CPPUNIT_TEST( execute_forwards );
 	CPPUNIT_TEST( prepare_forwards );
 	CPPUNIT_TEST( bind_input_parameter_forwards );
+	CPPUNIT_TEST( unbind_all_parameters_forwards );
 	CPPUNIT_TEST( execute_prepared_forwards );
 	CPPUNIT_TEST( number_of_columns_forwards );
 	CPPUNIT_TEST( number_of_parameters_forwards );
 	CPPUNIT_TEST( bind_column_forwards );
+	CPPUNIT_TEST( unbind_all_columns_forwards );
 	CPPUNIT_TEST( fetch_next_forwards );
 	CPPUNIT_TEST( close_cursor_forwards );
 	CPPUNIT_TEST( get_integer_column_attribute_forwards );
@@ -53,10 +55,12 @@ public:
 	void execute_forwards();
 	void prepare_forwards();
 	void bind_input_parameter_forwards();
+	void unbind_all_parameters_forwards();
 	void execute_prepared_forwards();
 	void number_of_columns_forwards();
 	void number_of_parameters_forwards();
 	void bind_column_forwards();
+	void unbind_all_columns_forwards();
 	void fetch_next_forwards();
 	void close_cursor_forwards();
 	void get_integer_column_attribute_forwards();
@@ -146,6 +150,14 @@ void statement_test::bind_input_parameter_forwards()
 	statement.bind_input_parameter(parameter, value_type, parameter_type, values);
 }
 
+void statement_test::unbind_all_parameters_forwards()
+{
+	mock_statement statement;
+	EXPECT_CALL( statement, do_unbind_all_parameters() ).Times(1);
+
+	statement.unbind_all_parameters();
+}
+
 
 void statement_test::execute_prepared_forwards()
 {
@@ -187,6 +199,14 @@ void statement_test::bind_column_forwards()
 	EXPECT_CALL( statement, do_bind_column(column, column_type, testing::Ref(values))).Times(1);
 
 	statement.bind_column(column, column_type, values);
+}
+
+void statement_test::unbind_all_columns_forwards()
+{
+	mock_statement statement;
+	EXPECT_CALL( statement, do_unbind_all_columns() ).Times(1);
+
+	statement.unbind_all_columns();
 }
 
 void statement_test::fetch_next_forwards()
