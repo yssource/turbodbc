@@ -151,6 +151,14 @@ public:
 	std::string get_string_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const;
 
 	/**
+	 * @brief Retrieve an integer information associated with the connection
+	 * @param handle The connection for which we would like to retrieve information
+	 * @param info_type The info type we are interested in. See unixODBC's SQLGetInfo() documentation
+	 * @return The retrieved integer
+	 */
+	SQLUINTEGER get_integer_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const;
+
+	/**
 	 * @brief Bind a buffer to a column of the statement
 	 * @param handle The statement which holds a result set
 	 * @param column_id The column identifier with which we want to associate the buffer
@@ -310,6 +318,7 @@ private:
 	virtual void do_disconnect(connection_handle & handle) const = 0;
 	virtual void do_end_transaction(connection_handle const & handle, SQLSMALLINT completion_type) const = 0;
 	virtual std::string do_get_string_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const = 0;
+	virtual SQLUINTEGER do_get_integer_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const = 0;
 
 	virtual void do_bind_column(statement_handle const & handle, SQLUSMALLINT column_id, SQLSMALLINT column_type, multi_value_buffer & column_buffer) const = 0;
 	virtual void do_bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, multi_value_buffer & parameter_values) const = 0;

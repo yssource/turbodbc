@@ -208,6 +208,21 @@ std::string level1_connector::do_get_string_connection_info(connection_handle co
 	return output_connection_string;
 }
 
+SQLUINTEGER level1_connector::do_get_integer_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const
+{
+	SQLUINTEGER destination = 0;
+	auto const return_code = level1_api_->get_connection_info(
+			handle.handle,
+			info_type,
+			&destination,
+			0,
+			nullptr
+		);
+
+	impl::throw_on_error(return_code, *this, handle);
+	return destination;
+}
+
 void level1_connector::do_bind_column(statement_handle const & handle, SQLUSMALLINT column_id, SQLSMALLINT column_type, multi_value_buffer & column_buffer) const
 {
 	auto const return_code = level1_api_->bind_column(

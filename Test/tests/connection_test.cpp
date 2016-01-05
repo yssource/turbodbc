@@ -28,6 +28,7 @@ CPPUNIT_TEST_SUITE( connection_test );
 	CPPUNIT_TEST( commit_forwards );
 	CPPUNIT_TEST( rollback_forwards );
 	CPPUNIT_TEST( get_string_info_forwards );
+	CPPUNIT_TEST( get_integer_info_forwards );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -40,6 +41,7 @@ public:
 	void commit_forwards();
 	void rollback_forwards();
 	void get_string_info_forwards();
+	void get_integer_info_forwards();
 
 };
 
@@ -111,4 +113,16 @@ void connection_test::get_string_info_forwards()
 		.WillOnce(testing::Return(expected));
 
 	CPPUNIT_ASSERT_EQUAL(expected, connection.get_string_info(info_type));
+}
+
+void connection_test::get_integer_info_forwards()
+{
+	mock_connection connection;
+	SQLUSMALLINT const info_type = 42;
+	SQLUINTEGER const expected = 23;
+
+	EXPECT_CALL(connection, do_get_integer_info(info_type))
+		.WillOnce(testing::Return(expected));
+
+	CPPUNIT_ASSERT_EQUAL(expected, connection.get_integer_info(info_type));
 }

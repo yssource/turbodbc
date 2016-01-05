@@ -39,6 +39,7 @@ CPPUNIT_TEST_SUITE( level2_api_test );
 	CPPUNIT_TEST( disconnect_forwards );
 	CPPUNIT_TEST( end_transaction_forwards );
 	CPPUNIT_TEST( get_string_connection_info_forwards );
+	CPPUNIT_TEST( get_integer_connection_info_forwards );
 	CPPUNIT_TEST( bind_column_forwards );
 	CPPUNIT_TEST( bind_input_parameter_forwards );
 	CPPUNIT_TEST( get_string_column_attribute_forwards );
@@ -77,6 +78,7 @@ public:
 	void disconnect_forwards();
 	void end_transaction_forwards();
 	void get_string_connection_info_forwards();
+	void get_integer_connection_info_forwards();
 	void bind_column_forwards();
 	void bind_input_parameter_forwards();
 	void get_string_column_attribute_forwards();
@@ -294,6 +296,19 @@ void level2_api_test::get_string_connection_info_forwards()
 		.WillOnce(testing::Return(expected_info));
 
 	CPPUNIT_ASSERT_EQUAL(expected_info, api.get_string_connection_info(handle, info_type));
+}
+
+void level2_api_test::get_integer_connection_info_forwards()
+{
+	level2::connection_handle handle = {&value_a};
+	SQLUSMALLINT const info_type = SQL_DRIVER_ODBC_VER;
+	SQLUINTEGER const expected = 42;
+
+	level2_mock_api api;
+	EXPECT_CALL(api, do_get_integer_connection_info(handle, info_type))
+		.WillOnce(testing::Return(expected));
+
+	CPPUNIT_ASSERT_EQUAL(expected, api.get_integer_connection_info(handle, info_type));
 }
 
 void level2_api_test::bind_column_forwards()

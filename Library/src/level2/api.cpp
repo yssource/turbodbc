@@ -92,6 +92,11 @@ std::string api::get_string_connection_info(connection_handle const & handle, SQ
 	return do_get_string_connection_info(handle, info_type);
 }
 
+SQLUINTEGER api::get_integer_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const
+{
+	return do_get_integer_connection_info(handle, info_type);
+}
+
 void api::bind_column(statement_handle const & handle, SQLUSMALLINT column_id, SQLSMALLINT column_type, multi_value_buffer & column_buffer) const
 {
 	do_bind_column(handle, column_id, column_type, column_buffer);

@@ -36,6 +36,7 @@ CPPUNIT_TEST_SUITE( raii_connection_test );
 	CPPUNIT_TEST( commit );
 	CPPUNIT_TEST( rollback );
 	CPPUNIT_TEST( get_string_info );
+	CPPUNIT_TEST( get_integer_info );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -52,6 +53,7 @@ public:
 	void commit();
 	void rollback();
 	void get_string_info();
+	void get_integer_info();
 };
 
 // Registers the fixture with the 'registry'
@@ -216,4 +218,18 @@ void raii_connection_test::get_string_info()
 		.WillOnce(testing::Return(expected));
 
 	CPPUNIT_ASSERT_EQUAL(expected, connection.get_string_info(info_type));
+}
+
+void raii_connection_test::get_integer_info()
+{
+	SQLUSMALLINT const info_type = 42;
+	SQLUINTEGER const expected = 23;
+
+	auto api = make_default_api();
+	auto environment = std::make_shared<raii_environment const>(api);
+	raii_connection connection(environment, "dummy");
+	EXPECT_CALL(*api, do_get_integer_connection_info(default_c_handle, info_type))
+		.WillOnce(testing::Return(expected));
+
+	CPPUNIT_ASSERT_EQUAL(expected, connection.get_integer_info(info_type));
 }

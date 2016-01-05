@@ -62,6 +62,7 @@ private:
 	void do_commit() const final;
 	void do_rollback() const final;
 	std::string do_get_string_info(SQLUSMALLINT info_type) const final;
+	SQLUINTEGER do_get_integer_info(SQLUSMALLINT info_type) const final;
 
 	struct intern;
 	std::unique_ptr<intern> impl_;

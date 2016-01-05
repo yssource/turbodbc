@@ -42,4 +42,9 @@ std::string connection::get_string_info(SQLUSMALLINT info_type) const
 	return do_get_string_info(info_type);
 }
 
+SQLUINTEGER connection::get_integer_info(SQLUSMALLINT info_type) const
+{
+	return do_get_integer_info(info_type);
+}
+
 }

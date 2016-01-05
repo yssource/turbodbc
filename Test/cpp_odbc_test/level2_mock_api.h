@@ -35,6 +35,7 @@ namespace cpp_odbc_test {
 		MOCK_CONST_METHOD1(do_disconnect, void(cpp_odbc::level2::connection_handle &));
 		MOCK_CONST_METHOD2(do_end_transaction, void(cpp_odbc::level2::connection_handle const &, SQLSMALLINT));
 		MOCK_CONST_METHOD2(do_get_string_connection_info, std::string(cpp_odbc::level2::connection_handle const & handle, SQLUSMALLINT info_type));
+		MOCK_CONST_METHOD2(do_get_integer_connection_info, SQLUINTEGER(cpp_odbc::level2::connection_handle const & handle, SQLUSMALLINT info_type));
 		MOCK_CONST_METHOD4(do_bind_column, void(cpp_odbc::level2::statement_handle const &, SQLUSMALLINT, SQLSMALLINT, cpp_odbc::multi_value_buffer &));
 		MOCK_CONST_METHOD5(do_bind_input_parameter, void(cpp_odbc::level2::statement_handle const &, SQLUSMALLINT, SQLSMALLINT, SQLSMALLINT, cpp_odbc::multi_value_buffer &));
 		MOCK_CONST_METHOD1(do_execute_prepared_statement, void(cpp_odbc::level2::statement_handle const &));

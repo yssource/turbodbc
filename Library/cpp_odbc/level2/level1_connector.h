@@ -53,6 +53,7 @@ private:
 	void do_disconnect(connection_handle & handle) const final;
 	void do_end_transaction(connection_handle const & handle, SQLSMALLINT completion_type) const final;
 	std::string do_get_string_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const final;
+	SQLUINTEGER do_get_integer_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const final;
 	void do_bind_column(statement_handle const & handle, SQLUSMALLINT column_id, SQLSMALLINT column_type, multi_value_buffer & column_buffer) const final;
 	void do_bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, multi_value_buffer & parameter_values) const final;
 	void do_execute_prepared_statement(statement_handle const & handle) const final;

@@ -70,6 +70,9 @@ CPPUNIT_TEST_SUITE( level1_connector_test );
 	CPPUNIT_TEST( get_string_connection_info_calls_api );
 	CPPUNIT_TEST( get_string_connection_info_fails );
 
+	CPPUNIT_TEST( get_integer_connection_info_calls_api );
+	CPPUNIT_TEST( get_integer_connection_info_fails );
+
 	CPPUNIT_TEST( bind_column_calls_api );
 	CPPUNIT_TEST( bind_column_fails );
 	CPPUNIT_TEST( bind_input_parameter_calls_api );
@@ -153,6 +156,9 @@ public:
 
 	void get_string_connection_info_calls_api();
 	void get_string_connection_info_fails();
+
+	void get_integer_connection_info_calls_api();
+	void get_integer_connection_info_fails();
 
 	void bind_column_calls_api();
 	void bind_column_fails();
@@ -622,7 +628,6 @@ void level1_connector_test::get_string_connection_info_fails()
 {
 	level2::connection_handle handle = {&value_a};
 	SQLUSMALLINT const info_type = SQL_ODBC_VER;
-	std::string const expected_info = "test info";
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_get_connection_info(testing::_, testing::_, testing::_, testing::_, testing::_))
@@ -631,6 +636,41 @@ void level1_connector_test::get_string_connection_info_fails()
 
 	level1_connector const connector(api);
 	CPPUNIT_ASSERT_THROW(connector.get_string_connection_info(handle, info_type), cpp_odbc::error);
+}
+
+void level1_connector_test::get_integer_connection_info_calls_api()
+{
+	level2::connection_handle handle = {&value_a};
+	SQLUSMALLINT const info_type = SQL_ODBC_VER;
+	SQLUINTEGER const expected_info = 42;
+
+	auto copy_int_to_void_pointer = [&expected_info](testing::Unused, testing::Unused, void * destination, testing::Unused, testing::Unused) {
+		memcpy(destination, &expected_info, sizeof(expected_info));
+	};
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_get_connection_info(handle.handle, info_type, testing::_, 0, nullptr))
+		.WillOnce(testing::DoAll(
+					testing::Invoke(copy_int_to_void_pointer),
+					testing::Return(SQL_SUCCESS)
+				));
+
+	level1_connector const connector(api);
+	CPPUNIT_ASSERT_EQUAL(expected_info, connector.get_integer_connection_info(handle, info_type));
+}
+
+void level1_connector_test::get_integer_connection_info_fails()
+{
+	level2::connection_handle handle = {&value_a};
+	SQLUSMALLINT const info_type = SQL_ODBC_VER;
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_get_connection_info(testing::_, testing::_, testing::_, testing::_, testing::_))
+		.WillOnce(testing::Return(SQL_ERROR));
+	expect_error(*api, expected_error);
+
+	level1_connector const connector(api);
+	CPPUNIT_ASSERT_THROW(connector.get_integer_connection_info(handle, info_type), cpp_odbc::error);
 }
 
 void level1_connector_test::bind_column_calls_api()

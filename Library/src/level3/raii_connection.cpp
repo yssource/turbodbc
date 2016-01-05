@@ -125,6 +125,11 @@ std::string raii_connection::do_get_string_info(SQLUSMALLINT info_type) const
 	return impl_->api->get_string_connection_info(impl_->handle.handle, info_type);
 }
 
+SQLUINTEGER raii_connection::do_get_integer_info(SQLUSMALLINT info_type) const
+{
+	return impl_->api->get_integer_connection_info(impl_->handle.handle, info_type);
+}
+
 raii_connection::~raii_connection() = default;
 
 } }
