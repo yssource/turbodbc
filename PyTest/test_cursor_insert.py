@@ -5,6 +5,7 @@ from query_fixture import query_fixture
 
 
 class InsertTests(object):
+
     def test_single_row(self):
         to_insert = [1]
 
@@ -19,6 +20,7 @@ class InsertTests(object):
 
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
             self.cursor.execute_many("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+#             self.cursor.execute_many("INSERT INTO {} VALUES (1)".format(table_name), to_insert)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual(to_insert, inserted)

@@ -13,11 +13,14 @@
 #include <pydbc/cursor.h>
 #include <pydbc/make_description.h>
 
+#include <cpp_odbc/error.h>
+
 #include <boost/variant/get.hpp>
 #include <sqlext.h>
 #include <stdexcept>
 
 #include <cstring>
+#include <sstream>
 
 namespace pydbc {
 
@@ -73,9 +76,17 @@ void cursor::bind_parameters()
 
 void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set)
 {
+	if (parameter_set.size() != parameters_.size()) {
+		std::ostringstream message;
+		message << "Invalid number of parameters (expected " << parameters_.size()
+				<< ", got " << parameter_set.size() << ")";
+		throw cpp_odbc::error(message.str());
+	}
+
 	for (unsigned int parameter = 0; parameter != parameter_set.size(); ++parameter) {
 		parameters_[parameter]->set(current_parameter_set_, *parameter_set[parameter]);
 	}
+
 	++current_parameter_set_;
 	statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
 }

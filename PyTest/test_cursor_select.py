@@ -13,6 +13,13 @@ class SelectTests(object):
 
     self.supports_row_count
     """
+    def test_too_many_parameters_raise(self):
+        with self.assertRaises(pydbc.Error):
+            self.cursor.execute("SELECT 42", [42])
+
+        with self.assertRaises(pydbc.Error):
+            self.cursor.execute_many("SELECT 42", [[42]])
+
     def _test_single_row_result_set(self, query, expected_row):
         self.cursor.execute(query)
 
