@@ -37,10 +37,12 @@ namespace pydbc_test {
 		MOCK_CONST_METHOD1( do_execute, void(std::string const &));
 		MOCK_CONST_METHOD1( do_prepare, void(std::string const &));
 		MOCK_CONST_METHOD4( do_bind_input_parameter, void(SQLUSMALLINT, SQLSMALLINT, SQLSMALLINT, cpp_odbc::multi_value_buffer &));
+		MOCK_CONST_METHOD0( do_unbind_all_parameters, void());
 		MOCK_CONST_METHOD0( do_execute_prepared, void());
 		MOCK_CONST_METHOD0( do_number_of_columns, short int());
 		MOCK_CONST_METHOD0( do_number_of_parameters, short int());
 		MOCK_CONST_METHOD3( do_bind_column, void(SQLUSMALLINT, SQLSMALLINT, cpp_odbc::multi_value_buffer &));
+		MOCK_CONST_METHOD0( do_unbind_all_columns, void());
 		MOCK_CONST_METHOD0( do_fetch_next, bool());
 		MOCK_CONST_METHOD0( do_close_cursor, void());
 		MOCK_CONST_METHOD2( do_get_integer_column_attribute, long(SQLUSMALLINT, SQLUSMALLINT));
