@@ -41,7 +41,7 @@ class Cursor(object):
         if parameters:
             self.impl.add_parameter_set(parameters)
         self.impl.execute()
-        self.rowcount = self.impl.get_rowcount()
+        self.rowcount = self.impl.get_row_count()
 
     @translate_exceptions
     def execute_many(self, sql, parameters=None):
@@ -55,7 +55,7 @@ class Cursor(object):
                 self.impl.add_parameter_set(parameter_set)
 
         self.impl.execute()
-        self.rowcount = self.impl.get_rowcount()
+        self.rowcount = self.impl.get_row_count()
 
     @translate_exceptions
     def fetchone(self):

@@ -24,7 +24,7 @@ void for_cursor()
     		.def("bind_parameters", &pydbc::cursor::bind_parameters)
     		.def("add_parameter_set", &pydbc::cursor::add_parameter_set)
     		.def("fetchone", &pydbc::cursor::fetch_one)
-    		.def("get_rowcount", &pydbc::cursor::get_rowcount)
+    		.def("get_row_count", &pydbc::cursor::get_row_count)
     	;
 }
 

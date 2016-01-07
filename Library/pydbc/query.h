@@ -12,20 +12,20 @@
  */
 
 #include <cpp_odbc/statement.h>
-#include <pydbc/query.h>
+#include <pydbc/result_set.h>
+#include <pydbc/parameter.h>
 #include <memory>
 #include <vector>
 
 namespace pydbc {
 
 /**
- * TODO: Cursor needs proper unit tests
+ * TODO: Query needs proper unit tests
  */
-class cursor {
+class query {
 public:
-	cursor(std::shared_ptr<cpp_odbc::statement const> statement);
+	query(std::shared_ptr<cpp_odbc::statement const> statement);
 
-	void prepare(std::string const & sql);
 	void execute();
 	void bind_parameters();
 	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
@@ -33,13 +33,15 @@ public:
 	std::vector<nullable_field> fetch_one();
 	long get_row_count();
 
-	std::shared_ptr<cpp_odbc::statement const> get_statement() const;
-
-	~cursor();
+	~query();
 
 private:
+	void check_parameter_set(std::vector<nullable_field> const & parameter_set) const;
+
 	std::shared_ptr<cpp_odbc::statement const> statement_;
-	std::shared_ptr<pydbc::query> query_;
+	std::vector<std::shared_ptr<pydbc::parameter>> parameters_;
+	std::shared_ptr<result_set> result_;
+	std::size_t current_parameter_set_;
 };
 
 }

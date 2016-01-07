@@ -22,7 +22,7 @@ CPPUNIT_TEST_SUITE( cursor_test );
 
 	CPPUNIT_TEST( get_statement );
 	CPPUNIT_TEST( fetch_one_if_empty );
-	CPPUNIT_TEST( get_rowcount );
+	CPPUNIT_TEST( get_row_count );
 
 
 CPPUNIT_TEST_SUITE_END();
@@ -31,7 +31,7 @@ public:
 
 	void get_statement();
 	void fetch_one_if_empty();
-	void get_rowcount();
+	void get_row_count();
 
 
 };
@@ -59,12 +59,12 @@ void cursor_test::fetch_one_if_empty()
 }
 
 
-void cursor_test::get_rowcount(){
+void cursor_test::get_row_count(){
 	long const expected = 17;
 	auto statement = std::make_shared<mock_statement>();
 	EXPECT_CALL( *statement, do_row_count())
 			.WillOnce(testing::Return(expected));
 
 	pydbc::cursor cursor(statement);
-	CPPUNIT_ASSERT_EQUAL(expected, cursor.get_rowcount());
+	CPPUNIT_ASSERT_EQUAL(expected, cursor.get_row_count());
 }
