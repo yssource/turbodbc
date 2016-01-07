@@ -1,20 +1,9 @@
 #pragma once
-/**
- *  @file cursor.h
- *  @date 12.12.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
 
-#include <cpp_odbc/statement.h>
+#include <cpp_odbc/connection.h>
 #include <pydbc/query.h>
 #include <memory>
-#include <vector>
+
 
 namespace pydbc {
 
@@ -23,7 +12,7 @@ namespace pydbc {
  */
 class cursor {
 public:
-	cursor(std::shared_ptr<cpp_odbc::statement const> statement);
+	cursor(std::shared_ptr<cpp_odbc::connection const> connection);
 
 	void prepare(std::string const & sql);
 	void execute();
@@ -33,12 +22,12 @@ public:
 	std::vector<nullable_field> fetch_one();
 	long get_row_count();
 
-	std::shared_ptr<cpp_odbc::statement const> get_statement() const;
+	std::shared_ptr<cpp_odbc::connection const> get_connection() const;
 
 	~cursor();
 
 private:
-	std::shared_ptr<cpp_odbc::statement const> statement_;
+	std::shared_ptr<cpp_odbc::connection const> connection_;
 	std::shared_ptr<pydbc::query> query_;
 };
 

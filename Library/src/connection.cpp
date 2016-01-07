@@ -33,7 +33,7 @@ void connection::rollback() const
 
 cursor connection::make_cursor() const
 {
-	return {connection_->make_statement()};
+	return {connection_};
 }
 
 }

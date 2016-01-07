@@ -25,7 +25,7 @@ CPPUNIT_TEST_SUITE( connection_test );
 	CPPUNIT_TEST( constructor_disables_auto_commit );
 	CPPUNIT_TEST( commit );
 	CPPUNIT_TEST( rollback );
-	CPPUNIT_TEST( test_make_cursor_forwards );
+	CPPUNIT_TEST( test_make_cursor_forwards_self );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -34,7 +34,7 @@ public:
 	void constructor_disables_auto_commit();
 	void commit();
 	void rollback();
-	void test_make_cursor_forwards();
+	void test_make_cursor_forwards_self();
 
 };
 
@@ -73,15 +73,12 @@ void connection_test::rollback()
 }
 
 
-void connection_test::test_make_cursor_forwards()
+void connection_test::test_make_cursor_forwards_self()
 {
 	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
 	auto statement = std::make_shared<mock_statement const>();
-	EXPECT_CALL(*connection, do_make_statement())
-		.WillOnce(testing::Return(statement));
 
 	pydbc::connection test_connection(connection);
-	auto result_cursor = test_connection.make_cursor();
-	CPPUNIT_ASSERT_EQUAL( statement, std::dynamic_pointer_cast<mock_statement const>(result_cursor.get_statement()));
-
+	auto cursor = test_connection.make_cursor();
+	CPPUNIT_ASSERT(connection == cursor.get_connection());
 }

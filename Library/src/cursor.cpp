@@ -13,6 +13,7 @@
 #include <pydbc/cursor.h>
 #include <pydbc/make_description.h>
 
+#include <cpp_odbc/statement.h>
 #include <cpp_odbc/error.h>
 
 #include <boost/variant/get.hpp>
@@ -25,9 +26,9 @@
 
 namespace pydbc {
 
-cursor::cursor(std::shared_ptr<cpp_odbc::statement const> statement) :
-	statement_(statement),
-	query_(std::make_shared<query>(statement))
+cursor::cursor(std::shared_ptr<cpp_odbc::connection const> connection) :
+	connection_(connection),
+	query_()
 {
 }
 
@@ -35,11 +36,13 @@ cursor::~cursor() = default;
 
 void cursor::prepare(std::string const & sql)
 {
-	statement_->unbind_all_columns();
-	statement_->unbind_all_parameters();
-	statement_->close_cursor();
+	auto statement = connection_->make_statement();
+//	statement->unbind_all_columns();
+//	statement->unbind_all_parameters();
+//	statement->close_cursor();
 
-	statement_->prepare(sql);
+	statement->prepare(sql);
+	query_ = std::make_shared<query>(statement);
 }
 
 void cursor::execute()
@@ -67,9 +70,9 @@ long cursor::get_row_count()
 	return query_->get_row_count();
 }
 
-std::shared_ptr<cpp_odbc::statement const> cursor::get_statement() const
+std::shared_ptr<cpp_odbc::connection const> cursor::get_connection() const
 {
-	return statement_;
+	return connection_;
 }
 
 

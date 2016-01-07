@@ -57,9 +57,9 @@ class TestCursorInsertExasol(InsertTests, CursorTestCase):
     fixture_file_name = 'query_fixtures_exasol.json'
 
 
-# class TestCursorInsertPostgreSQL(InsertTests, CursorTestCase):
-#     dsn = "PostgreSQL R&D test database"
-#     fixture_file_name = 'query_fixtures_postgresql.json'
+class TestCursorInsertPostgreSQL(InsertTests, CursorTestCase):
+    dsn = "PostgreSQL R&D test database"
+    fixture_file_name = 'query_fixtures_postgresql.json'
 
 
 class TestCursorInsertMySQL(InsertTests, CursorTestCase):
