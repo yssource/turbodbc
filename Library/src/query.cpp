@@ -53,7 +53,7 @@ void query::add_parameter_set(std::vector<nullable_field> const & parameter_set)
 	check_parameter_set(parameter_set);
 
 	for (unsigned int parameter = 0; parameter != parameter_set.size(); ++parameter) {
-		parameters_[parameter]->set(current_parameter_set_, *parameter_set[parameter]);
+		parameters_[parameter]->set(current_parameter_set_, parameter_set[parameter]);
 	}
 
 	++current_parameter_set_;

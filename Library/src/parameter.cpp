@@ -11,20 +11,15 @@ parameter::parameter(cpp_odbc::statement const & statement, std::size_t one_base
 
 parameter::~parameter() = default;
 
-void parameter::set(std::size_t row_index, pydbc::field const & value)
+void parameter::set(std::size_t row_index, pydbc::nullable_field const & value)
 {
 	auto element = buffer_[row_index];
-	description_->set_field(element, value);
+	if (value) {
+		description_->set_field(element, *value);
+	} else {
+		element.indicator = SQL_NULL_DATA;
+	}
 }
 
-//nullable_field parameter::get_field(std::size_t row_index) const
-//{
-//	auto const element = buffer_[row_index];
-//	if (element.indicator == SQL_NULL_DATA) {
-//		return {};
-//	} else {
-//		return description_->make_field(element.data_pointer);
-//	}
-//}
 
 }

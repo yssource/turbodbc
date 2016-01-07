@@ -24,9 +24,9 @@ public:
 	/**
 	 * @brief Set the value of the parameter associated with the given row to the given value
 	 * @param row_index Index of the row for which the value is set
-	 * @param value Index of the row for which the value is set
+	 * @param value The value which is set
 	 */
-	void set(std::size_t row_index, pydbc::field const & value);
+	void set(std::size_t row_index, pydbc::nullable_field const & value);
 
 	~parameter();
 private:
