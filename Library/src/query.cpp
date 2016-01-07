@@ -1,5 +1,6 @@
 #include <pydbc/query.h>
 #include <pydbc/make_description.h>
+#include <pydbc/descriptions/integer_description.h>
 
 #include <cpp_odbc/error.h>
 
@@ -37,10 +38,7 @@ query::~query()
 
 void query::execute()
 {
-	if (parameters_.size() != 0) {
-		statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
-	}
-	statement_->execute_prepared();
+	execute_batch();
 
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
@@ -52,8 +50,15 @@ void query::add_parameter_set(std::vector<nullable_field> const & parameter_set)
 {
 	check_parameter_set(parameter_set);
 
-	for (unsigned int parameter = 0; parameter != parameter_set.size(); ++parameter) {
-		parameters_[parameter]->set(current_parameter_set_, parameter_set[parameter]);
+	for (unsigned int p = 0; p != parameter_set.size(); ++p) {
+		try {
+			parameters_[p]->set(current_parameter_set_, parameter_set[p]);
+		} catch (boost::bad_get const &) {
+			execute_batch();
+			std::unique_ptr<description const> description(new integer_description());
+			parameters_[p] = std::make_shared<parameter>(*statement_, p + 1, 10, std::move(description));
+			parameters_[p]->set(current_parameter_set_, parameter_set[p]);
+		}
 	}
 
 	++current_parameter_set_;
@@ -71,6 +76,15 @@ std::vector<nullable_field> query::fetch_one()
 long query::get_row_count()
 {
 	return statement_->row_count();
+}
+
+void query::execute_batch()
+{
+	if (parameters_.size() != 0) {
+		statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
+	}
+	statement_->execute_prepared();
+	current_parameter_set_ = 0;
 }
 
 void query::bind_parameters()

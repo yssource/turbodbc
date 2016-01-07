@@ -35,6 +35,7 @@ public:
 	~query();
 
 private:
+	void execute_batch();
 	void bind_parameters();
 	void check_parameter_set(std::vector<nullable_field> const & parameter_set) const;
 
