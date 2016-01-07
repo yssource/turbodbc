@@ -16,7 +16,6 @@ public:
 
 	void prepare(std::string const & sql);
 	void execute();
-	void bind_parameters();
 	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
 
 	std::vector<nullable_field> fetch_one();

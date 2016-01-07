@@ -27,6 +27,7 @@ query::query(std::shared_ptr<cpp_odbc::statement const> statement) :
 	statement_(statement),
 	current_parameter_set_(0)
 {
+	bind_parameters();
 }
 
 query::~query()
@@ -44,17 +45,6 @@ void query::execute()
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
 		result_ = std::make_shared<result_set>(statement_, 10);
-	}
-}
-
-void query::bind_parameters()
-{
-	if (statement_->number_of_parameters() != 0) {
-		std::size_t const n_parameters = statement_->number_of_parameters();
-		for (std::size_t one_based_index = 1; one_based_index <= n_parameters; ++one_based_index) {
-			parameters_.push_back(make_parameter(*statement_, one_based_index));
-		}
-		statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
 	}
 }
 
@@ -81,6 +71,17 @@ std::vector<nullable_field> query::fetch_one()
 long query::get_row_count()
 {
 	return statement_->row_count();
+}
+
+void query::bind_parameters()
+{
+	if (statement_->number_of_parameters() != 0) {
+		std::size_t const n_parameters = statement_->number_of_parameters();
+		for (std::size_t one_based_index = 1; one_based_index <= n_parameters; ++one_based_index) {
+			parameters_.push_back(make_parameter(*statement_, one_based_index));
+		}
+		statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
+	}
 }
 
 void query::check_parameter_set(std::vector<nullable_field> const & parameter_set) const

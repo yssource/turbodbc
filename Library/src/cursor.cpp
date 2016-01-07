@@ -47,11 +47,6 @@ void cursor::execute()
 	query_->execute();
 }
 
-void cursor::bind_parameters()
-{
-	query_->bind_parameters();
-}
-
 void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set)
 {
 	query_->add_parameter_set(parameter_set);

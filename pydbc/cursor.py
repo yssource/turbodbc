@@ -37,7 +37,6 @@ class Cursor(object):
         """Execute an SQL query"""
         self._assert_valid()
         self.impl.prepare(sql)
-        self.impl.bind_parameters()
         if parameters:
             self.impl.add_parameter_set(parameters)
         self.impl.execute()
@@ -48,7 +47,6 @@ class Cursor(object):
         """Execute an SQL query"""
         self._assert_valid()
         self.impl.prepare(sql)
-        self.impl.bind_parameters()
 
         if parameters:
             for parameter_set in parameters:

@@ -27,7 +27,6 @@ public:
 	query(std::shared_ptr<cpp_odbc::statement const> statement);
 
 	void execute();
-	void bind_parameters();
 	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
 
 	std::vector<nullable_field> fetch_one();
@@ -36,6 +35,7 @@ public:
 	~query();
 
 private:
+	void bind_parameters();
 	void check_parameter_set(std::vector<nullable_field> const & parameter_set) const;
 
 	std::shared_ptr<cpp_odbc::statement const> statement_;
