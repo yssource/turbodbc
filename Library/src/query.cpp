@@ -106,14 +106,24 @@ void query::add_parameter(std::size_t index, nullable_field const & value)
 		parameters_[index]->set(current_parameter_set_, value);
 	} catch (boost::bad_get const &) {
 		execute_batch();
-		for (std::size_t i = 0; i != index; ++i) {
-			parameters_[i]->copy_to_first_row(current_parameter_set_);
-		}
-		current_parameter_set_ = 0;
-		std::unique_ptr<description const> description(new integer_description());
-		parameters_[index] = std::make_shared<parameter>(*statement_, index + 1, 10, std::move(description));
+		recover_unwritten_parameters_below(index);
+		rebind_parameter(index);
 		parameters_[index]->set(current_parameter_set_, value);
 	}
+}
+
+void query::recover_unwritten_parameters_below(std::size_t index)
+{
+	for (std::size_t i = 0; i != index; ++i) {
+		parameters_[i]->copy_to_first_row(current_parameter_set_);
+	}
+	current_parameter_set_ = 0;
+}
+
+void query::rebind_parameter(std::size_t index)
+{
+	std::unique_ptr<description const> description(new integer_description());
+	parameters_[index] = std::make_shared<parameter>(*statement_, index + 1, 10, std::move(description));
 }
 
 }

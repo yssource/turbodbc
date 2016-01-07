@@ -40,6 +40,14 @@
 		],
 		"teardown": ["DROP TABLE {table_name}"]
 	},
+	
+	"INSERT MIXED": {
+		"setup": [
+			"DROP TABLE IF EXISTS {table_name}",
+			"CREATE TABLE {table_name} (a INTEGER, b DOUBLE) engine=innodb"
+		],
+		"teardown": ["DROP TABLE {table_name}"]
+	},
 
 	"INSERT DOUBLE": {
 		"setup": [

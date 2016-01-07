@@ -6,7 +6,7 @@ from query_fixture import query_fixture
 
 class InsertTests(object):
 
-    def _test_single_row(self):
+    def test_single_row(self):
         to_insert = [1]
 
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
