@@ -79,6 +79,6 @@ class TestCursorInsertPostgreSQL(InsertTests, CursorTestCase):
     fixture_file_name = 'query_fixtures_postgresql.json'
 
 
-# class TestCursorInsertMySQL(InsertTests, CursorTestCase):
-#     dsn = "MySQL R&D test database"
-#     fixture_file_name = 'query_fixtures_mysql.json'
+class TestCursorInsertMySQL(InsertTests, CursorTestCase):
+    dsn = "MySQL R&D test database"
+    fixture_file_name = 'query_fixtures_mysql.json'

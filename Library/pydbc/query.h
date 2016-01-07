@@ -40,7 +40,7 @@ private:
 	void check_parameter_set(std::vector<nullable_field> const & parameter_set) const;
 	void add_parameter(std::size_t index, nullable_field const & value);
 	void recover_unwritten_parameters_below(std::size_t index);
-	void rebind_parameter(std::size_t index);
+	void rebind_parameter_to_hold_value(std::size_t index, field const & value);
 
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	std::vector<std::shared_ptr<pydbc::parameter>> parameters_;

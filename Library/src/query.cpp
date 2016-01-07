@@ -107,7 +107,7 @@ void query::add_parameter(std::size_t index, nullable_field const & value)
 	} catch (boost::bad_get const &) {
 		execute_batch();
 		recover_unwritten_parameters_below(index);
-		rebind_parameter(index);
+		rebind_parameter_to_hold_value(index, *value);
 		parameters_[index]->set(current_parameter_set_, value);
 	}
 }
@@ -120,9 +120,9 @@ void query::recover_unwritten_parameters_below(std::size_t index)
 	current_parameter_set_ = 0;
 }
 
-void query::rebind_parameter(std::size_t index)
+void query::rebind_parameter_to_hold_value(std::size_t index, field const & value)
 {
-	std::unique_ptr<description const> description(new integer_description());
+	auto description = make_description(value);
 	parameters_[index] = std::make_shared<parameter>(*statement_, index + 1, 10, std::move(description));
 }
 

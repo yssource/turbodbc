@@ -1,9 +1,3 @@
-/**
- *  @file make_description_test.cpp
- *  @date 13.02.2015
- *  @author mkoenig
- */
-
 #include <pydbc/make_description.h>
 
 #include <cppunit/extensions/HelperMacros.h>
@@ -15,8 +9,8 @@
 #include <stdexcept>
 
 
-class make_description_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( make_description_test );
+class make_description_of_description_test : public CppUnit::TestFixture {
+CPPUNIT_TEST_SUITE( make_description_of_description_test );
 
 	CPPUNIT_TEST( unsupported_type_throws );
 	CPPUNIT_TEST( integer_types );
@@ -47,7 +41,7 @@ public:
 };
 
 // Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( make_description_test );
+CPPUNIT_TEST_SUITE_REGISTRATION( make_description_of_description_test );
 
 using pydbc::make_description;
 
@@ -87,14 +81,14 @@ namespace {
 
 }
 
-void make_description_test::unsupported_type_throws()
+void make_description_of_description_test::unsupported_type_throws()
 {
 	SQLSMALLINT const unsupported_type = SQL_GUID;
 	cpp_odbc::column_description column_description = {"dummy", unsupported_type, 0, 0, false};
 	test_unsupported(column_description);
 }
 
-void make_description_test::integer_types()
+void make_description_of_description_test::integer_types()
 {
 	std::vector<SQLSMALLINT> const types = {
 			SQL_SMALLINT, SQL_INTEGER, SQL_TINYINT, SQL_BIGINT,
@@ -106,7 +100,7 @@ void make_description_test::integer_types()
 	}
 }
 
-void make_description_test::string_types()
+void make_description_of_description_test::string_types()
 {
 	std::vector<SQLSMALLINT> const types = {
 			SQL_CHAR, SQL_VARCHAR, SQL_LONGVARCHAR, SQL_WCHAR, SQL_WVARCHAR, SQL_WLONGVARCHAR
@@ -119,7 +113,7 @@ void make_description_test::string_types()
 	}
 }
 
-void make_description_test::floating_point_types()
+void make_description_of_description_test::floating_point_types()
 {
 	std::vector<SQLSMALLINT> const types = {
 			SQL_REAL, SQL_FLOAT, SQL_DOUBLE
@@ -131,7 +125,7 @@ void make_description_test::floating_point_types()
 	}
 }
 
-void make_description_test::bit_type()
+void make_description_of_description_test::bit_type()
 {
 	SQLSMALLINT const type = SQL_BIT;
 
@@ -140,7 +134,7 @@ void make_description_test::bit_type()
 	CPPUNIT_ASSERT( dynamic_cast<pydbc::boolean_description const *>(description.get()) );
 }
 
-void make_description_test::date_type()
+void make_description_of_description_test::date_type()
 {
 	SQLSMALLINT const type = SQL_TYPE_DATE;
 
@@ -149,7 +143,7 @@ void make_description_test::date_type()
 	CPPUNIT_ASSERT( dynamic_cast<pydbc::date_description const *>(description.get()) );
 }
 
-void make_description_test::timestamp_type()
+void make_description_of_description_test::timestamp_type()
 {
 	SQLSMALLINT const type = SQL_TYPE_TIMESTAMP;
 
@@ -172,7 +166,7 @@ namespace {
 
 }
 
-void make_description_test::decimal_as_integer()
+void make_description_of_description_test::decimal_as_integer()
 {
 	test_as_integer(make_decimal_column_description(18, 0));
 	test_as_integer(make_decimal_column_description(9, 0));
@@ -182,13 +176,13 @@ void make_description_test::decimal_as_integer()
 	test_as_integer(make_numeric_column_description(1, 0));
 }
 
-void make_description_test::decimal_as_floating_point()
+void make_description_of_description_test::decimal_as_floating_point()
 {
 	test_as_floating_point(make_decimal_column_description(18, 1));
 	test_as_floating_point(make_numeric_column_description(18, 1));
 }
 
-void make_description_test::decimal_as_string()
+void make_description_of_description_test::decimal_as_string()
 {
 	std::size_t const size = 19;
 	// add three bytes to size (null-termination, sign, decimal point

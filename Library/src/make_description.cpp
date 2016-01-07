@@ -26,6 +26,40 @@ namespace {
 		}
 	}
 
+	using description_ptr = description const *;
+
+	struct description_by_value : public boost::static_visitor<description_ptr> {
+		description_ptr operator()(long const &) const
+		{
+			return new integer_description;
+		}
+
+		description_ptr operator()(double const &) const
+		{
+			return new floating_point_description;
+		}
+
+		description_ptr operator()(bool const &) const
+		{
+			return new boolean_description;
+		}
+
+		description_ptr operator()(boost::gregorian::date const &) const
+		{
+			return new date_description;
+		}
+
+		description_ptr operator()(boost::posix_time::ptime const &) const
+		{
+			return new timestamp_description;
+		}
+
+		description_ptr operator()(std::string const & s) const
+		{
+			return new string_description(s.size());
+		}
+	};
+
 }
 
 std::unique_ptr<description const> make_description(cpp_odbc::column_description const & source)
@@ -62,6 +96,12 @@ std::unique_ptr<description const> make_description(cpp_odbc::column_description
 			message << "Error! Unsupported type identifier '" << source.data_type << "'";
 			throw std::runtime_error(message.str());
 	}
+}
+
+
+std::unique_ptr<description const> make_description(field const & value)
+{
+	return std::unique_ptr<description const>(boost::apply_visitor(description_by_value{}, value));
 }
 
 }
