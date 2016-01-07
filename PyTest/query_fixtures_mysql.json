@@ -25,6 +25,14 @@
 		"payload": "SELECT CAST('2015-12-31 01:02:03' AS DATETIME) AS a"
 	},
 
+	"INSERT STRING": {
+		"setup": [
+			"DROP TABLE IF EXISTS {table_name}",
+			"CREATE TABLE {table_name} (a VARCHAR(20)) engine=innodb"
+		],
+		"teardown": ["DROP TABLE {table_name}"]
+	},
+
 	"INSERT INTEGER": {
 		"setup": [
 			"DROP TABLE IF EXISTS {table_name}",

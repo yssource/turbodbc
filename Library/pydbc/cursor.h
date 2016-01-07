@@ -39,6 +39,8 @@ public:
 	~cursor();
 
 private:
+	void check_parameter_set(std::vector<nullable_field> const & parameter_set) const;
+
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	std::vector<std::shared_ptr<pydbc::parameter>> parameters_;
 	std::shared_ptr<result_set> result_;

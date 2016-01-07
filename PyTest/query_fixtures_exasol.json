@@ -20,6 +20,11 @@
 		"payload": "SELECT CAST('2015-12-31 01:02:03' AS TIMESTAMP) AS a"
 	},
 
+	"INSERT STRING": {
+		"setup": ["CREATE OR REPLACE TABLE {table_name} (a VARCHAR(20))"],
+		"teardown": ["DROP TABLE {table_name}"]
+	},
+
 	"INSERT INTEGER": {
 		"setup": ["CREATE OR REPLACE TABLE {table_name} (a INTEGER)"],
 		"teardown": ["DROP TABLE {table_name}"]

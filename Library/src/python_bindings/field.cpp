@@ -74,7 +74,8 @@ struct nullable_field_from_object{
 	{
 		return
 				boost::python::extract<long>(object).check()
-			or	boost::python::extract<double>(object).check();
+			or	boost::python::extract<double>(object).check()
+			or	boost::python::extract<std::string>(object).check();
 	}
 
 	static nullable_field convert(PyObject * object)
@@ -90,6 +91,13 @@ struct nullable_field_from_object{
 
 		{
 			boost::python::extract<double> extractor(object);
+			if (extractor.check()) {
+				return pydbc::field(extractor());
+			}
+		}
+
+		{
+			boost::python::extract<std::string> extractor(object);
 			if (extractor.check()) {
 				return pydbc::field(extractor());
 			}
