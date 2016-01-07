@@ -29,7 +29,10 @@ query::query(std::shared_ptr<cpp_odbc::statement const> statement) :
 {
 }
 
-query::~query() = default;
+query::~query()
+{
+	statement_->close_cursor();
+}
 
 void query::execute()
 {

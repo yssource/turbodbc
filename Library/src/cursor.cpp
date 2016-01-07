@@ -36,11 +36,8 @@ cursor::~cursor() = default;
 
 void cursor::prepare(std::string const & sql)
 {
+	query_.reset();
 	auto statement = connection_->make_statement();
-//	statement->unbind_all_columns();
-//	statement->unbind_all_parameters();
-//	statement->close_cursor();
-
 	statement->prepare(sql);
 	query_ = std::make_shared<query>(statement);
 }
