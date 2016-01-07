@@ -38,6 +38,7 @@ private:
 	void execute_batch();
 	void bind_parameters();
 	void check_parameter_set(std::vector<nullable_field> const & parameter_set) const;
+	void add_parameter(std::size_t index, nullable_field const & value);
 
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	std::vector<std::shared_ptr<pydbc::parameter>> parameters_;

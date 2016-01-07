@@ -1,5 +1,7 @@
 #include <pydbc/parameter.h>
 
+#include <cstring>
+
 namespace pydbc {
 
 parameter::parameter(cpp_odbc::statement const & statement, std::size_t one_based_index, std::size_t buffered_rows, std::unique_ptr<description const> description) :
@@ -21,5 +23,12 @@ void parameter::set(std::size_t row_index, pydbc::nullable_field const & value)
 	}
 }
 
+void parameter::copy_to_first_row(std::size_t row_index)
+{
+	auto destination = buffer_[0];
+	auto const & source = buffer_[row_index];
+	std::memcpy(destination.data_pointer, source.data_pointer, buffer_.capacity_per_element());
+	destination.indicator = source.indicator;
+}
 
 }

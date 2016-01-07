@@ -28,6 +28,12 @@ public:
 	 */
 	void set(std::size_t row_index, pydbc::nullable_field const & value);
 
+	/**
+	 * @brief Copy the value set for the given row_index to the first row (with index 0)
+	 * @param row_index Index of the row whose value is copied
+	 */
+	void copy_to_first_row(std::size_t row_index);
+
 	~parameter();
 private:
 	std::unique_ptr<description const> description_;

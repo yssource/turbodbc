@@ -29,6 +29,11 @@
 		"setup": ["CREATE OR REPLACE TABLE {table_name} (a INTEGER)"],
 		"teardown": ["DROP TABLE {table_name}"]
 	},
+	
+	"INSERT MIXED": {
+		"setup": ["CREATE OR REPLACE TABLE {table_name} (a INTEGER, b DOUBLE PRECISION)"],
+		"teardown": ["DROP TABLE {table_name}"]
+	},
 
 	"INSERT DOUBLE": {
 		"setup": ["CREATE OR REPLACE TABLE {table_name} (a DOUBLE PRECISION)"],

@@ -51,14 +51,7 @@ void query::add_parameter_set(std::vector<nullable_field> const & parameter_set)
 	check_parameter_set(parameter_set);
 
 	for (unsigned int p = 0; p != parameter_set.size(); ++p) {
-		try {
-			parameters_[p]->set(current_parameter_set_, parameter_set[p]);
-		} catch (boost::bad_get const &) {
-			execute_batch();
-			std::unique_ptr<description const> description(new integer_description());
-			parameters_[p] = std::make_shared<parameter>(*statement_, p + 1, 10, std::move(description));
-			parameters_[p]->set(current_parameter_set_, parameter_set[p]);
-		}
+		add_parameter(p, parameter_set[p]);
 	}
 
 	++current_parameter_set_;
@@ -84,7 +77,6 @@ void query::execute_batch()
 		statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
 	}
 	statement_->execute_prepared();
-	current_parameter_set_ = 0;
 }
 
 void query::bind_parameters()
@@ -105,6 +97,22 @@ void query::check_parameter_set(std::vector<nullable_field> const & parameter_se
 		message << "Invalid number of parameters (expected " << parameters_.size()
 				<< ", got " << parameter_set.size() << ")";
 		throw cpp_odbc::error(message.str());
+	}
+}
+
+void query::add_parameter(std::size_t index, nullable_field const & value)
+{
+	try {
+		parameters_[index]->set(current_parameter_set_, value);
+	} catch (boost::bad_get const &) {
+		execute_batch();
+		for (std::size_t i = 0; i != index; ++i) {
+			parameters_[i]->copy_to_first_row(current_parameter_set_);
+		}
+		current_parameter_set_ = 0;
+		std::unique_ptr<description const> description(new integer_description());
+		parameters_[index] = std::make_shared<parameter>(*statement_, index + 1, 10, std::move(description));
+		parameters_[index]->set(current_parameter_set_, value);
 	}
 }
 

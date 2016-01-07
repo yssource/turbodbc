@@ -51,17 +51,18 @@ class InsertTests(object):
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual(to_insert, inserted)
 
-    def test_mixed_data_column(self):
-        to_insert = [[1.23], [2]] #, [3.14]]
+    def test_mixed_data_columns(self):
+        # second column has mixed data types in the same column
+        # first column makes sure values of "good" columns are not affected
+        to_insert = [[23, 1.23],
+                     [42, 2]]
  
-        with query_fixture(self.cursor, self.fixtures, 'INSERT DOUBLE') as table_name:
-            self.cursor.execute_many("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
-            self.cursor.execute("SELECT a FROM {}".format(table_name))
+        with query_fixture(self.cursor, self.fixtures, 'INSERT MIXED') as table_name:
+            self.cursor.execute_many("INSERT INTO {} VALUES (?, ?)".format(table_name), to_insert)
+            self.cursor.execute("SELECT a, b FROM {}".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
-#             print "to insert: {}".format(to_insert)
-#             print "inserted: {}".format(inserted)
             self.assertItemsEqual(to_insert, inserted)
-# 
+
 #     def test_no_parameters(self):
 #         self.fail("not implemented")
 
