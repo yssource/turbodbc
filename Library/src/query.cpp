@@ -16,10 +16,12 @@ namespace pydbc {
 
 namespace {
 
+	std::size_t const maximum_parameter_sets = 10;
+
 	std::shared_ptr<parameter> make_parameter(cpp_odbc::statement const & statement, std::size_t one_based_index)
 	{
 		auto const description = statement.describe_parameter(one_based_index);
-		return std::make_shared<parameter>(statement, one_based_index, 10, make_description(description));
+		return std::make_shared<parameter>(statement, one_based_index, maximum_parameter_sets, make_description(description));
 	}
 
 }
@@ -51,6 +53,10 @@ void query::add_parameter_set(std::vector<nullable_field> const & parameter_set)
 {
 	check_parameter_set(parameter_set);
 
+	if (current_parameter_set_ == maximum_parameter_sets) {
+		execute_batch();
+	}
+
 	for (unsigned int p = 0; p != parameter_set.size(); ++p) {
 		add_parameter(p, parameter_set[p]);
 	}
@@ -76,16 +82,22 @@ long query::get_row_count()
 	}
 }
 
-void query::execute_batch()
+std::size_t query::execute_batch()
 {
-	if (parameters_.size() != 0) {
+	std::size_t result = 0;
+
+	if (not parameters_.empty()) {
 		statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
 	}
 
-	if ((current_parameter_set_ != 0) or (parameters_.size() == 0)){
+	if ((current_parameter_set_ != 0) or parameters_.empty()){
 		statement_->execute_prepared();
 		was_executed_ = true;
+		result = parameters_.empty() ? 1 : current_parameter_set_;
 	}
+
+	current_parameter_set_ = 0;
+	return result;
 }
 
 void query::bind_parameters()
@@ -114,25 +126,24 @@ void query::add_parameter(std::size_t index, nullable_field const & value)
 	try {
 		parameters_[index]->set(current_parameter_set_, value);
 	} catch (boost::bad_get const &) {
-		execute_batch();
-		recover_unwritten_parameters_below(index);
+		auto const last_active_row = execute_batch();
+		recover_unwritten_parameters_below(index, last_active_row);
 		rebind_parameter_to_hold_value(index, *value);
 		parameters_[index]->set(current_parameter_set_, value);
 	}
 }
 
-void query::recover_unwritten_parameters_below(std::size_t index)
+void query::recover_unwritten_parameters_below(std::size_t parameter_index, std::size_t last_active_row)
 {
-	for (std::size_t i = 0; i != index; ++i) {
-		parameters_[i]->copy_to_first_row(current_parameter_set_);
+	for (std::size_t i = 0; i != parameter_index; ++i) {
+		parameters_[i]->copy_to_first_row(last_active_row);
 	}
-	current_parameter_set_ = 0;
 }
 
 void query::rebind_parameter_to_hold_value(std::size_t index, field const & value)
 {
 	auto description = make_description(value);
-	parameters_[index] = std::make_shared<parameter>(*statement_, index + 1, 10, std::move(description));
+	parameters_[index] = std::make_shared<parameter>(*statement_, index + 1, maximum_parameter_sets, std::move(description));
 }
 
 }

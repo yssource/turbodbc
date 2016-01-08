@@ -79,6 +79,18 @@ class InsertTests(object):
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual(to_insert, inserted)
 
+    def test_number_of_rows_exceeds_buffer_size(self):
+        with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
+            numbers = 123
+            to_insert = [[i] for i in xrange(numbers)]
+            self.cursor.execute_many("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+
+            self.cursor.execute("SELECT a FROM {}".format(table_name))
+            retrieved = self.cursor.fetchall()
+            actual_sum = sum([row[0] for row in retrieved])
+            expected_sum = sum(xrange(numbers))
+            self.assertEqual(expected_sum, actual_sum)
+
 
 # Actual test cases
 

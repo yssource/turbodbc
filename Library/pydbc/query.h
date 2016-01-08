@@ -35,11 +35,11 @@ public:
 	~query();
 
 private:
-	void execute_batch();
+	std::size_t execute_batch();
 	void bind_parameters();
 	void check_parameter_set(std::vector<nullable_field> const & parameter_set) const;
 	void add_parameter(std::size_t index, nullable_field const & value);
-	void recover_unwritten_parameters_below(std::size_t index);
+	void recover_unwritten_parameters_below(std::size_t parameter_index, std::size_t last_active_row);
 	void rebind_parameter_to_hold_value(std::size_t index, field const & value);
 
 	std::shared_ptr<cpp_odbc::statement const> statement_;
