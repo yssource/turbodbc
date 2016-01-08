@@ -46,6 +46,7 @@ private:
 	std::vector<std::shared_ptr<pydbc::parameter>> parameters_;
 	std::shared_ptr<result_set> result_;
 	std::size_t current_parameter_set_;
+	bool was_executed_;
 };
 
 }

@@ -26,7 +26,8 @@ namespace {
 
 query::query(std::shared_ptr<cpp_odbc::statement const> statement) :
 	statement_(statement),
-	current_parameter_set_(0)
+	current_parameter_set_(0),
+	was_executed_(false)
 {
 	bind_parameters();
 }
@@ -68,15 +69,27 @@ std::vector<nullable_field> query::fetch_one()
 
 long query::get_row_count()
 {
-	return statement_->row_count();
+	if (was_executed_) {
+		return statement_->row_count();
+	} else {
+		return 0;
+	}
 }
 
 void query::execute_batch()
 {
-	if (parameters_.size() != 0) {
-		statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
+	if (current_parameter_set_ != 0) {
+		if (parameters_.size() != 0) {
+			statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
+		}
+		statement_->execute_prepared();
+		was_executed_ = true;
+	} else {
+		if (parameters_.size() == 0) {
+			statement_->execute_prepared();
+			was_executed_ = true;
+		}
 	}
-	statement_->execute_prepared();
 }
 
 void query::bind_parameters()
