@@ -34,7 +34,7 @@ using pydbc_test::mock_statement;
 void query_test::fetch_one_if_empty()
 {
 	auto statement = std::make_shared<mock_statement>();
-	pydbc::query query(statement);
+	pydbc::query query(statement, 1, 1);
 	CPPUNIT_ASSERT_THROW(query.fetch_one(), std::runtime_error);
 }
 
@@ -42,7 +42,7 @@ void query_test::fetch_one_if_empty()
 void query_test::get_row_count_before_execute(){
 	auto statement = std::make_shared<mock_statement>();
 
-	pydbc::query query(statement);
+	pydbc::query query(statement, 1, 1);
 	CPPUNIT_ASSERT_EQUAL(0, query.get_row_count());
 }
 
@@ -52,7 +52,7 @@ void query_test::get_row_count_after_execute(){
 	EXPECT_CALL( *statement, do_row_count())
 			.WillOnce(testing::Return(expected));
 
-	pydbc::query query(statement);
+	pydbc::query query(statement, 1, 1);
 	query.execute();
 	CPPUNIT_ASSERT_EQUAL(expected, query.get_row_count());
 }

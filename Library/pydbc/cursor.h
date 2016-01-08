@@ -12,7 +12,9 @@ namespace pydbc {
  */
 class cursor {
 public:
-	cursor(std::shared_ptr<cpp_odbc::connection const> connection);
+	cursor(std::shared_ptr<cpp_odbc::connection const> connection,
+		   std::size_t rows_to_buffer,
+		   std::size_t parameter_sets_to_buffer);
 
 	void prepare(std::string const & sql);
 	void execute();
@@ -27,6 +29,8 @@ public:
 
 private:
 	std::shared_ptr<cpp_odbc::connection const> connection_;
+	std::size_t rows_to_buffer_;
+	std::size_t parameter_sets_to_buffer_;
 	std::shared_ptr<pydbc::query> query_;
 };
 

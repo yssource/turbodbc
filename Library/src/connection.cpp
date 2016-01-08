@@ -35,7 +35,7 @@ void connection::rollback() const
 
 cursor connection::make_cursor() const
 {
-	return {connection_};
+	return {connection_, rows_to_buffer, parameter_sets_to_buffer};
 }
 
 }

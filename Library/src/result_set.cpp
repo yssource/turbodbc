@@ -21,10 +21,10 @@ namespace pydbc {
 
 namespace {
 
-	std::unique_ptr<column> make_column(cpp_odbc::statement const & statement, std::size_t one_based_index)
+	std::unique_ptr<column> make_column(cpp_odbc::statement const & statement, std::size_t one_based_index, std::size_t buffered_rows)
 	{
 		auto const column_description = statement.describe_column(one_based_index);
-		return std::unique_ptr<column>(new column(statement, one_based_index, 10, make_description(column_description)));
+		return std::unique_ptr<column>(new column(statement, one_based_index, buffered_rows, make_description(column_description)));
 	}
 
 }
@@ -37,7 +37,7 @@ result_set::result_set(std::shared_ptr<cpp_odbc::statement const> statement, std
 	std::size_t const n_columns = statement_->number_of_columns();
 
 	for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
-		columns_.push_back(make_column(*statement, one_based_index));
+		columns_.push_back(make_column(*statement, one_based_index, buffered_rows));
 	}
 
 	statement_->set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffered_rows);
