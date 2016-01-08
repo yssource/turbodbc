@@ -18,3 +18,11 @@ class TestConnect(TestCase):
         invalid_dsn = 'This data source does not exist'
         with self.assertRaises(DatabaseError):
             connect(invalid_dsn)
+
+    def test_buffer_sizes_default_values(self):
+        connection = connect("Exasol R&D test database",
+                             rows_to_buffer=317,
+                             parameter_sets_to_buffer=123)
+
+        self.assertEqual(connection.impl.rows_to_buffer, 317)
+        self.assertEqual(connection.impl.parameter_sets_to_buffer, 123)

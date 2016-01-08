@@ -15,6 +15,7 @@ CPPUNIT_TEST_SUITE( connection_test );
 	CPPUNIT_TEST( rollback );
 	CPPUNIT_TEST( make_cursor_forwards_self );
 	CPPUNIT_TEST( rows_to_buffer );
+	CPPUNIT_TEST( parameter_sets_to_buffer );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -25,6 +26,7 @@ public:
 	void rollback();
 	void make_cursor_forwards_self();
 	void rows_to_buffer();
+	void parameter_sets_to_buffer();
 
 };
 
@@ -77,5 +79,13 @@ void connection_test::rows_to_buffer()
 	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
 
 	pydbc::connection test_connection(connection);
-	CPPUNIT_ASSERT_EQUAL(10, test_connection.rows_to_buffer);
+	CPPUNIT_ASSERT_EQUAL(1000, test_connection.rows_to_buffer);
+}
+
+void connection_test::parameter_sets_to_buffer()
+{
+	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
+
+	pydbc::connection test_connection(connection);
+	CPPUNIT_ASSERT_EQUAL(1000, test_connection.parameter_sets_to_buffer);
 }

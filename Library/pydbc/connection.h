@@ -46,7 +46,10 @@ public:
 	 */
 	pydbc::cursor make_cursor() const;
 
-	std::size_t rows_to_buffer; ///< Indicate number of rows which shall be buffered
+	/// Indicate number of rows which shall be buffered by result sets
+	std::size_t rows_to_buffer;
+	///< Indicate number of parameter sets which shall be buffered by queries
+	std::size_t parameter_sets_to_buffer;
 
 private:
 	std::shared_ptr<cpp_odbc::connection const> connection_;
