@@ -78,17 +78,13 @@ long query::get_row_count()
 
 void query::execute_batch()
 {
-	if (current_parameter_set_ != 0) {
-		if (parameters_.size() != 0) {
-			statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
-		}
+	if (parameters_.size() != 0) {
+		statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
+	}
+
+	if ((current_parameter_set_ != 0) or (parameters_.size() == 0)){
 		statement_->execute_prepared();
 		was_executed_ = true;
-	} else {
-		if (parameters_.size() == 0) {
-			statement_->execute_prepared();
-			was_executed_ = true;
-		}
 	}
 }
 
