@@ -1,19 +1,7 @@
-/**
- *  @file connection_test.cpp
- *  @date 19.12.2014
- *  @author mwarsinsky
- *  @brief 
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
-
-
 #include <cppunit/extensions/HelperMacros.h>
-#include "cpp_odbc/connection.h"
-#include "pydbc/connection.h"
+#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
+#include <cpp_odbc/connection.h>
+#include <pydbc/connection.h>
 #include "mock_classes.h"
 
 #include <sqlext.h>
@@ -25,7 +13,8 @@ CPPUNIT_TEST_SUITE( connection_test );
 	CPPUNIT_TEST( constructor_disables_auto_commit );
 	CPPUNIT_TEST( commit );
 	CPPUNIT_TEST( rollback );
-	CPPUNIT_TEST( test_make_cursor_forwards_self );
+	CPPUNIT_TEST( make_cursor_forwards_self );
+	CPPUNIT_TEST( rows_to_buffer );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -34,7 +23,8 @@ public:
 	void constructor_disables_auto_commit();
 	void commit();
 	void rollback();
-	void test_make_cursor_forwards_self();
+	void make_cursor_forwards_self();
+	void rows_to_buffer();
 
 };
 
@@ -73,12 +63,19 @@ void connection_test::rollback()
 }
 
 
-void connection_test::test_make_cursor_forwards_self()
+void connection_test::make_cursor_forwards_self()
 {
 	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
-	auto statement = std::make_shared<mock_statement const>();
 
 	pydbc::connection test_connection(connection);
 	auto cursor = test_connection.make_cursor();
 	CPPUNIT_ASSERT(connection == cursor.get_connection());
+}
+
+void connection_test::rows_to_buffer()
+{
+	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
+
+	pydbc::connection test_connection(connection);
+	CPPUNIT_ASSERT_EQUAL(10, test_connection.rows_to_buffer);
 }

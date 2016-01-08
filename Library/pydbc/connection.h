@@ -45,6 +45,9 @@ public:
 	 * @brief Create a new cursor object associated with this connection
 	 */
 	pydbc::cursor make_cursor() const;
+
+	std::size_t rows_to_buffer; ///< Indicate number of rows which shall be buffered
+
 private:
 	std::shared_ptr<cpp_odbc::connection const> connection_;
 };
