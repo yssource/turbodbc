@@ -43,7 +43,7 @@ class Cursor(object):
         self.rowcount = self.impl.get_row_count()
 
     @translate_exceptions
-    def execute_many(self, sql, parameters=None):
+    def executemany(self, sql, parameters=None):
         """Execute an SQL query"""
         self._assert_valid()
         self.impl.prepare(sql)

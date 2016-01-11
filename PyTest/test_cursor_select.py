@@ -18,7 +18,7 @@ class SelectTests(object):
             self.cursor.execute("SELECT 42", [42])
 
         with self.assertRaises(pydbc.Error):
-            self.cursor.execute_many("SELECT 42", [[42]])
+            self.cursor.executemany("SELECT 42", [[42]])
 
     def _test_single_row_result_set(self, query, expected_row):
         self.cursor.execute(query)

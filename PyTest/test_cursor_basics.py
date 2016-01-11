@@ -27,7 +27,7 @@ class TestCursorBasics(TestCase):
             cursor.execute("SELECT 42")
 
         with self.assertRaises(InterfaceError):
-            cursor.execute_many("SELECT 42")
+            cursor.executemany("SELECT 42")
 
         with self.assertRaises(InterfaceError):
             cursor.fetchone()

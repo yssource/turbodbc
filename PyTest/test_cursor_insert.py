@@ -19,7 +19,7 @@ class InsertTests(object):
         to_insert = [['hi'], ['there'], ['test case']]
 
         with query_fixture(self.cursor, self.fixtures, 'INSERT STRING') as table_name:
-            self.cursor.execute_many("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual(to_insert, inserted)
@@ -28,7 +28,7 @@ class InsertTests(object):
         to_insert = [[1], [2], [3]]
 
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
-            self.cursor.execute_many("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual(to_insert, inserted)
@@ -37,7 +37,7 @@ class InsertTests(object):
         to_insert = [[1.23], [2.71], [3.14]]
  
         with query_fixture(self.cursor, self.fixtures, 'INSERT DOUBLE') as table_name:
-            self.cursor.execute_many("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual(to_insert, inserted)
@@ -46,7 +46,7 @@ class InsertTests(object):
         to_insert = [[None]]
 
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
-            self.cursor.execute_many("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual(to_insert, inserted)
@@ -58,14 +58,14 @@ class InsertTests(object):
                      [42, 2]]
  
         with query_fixture(self.cursor, self.fixtures, 'INSERT MIXED') as table_name:
-            self.cursor.execute_many("INSERT INTO {} VALUES (?, ?)".format(table_name), to_insert)
+            self.cursor.executemany("INSERT INTO {} VALUES (?, ?)".format(table_name), to_insert)
             self.cursor.execute("SELECT a, b FROM {}".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual(to_insert, inserted)
 
     def test_no_parameter_list(self):
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
-            self.cursor.execute_many("INSERT INTO {} VALUES (?)".format(table_name))
+            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name))
             self.cursor.execute("SELECT a FROM {}".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertEqual(0, len(inserted))
@@ -74,7 +74,7 @@ class InsertTests(object):
         to_insert = []
 
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
-            self.cursor.execute_many("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual(to_insert, inserted)
@@ -83,7 +83,7 @@ class InsertTests(object):
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
             numbers = 123
             to_insert = [[i] for i in xrange(numbers)]
-            self.cursor.execute_many("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
 
             self.cursor.execute("SELECT a FROM {}".format(table_name))
             retrieved = self.cursor.fetchall()
