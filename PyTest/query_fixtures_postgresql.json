@@ -49,5 +49,13 @@
 			"CREATE TABLE {table_name} (a DOUBLE PRECISION)"
 		],
 		"teardown": ["DROP TABLE {table_name}"]
+	},
+
+	"DESCRIPTION": {
+		"setup": [
+			"DROP TABLE IF EXISTS {table_name}",
+			"CREATE TABLE {table_name} (as_int INTEGER, as_double DOUBLE PRECISION, as_varchar VARCHAR(100), as_date DATE, as_timestamp TIMESTAMP, as_int_not_null INTEGER NOT NULL)"
+		],
+		"teardown": ["DROP TABLE {table_name}"]
 	}
 }

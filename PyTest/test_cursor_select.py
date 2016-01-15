@@ -12,6 +12,8 @@ class SelectTests(object):
     the following attributes:
 
     self.supports_row_count
+    self.indicates_null_columns
+    self.reports_column_names_as_upper_case
     """
     def test_too_many_parameters_raise(self):
         with self.assertRaises(turbodbc.Error):
@@ -97,6 +99,27 @@ class SelectTests(object):
             expected_sum = sum(xrange(numbers))
             self.assertEqual(expected_sum, actual_sum)
 
+    def test_description(self):
+        self.assertIsNone(self.cursor.description)
+        
+        def fix_case(string):
+            if self.reports_column_names_as_upper_case:
+                return string.upper()
+            else:
+                return string
+
+        with query_fixture(self.cursor, self.fixtures, 'DESCRIPTION') as table_name:
+            self.cursor.execute("SELECT * FROM {}".format(table_name))
+
+            nullness_for_null_column = not self.indicates_null_columns
+
+            expected = [(fix_case('as_int'), turbodbc.NUMBER, None, None, None, None, True),
+                        (fix_case('as_double'), turbodbc.NUMBER, None, None, None, None, True),
+                        (fix_case('as_varchar'), turbodbc.STRING, None, None, None, None, True),
+                        (fix_case('as_date'), turbodbc.DATETIME, None, None, None, None, True),
+                        (fix_case('as_timestamp'), turbodbc.DATETIME, None, None, None, None, True),
+                        (fix_case('as_int_not_null'), turbodbc.NUMBER, None, None, None, None, nullness_for_null_column)]
+            self.assertEqual(expected, self.cursor.description)
 
 # Actual test cases
 
@@ -104,15 +127,20 @@ class TestCursorSelectExasol(SelectTests, CursorTestCase):
     dsn = "Exasol R&D test database"
     fixture_file_name = 'query_fixtures_exasol.json'
     supports_row_count = True
+    indicates_null_columns = False
+    reports_column_names_as_upper_case = True
 
 
 class TestCursorSelectPostgreSQL(SelectTests, CursorTestCase):
     dsn = "PostgreSQL R&D test database"
     fixture_file_name = 'query_fixtures_postgresql.json'
     supports_row_count = False
-
+    indicates_null_columns = True
+    reports_column_names_as_upper_case = False
 
 class TestCursorSelectMySQL(SelectTests, CursorTestCase):
     dsn = "MySQL R&D test database"
     fixture_file_name = 'query_fixtures_mysql.json'
     supports_row_count = True
+    indicates_null_columns = True
+    reports_column_names_as_upper_case = False

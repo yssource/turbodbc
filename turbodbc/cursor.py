@@ -37,7 +37,7 @@ class Cursor(object):
         if len(info) == 0:
             return None
         else:
-            return info
+            return [(c['name'], c['type_code'], None, None, None, None, c['supports_null_values']) for c in info]
 
     @translate_exceptions
     def execute(self, sql, parameters=None):

@@ -1,38 +1,25 @@
 from unittest import TestCase
 
-from turbodbc.data_types import DataType
+import turbodbc.data_types
 from turbodbc import STRING, BINARY, NUMBER, DATETIME, ROWID
 
+ALL_TYPE_CODES = [turbodbc.data_types._BOOLEAN_CODE,
+                  turbodbc.data_types._INTEGER_CODE,
+                  turbodbc.data_types._FLOATING_POINT_CODE,
+                  turbodbc.data_types._STRING_CODE,
+                  turbodbc.data_types._TIMESTAMP_CODE,
+                  turbodbc.data_types._DATE_CODE]
+
+ALL_DATA_TYPES = [STRING, BINARY, NUMBER, DATETIME, ROWID]
+
 class TestDataTypes(TestCase):
-    def test_equality(self):
-        a = DataType(0)
-        same_as_a = DataType(0)
-        other_as_a = DataType(1)
+    def test_each_type_code_matches_one_data_type(self):
+        for type_code in ALL_TYPE_CODES:
+            matches = [type for type in ALL_DATA_TYPES if type_code == type]
+            self.assertEqual(1, len(matches))
 
-        self.assertTrue(a == a)
-        self.assertTrue(a == same_as_a)
-        self.assertFalse(a == other_as_a)
-
-    def test_inequality(self):
-        a = DataType(0)
-        same_as_a = DataType(0)
-        other_as_a = DataType(1)
-
-        self.assertFalse(a != a)
-        self.assertFalse(a != same_as_a)
-        self.assertTrue(a != other_as_a)
-
-    def test_constants(self):
-        self.assertNotEqual(STRING, BINARY)
-        self.assertNotEqual(STRING, NUMBER)
-        self.assertNotEqual(STRING, DATETIME)
-        self.assertNotEqual(STRING, ROWID)
-
-        self.assertNotEqual(BINARY, NUMBER)
-        self.assertNotEqual(BINARY, DATETIME)
-        self.assertNotEqual(BINARY, ROWID)
-
-        self.assertNotEqual(NUMBER, DATETIME)
-        self.assertNotEqual(NUMBER, ROWID)
-
-        self.assertNotEqual(DATETIME, ROWID)
+    def test_each_type_code_matches_all_but_one_data_type(self):
+        for type_code in ALL_TYPE_CODES:
+            mismatches = [type for type in ALL_DATA_TYPES if type_code != type]
+            expected = len(ALL_DATA_TYPES) - 1
+            self.assertEqual(expected, len(mismatches))    
