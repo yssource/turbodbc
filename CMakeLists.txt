@@ -29,6 +29,6 @@ if(BUILD_TESTING)
     add_subdirectory(PyTest PyTest)
 endif()
 
-file(COPY pydbc DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY turbodbc DESTINATION ${CMAKE_BINARY_DIR})
 
 add_subdirectory(Wheel)

@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from pydbc.data_types import DataType
-from pydbc import STRING, BINARY, NUMBER, DATETIME, ROWID
+from turbodbc.data_types import DataType
+from turbodbc import STRING, BINARY, NUMBER, DATETIME, ROWID
 
 class TestDataTypes(TestCase):
     def test_equality(self):

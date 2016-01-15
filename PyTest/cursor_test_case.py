@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import json
 
-import pydbc
+import turbodbc
 
 
 class CursorTestCase(TestCase):
@@ -19,7 +19,7 @@ class CursorTestCase(TestCase):
             cls.fixtures = json.load(f)
 
     def setUp(self):
-        self.connection = pydbc.connect(self.dsn)
+        self.connection = turbodbc.connect(self.dsn)
         self.cursor = self.connection.cursor()
 
     def tearDown(self):

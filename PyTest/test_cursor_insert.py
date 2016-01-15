@@ -1,5 +1,3 @@
-import pydbc
-
 from cursor_test_case import CursorTestCase
 from query_fixture import query_fixture
 

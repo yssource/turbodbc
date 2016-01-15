@@ -1,1 +1,1 @@
-include pydbc/*.so
+include turbodbc/*.so

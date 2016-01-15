@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from pydbc import connect, InterfaceError
+from turbodbc import connect, InterfaceError
 
 
 dsn = "Exasol R&D test database"

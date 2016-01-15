@@ -6,12 +6,12 @@ import os
 
 
 setup(
-      name='pydbc',
-      version='@pydbc_VERSION@',
+      name='turbodbc',
+      version='@turbodbc_VERSION@',
       author='Michael König',
       url='http://jira.phi-tps.local',
       author_email='michael.koenig@blue-yonder.com',
       install_requires=['cpp_odbc'],
       include_package_data=True,
-      packages=['pydbc'],
+      packages=['turbodbc'],
 )

@@ -1,5 +1,5 @@
 from unittest import TestCase
-import pydbc
+import turbodbc
 
 #dsn = "PostgreSQL R&D test database"
 dsn = "Exasol R&D test database"
@@ -9,7 +9,7 @@ dsn = "Exasol R&D test database"
 class TestDML(TestCase):
 
     def setUp(self):
-        self.connection = pydbc.connect(dsn)
+        self.connection = turbodbc.connect(dsn)
         self.cursor = self.connection.cursor()
 
     def tearDown(self):

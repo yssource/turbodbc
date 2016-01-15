@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from pydbc import connect, DatabaseError
-from pydbc.connection import Connection
+from turbodbc import connect, DatabaseError
+from turbodbc.connection import Connection
 
 
 def has_method(_object, method_name):

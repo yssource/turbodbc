@@ -1,6 +1,6 @@
 import datetime
 
-import pydbc
+import turbodbc
 
 from query_fixture import query_fixture
 from cursor_test_case import CursorTestCase
@@ -14,10 +14,10 @@ class SelectTests(object):
     self.supports_row_count
     """
     def test_too_many_parameters_raise(self):
-        with self.assertRaises(pydbc.Error):
+        with self.assertRaises(turbodbc.Error):
             self.cursor.execute("SELECT 42", [42])
 
-        with self.assertRaises(pydbc.Error):
+        with self.assertRaises(turbodbc.Error):
             self.cursor.executemany("SELECT 42", [[42]])
 
     def _test_single_row_result_set(self, query, expected_row):

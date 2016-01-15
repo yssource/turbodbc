@@ -1,7 +1,7 @@
 from unittest import TestCase
 import datetime
 
-from pydbc import Date, Time, Timestamp
+from turbodbc import Date, Time, Timestamp
 
 
 class TestConstructors(TestCase):
