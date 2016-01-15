@@ -47,12 +47,23 @@ using pydbc::make_description;
 
 namespace {
 
+	std::string const name("custom_name");
+	bool const supports_null_values = false;
+
+	void assert_custom_name_and_nullable_support(pydbc::description const & description)
+	{
+		CPPUNIT_ASSERT_EQUAL(name, description.name());
+		CPPUNIT_ASSERT_EQUAL(supports_null_values, description.supports_null_values());
+	}
+
 	void test_as_integer(cpp_odbc::column_description const & column_description)
 	{
 		auto const description = make_description(column_description);
 		std::ostringstream message;
 		message << "Could not convert type identifier '" << column_description.data_type << "' to integer description";
 		CPPUNIT_ASSERT_MESSAGE( message.str(), dynamic_cast<pydbc::integer_description const *>(description.get()) );
+
+		assert_custom_name_and_nullable_support(*description);
 	}
 
 	void test_as_floating_point(cpp_odbc::column_description const & column_description)
@@ -61,6 +72,8 @@ namespace {
 		std::ostringstream message;
 		message << "Could not convert type identifier '" << column_description.data_type << "' to floating point description";
 		CPPUNIT_ASSERT_MESSAGE( message.str(), dynamic_cast<pydbc::floating_point_description const *>(description.get()) );
+
+		assert_custom_name_and_nullable_support(*description);
 	}
 
 	void test_unsupported(cpp_odbc::column_description const & column_description)
@@ -77,6 +90,7 @@ namespace {
 		CPPUNIT_ASSERT_MESSAGE( message.str(), dynamic_cast<pydbc::string_description const *>(description.get()) );
 
 		CPPUNIT_ASSERT_EQUAL( expected_size, description->element_size() );
+		assert_custom_name_and_nullable_support(*description);
 	}
 
 }
@@ -84,7 +98,7 @@ namespace {
 void make_description_of_description_test::unsupported_type_throws()
 {
 	SQLSMALLINT const unsupported_type = SQL_GUID;
-	cpp_odbc::column_description column_description = {"dummy", unsupported_type, 0, 0, false};
+	cpp_odbc::column_description column_description = {name, unsupported_type, 0, 0, supports_null_values};
 	test_unsupported(column_description);
 }
 
@@ -95,7 +109,7 @@ void make_description_of_description_test::integer_types()
 		};
 
 	for (auto const type : types) {
-		cpp_odbc::column_description column_description = {"dummy", type, 0, 0, false};
+		cpp_odbc::column_description column_description = {name, type, 0, 0, supports_null_values};
 		test_as_integer(column_description);
 	}
 }
@@ -108,7 +122,7 @@ void make_description_of_description_test::string_types()
 
 	std::size_t const size = 42;
 	for (auto const type : types) {
-		cpp_odbc::column_description column_description = {"dummy", type, size, 0, false};
+		cpp_odbc::column_description column_description = {name, type, size, 0, supports_null_values};
 		test_as_string(column_description, size + 1);
 	}
 }
@@ -120,7 +134,7 @@ void make_description_of_description_test::floating_point_types()
 		};
 
 	for (auto const type : types) {
-		cpp_odbc::column_description column_description = {"dummy", type, 0, 0, false};
+		cpp_odbc::column_description column_description = {name, type, 0, 0, supports_null_values};
 		test_as_floating_point(column_description);
 	}
 }
@@ -129,39 +143,42 @@ void make_description_of_description_test::bit_type()
 {
 	SQLSMALLINT const type = SQL_BIT;
 
-	cpp_odbc::column_description column_description = {"dummy", type, 0, 0, false};
+	cpp_odbc::column_description column_description = {name, type, 0, 0, supports_null_values};
 	auto const description = make_description(column_description);
 	CPPUNIT_ASSERT( dynamic_cast<pydbc::boolean_description const *>(description.get()) );
+	assert_custom_name_and_nullable_support(*description);
 }
 
 void make_description_of_description_test::date_type()
 {
 	SQLSMALLINT const type = SQL_TYPE_DATE;
 
-	cpp_odbc::column_description column_description = {"dummy", type, 0, 0, false};
+	cpp_odbc::column_description column_description = {name, type, 0, 0, supports_null_values};
 	auto const description = make_description(column_description);
 	CPPUNIT_ASSERT( dynamic_cast<pydbc::date_description const *>(description.get()) );
+	assert_custom_name_and_nullable_support(*description);
 }
 
 void make_description_of_description_test::timestamp_type()
 {
 	SQLSMALLINT const type = SQL_TYPE_TIMESTAMP;
 
-	cpp_odbc::column_description column_description = {"dummy", type, 0, 0, false};
+	cpp_odbc::column_description column_description = {name, type, 0, 0, supports_null_values};
 	auto const description = make_description(column_description);
 	CPPUNIT_ASSERT( dynamic_cast<pydbc::timestamp_description const *>(description.get()) );
+	assert_custom_name_and_nullable_support(*description);
 }
 
 namespace {
 
 	cpp_odbc::column_description make_decimal_column_description(SQLULEN size, SQLSMALLINT precision)
 	{
-		return {"dummy", SQL_DECIMAL, size, precision, false};
+		return {name, SQL_DECIMAL, size, precision, supports_null_values};
 	}
 
 	cpp_odbc::column_description make_numeric_column_description(SQLULEN size, SQLSMALLINT precision)
 	{
-		return {"dummy", SQL_NUMERIC, size, precision, false};
+		return {name, SQL_NUMERIC, size, precision, supports_null_values};
 	}
 
 }

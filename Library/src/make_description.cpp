@@ -16,13 +16,13 @@ namespace {
 	{
 		if (source.size <= digits_representable_by_long) {
 			if (source.decimal_digits == 0) {
-				return std::unique_ptr<description>(new integer_description);
+				return std::unique_ptr<description>(new integer_description(source.name, source.allows_null_values));
 			} else {
-				return std::unique_ptr<description>(new floating_point_description);
+				return std::unique_ptr<description>(new floating_point_description(source.name, source.allows_null_values));
 			}
 		} else {
 			// fall back to strings; add two characters for decimal point and sign!
-			return std::unique_ptr<description>(new string_description(source.size + 2));
+			return std::unique_ptr<description>(new string_description(source.name, source.allows_null_values, source.size + 2));
 		}
 	}
 
@@ -62,6 +62,7 @@ namespace {
 
 }
 
+
 std::unique_ptr<description const> make_description(cpp_odbc::column_description const & source)
 {
 	switch (source.data_type) {
@@ -71,26 +72,25 @@ std::unique_ptr<description const> make_description(cpp_odbc::column_description
 		case SQL_WVARCHAR:
 		case SQL_WLONGVARCHAR:
 		case SQL_WCHAR:
-			return std::unique_ptr<description>(new string_description(source.size));
+			return std::unique_ptr<description>(new string_description(source.name, source.allows_null_values, source.size));
 		case SQL_INTEGER:
 		case SQL_SMALLINT:
 		case SQL_BIGINT:
 		case SQL_TINYINT:
-			return std::unique_ptr<description>(new integer_description);
+			return std::unique_ptr<description>(new integer_description(source.name, source.allows_null_values));
 		case SQL_REAL:
 		case SQL_FLOAT:
 		case SQL_DOUBLE:
-			return std::unique_ptr<description>(new floating_point_description);
+			return std::unique_ptr<description>(new floating_point_description(source.name, source.allows_null_values));
 		case SQL_BIT:
-			return std::unique_ptr<description>(new boolean_description);
+			return std::unique_ptr<description>(new boolean_description(source.name, source.allows_null_values));
 		case SQL_NUMERIC:
 		case SQL_DECIMAL:
 			return make_decimal_description(source);
-//			return std::unique_ptr<description>(new number_description);
 		case SQL_TYPE_DATE:
-			return std::unique_ptr<description>(new date_description);
+			return std::unique_ptr<description>(new date_description(source.name, source.allows_null_values));
 		case SQL_TYPE_TIMESTAMP:
-			return std::unique_ptr<description>(new timestamp_description);
+			return std::unique_ptr<description>(new timestamp_description(source.name, source.allows_null_values));
 		default:
 			std::ostringstream message;
 			message << "Error! Unsupported type identifier '" << source.data_type << "'";
