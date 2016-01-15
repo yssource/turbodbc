@@ -21,6 +21,7 @@ CPPUNIT_TEST_SUITE( description_test );
 	CPPUNIT_TEST( column_sql_type_forwards );
 	CPPUNIT_TEST( make_field_forwards );
 	CPPUNIT_TEST( set_field_forwards );
+	CPPUNIT_TEST( type_code_forwards );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -32,6 +33,7 @@ public:
 	void column_sql_type_forwards();
 	void make_field_forwards();
 	void set_field_forwards();
+	void type_code_forwards();
 
 };
 
@@ -46,6 +48,7 @@ namespace {
 		MOCK_CONST_METHOD0(do_column_sql_type, SQLSMALLINT());
 		MOCK_CONST_METHOD1(do_make_field, pydbc::field(char const *));
 		MOCK_CONST_METHOD2(do_set_field, void(cpp_odbc::writable_buffer_element &, pydbc::field const &));
+		MOCK_CONST_METHOD0(do_get_type_code, pydbc::type_code());
 	};
 
 }
@@ -111,4 +114,14 @@ void description_test::set_field_forwards()
 	EXPECT_CALL(description, do_set_field(testing::Ref(element), value)).Times(1);
 
 	CPPUNIT_ASSERT_NO_THROW(description.set_field(element, value));
+}
+
+void description_test::type_code_forwards()
+{
+	auto const expected = pydbc::type_code::string;
+	mock_description description;
+	EXPECT_CALL(description, do_get_type_code())
+		.WillOnce(testing::Return(expected));
+
+	CPPUNIT_ASSERT(expected == description.get_type_code());
 }

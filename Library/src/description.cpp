@@ -30,4 +30,9 @@ void description::set_field(cpp_odbc::writable_buffer_element & element, field c
 	do_set_field(element, value);
 }
 
+type_code description::get_type_code() const
+{
+	return do_get_type_code();
+}
+
 }

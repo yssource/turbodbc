@@ -49,4 +49,9 @@ void string_description::do_set_field(cpp_odbc::writable_buffer_element & elemen
 	}
 }
 
+type_code string_description::do_get_type_code() const
+{
+	return type_code::string;
+}
+
 }

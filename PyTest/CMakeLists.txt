@@ -2,7 +2,7 @@ find_package(PythonInterp REQUIRED)
 add_test(
     NAME PyTest
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMAND ${PYTHON_EXECUTABLE} -m unittest discover
+    COMMAND ${PYTHON_EXECUTABLE} -m unittest discover -p test_cursor_select.py
 )
 set_tests_properties(
     PyTest

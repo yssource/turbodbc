@@ -1,6 +1,7 @@
 #pragma once
 
-#include "pydbc/field.h"
+#include <pydbc/field.h>
+#include <pydbc/type_code.h>
 #include <cpp_odbc/multi_value_buffer.h>
 #include <sqltypes.h>
 
@@ -37,6 +38,11 @@ public:
 	 */
 	void set_field(cpp_odbc::writable_buffer_element & element, field const & value) const;
 
+	/**
+	 * @brief Retrieve a code which indicates this field's type
+	 */
+	type_code get_type_code() const;
+
 	description (description const &) = delete;
 	description & operator=(description const &) = delete;
 
@@ -49,6 +55,7 @@ private:
 	virtual SQLSMALLINT do_column_sql_type() const = 0;
 	virtual field do_make_field(char const * data_pointer) const = 0;
 	virtual void do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const = 0;
+	virtual type_code do_get_type_code() const = 0;
 };
 
 }

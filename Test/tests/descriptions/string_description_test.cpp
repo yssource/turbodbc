@@ -13,6 +13,7 @@ CPPUNIT_TEST_SUITE( string_description_test );
 	CPPUNIT_TEST( set_field );
 	CPPUNIT_TEST( set_field_with_maximum_length );
 	CPPUNIT_TEST( set_field_crops_to_maximum_length );
+	CPPUNIT_TEST( get_type_code );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -23,6 +24,7 @@ public:
 	void set_field();
 	void set_field_with_maximum_length();
 	void set_field_crops_to_maximum_length();
+	void get_type_code();
 
 };
 
@@ -86,4 +88,10 @@ void string_description_test::set_field_crops_to_maximum_length()
 	description.set_field(element, pydbc::field{full});
 	CPPUNIT_ASSERT_EQUAL(basic, std::string(element.data_pointer));
 	CPPUNIT_ASSERT_EQUAL(basic.size(), element.indicator);
+}
+
+void string_description_test::get_type_code()
+{
+	pydbc::string_description const description(10);
+	CPPUNIT_ASSERT( pydbc::type_code::string == description.get_type_code() );
 }

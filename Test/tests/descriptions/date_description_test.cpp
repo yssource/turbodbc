@@ -11,6 +11,7 @@ CPPUNIT_TEST_SUITE( date_description_test );
 	CPPUNIT_TEST( basic_properties );
 	CPPUNIT_TEST( make_field );
 	CPPUNIT_TEST( set_field );
+	CPPUNIT_TEST( get_type_code );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -19,6 +20,7 @@ public:
 	void basic_properties();
 	void make_field();
 	void set_field();
+	void get_type_code();
 
 };
 
@@ -57,4 +59,10 @@ void date_description_test::set_field()
 	CPPUNIT_ASSERT_EQUAL(12, as_sql_date->month);
 	CPPUNIT_ASSERT_EQUAL(31, as_sql_date->day);
 	CPPUNIT_ASSERT_EQUAL(description.element_size(), element.indicator);
+}
+
+void date_description_test::get_type_code()
+{
+	pydbc::date_description const description;
+	CPPUNIT_ASSERT( pydbc::type_code::date == description.get_type_code() );
 }

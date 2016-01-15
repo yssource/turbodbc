@@ -11,6 +11,7 @@ CPPUNIT_TEST_SUITE( boolean_description_test );
 	CPPUNIT_TEST( basic_properties );
 	CPPUNIT_TEST( make_field );
 	CPPUNIT_TEST( set_field );
+	CPPUNIT_TEST( get_type_code );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -19,6 +20,7 @@ public:
 	void basic_properties();
 	void make_field();
 	void set_field();
+	void get_type_code();
 
 };
 
@@ -57,4 +59,10 @@ void boolean_description_test::set_field()
 	description.set_field(element, pydbc::field{false});
 	CPPUNIT_ASSERT_EQUAL(0, *element.data_pointer);
 	CPPUNIT_ASSERT_EQUAL(description.element_size(), element.indicator);
+}
+
+void boolean_description_test::get_type_code()
+{
+	pydbc::boolean_description const description;
+	CPPUNIT_ASSERT( pydbc::type_code::boolean == description.get_type_code() );
 }

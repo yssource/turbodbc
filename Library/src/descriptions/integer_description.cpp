@@ -37,4 +37,9 @@ void integer_description::do_set_field(cpp_odbc::writable_buffer_element & eleme
 	element.indicator = element_size();
 }
 
+type_code integer_description::do_get_type_code() const
+{
+	return type_code::integer;
+}
+
 }

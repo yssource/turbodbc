@@ -11,6 +11,7 @@ CPPUNIT_TEST_SUITE( timestamp_description_test );
 	CPPUNIT_TEST( basic_properties );
 	CPPUNIT_TEST( make_field );
 	CPPUNIT_TEST( set_field );
+	CPPUNIT_TEST( get_type_code );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -19,6 +20,7 @@ public:
 	void basic_properties();
 	void make_field();
 	void set_field();
+	void get_type_code();
 
 };
 
@@ -61,4 +63,10 @@ void timestamp_description_test::set_field()
 	CPPUNIT_ASSERT_EQUAL(3, as_sql_date->second);
 	CPPUNIT_ASSERT_EQUAL(123456000, as_sql_date->fraction);
 	CPPUNIT_ASSERT_EQUAL(description.element_size(), element.indicator);
+}
+
+void timestamp_description_test::get_type_code()
+{
+	pydbc::timestamp_description const description;
+	CPPUNIT_ASSERT( pydbc::type_code::timestamp == description.get_type_code() );
 }
