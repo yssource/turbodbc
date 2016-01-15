@@ -3,14 +3,9 @@
 #include <cpp_odbc/statement.h>
 #include <pydbc/field.h>
 #include <pydbc/description.h>
+#include <pydbc/column_info.h>
 
 namespace pydbc {
-
-struct column_info {
-	std::string name;
-	type_code type;
-	bool supports_null_values;
-};
 
 /**
  * @brief This interface represents a single column of a result set.
