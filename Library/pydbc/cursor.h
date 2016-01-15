@@ -2,6 +2,7 @@
 
 #include <cpp_odbc/connection.h>
 #include <pydbc/query.h>
+#include <pydbc/column_info.h>
 #include <memory>
 
 
@@ -22,6 +23,8 @@ public:
 
 	std::vector<nullable_field> fetch_one();
 	long get_row_count();
+
+	std::vector<column_info> get_result_set_info() const;
 
 	std::shared_ptr<cpp_odbc::connection const> get_connection() const;
 
