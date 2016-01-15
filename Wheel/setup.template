@@ -1,8 +1,16 @@
 # encoding=utf-8
 
-from setuptools import setup
+from setuptools import setup, Distribution
 from glob import glob
 import os
+
+
+# A hack to override wheel's autodetection for binary content.
+# -> fixes py27 and platform
+class BinaryDistribution(Distribution):
+    def has_ext_modules(self):
+        return True
+
 
 bins = filter(os.path.isfile, glob('@CMAKE_INSTALL_PREFIX@/bin/*'))
 libs = glob('@CMAKE_INSTALL_PREFIX@/lib/*.so')
@@ -11,6 +19,7 @@ cfgs = glob('@CMAKE_INSTALL_PREFIX@/etc/*')
 
 setup(
       name='cpp_odbc',
+      distclass=BinaryDistribution,
       version='0.1.0',
       author='Michael König',
       url='http://jira.phi-tps.local',
