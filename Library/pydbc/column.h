@@ -6,6 +6,12 @@
 
 namespace pydbc {
 
+struct column_info {
+	std::string name;
+	type_code type;
+	bool supports_null_values;
+};
+
 /**
  * @brief This interface represents a single column of a result set.
  */
@@ -25,6 +31,8 @@ public:
 	 * @param row_index Index of the row for which the field is retrieved
 	 */
 	nullable_field get_field(std::size_t row_index) const;
+
+	column_info get_info() const;
 
 	~column();
 private:

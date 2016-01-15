@@ -7,6 +7,7 @@
 #include "pydbc/column.h"
 
 #include <cppunit/extensions/HelperMacros.h>
+#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
 
 #include "mock_classes.h"
 
@@ -19,6 +20,7 @@ CPPUNIT_TEST_SUITE( column_test );
 
 	CPPUNIT_TEST( get_field_non_nullable );
 	CPPUNIT_TEST( get_field_nullable );
+	CPPUNIT_TEST( get_info );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -26,6 +28,7 @@ public:
 
 	void get_field_non_nullable();
 	void get_field_nullable();
+	void get_info();
 
 };
 
@@ -95,4 +98,17 @@ void column_test::get_field_nullable()
 	auto const row_index = 42;
 	set_buffer_element_to_null(*buffer, row_index);
 	CPPUNIT_ASSERT(not static_cast<bool>(column.get_field(row_index)));
+}
+
+void column_test::get_info()
+{
+	std::unique_ptr<pydbc::string_description> description(new pydbc::string_description("custom_name", false, 128));
+
+	testing::NiceMock<pydbc_test::mock_statement> statement;
+	pydbc::column column(statement, 0, 10, std::move(description));
+
+	auto const info = column.get_info();
+	CPPUNIT_ASSERT_EQUAL("custom_name", info.name);
+	CPPUNIT_ASSERT_EQUAL(false, info.supports_null_values);
+	CPPUNIT_ASSERT(pydbc::type_code::string == info.type);
 }

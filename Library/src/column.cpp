@@ -21,4 +21,9 @@ nullable_field column::get_field(std::size_t row_index) const
 	}
 }
 
+column_info column::get_info() const
+{
+	return {description_->name(), description_->get_type_code(), description_->supports_null_values()};
+}
+
 }
