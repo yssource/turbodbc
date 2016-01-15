@@ -11,7 +11,7 @@ cfgs = glob('@CMAKE_INSTALL_PREFIX@/etc/*')
 
 setup(
       name='cpp_odbc',
-      version='@cpp_odbc_VERSION@',
+      version='0.1.0',
       author='Michael König',
       url='http://jira.phi-tps.local',
       author_email='michael.koenig@blue-yonder.com',
