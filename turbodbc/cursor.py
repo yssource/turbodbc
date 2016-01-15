@@ -7,7 +7,6 @@ class Cursor(object):
     def __init__(self, impl):
         self.impl = impl
         self.rowcount = -1
-        self.description = None
         self._arraysize = 1
 
     def __iter__(self):
@@ -31,6 +30,14 @@ class Cursor(object):
     @arraysize.setter
     def arraysize(self, value):
         self._arraysize = value
+
+    @property
+    def description(self):
+        info = self.impl.get_result_set_info()
+        if len(info) == 0:
+            return None
+        else:
+            return info
 
     @translate_exceptions
     def execute(self, sql, parameters=None):

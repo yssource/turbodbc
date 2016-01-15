@@ -34,6 +34,8 @@ public:
 	std::vector<nullable_field> fetch_one();
 	long get_row_count();
 
+	std::vector<column_info> get_result_set_info() const;
+
 	~query();
 
 private:

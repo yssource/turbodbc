@@ -82,6 +82,15 @@ long query::get_row_count()
 	}
 }
 
+std::vector<column_info> query::get_result_set_info() const
+{
+//	if (result_) {
+		return {column_info{"name", type_code::integer, true}};
+//	} else {
+//		return {};
+//	}
+}
+
 std::size_t query::execute_batch()
 {
 	std::size_t result = 0;
