@@ -84,11 +84,11 @@ long query::get_row_count()
 
 std::vector<column_info> query::get_result_set_info() const
 {
-//	if (result_) {
+	if (result_) {
 		return result_->get_info();
-//	} else {
-//		return {};
-//	}
+	} else {
+		return {};
+	}
 }
 
 std::size_t query::execute_batch()

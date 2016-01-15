@@ -89,6 +89,11 @@ class InsertTests(object):
             expected_sum = sum(xrange(numbers))
             self.assertEqual(expected_sum, actual_sum)
 
+    def test_description_after_insert(self):
+        with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
+            self.cursor.execute("INSERT INTO {} VALUES (42)".format(table_name))
+            self.assertIsNone(self.cursor.description)
+
 
 # Actual test cases
 
