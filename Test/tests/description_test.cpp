@@ -7,6 +7,7 @@
 #include "pydbc/description.h"
 
 #include <cppunit/extensions/HelperMacros.h>
+#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
 #include <cppunit_toolbox/helpers/is_abstract_base_class.h>
 
 #include <gmock/gmock.h>
@@ -22,6 +23,9 @@ CPPUNIT_TEST_SUITE( description_test );
 	CPPUNIT_TEST( make_field_forwards );
 	CPPUNIT_TEST( set_field_forwards );
 	CPPUNIT_TEST( type_code_forwards );
+	CPPUNIT_TEST( default_name );
+	CPPUNIT_TEST( default_supports_null_values );
+	CPPUNIT_TEST( custom_name_and_nullable_support );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -34,6 +38,9 @@ public:
 	void make_field_forwards();
 	void set_field_forwards();
 	void type_code_forwards();
+	void default_name();
+	void default_supports_null_values();
+	void custom_name_and_nullable_support();
 
 };
 
@@ -43,6 +50,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION( description_test );
 namespace {
 
 	struct mock_description : public pydbc::description {
+		mock_description() : pydbc::description() {}
+		mock_description(std::string name, bool supports_null_values) :
+			pydbc::description(std::move(name), supports_null_values)
+		{
+		}
+
 		MOCK_CONST_METHOD0(do_element_size, std::size_t());
 		MOCK_CONST_METHOD0(do_column_c_type, SQLSMALLINT());
 		MOCK_CONST_METHOD0(do_column_sql_type, SQLSMALLINT());
@@ -124,4 +137,28 @@ void description_test::type_code_forwards()
 		.WillOnce(testing::Return(expected));
 
 	CPPUNIT_ASSERT(expected == description.get_type_code());
+}
+
+void description_test::default_name()
+{
+	mock_description description;
+
+	CPPUNIT_ASSERT_EQUAL("parameter", description.name());
+}
+
+void description_test::default_supports_null_values()
+{
+	mock_description description;
+
+	CPPUNIT_ASSERT(description.supports_null_values());
+}
+
+void description_test::custom_name_and_nullable_support()
+{
+	std::string const expected_name("my_name");
+	bool const expected_supports_null = false;
+	mock_description description(expected_name, expected_supports_null);
+
+	CPPUNIT_ASSERT_EQUAL(expected_name, description.name());
+	CPPUNIT_ASSERT_EQUAL(expected_supports_null, description.supports_null_values());
 }

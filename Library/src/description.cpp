@@ -2,7 +2,18 @@
 
 namespace pydbc {
 
-description::description() = default;
+description::description() :
+	name_("parameter"),
+	supports_null_(true)
+{
+}
+
+description::description(std::string name, bool supports_null) :
+	name_(std::move(name)),
+	supports_null_(supports_null)
+{
+}
+
 description::~description() = default;
 
 std::size_t description::element_size() const
@@ -33,6 +44,16 @@ void description::set_field(cpp_odbc::writable_buffer_element & element, field c
 type_code description::get_type_code() const
 {
 	return do_get_type_code();
+}
+
+std::string const & description::name() const
+{
+	return name_;
+}
+
+bool description::supports_null_values() const
+{
+	return supports_null_;
 }
 
 }
