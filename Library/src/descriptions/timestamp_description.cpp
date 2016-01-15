@@ -8,6 +8,12 @@
 namespace pydbc {
 
 timestamp_description::timestamp_description() = default;
+
+timestamp_description::timestamp_description(std::string name, bool supports_null) :
+	description(std::move(name), supports_null)
+{
+}
+
 timestamp_description::~timestamp_description() = default;
 
 std::size_t timestamp_description::do_element_size() const

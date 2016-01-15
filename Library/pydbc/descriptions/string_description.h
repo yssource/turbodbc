@@ -10,6 +10,7 @@ namespace pydbc {
 class string_description : public description {
 public:
 	string_description(std::size_t maximum_length);
+	string_description(std::string name, bool supports_null, std::size_t maximum_length);
 	~string_description();
 private:
 	std::size_t do_element_size() const final;

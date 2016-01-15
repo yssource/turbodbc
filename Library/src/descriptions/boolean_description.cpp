@@ -6,6 +6,13 @@
 namespace pydbc {
 
 boolean_description::boolean_description() = default;
+
+boolean_description::boolean_description(std::string name, bool supports_null) :
+	description(std::move(name), supports_null)
+{
+}
+
+
 boolean_description::~boolean_description() = default;
 
 std::size_t boolean_description::do_element_size() const

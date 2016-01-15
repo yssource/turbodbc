@@ -8,7 +8,13 @@
 namespace pydbc {
 
 string_description::string_description(std::size_t maximum_length) :
-		maximum_length_(maximum_length)
+	maximum_length_(maximum_length)
+{
+}
+
+string_description::string_description(std::string name, bool supports_null, std::size_t maximum_length) :
+	description(std::move(name), supports_null),
+	maximum_length_(maximum_length)
 {
 }
 

@@ -10,6 +10,7 @@ namespace pydbc {
 class integer_description : public description {
 public:
 	integer_description();
+	integer_description(std::string name, bool supports_null);
 	~integer_description();
 private:
 	std::size_t do_element_size() const final;

@@ -8,6 +8,12 @@
 namespace pydbc {
 
 date_description::date_description() = default;
+
+date_description::date_description(std::string name, bool supports_null) :
+	description(std::move(name), supports_null)
+{
+}
+
 date_description::~date_description() = default;
 
 std::size_t date_description::do_element_size() const

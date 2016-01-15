@@ -8,6 +8,12 @@
 namespace pydbc {
 
 integer_description::integer_description() = default;
+
+integer_description::integer_description(std::string name, bool supports_null) :
+	description(std::move(name), supports_null)
+{
+}
+
 integer_description::~integer_description() = default;
 
 std::size_t integer_description::do_element_size() const

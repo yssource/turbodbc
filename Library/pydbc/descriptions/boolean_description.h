@@ -10,6 +10,7 @@ namespace pydbc {
 class boolean_description : public description {
 public:
 	boolean_description();
+	boolean_description(std::string name, bool supports_null);
 	~boolean_description();
 private:
 	std::size_t do_element_size() const final;

@@ -8,6 +8,12 @@
 namespace pydbc {
 
 floating_point_description::floating_point_description() = default;
+
+floating_point_description::floating_point_description(std::string name, bool supports_null) :
+	description(std::move(name), supports_null)
+{
+}
+
 floating_point_description::~floating_point_description() = default;
 
 std::size_t floating_point_description::do_element_size() const

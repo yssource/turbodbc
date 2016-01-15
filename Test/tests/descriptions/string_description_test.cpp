@@ -14,6 +14,7 @@ CPPUNIT_TEST_SUITE( string_description_test );
 	CPPUNIT_TEST( set_field_with_maximum_length );
 	CPPUNIT_TEST( set_field_crops_to_maximum_length );
 	CPPUNIT_TEST( get_type_code );
+	CPPUNIT_TEST( custom_name_and_nullable_support );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -25,6 +26,7 @@ public:
 	void set_field_with_maximum_length();
 	void set_field_crops_to_maximum_length();
 	void get_type_code();
+	void custom_name_and_nullable_support();
 
 };
 
@@ -94,4 +96,15 @@ void string_description_test::get_type_code()
 {
 	pydbc::string_description const description(10);
 	CPPUNIT_ASSERT( pydbc::type_code::string == description.get_type_code() );
+}
+
+void string_description_test::custom_name_and_nullable_support()
+{
+	std::string const expected_name("my_name");
+	bool const expected_supports_null = false;
+
+	pydbc::string_description const description(expected_name, expected_supports_null, 10);
+
+	CPPUNIT_ASSERT_EQUAL(expected_name, description.name());
+	CPPUNIT_ASSERT_EQUAL(expected_supports_null, description.supports_null_values());
 }

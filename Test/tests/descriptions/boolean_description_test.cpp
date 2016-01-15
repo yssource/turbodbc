@@ -12,6 +12,7 @@ CPPUNIT_TEST_SUITE( boolean_description_test );
 	CPPUNIT_TEST( make_field );
 	CPPUNIT_TEST( set_field );
 	CPPUNIT_TEST( get_type_code );
+	CPPUNIT_TEST( custom_name_and_nullable_support );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -21,6 +22,7 @@ public:
 	void make_field();
 	void set_field();
 	void get_type_code();
+	void custom_name_and_nullable_support();
 
 };
 
@@ -65,4 +67,15 @@ void boolean_description_test::get_type_code()
 {
 	pydbc::boolean_description const description;
 	CPPUNIT_ASSERT( pydbc::type_code::boolean == description.get_type_code() );
+}
+
+void boolean_description_test::custom_name_and_nullable_support()
+{
+	std::string const expected_name("my_name");
+	bool const expected_supports_null = false;
+
+	pydbc::boolean_description const description(expected_name, expected_supports_null);
+
+	CPPUNIT_ASSERT_EQUAL(expected_name, description.name());
+	CPPUNIT_ASSERT_EQUAL(expected_supports_null, description.supports_null_values());
 }

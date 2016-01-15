@@ -10,6 +10,7 @@ namespace pydbc {
 class timestamp_description : public description {
 public:
 	timestamp_description();
+	timestamp_description(std::string name, bool supports_null);
 	~timestamp_description();
 private:
 	std::size_t do_element_size() const final;
