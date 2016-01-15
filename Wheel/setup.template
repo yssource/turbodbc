@@ -7,7 +7,7 @@ import os
 
 setup(
       name='turbodbc',
-      version='@turbodbc_VERSION@',
+      version='0.1.0',
       author='Michael König',
       url='http://jira.phi-tps.local',
       author_email='michael.koenig@blue-yonder.com',
