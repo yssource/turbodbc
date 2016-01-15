@@ -35,6 +35,7 @@ CPPUNIT_TEST_SUITE( result_set_test );
 	CPPUNIT_TEST( fetch_rows_3_buffer_3 );
 	CPPUNIT_TEST( fetch_rows_4_buffer_3 );
 	CPPUNIT_TEST( fetch_rows_6_buffer_3 );
+	CPPUNIT_TEST( get_info );
 
 
 CPPUNIT_TEST_SUITE_END();
@@ -52,6 +53,7 @@ public:
 	void fetch_rows_3_buffer_3();
 	void fetch_rows_4_buffer_3();
 	void fetch_rows_6_buffer_3();
+	void get_info();
 
 };
 
@@ -370,3 +372,13 @@ void result_set_test::fetch_rows_6_buffer_3()
 	test_fetch_multiple_rows(6, 3);
 }
 
+void result_set_test::get_info()
+{
+	auto statement = prepare_mock_with_columns({SQL_VARCHAR, SQL_INTEGER});
+
+	auto result_set = pydbc::result_set(statement, 1);
+	auto const columns = result_set.get_info();
+	CPPUNIT_ASSERT_EQUAL(2, columns.size());
+	CPPUNIT_ASSERT(pydbc::type_code::string == columns[0].type);
+	CPPUNIT_ASSERT(pydbc::type_code::integer == columns[1].type);
+}

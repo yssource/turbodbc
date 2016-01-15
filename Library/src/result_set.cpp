@@ -63,5 +63,13 @@ std::vector<nullable_field> result_set::fetch_one()
 	return row;
 }
 
+std::vector<column_info> result_set::get_info() const
+{
+	std::vector<column_info> infos;
+	for (auto const & column : columns_) {
+		infos.push_back(column->get_info());
+	}
+	return infos;
+}
 
 }

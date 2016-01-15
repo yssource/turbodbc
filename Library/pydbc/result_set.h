@@ -34,6 +34,11 @@ public:
 	 * @brief Fetch the next row of the result set
 	 */
 	std::vector<nullable_field> fetch_one();
+
+	/**
+	 * @brief Get user-level information about the columns in the result set
+	 */
+	std::vector<column_info> get_info() const;
 private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	std::vector<std::unique_ptr<column>> columns_;

@@ -85,7 +85,7 @@ long query::get_row_count()
 std::vector<column_info> query::get_result_set_info() const
 {
 //	if (result_) {
-		return {column_info{"name", type_code::integer, true}};
+		return result_->get_info();
 //	} else {
 //		return {};
 //	}
