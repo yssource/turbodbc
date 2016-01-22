@@ -57,6 +57,7 @@ CPPUNIT_TEST_SUITE( level2_api_test );
 	CPPUNIT_TEST( row_count_forwards );
 	CPPUNIT_TEST( describe_column_forwards );
 	CPPUNIT_TEST( describe_parameter_forwards );
+	CPPUNIT_TEST( more_results_forwards );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -96,6 +97,7 @@ public:
 	void row_count_forwards();
 	void describe_column_forwards();
 	void describe_parameter_forwards();
+	void more_results_forwards();
 
 };
 
@@ -516,4 +518,14 @@ void level2_api_test::describe_parameter_forwards()
 	EXPECT_CALL(api, do_describe_parameter(handle, parameter_id)).WillOnce(testing::Return(expected));
 
 	CPPUNIT_ASSERT_EQUAL(expected, api.describe_parameter(handle, parameter_id));
+}
+
+void level2_api_test::more_results_forwards()
+{
+	level2::statement_handle const handle = {&value_a};
+
+	level2_mock_api api;
+	EXPECT_CALL(api, do_more_results(handle)).Times(1);
+
+	api.more_results(handle);
 }
