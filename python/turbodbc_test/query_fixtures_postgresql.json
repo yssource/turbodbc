@@ -50,6 +50,14 @@
 		],
 		"teardown": ["DROP TABLE {table_name}"]
 	},
+	
+	"INSERT BOOL": {
+		"setup": [
+			"DROP TABLE IF EXISTS {table_name}",
+			"CREATE TABLE {table_name} (a BOOLEAN)"
+		],
+		"teardown": ["DROP TABLE {table_name}"]
+	},
 
 	"DESCRIPTION": {
 		"setup": [

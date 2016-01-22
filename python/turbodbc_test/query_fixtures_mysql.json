@@ -54,7 +54,15 @@
 		],
 		"teardown": ["DROP TABLE {table_name}"]
 	},
-	
+
+	"INSERT BOOL": {
+		"setup": [
+			"DROP TABLE IF EXISTS {table_name}",
+			"CREATE TABLE {table_name} (a BOOLEAN) engine=innodb"
+		],
+		"teardown": ["DROP TABLE {table_name}"]
+	},
+		
 	"DESCRIPTION": {
 		"setup": [
 			"DROP TABLE IF EXISTS {table_name}",
