@@ -136,5 +136,9 @@ SQLRETURN unixodbc_backend::do_describe_parameter(SQLHSTMT statement_handle, SQL
 	return SQLDescribeParam(statement_handle, parameter_number, data_type, column_size, decimal_digits, nullable);
 }
 
+SQLRETURN unixodbc_backend::do_more_results(SQLHSTMT statement_handle) const
+{
+	return SQLMoreResults(statement_handle);
+}
 
 } }

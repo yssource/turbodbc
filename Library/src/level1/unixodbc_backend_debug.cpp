@@ -209,5 +209,13 @@ SQLRETURN unixodbc_backend_debug::do_describe_parameter(SQLHSTMT statement_handl
 	return return_code;
 }
 
+SQLRETURN unixodbc_backend_debug::do_more_results(SQLHSTMT statement_handle) const
+{
+	std::cout << " *DEBUG* more_results";
+	auto const return_code = SQLMoreResults(statement_handle);
+	std::cout << " (return code " << return_code << ")" << std::endl;
+	return return_code;
+}
+
 
 } }

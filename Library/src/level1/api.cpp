@@ -137,4 +137,9 @@ SQLRETURN api::describe_parameter(SQLHSTMT statement_handle, SQLUSMALLINT parame
 	return do_describe_parameter(statement_handle, parameter_number, data_type, column_size, decimal_digits, nullable);
 }
 
+SQLRETURN api::more_results(SQLHSTMT statement_handle) const
+{
+	return do_more_results(statement_handle);
+}
+
 } }

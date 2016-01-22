@@ -52,6 +52,7 @@ CPPUNIT_TEST_SUITE( level1_api_test );
 	CPPUNIT_TEST( row_count_forwards );
 	CPPUNIT_TEST( describe_column_forwards );
 	CPPUNIT_TEST( describe_parameter_forwards );
+	CPPUNIT_TEST( more_results_forwards );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -85,6 +86,7 @@ public:
 	void row_count_forwards();
 	void describe_column_forwards();
 	void describe_parameter_forwards();
+	void more_results_forwards();
 
 };
 
@@ -495,11 +497,15 @@ void level1_api_test::describe_parameter_forwards()
 	CPPUNIT_ASSERT_EQUAL(expected, actual);
 }
 
+void level1_api_test::more_results_forwards()
+{
+	SQLRETURN const expected = 23;
+	SQLHDBC handle = &value_a;
 
+	level1_mock_api api;
+	EXPECT_CALL(api, do_more_results(handle))
+		.WillOnce(testing::Return(expected));
 
-
-
-
-
-
-
+	auto const actual = api.more_results(handle);
+	CPPUNIT_ASSERT_EQUAL(expected, actual);
+}

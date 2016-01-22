@@ -44,6 +44,7 @@ private:
 	SQLRETURN do_row_count(SQLHSTMT statement_handle, SQLLEN * count) const final;
 	SQLRETURN do_describe_column(SQLHSTMT statement_handle, SQLUSMALLINT column_number, SQLCHAR * column_name, SQLSMALLINT buffer_length, SQLSMALLINT * name_length, SQLSMALLINT * data_type, SQLULEN * column_size, SQLSMALLINT * decimal_digits, SQLSMALLINT * nullable) const final;
 	SQLRETURN do_describe_parameter(SQLHSTMT statement_handle, SQLUSMALLINT parameter_number, SQLSMALLINT * data_type, SQLULEN * column_size, SQLSMALLINT * decimal_digits, SQLSMALLINT * nullable) const final;
+	SQLRETURN do_more_results(SQLHSTMT statement_handle) const final;
 };
 
 } }
