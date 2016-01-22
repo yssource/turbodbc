@@ -38,11 +38,11 @@ class InsertTests(object):
         self._test_insert_many('INSERT DOUBLE',
                                [[1.23], [2.71], [3.14]])
 
-#     def test_date_column(self):
-#         self._test_insert_many('INSERT DATE',
-#                                [[datetime.date(2015, 12, 31)],
-#                                 [datetime.date(2016, 1, 15)],
-#                                 [datetime.date(2016, 2, 3)]])
+    def test_date_column(self):
+        self._test_insert_many('INSERT DATE',
+                               [[datetime.date(2015, 12, 31)],
+                                [datetime.date(2016, 1, 15)],
+                                [datetime.date(2016, 2, 3)]])
 
     def test_null(self):
         self._test_insert_many('INSERT INTEGER',

@@ -75,7 +75,8 @@ struct nullable_field_from_object{
 		return	object == Py_None
 			or	boost::python::extract<long>(object).check()
 			or	boost::python::extract<double>(object).check()
-			or	boost::python::extract<std::string>(object).check();
+			or	boost::python::extract<std::string>(object).check()
+			or	PyDate_Check(object);
 	}
 
 	static nullable_field convert(PyObject * object)
@@ -107,6 +108,14 @@ struct nullable_field_from_object{
 			}
 		}
 
+		{
+			if (PyDate_Check(object)) {
+				int const year = PyDateTime_GET_YEAR(object);
+				int const month = PyDateTime_GET_MONTH(object);
+				int const day = PyDateTime_GET_DAY(object);
+				return turbodbc::field(boost::gregorian::date(year, month, day));
+			}
+		}
 		throw std::runtime_error("Could not convert python value to C++");
 	}
 };

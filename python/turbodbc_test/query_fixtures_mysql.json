@@ -62,6 +62,14 @@
 		],
 		"teardown": ["DROP TABLE {table_name}"]
 	},
+
+	"INSERT DATE": {
+		"setup": [
+			"DROP TABLE IF EXISTS {table_name}",
+			"CREATE TABLE {table_name} (a DATE) engine=innodb"
+		],
+		"teardown": ["DROP TABLE {table_name}"]
+	},
 		
 	"DESCRIPTION": {
 		"setup": [
