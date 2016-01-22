@@ -24,7 +24,8 @@ Features
     appropriate
 *   Supported data types for result sets: `int`, `float`, `str`, `bool`,
     `datetime.date`, `datetime.datetime`
-*   Supported data types for parameters: `int`, `float`, `str`
+*   Supported data types for parameters: `int`, `float`, `str`, `bool`,
+    `datetime.date`, `datetime.datetime`
 
 
 Installation
