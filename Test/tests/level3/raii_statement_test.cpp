@@ -46,6 +46,7 @@ CPPUNIT_TEST_SUITE( raii_statement_test );
 	CPPUNIT_TEST( row_count );
 	CPPUNIT_TEST( describe_column );
 	CPPUNIT_TEST( describe_parameter );
+	CPPUNIT_TEST( more_results );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -73,6 +74,7 @@ public:
 	void row_count();
 	void describe_column();
 	void describe_parameter();
+	void more_results();
 
 };
 
@@ -414,4 +416,15 @@ void raii_statement_test::describe_parameter()
 
 	raii_statement statement(connection);
 	CPPUNIT_ASSERT_EQUAL( expected, statement.describe_parameter(parameter_id));
+}
+
+void raii_statement_test::more_results()
+{
+	auto api = make_default_api();
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
+	EXPECT_CALL(*api, do_more_results(default_s_handle)).Times(1);
+
+	raii_statement statement(connection);
+	statement.more_results();
 }

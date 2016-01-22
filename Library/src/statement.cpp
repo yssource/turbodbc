@@ -113,4 +113,9 @@ column_description statement::describe_parameter(SQLUSMALLINT parameter_id) cons
 	return do_describe_parameter(parameter_id);
 }
 
+void statement::more_results() const
+{
+	do_more_results();
+}
+
 }

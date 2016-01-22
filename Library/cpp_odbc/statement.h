@@ -150,6 +150,12 @@ public:
 	 */
 	column_description describe_parameter(SQLUSMALLINT parameter_id) const;
 
+	/**
+	 * @brief Make more results (created by multiple queries or parameter sets)
+	 *        available
+	 */
+	void more_results() const;
+
 	virtual ~statement();
 protected:
 	statement();
@@ -175,6 +181,7 @@ private:
 	virtual SQLLEN do_row_count() const = 0;
 	virtual column_description do_describe_column(SQLUSMALLINT column_id) const = 0;
 	virtual column_description do_describe_parameter(SQLUSMALLINT parameter_id) const = 0;
+	virtual void do_more_results() const = 0;
 };
 
 }

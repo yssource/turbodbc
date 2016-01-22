@@ -43,6 +43,7 @@ CPPUNIT_TEST_SUITE( statement_test );
 	CPPUNIT_TEST( row_count_forwards );
 	CPPUNIT_TEST( describe_column_forwards );
 	CPPUNIT_TEST( describe_parameter_forwards );
+	CPPUNIT_TEST( more_results_forwards );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -68,6 +69,7 @@ public:
 	void row_count_forwards();
 	void describe_column_forwards();
 	void describe_parameter_forwards();
+	void more_results_forwards();
 
 };
 
@@ -285,4 +287,12 @@ void statement_test::describe_parameter_forwards()
 		.WillOnce(testing::Return(expected));
 
 	CPPUNIT_ASSERT_EQUAL( expected, statement.describe_parameter(parameter_id) );
+}
+
+void statement_test::more_results_forwards()
+{
+	mock_statement statement;
+	EXPECT_CALL( statement, do_more_results()).Times(1);
+
+	statement.more_results();
 }

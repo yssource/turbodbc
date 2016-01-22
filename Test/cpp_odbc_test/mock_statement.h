@@ -37,6 +37,7 @@ public:
 	MOCK_CONST_METHOD0( do_row_count, SQLLEN());
 	MOCK_CONST_METHOD1( do_describe_column, cpp_odbc::column_description(SQLUSMALLINT));
 	MOCK_CONST_METHOD1( do_describe_parameter, cpp_odbc::column_description(SQLUSMALLINT));
+	MOCK_CONST_METHOD0( do_more_results, void());
 };
 
 }
