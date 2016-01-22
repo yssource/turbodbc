@@ -19,7 +19,9 @@ class CursorTestCase(TestCase):
             cls.fixtures = json.load(f)
 
     def setUp(self):
-        self.connection = turbodbc.connect(self.dsn)
+        self.parameter_sets_to_buffer = 100
+        self.connection = turbodbc.connect(self.dsn,
+                                           parameter_sets_to_buffer=self.parameter_sets_to_buffer)
         self.cursor = self.connection.cursor()
 
     def tearDown(self):

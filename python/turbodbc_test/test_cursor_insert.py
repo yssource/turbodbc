@@ -1,10 +1,19 @@
+import datetime
+
 from cursor_test_case import CursorTestCase
 from query_fixture import query_fixture
 
 
 class InsertTests(object):
 
-    def test_single_row(self):
+    def _test_insert_many(self, fixture_name, data):
+        with query_fixture(self.cursor, self.fixtures, fixture_name) as table_name:
+            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), data)
+            self.cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
+            inserted = [list(row) for row in self.cursor.fetchall()]
+            self.assertItemsEqual(data, inserted)
+
+    def test_insert_single(self):
         to_insert = [1]
 
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
@@ -14,49 +23,30 @@ class InsertTests(object):
             self.assertItemsEqual([to_insert], inserted)
 
     def test_string_column(self):
-        to_insert = [['hello'], ['my'], ['test case']]
-
-        with query_fixture(self.cursor, self.fixtures, 'INSERT STRING') as table_name:
-            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
-            self.cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
-            inserted = [list(row) for row in self.cursor.fetchall()]
-            self.assertItemsEqual(to_insert, inserted)
+        self._test_insert_many('INSERT STRING',
+                               [['hello'], ['my'], ['test case']])
 
     def test_bool_column(self):
-        to_insert = [[True], [True], [False]]
-
-        with query_fixture(self.cursor, self.fixtures, 'INSERT BOOL') as table_name:
-            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
-            self.cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
-            inserted = [list(row) for row in self.cursor.fetchall()]
-            self.assertItemsEqual(to_insert, inserted)
+        self._test_insert_many('INSERT BOOL',
+                               [[True], [True], [False]])
 
     def test_integer_column(self):
-        to_insert = [[1], [2], [3]]
-
-        with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
-            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
-            self.cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
-            inserted = [list(row) for row in self.cursor.fetchall()]
-            self.assertItemsEqual(to_insert, inserted)
+        self._test_insert_many('INSERT INTEGER',
+                               [[1], [2], [3]])
 
     def test_double_column(self):
-        to_insert = [[1.23], [2.71], [3.14]]
- 
-        with query_fixture(self.cursor, self.fixtures, 'INSERT DOUBLE') as table_name:
-            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
-            self.cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
-            inserted = [list(row) for row in self.cursor.fetchall()]
-            self.assertItemsEqual(to_insert, inserted)
+        self._test_insert_many('INSERT DOUBLE',
+                               [[1.23], [2.71], [3.14]])
+
+#     def test_date_column(self):
+#         self._test_insert_many('INSERT DATE',
+#                                [[datetime.date(2015, 12, 31)],
+#                                 [datetime.date(2016, 1, 15)],
+#                                 [datetime.date(2016, 2, 3)]])
 
     def test_null(self):
-        to_insert = [[None]]
-
-        with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
-            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
-            self.cursor.execute("SELECT a FROM {}".format(table_name))
-            inserted = [list(row) for row in self.cursor.fetchall()]
-            self.assertItemsEqual(to_insert, inserted)
+        self._test_insert_many('INSERT INTEGER',
+                               [[None]])
 
     def test_mixed_data_columns(self):
         # second column has mixed data types in the same column
@@ -87,16 +77,9 @@ class InsertTests(object):
             self.assertItemsEqual(to_insert, inserted)
 
     def test_number_of_rows_exceeds_buffer_size(self):
-        with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
-            numbers = 123
-            to_insert = [[i] for i in xrange(numbers)]
-            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
-
-            self.cursor.execute("SELECT a FROM {}".format(table_name))
-            retrieved = self.cursor.fetchall()
-            actual_sum = sum([row[0] for row in retrieved])
-            expected_sum = sum(xrange(numbers))
-            self.assertEqual(expected_sum, actual_sum)
+        numbers = self.parameter_sets_to_buffer * 2 + 17
+        self._test_insert_many('INSERT INTEGER',
+                               [[i] for i in xrange(numbers)])
 
     def test_description_after_insert(self):
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
