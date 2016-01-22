@@ -1,19 +1,7 @@
-/**
- *  @file connection.cpp
- *  @date 12.12.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
-
-#include "pydbc/connection.h"
+#include "turbodbc/connection.h"
 #include <sqlext.h>
 
-namespace pydbc {
+namespace turbodbc {
 
 connection::connection(std::shared_ptr<cpp_odbc::connection const> low_level_connection) :
 	rows_to_buffer(1000),

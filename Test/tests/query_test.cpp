@@ -1,7 +1,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
 #include "cpp_odbc/connection.h"
-#include "pydbc/query.h"
+#include "turbodbc/query.h"
 #include "mock_classes.h"
 
 
@@ -27,14 +27,14 @@ public:
 // Registers the fixture with the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( query_test );
 
-using pydbc_test::mock_connection;
-using pydbc_test::mock_statement;
+using turbodbc_test::mock_connection;
+using turbodbc_test::mock_statement;
 
 
 void query_test::fetch_one_if_empty()
 {
 	auto statement = std::make_shared<mock_statement>();
-	pydbc::query query(statement, 1, 1);
+	turbodbc::query query(statement, 1, 1);
 	CPPUNIT_ASSERT_THROW(query.fetch_one(), std::runtime_error);
 }
 
@@ -42,7 +42,7 @@ void query_test::fetch_one_if_empty()
 void query_test::get_row_count_before_execute(){
 	auto statement = std::make_shared<mock_statement>();
 
-	pydbc::query query(statement, 1, 1);
+	turbodbc::query query(statement, 1, 1);
 	CPPUNIT_ASSERT_EQUAL(0, query.get_row_count());
 }
 
@@ -52,7 +52,7 @@ void query_test::get_row_count_after_execute(){
 	EXPECT_CALL( *statement, do_row_count())
 			.WillOnce(testing::Return(expected));
 
-	pydbc::query query(statement, 1, 1);
+	turbodbc::query query(statement, 1, 1);
 	query.execute();
 	CPPUNIT_ASSERT_EQUAL(expected, query.get_row_count());
 }

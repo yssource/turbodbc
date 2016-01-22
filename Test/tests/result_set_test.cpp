@@ -1,22 +1,9 @@
-/**
- *  @file result_set_test.cpp
- *  @date 19.12.2014
- *  @author mwarsinsky
- *  @brief 
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
-
-
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
 #include "cpp_odbc/connection.h"
-#include "pydbc/connection.h"
+#include "turbodbc/connection.h"
 #include "mock_classes.h"
-#include "pydbc/result_set.h"
+#include "turbodbc/result_set.h"
 #include <sqlext.h>
 #include <boost/variant/get.hpp>
 #include <cstring>
@@ -60,8 +47,8 @@ public:
 // Registers the fixture with the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( result_set_test );
 
-using pydbc_test::mock_connection;
-using pydbc_test::mock_statement;
+using turbodbc_test::mock_connection;
+using turbodbc_test::mock_statement;
 
 namespace {
 
@@ -126,7 +113,7 @@ void result_set_test::enables_fetching_multiple_rows()
 	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffered_rows)).Times(1);
 	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>())).Times(1);
 
-	pydbc::result_set result_set(statement, buffered_rows);
+	turbodbc::result_set result_set(statement, buffered_rows);
 }
 
 void result_set_test::fetch_without_columns()
@@ -136,7 +123,7 @@ void result_set_test::fetch_without_columns()
 	ON_CALL(*statement, do_fetch_next())
 		.WillByDefault(testing::Return(true));
 
-	pydbc::result_set result_set(statement, 1);
+	turbodbc::result_set result_set(statement, 1);
 	CPPUNIT_ASSERT_EQUAL(0, result_set.fetch_one().size());
 }
 
@@ -156,7 +143,7 @@ void result_set_test::fetch_empty_column()
 	SQLULEN * rows_fetched = nullptr;
 	expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
-	auto result_set = pydbc::result_set(statement, 1);
+	auto result_set = turbodbc::result_set(statement, 1);
 	CPPUNIT_ASSERT(buffers[0] != nullptr);
 
 	EXPECT_CALL(*statement, do_fetch_next())
@@ -190,7 +177,7 @@ void result_set_test::fetch_with_single_string_column()
 	SQLULEN * rows_fetched = nullptr;
 	expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
-	auto result_set = pydbc::result_set(statement, 1);
+	auto result_set = turbodbc::result_set(statement, 1);
 	CPPUNIT_ASSERT(buffers[0] != nullptr);
 
 	std::string const expected_value = "this is a test string";
@@ -240,7 +227,7 @@ void result_set_test::fetch_with_single_integer_column()
 	SQLULEN * rows_fetched = nullptr;
 	expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
-	auto result_set = pydbc::result_set(statement, 1);
+	auto result_set = turbodbc::result_set(statement, 1);
 	CPPUNIT_ASSERT(buffers[0] != nullptr);
 
 	long const expected_value = 42;
@@ -265,7 +252,7 @@ void result_set_test::fetch_with_multiple_columns()
 	SQLULEN * rows_fetched = nullptr;
 	expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
-	auto result_set = pydbc::result_set(statement, 1);
+	auto result_set = turbodbc::result_set(statement, 1);
 
 	std::vector<long> expected_values = {42, 17};
 	EXPECT_CALL(*statement, do_fetch_next())
@@ -293,7 +280,7 @@ namespace {
 		SQLULEN * rows_fetched = nullptr;
 		expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
-		auto result_set = pydbc::result_set(statement, buffer_size);
+		auto result_set = turbodbc::result_set(statement, buffer_size);
 
 		std::vector<long> expected_values;
 		for (std::size_t i = 0; i != rows; ++i) {
@@ -376,9 +363,9 @@ void result_set_test::get_info()
 {
 	auto statement = prepare_mock_with_columns({SQL_VARCHAR, SQL_INTEGER});
 
-	auto result_set = pydbc::result_set(statement, 1);
+	auto result_set = turbodbc::result_set(statement, 1);
 	auto const columns = result_set.get_info();
 	CPPUNIT_ASSERT_EQUAL(2, columns.size());
-	CPPUNIT_ASSERT(pydbc::type_code::string == columns[0].type);
-	CPPUNIT_ASSERT(pydbc::type_code::integer == columns[1].type);
+	CPPUNIT_ASSERT(turbodbc::type_code::string == columns[0].type);
+	CPPUNIT_ASSERT(turbodbc::type_code::integer == columns[1].type);
 }

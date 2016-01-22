@@ -1,9 +1,9 @@
-#include <pydbc/descriptions/boolean_description.h>
+#include <turbodbc/descriptions/boolean_description.h>
 
 #include <boost/variant/get.hpp>
 #include <sqlext.h>
 
-namespace pydbc {
+namespace turbodbc {
 
 boolean_description::boolean_description() = default;
 

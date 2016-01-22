@@ -1,21 +1,10 @@
 #pragma once
-/**
- *  @file connection.h
- *  @date 12.12.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
 
-#include "pydbc/cursor.h"
+#include "turbodbc/cursor.h"
 #include <cpp_odbc/connection.h>
 #include <memory>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * @brief This class is provides basic functionality required by python's
@@ -44,7 +33,7 @@ public:
 	/**
 	 * @brief Create a new cursor object associated with this connection
 	 */
-	pydbc::cursor make_cursor() const;
+	turbodbc::cursor make_cursor() const;
 
 	/// Indicate number of rows which shall be buffered by result sets
 	std::size_t rows_to_buffer;

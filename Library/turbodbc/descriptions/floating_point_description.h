@@ -1,17 +1,18 @@
 #pragma once
 
-#include <pydbc/description.h>
+#include <turbodbc/description.h>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
- * @brief Represents a description to bind a buffer holding timestamp values
+ * @brief Represents a description to bind a buffer holding double precision
+ *        floating point values
  */
-class timestamp_description : public description {
+class floating_point_description : public description {
 public:
-	timestamp_description();
-	timestamp_description(std::string name, bool supports_null);
-	~timestamp_description();
+	floating_point_description();
+	floating_point_description(std::string name, bool supports_null);
+	~floating_point_description();
 private:
 	std::size_t do_element_size() const final;
 	SQLSMALLINT do_column_c_type() const final;
@@ -20,5 +21,6 @@ private:
 	void do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const final;
 	type_code do_get_type_code() const final;
 };
+
 
 }

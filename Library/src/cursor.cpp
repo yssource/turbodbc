@@ -1,17 +1,5 @@
-/**
- *  @file cursor.cpp
- *  @date 12.12.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
-
-#include <pydbc/cursor.h>
-#include <pydbc/make_description.h>
+#include <turbodbc/cursor.h>
+#include <turbodbc/make_description.h>
 
 #include <cpp_odbc/statement.h>
 #include <cpp_odbc/error.h>
@@ -24,7 +12,7 @@
 #include <sstream>
 
 
-namespace pydbc {
+namespace turbodbc {
 
 cursor::cursor(std::shared_ptr<cpp_odbc::connection const> connection, std::size_t rows_to_buffer, std::size_t parameter_sets_to_buffer) :
 	connection_(connection),

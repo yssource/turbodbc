@@ -1,11 +1,11 @@
-#include <pydbc/descriptions/integer_description.h>
+#include <turbodbc/descriptions/integer_description.h>
 
 #include <sqlext.h>
 
 #include <boost/variant/get.hpp>
 #include <cstring>
 
-namespace pydbc {
+namespace turbodbc {
 
 integer_description::integer_description() = default;
 

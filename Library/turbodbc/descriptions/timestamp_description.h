@@ -1,17 +1,17 @@
 #pragma once
 
-#include <pydbc/description.h>
+#include <turbodbc/description.h>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
- * @brief Represents a description to bind a buffer holding integer values
+ * @brief Represents a description to bind a buffer holding timestamp values
  */
-class integer_description : public description {
+class timestamp_description : public description {
 public:
-	integer_description();
-	integer_description(std::string name, bool supports_null);
-	~integer_description();
+	timestamp_description();
+	timestamp_description(std::string name, bool supports_null);
+	~timestamp_description();
 private:
 	std::size_t do_element_size() const final;
 	SQLSMALLINT do_column_c_type() const final;

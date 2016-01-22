@@ -1,17 +1,17 @@
 file(GLOB_RECURSE LIBRARY_FILES "src/*.cpp")
 
-add_library(pydbc_intern ${LIBRARY_FILES})
+add_library(turbodbc_intern ${LIBRARY_FILES})
 
-set_target_properties(pydbc_intern PROPERTIES 
+set_target_properties(turbodbc_intern PROPERTIES 
     PREFIX ""
     INSTALL_RPATH "../../.."
 )
 
-add_dependencies(pydbc_intern
+add_dependencies(turbodbc_intern
     refresh_cmake_configuration
 )
 
-target_link_libraries(pydbc_intern
+target_link_libraries(turbodbc_intern
 	${Boost_LIBRARIES}
 	${Odbc_LIBRARIES}
 	${PYTHON_LIBRARIES}
@@ -21,17 +21,17 @@ target_link_libraries(pydbc_intern
 
 
 install(
-    TARGETS pydbc_intern
+    TARGETS turbodbc_intern
     LIBRARY DESTINATION lib
 )
 
 install(
-	DIRECTORY pydbc_intern
+	DIRECTORY turbodbc_intern
 	DESTINATION include
 	FILES_MATCHING PATTERN "*.h"
 	PATTERN ".git" EXCLUDE
 )
 
-add_custom_command(TARGET pydbc_intern POST_BUILD
+add_custom_command(TARGET turbodbc_intern POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
-                   ${CMAKE_CURRENT_BINARY_DIR}/pydbc_intern.so ${CMAKE_BINARY_DIR}/turbodbc)
+                   ${CMAKE_CURRENT_BINARY_DIR}/turbodbc_intern.so ${CMAKE_BINARY_DIR}/turbodbc)

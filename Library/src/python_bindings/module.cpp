@@ -1,6 +1,6 @@
 #include <boost/python/module.hpp>
 
-namespace pydbc { namespace bindings {
+namespace turbodbc { namespace bindings {
 
 	void for_column_info();
 	void for_connect();
@@ -11,9 +11,9 @@ namespace pydbc { namespace bindings {
 
 } }
 
-BOOST_PYTHON_MODULE(pydbc_intern)
+BOOST_PYTHON_MODULE(turbodbc_intern)
 {
-	using namespace pydbc;
+	using namespace turbodbc;
 	bindings::for_column_info();
 	bindings::for_connect();
 	bindings::for_connection();

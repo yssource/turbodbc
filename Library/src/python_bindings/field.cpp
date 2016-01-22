@@ -1,4 +1,4 @@
-#include <pydbc/field.h>
+#include <turbodbc/field.h>
 
 #include <boost/python/to_python_converter.hpp>
 #include <boost/python/implicit.hpp>
@@ -8,7 +8,7 @@
 
 #include <datetime.h> // Python header
 
-namespace pydbc { namespace bindings {
+namespace turbodbc { namespace bindings {
 
 
 struct utf8_from_unicode_object {
@@ -89,21 +89,21 @@ struct nullable_field_from_object{
 		{
 			boost::python::extract<long> extractor(object);
 			if (extractor.check()) {
-				return pydbc::field(extractor());
+				return turbodbc::field(extractor());
 			}
 		}
 
 		{
 			boost::python::extract<double> extractor(object);
 			if (extractor.check()) {
-				return pydbc::field(extractor());
+				return turbodbc::field(extractor());
 			}
 		}
 
 		{
 			boost::python::extract<std::string> extractor(object);
 			if (extractor.check()) {
-				return pydbc::field(extractor());
+				return turbodbc::field(extractor());
 			}
 		}
 

@@ -1,11 +1,11 @@
 #pragma once
 
 #include <cpp_odbc/statement.h>
-#include <pydbc/field.h>
-#include <pydbc/description.h>
-#include <pydbc/column_info.h>
+#include <turbodbc/field.h>
+#include <turbodbc/description.h>
+#include <turbodbc/column_info.h>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * @brief This interface represents a single column of a result set.

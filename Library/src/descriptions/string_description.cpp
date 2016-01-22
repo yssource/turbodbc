@@ -1,11 +1,11 @@
-#include <pydbc/descriptions/string_description.h>
+#include <turbodbc/descriptions/string_description.h>
 
 #include <boost/variant/get.hpp>
 
 #include <sqlext.h>
 #include <cstring>
 
-namespace pydbc {
+namespace turbodbc {
 
 string_description::string_description(std::size_t maximum_length) :
 	maximum_length_(maximum_length)

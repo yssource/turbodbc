@@ -1,6 +1,6 @@
 #pragma once
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * This enumeration assigns integer values to certain database types

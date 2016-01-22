@@ -1,10 +1,4 @@
-/**
- *  @file description_test.cpp
- *  @date 05.02.2015
- *  @author mkoenig
- */
-
-#include "pydbc/description.h"
+#include "turbodbc/description.h"
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
@@ -49,26 +43,26 @@ CPPUNIT_TEST_SUITE_REGISTRATION( description_test );
 
 namespace {
 
-	struct mock_description : public pydbc::description {
-		mock_description() : pydbc::description() {}
+	struct mock_description : public turbodbc::description {
+		mock_description() : turbodbc::description() {}
 		mock_description(std::string name, bool supports_null_values) :
-			pydbc::description(std::move(name), supports_null_values)
+			turbodbc::description(std::move(name), supports_null_values)
 		{
 		}
 
 		MOCK_CONST_METHOD0(do_element_size, std::size_t());
 		MOCK_CONST_METHOD0(do_column_c_type, SQLSMALLINT());
 		MOCK_CONST_METHOD0(do_column_sql_type, SQLSMALLINT());
-		MOCK_CONST_METHOD1(do_make_field, pydbc::field(char const *));
-		MOCK_CONST_METHOD2(do_set_field, void(cpp_odbc::writable_buffer_element &, pydbc::field const &));
-		MOCK_CONST_METHOD0(do_get_type_code, pydbc::type_code());
+		MOCK_CONST_METHOD1(do_make_field, turbodbc::field(char const *));
+		MOCK_CONST_METHOD2(do_set_field, void(cpp_odbc::writable_buffer_element &, turbodbc::field const &));
+		MOCK_CONST_METHOD0(do_get_type_code, turbodbc::type_code());
 	};
 
 }
 
 void description_test::is_base_class()
 {
-	bool const all_good = cppunit_toolbox::is_abstract_base_class<pydbc::description>::value;
+	bool const all_good = cppunit_toolbox::is_abstract_base_class<turbodbc::description>::value;
 	CPPUNIT_ASSERT(all_good);
 }
 
@@ -107,7 +101,7 @@ void description_test::column_sql_type_forwards()
 
 void description_test::make_field_forwards()
 {
-	pydbc::field const expected(42l);
+	turbodbc::field const expected(42l);
 	char const * data = nullptr;
 
 	mock_description description;
@@ -119,7 +113,7 @@ void description_test::make_field_forwards()
 
 void description_test::set_field_forwards()
 {
-	pydbc::field const value(42l);
+	turbodbc::field const value(42l);
 	cpp_odbc::multi_value_buffer buffer(42, 10);
 	auto element = buffer[0];
 
@@ -131,7 +125,7 @@ void description_test::set_field_forwards()
 
 void description_test::type_code_forwards()
 {
-	auto const expected = pydbc::type_code::string;
+	auto const expected = turbodbc::type_code::string;
 	mock_description description;
 	EXPECT_CALL(description, do_get_type_code())
 		.WillOnce(testing::Return(expected));

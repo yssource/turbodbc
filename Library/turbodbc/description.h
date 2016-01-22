@@ -1,11 +1,11 @@
 #pragma once
 
-#include <pydbc/field.h>
-#include <pydbc/type_code.h>
+#include <turbodbc/field.h>
+#include <turbodbc/type_code.h>
 #include <cpp_odbc/multi_value_buffer.h>
 #include <sqltypes.h>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * @brief Represents all information to bind a buffer to a column or parameter and

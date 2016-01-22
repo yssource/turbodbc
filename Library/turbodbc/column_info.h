@@ -1,9 +1,9 @@
 #pragma once
 
-#include <pydbc/type_code.h>
+#include <turbodbc/type_code.h>
 #include <string>
 
-namespace pydbc {
+namespace turbodbc {
 
 struct column_info {
 	std::string name;

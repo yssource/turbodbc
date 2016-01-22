@@ -1,11 +1,11 @@
 #pragma once
 
 #include <cpp_odbc/column_description.h>
-#include <pydbc/description.h>
-#include <pydbc/field.h>
+#include <turbodbc/description.h>
+#include <turbodbc/field.h>
 #include <memory>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * @brief Create a buffer description based on a given column description

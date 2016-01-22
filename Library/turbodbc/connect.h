@@ -1,20 +1,9 @@
 #pragma once
-/**
- *  @file connect.h
- *  @date 12.12.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
 
-#include "pydbc/connection.h"
+#include "turbodbc/connection.h"
 #include <string>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * @brief Establish a new connection to the database identified by the given

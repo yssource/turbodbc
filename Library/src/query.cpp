@@ -1,6 +1,6 @@
-#include <pydbc/query.h>
-#include <pydbc/make_description.h>
-#include <pydbc/descriptions/integer_description.h>
+#include <turbodbc/query.h>
+#include <turbodbc/make_description.h>
+#include <turbodbc/descriptions/integer_description.h>
 
 #include <cpp_odbc/error.h>
 
@@ -12,7 +12,7 @@
 #include <sstream>
 
 
-namespace pydbc {
+namespace turbodbc {
 
 namespace {
 

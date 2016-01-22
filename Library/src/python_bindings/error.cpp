@@ -1,19 +1,7 @@
-/**
- *  @file connect.h
- *  @date 12.12.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
-
 #include <boost/python.hpp>
 #include <cpp_odbc/error.h>
 
-namespace pydbc { namespace bindings {
+namespace turbodbc { namespace bindings {
 
 //this is for translating into python exceptions that follow a specified inheritance hierarchy
 PyObject* createExceptionClass(const char* name, PyObject* baseTypeObj = PyExc_StandardError)

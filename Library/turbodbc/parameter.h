@@ -2,10 +2,10 @@
 
 #include <cpp_odbc/statement.h>
 #include <cpp_odbc/multi_value_buffer.h>
-#include <pydbc/field.h>
-#include <pydbc/description.h>
+#include <turbodbc/field.h>
+#include <turbodbc/description.h>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * @brief This interface represents a single parameter of a query
@@ -26,7 +26,7 @@ public:
 	 * @param row_index Index of the row for which the value is set
 	 * @param value The value which is set
 	 */
-	void set(std::size_t row_index, pydbc::nullable_field const & value);
+	void set(std::size_t row_index, turbodbc::nullable_field const & value);
 
 	/**
 	 * @brief Copy the value set for the given row_index to the first row (with index 0)

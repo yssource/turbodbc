@@ -1,12 +1,12 @@
 #pragma once
 
 #include <cpp_odbc/connection.h>
-#include <pydbc/query.h>
-#include <pydbc/column_info.h>
+#include <turbodbc/query.h>
+#include <turbodbc/column_info.h>
 #include <memory>
 
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * TODO: Cursor needs proper unit tests
@@ -34,7 +34,7 @@ private:
 	std::shared_ptr<cpp_odbc::connection const> connection_;
 	std::size_t rows_to_buffer_;
 	std::size_t parameter_sets_to_buffer_;
-	std::shared_ptr<pydbc::query> query_;
+	std::shared_ptr<turbodbc::query> query_;
 };
 
 }

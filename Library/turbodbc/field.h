@@ -6,7 +6,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <string>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * @brief This type represents a single field in a table, i.e., the data associated

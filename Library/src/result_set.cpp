@@ -1,23 +1,11 @@
-/**
- *  @file cursor.cpp
- *  @date 12.12.2014
- *  @author mkoenig
- *  @brief
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
-
-#include <pydbc/cursor.h>
-#include <pydbc/column.h>
-#include <pydbc/make_description.h>
+#include <turbodbc/cursor.h>
+#include <turbodbc/column.h>
+#include <turbodbc/make_description.h>
 #include <sqlext.h>
 #include <stdexcept>
 #include <sstream>
 
-namespace pydbc {
+namespace turbodbc {
 
 namespace {
 

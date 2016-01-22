@@ -1,11 +1,11 @@
-#include <pydbc/descriptions/date_description.h>
+#include <turbodbc/descriptions/date_description.h>
 
 #include <sqlext.h>
 
 #include <boost/variant/get.hpp>
 #include <cstring>
 
-namespace pydbc {
+namespace turbodbc {
 
 date_description::date_description() = default;
 

@@ -1,23 +1,12 @@
 #pragma once
-/**
- *  @file cursor.h
- *  @date 12.12.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
 
 #include <cpp_odbc/statement.h>
-#include <pydbc/result_set.h>
-#include <pydbc/parameter.h>
+#include <turbodbc/result_set.h>
+#include <turbodbc/parameter.h>
 #include <memory>
 #include <vector>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * TODO: Query needs proper unit tests
@@ -49,7 +38,7 @@ private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	std::size_t rows_to_buffer_;
 	std::size_t parameter_sets_to_buffer_;
-	std::vector<std::shared_ptr<pydbc::parameter>> parameters_;
+	std::vector<std::shared_ptr<turbodbc::parameter>> parameters_;
 	std::shared_ptr<result_set> result_;
 	std::size_t current_parameter_set_;
 	bool was_executed_;

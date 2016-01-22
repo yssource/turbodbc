@@ -1,8 +1,8 @@
 #pragma once
 
-#include <pydbc/description.h>
+#include <turbodbc/description.h>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * @brief Represents a description to bind a buffer holding date values

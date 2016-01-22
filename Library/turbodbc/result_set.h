@@ -1,23 +1,12 @@
 #pragma once
-/**
- *  @file cursor.h
- *  @date 12.12.2014
- *  @author mkoenig
- *  @brief
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
 
 #include <cpp_odbc/statement.h>
 #include <cpp_odbc/multi_value_buffer.h>
-#include <pydbc/column.h>
+#include <turbodbc/column.h>
 #include <vector>
 #include <memory>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * @brief This class represents a result set as created by database queries.

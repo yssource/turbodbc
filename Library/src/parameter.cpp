@@ -1,8 +1,8 @@
-#include <pydbc/parameter.h>
+#include <turbodbc/parameter.h>
 
 #include <cstring>
 
-namespace pydbc {
+namespace turbodbc {
 
 parameter::parameter(cpp_odbc::statement const & statement, std::size_t one_based_index, std::size_t buffered_rows, std::unique_ptr<description const> description) :
 	description_(std::move(description)),
@@ -13,7 +13,7 @@ parameter::parameter(cpp_odbc::statement const & statement, std::size_t one_base
 
 parameter::~parameter() = default;
 
-void parameter::set(std::size_t row_index, pydbc::nullable_field const & value)
+void parameter::set(std::size_t row_index, turbodbc::nullable_field const & value)
 {
 	auto element = buffer_[row_index];
 	if (value) {

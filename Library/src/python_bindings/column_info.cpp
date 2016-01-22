@@ -1,4 +1,4 @@
-#include <pydbc/column_info.h>
+#include <turbodbc/column_info.h>
 
 #include <boost/python/to_python_converter.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
@@ -8,9 +8,9 @@
 
 #include <vector>
 
-using pydbc::column_info;
+using turbodbc::column_info;
 
-namespace pydbc { namespace bindings {
+namespace turbodbc { namespace bindings {
 
 
 struct column_info_to_object : boost::static_visitor<PyObject *> {

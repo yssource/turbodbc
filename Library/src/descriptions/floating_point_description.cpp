@@ -1,11 +1,11 @@
-#include <pydbc/descriptions/floating_point_description.h>
+#include <turbodbc/descriptions/floating_point_description.h>
 
 #include <sqlext.h>
 
 #include <boost/variant/get.hpp>
 #include <cstring>
 
-namespace pydbc {
+namespace turbodbc {
 
 floating_point_description::floating_point_description() = default;
 

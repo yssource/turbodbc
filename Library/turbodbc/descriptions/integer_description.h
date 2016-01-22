@@ -1,17 +1,17 @@
 #pragma once
 
-#include <pydbc/description.h>
+#include <turbodbc/description.h>
 
-namespace pydbc {
+namespace turbodbc {
 
 /**
  * @brief Represents a description to bind a buffer holding integer values
  */
-class string_description : public description {
+class integer_description : public description {
 public:
-	string_description(std::size_t maximum_length);
-	string_description(std::string name, bool supports_null, std::size_t maximum_length);
-	~string_description();
+	integer_description();
+	integer_description(std::string name, bool supports_null);
+	~integer_description();
 private:
 	std::size_t do_element_size() const final;
 	SQLSMALLINT do_column_c_type() const final;
@@ -19,8 +19,6 @@ private:
 	field do_make_field(char const * data_pointer) const final;
 	void do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const final;
 	type_code do_get_type_code() const final;
-
-	std::size_t maximum_length_;
 };
 
 }

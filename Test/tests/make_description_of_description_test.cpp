@@ -1,8 +1,8 @@
-#include <pydbc/make_description.h>
+#include <turbodbc/make_description.h>
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <pydbc/descriptions.h>
+#include <turbodbc/descriptions.h>
 
 #include <sqlext.h>
 #include <sstream>
@@ -43,14 +43,14 @@ public:
 // Registers the fixture with the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( make_description_of_description_test );
 
-using pydbc::make_description;
+using turbodbc::make_description;
 
 namespace {
 
 	std::string const name("custom_name");
 	bool const supports_null_values = false;
 
-	void assert_custom_name_and_nullable_support(pydbc::description const & description)
+	void assert_custom_name_and_nullable_support(turbodbc::description const & description)
 	{
 		CPPUNIT_ASSERT_EQUAL(name, description.name());
 		CPPUNIT_ASSERT_EQUAL(supports_null_values, description.supports_null_values());
@@ -61,7 +61,7 @@ namespace {
 		auto const description = make_description(column_description);
 		std::ostringstream message;
 		message << "Could not convert type identifier '" << column_description.data_type << "' to integer description";
-		CPPUNIT_ASSERT_MESSAGE( message.str(), dynamic_cast<pydbc::integer_description const *>(description.get()) );
+		CPPUNIT_ASSERT_MESSAGE( message.str(), dynamic_cast<turbodbc::integer_description const *>(description.get()) );
 
 		assert_custom_name_and_nullable_support(*description);
 	}
@@ -71,7 +71,7 @@ namespace {
 		auto const description = make_description(column_description);
 		std::ostringstream message;
 		message << "Could not convert type identifier '" << column_description.data_type << "' to floating point description";
-		CPPUNIT_ASSERT_MESSAGE( message.str(), dynamic_cast<pydbc::floating_point_description const *>(description.get()) );
+		CPPUNIT_ASSERT_MESSAGE( message.str(), dynamic_cast<turbodbc::floating_point_description const *>(description.get()) );
 
 		assert_custom_name_and_nullable_support(*description);
 	}
@@ -87,7 +87,7 @@ namespace {
 
 		std::ostringstream message;
 		message << "Could not convert type identifier '" << column_description.data_type << "' to string description";
-		CPPUNIT_ASSERT_MESSAGE( message.str(), dynamic_cast<pydbc::string_description const *>(description.get()) );
+		CPPUNIT_ASSERT_MESSAGE( message.str(), dynamic_cast<turbodbc::string_description const *>(description.get()) );
 
 		CPPUNIT_ASSERT_EQUAL( expected_size, description->element_size() );
 		assert_custom_name_and_nullable_support(*description);
@@ -145,7 +145,7 @@ void make_description_of_description_test::bit_type()
 
 	cpp_odbc::column_description column_description = {name, type, 0, 0, supports_null_values};
 	auto const description = make_description(column_description);
-	CPPUNIT_ASSERT( dynamic_cast<pydbc::boolean_description const *>(description.get()) );
+	CPPUNIT_ASSERT( dynamic_cast<turbodbc::boolean_description const *>(description.get()) );
 	assert_custom_name_and_nullable_support(*description);
 }
 
@@ -155,7 +155,7 @@ void make_description_of_description_test::date_type()
 
 	cpp_odbc::column_description column_description = {name, type, 0, 0, supports_null_values};
 	auto const description = make_description(column_description);
-	CPPUNIT_ASSERT( dynamic_cast<pydbc::date_description const *>(description.get()) );
+	CPPUNIT_ASSERT( dynamic_cast<turbodbc::date_description const *>(description.get()) );
 	assert_custom_name_and_nullable_support(*description);
 }
 
@@ -165,7 +165,7 @@ void make_description_of_description_test::timestamp_type()
 
 	cpp_odbc::column_description column_description = {name, type, 0, 0, supports_null_values};
 	auto const description = make_description(column_description);
-	CPPUNIT_ASSERT( dynamic_cast<pydbc::timestamp_description const *>(description.get()) );
+	CPPUNIT_ASSERT( dynamic_cast<turbodbc::timestamp_description const *>(description.get()) );
 	assert_custom_name_and_nullable_support(*description);
 }
 

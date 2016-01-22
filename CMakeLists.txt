@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.7)
-project(pydbc_intern CXX)
+project(turbodbc_intern CXX)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 

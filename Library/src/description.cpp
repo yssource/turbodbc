@@ -1,6 +1,6 @@
-#include <pydbc/description.h>
+#include <turbodbc/description.h>
 
-namespace pydbc {
+namespace turbodbc {
 
 description::description() :
 	name_("parameter"),

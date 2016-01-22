@@ -1,6 +1,6 @@
-#include <pydbc/column.h>
+#include <turbodbc/column.h>
 
-namespace pydbc {
+namespace turbodbc {
 
 column::column(cpp_odbc::statement const & statement, std::size_t one_based_index, std::size_t buffered_rows, std::unique_ptr<description const> description) :
 	description_(std::move(description)),

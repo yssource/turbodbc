@@ -1,11 +1,11 @@
-#include <pydbc/descriptions/timestamp_description.h>
+#include <turbodbc/descriptions/timestamp_description.h>
 
 #include <sqlext.h>
 
 #include <boost/variant/get.hpp>
 #include <cstring>
 
-namespace pydbc {
+namespace turbodbc {
 
 timestamp_description::timestamp_description() = default;
 

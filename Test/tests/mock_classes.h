@@ -10,10 +10,10 @@
 #include "gmock/gmock.h"
 
 #include "cpp_odbc/connection.h"
-#include "pydbc/column.h"
+#include "turbodbc/column.h"
 
 
-namespace pydbc_test {
+namespace turbodbc_test {
 
 	class mock_connection : public cpp_odbc::connection {
 	public:

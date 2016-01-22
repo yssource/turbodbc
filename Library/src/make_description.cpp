@@ -1,12 +1,12 @@
-#include <pydbc/make_description.h>
+#include <turbodbc/make_description.h>
 
-#include <pydbc/descriptions.h>
+#include <turbodbc/descriptions.h>
 #include <sqlext.h>
 
 #include <stdexcept>
 #include <sstream>
 
-namespace pydbc {
+namespace turbodbc {
 
 namespace {
 
