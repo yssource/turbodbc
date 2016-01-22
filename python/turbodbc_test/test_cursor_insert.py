@@ -4,8 +4,23 @@ from cursor_test_case import CursorTestCase
 from query_fixture import query_fixture
 
 
-class InsertTests(object):
+def generate_microseconds_with_precision(digits):
+    microseconds = 0;
+    for i in xrange(digits):
+        microseconds = 10 * microseconds + i + 1
+    for i in xrange(6 - digits):
+        microseconds *= 10
 
+    return microseconds
+
+
+class InsertTests(object):
+    """
+    Parent class for database-specific INSERT tests. Children are expected to provide
+    the following attributes:
+
+    self.fractional_second_digits
+    """
     def _test_insert_many(self, fixture_name, data):
         with query_fixture(self.cursor, self.fixtures, fixture_name) as table_name:
             self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), data)
@@ -43,6 +58,14 @@ class InsertTests(object):
                                [[datetime.date(2015, 12, 31)],
                                 [datetime.date(2016, 1, 15)],
                                 [datetime.date(2016, 2, 3)]])
+
+    def test_timestamp_column(self):
+        fractional = generate_microseconds_with_precision(self.fractional_second_digits)
+
+        self._test_insert_many('INSERT TIMESTAMP',
+                               [[datetime.datetime(2015, 12, 31, 1, 2, 3, fractional)],
+                                [datetime.datetime(2016, 1, 15, 4, 5, 6, fractional * 2)],
+                                [datetime.datetime(2016, 2, 3, 7, 8, 9, fractional * 3)]])
 
     def test_null(self):
         self._test_insert_many('INSERT INTEGER',
@@ -92,13 +115,16 @@ class InsertTests(object):
 class TestCursorInsertExasol(InsertTests, CursorTestCase):
     dsn = "Exasol R&D test database"
     fixture_file_name = 'query_fixtures_exasol.json'
+    fractional_second_digits = 3
 
 
 class TestCursorInsertPostgreSQL(InsertTests, CursorTestCase):
     dsn = "PostgreSQL R&D test database"
     fixture_file_name = 'query_fixtures_postgresql.json'
+    fractional_second_digits = 6
 
 
 class TestCursorInsertMySQL(InsertTests, CursorTestCase):
     dsn = "MySQL R&D test database"
     fixture_file_name = 'query_fixtures_mysql.json'
+    fractional_second_digits = 0

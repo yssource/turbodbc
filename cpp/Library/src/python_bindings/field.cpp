@@ -77,6 +77,7 @@ struct nullable_field_from_object{
 			or	boost::python::extract<double>(object).check()
 			or	boost::python::extract<std::string>(object).check()
 			or	PyDate_Check(object);
+			// no check for datetime necessary, included in PyDate_Check
 	}
 
 	static nullable_field convert(PyObject * object)
@@ -108,14 +109,25 @@ struct nullable_field_from_object{
 			}
 		}
 
-		{
-			if (PyDate_Check(object)) {
-				int const year = PyDateTime_GET_YEAR(object);
-				int const month = PyDateTime_GET_MONTH(object);
-				int const day = PyDateTime_GET_DAY(object);
-				return turbodbc::field(boost::gregorian::date(year, month, day));
-			}
+		if (PyDateTime_Check(object)) {
+			int const year = PyDateTime_GET_YEAR(object);
+			int const month = PyDateTime_GET_MONTH(object);
+			int const day = PyDateTime_GET_DAY(object);
+			int const hours = PyDateTime_DATE_GET_HOUR(object);
+			int const minutes = PyDateTime_DATE_GET_MINUTE(object);
+			int const seconds = PyDateTime_DATE_GET_SECOND(object);
+			int const fractional = PyDateTime_DATE_GET_MICROSECOND(object);
+			return turbodbc::field(boost::posix_time::ptime({year, month, day},
+															{hours, minutes, seconds, fractional}));
 		}
+
+		if (PyDate_Check(object)) {
+			int const year = PyDateTime_GET_YEAR(object);
+			int const month = PyDateTime_GET_MONTH(object);
+			int const day = PyDateTime_GET_DAY(object);
+			return turbodbc::field(boost::gregorian::date(year, month, day));
+		}
+
 		throw std::runtime_error("Could not convert python value to C++");
 	}
 };

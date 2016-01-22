@@ -47,7 +47,12 @@
 		"setup": ["CREATE OR REPLACE TABLE {table_name} (a DATE)"],
 		"teardown": ["DROP TABLE {table_name}"]
 	},
-	
+
+	"INSERT TIMESTAMP": {
+		"setup": ["CREATE OR REPLACE TABLE {table_name} (a TIMESTAMP)"],
+		"teardown": ["DROP TABLE {table_name}"]
+	},
+
 	"DESCRIPTION": {
 		"setup": ["CREATE OR REPLACE TABLE {table_name} (as_int INTEGER, as_double DOUBLE PRECISION, as_varchar VARCHAR(100), as_date DATE, as_timestamp TIMESTAMP, as_int_not_null INTEGER NOT NULL)"],
 		"teardown": ["DROP TABLE {table_name}"]

@@ -67,6 +67,14 @@
 		"teardown": ["DROP TABLE {table_name}"]
 	},
 
+	"INSERT TIMESTAMP": {
+		"setup": [
+			"DROP TABLE IF EXISTS {table_name}",
+			"CREATE TABLE {table_name} (a TIMESTAMP)"
+		],
+		"teardown": ["DROP TABLE {table_name}"]
+	},
+
 	"DESCRIPTION": {
 		"setup": [
 			"DROP TABLE IF EXISTS {table_name}",
