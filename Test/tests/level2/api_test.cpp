@@ -525,7 +525,7 @@ void level2_api_test::more_results_forwards()
 	level2::statement_handle const handle = {&value_a};
 
 	level2_mock_api api;
-	EXPECT_CALL(api, do_more_results(handle)).Times(1);
+	EXPECT_CALL(api, do_more_results(handle)).WillOnce(testing::Return(false));
 
-	api.more_results(handle);
+	CPPUNIT_ASSERT( not api.more_results(handle) );
 }

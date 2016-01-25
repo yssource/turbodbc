@@ -71,7 +71,7 @@ private:
 	SQLLEN do_row_count(statement_handle const & handle) const final;
 	column_description do_describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const final;
 	column_description do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const final;
-	void do_more_results(statement_handle const & handle) const final;
+	bool do_more_results(statement_handle const & handle) const final;
 
 	std::shared_ptr<level1::api const> level1_api_;
 };

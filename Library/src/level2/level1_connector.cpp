@@ -422,10 +422,11 @@ column_description level1_connector::do_describe_parameter(statement_handle cons
 	return {name.str(), data_type, size, decimal_digits, allows_nullable};
 }
 
-void level1_connector::do_more_results(statement_handle const & handle) const
+bool level1_connector::do_more_results(statement_handle const & handle) const
 {
 	auto const return_code = level1_api_->more_results(handle.handle);
 	impl::throw_on_error(return_code, *this, handle);
+	return return_code != SQL_NO_DATA;
 }
 
 } }

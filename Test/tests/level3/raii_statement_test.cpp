@@ -423,8 +423,8 @@ void raii_statement_test::more_results()
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
 	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
-	EXPECT_CALL(*api, do_more_results(default_s_handle)).Times(1);
+	EXPECT_CALL(*api, do_more_results(default_s_handle)).WillOnce(testing::Return(false));
 
 	raii_statement statement(connection);
-	statement.more_results();
+	CPPUNIT_ASSERT( not statement.more_results() );
 }

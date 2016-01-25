@@ -292,7 +292,7 @@ void statement_test::describe_parameter_forwards()
 void statement_test::more_results_forwards()
 {
 	mock_statement statement;
-	EXPECT_CALL( statement, do_more_results()).Times(1);
+	EXPECT_CALL( statement, do_more_results()).WillOnce(testing::Return(false));
 
-	statement.more_results();
+	CPPUNIT_ASSERT( not statement.more_results() );
 }

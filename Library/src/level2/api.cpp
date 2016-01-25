@@ -182,9 +182,9 @@ column_description api::describe_parameter(statement_handle const & handle, SQLU
 	return do_describe_parameter(handle, parameter_id);
 }
 
-void api::more_results(statement_handle const & handle) const
+bool api::more_results(statement_handle const & handle) const
 {
-	do_more_results(handle);
+	return do_more_results(handle);
 }
 
 

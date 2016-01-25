@@ -53,7 +53,7 @@ namespace cpp_odbc_test {
 		MOCK_CONST_METHOD1(do_row_count, SQLLEN(cpp_odbc::level2::statement_handle const &));
 		MOCK_CONST_METHOD2(do_describe_column, cpp_odbc::column_description(cpp_odbc::level2::statement_handle const &, SQLUSMALLINT));
 		MOCK_CONST_METHOD2(do_describe_parameter, cpp_odbc::column_description(cpp_odbc::level2::statement_handle const &, SQLUSMALLINT));
-		MOCK_CONST_METHOD1(do_more_results, void(cpp_odbc::level2::statement_handle const &));
+		MOCK_CONST_METHOD1(do_more_results, bool(cpp_odbc::level2::statement_handle const &));
 	};
 
 }

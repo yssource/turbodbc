@@ -127,9 +127,9 @@ column_description raii_statement::do_describe_parameter(SQLUSMALLINT parameter_
 	return api_->describe_parameter(handle_, parameter_id);
 }
 
-void raii_statement::do_more_results() const
+bool raii_statement::do_more_results() const
 {
-	api_->more_results(handle_);
+	return api_->more_results(handle_);
 }
 
 } }

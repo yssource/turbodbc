@@ -153,8 +153,9 @@ public:
 	/**
 	 * @brief Make more results (created by multiple queries or parameter sets)
 	 *        available
+	 * @brief Return true if another result is found
 	 */
-	void more_results() const;
+	bool more_results() const;
 
 	virtual ~statement();
 protected:
@@ -181,7 +182,7 @@ private:
 	virtual SQLLEN do_row_count() const = 0;
 	virtual column_description do_describe_column(SQLUSMALLINT column_id) const = 0;
 	virtual column_description do_describe_parameter(SQLUSMALLINT parameter_id) const = 0;
-	virtual void do_more_results() const = 0;
+	virtual bool do_more_results() const = 0;
 };
 
 }

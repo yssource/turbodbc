@@ -1268,10 +1268,14 @@ void level1_connector_test::more_results_calls_api()
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_more_results(handle.handle))
+		.WillOnce(testing::Return(SQL_SUCCESS))
+		.WillOnce(testing::Return(SQL_SUCCESS))
 		.WillOnce(testing::Return(SQL_NO_DATA));
 
 	level1_connector const connector(api);
-	connector.more_results(handle);
+	CPPUNIT_ASSERT( connector.more_results(handle) );
+	CPPUNIT_ASSERT( connector.more_results(handle) );
+	CPPUNIT_ASSERT( not connector.more_results(handle) );
 }
 
 void level1_connector_test::more_results_fails()

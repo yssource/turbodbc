@@ -298,8 +298,9 @@ public:
 	/**
 	 * @brief Set internal data structures to deal with results of next query
 	 * @param handle The statement handle which shall be prepared
+	 * @return True if another result set is found
 	 */
-	void more_results(statement_handle const & handle) const;
+	bool more_results(statement_handle const & handle) const;
 
 protected:
 
@@ -343,7 +344,7 @@ private:
 	virtual SQLLEN do_row_count(statement_handle const & handle) const = 0;
 	virtual column_description do_describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const = 0;
 	virtual column_description do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const = 0;
-	virtual void do_more_results(statement_handle const & handle) const = 0;
+	virtual bool do_more_results(statement_handle const & handle) const = 0;
 };
 
 } }
