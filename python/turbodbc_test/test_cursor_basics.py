@@ -55,3 +55,13 @@ class TestCursorBasics(TestCase):
         """
         cursor = connect(dsn).cursor()
         cursor.setinputsizes([10, 20])
+
+    def test_setoutputsize_does_not_raise(self):
+        """
+        It is legal for setinputsizes() to do nothing, so anything except
+        raising an exception is ok
+        """
+        cursor = connect(dsn).cursor()
+        cursor.setoutputsize(1000, 42) # with column
+        cursor.setoutputsize(1000, column=42) # with column
+        cursor.setoutputsize(1000) # without column

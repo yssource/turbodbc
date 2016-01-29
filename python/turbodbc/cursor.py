@@ -106,6 +106,13 @@ class Cursor(object):
     def setinputsizes(self, sizes):
         """
         setinputsizes() has no effect. turbodbc automatically picks appropriate
-        return types. Method exists since PEP-249 requires it.
+        return types and sizes. Method exists since PEP-249 requires it.
+        """
+        pass
+
+    def setoutputsize(self, size, column=None):
+        """
+        setoutputsize() has no effect. turbodbc automatically picks appropriate
+        input types and sizes. Method exists since PEP-249 requires it.
         """
         pass
