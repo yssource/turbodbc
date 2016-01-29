@@ -102,3 +102,10 @@ class Cursor(object):
 
     def close(self):
         self.impl = None
+
+    def setinputsizes(self, sizes):
+        """
+        setinputsizes() has no effect. turbodbc automatically picks appropriate
+        return types. Method exists since PEP-249 requires it.
+        """
+        pass

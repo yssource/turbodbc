@@ -47,3 +47,11 @@ class TestCursorBasics(TestCase):
 
         cursor.close()
         cursor.close()
+
+    def test_setinputsizes_does_not_raise(self):
+        """
+        It is legal for setinputsizes() to do nothing, so anything except
+        raising an exception is ok
+        """
+        cursor = connect(dsn).cursor()
+        cursor.setinputsizes([10, 20])
