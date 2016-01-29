@@ -9,7 +9,7 @@ class Cursor(object):
     def __init__(self, impl):
         self.impl = impl
         self.rowcount = -1
-        self._arraysize = 1
+        self.arraysize = 1
 
     def __iter__(self):
         return self
@@ -24,14 +24,6 @@ class Cursor(object):
     def _assert_valid(self):
         if self.impl is None:
             raise InterfaceError("Cursor already closed")
-
-    @property
-    def arraysize(self):
-        return self._arraysize
-
-    @arraysize.setter
-    def arraysize(self, value):
-        self._arraysize = value
 
     @property
     def description(self):
