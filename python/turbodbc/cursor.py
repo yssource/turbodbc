@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+from itertools import islice
+
 from .exceptions import translate_exceptions, InterfaceError
 
 
@@ -77,23 +79,12 @@ class Cursor(object):
 
     @translate_exceptions    
     def fetchmany(self, size=None):
-        def rows(maxrows):
-            rowcount = 1
-            row = self.fetchone()
-            yield row
-            while rowcount<size:
-                rowcount+=1
-                row = self.fetchone()
-                if not row:
-                    break
-                yield row
-
         if size is None:
             size = self.arraysize
         if (size <= 0):
             raise InterfaceError("Invalid arraysize {} for fetchmany()".format(size))
 
-        return [row for row in rows(size)]
+        return [row for row in islice(self, size)]
 
     def close(self):
         self.impl = None
