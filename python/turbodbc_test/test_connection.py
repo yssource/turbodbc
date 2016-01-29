@@ -7,16 +7,12 @@ dsn = "Exasol R&D test database"
 
 
 class TestConnection(TestCase):
-    def test_closed_connection_raises_when_used(self):
+    def test_cursor_on_closed_connection_raises(self):
         connection = connect(dsn)
-
         connection.close()
 
         with self.assertRaises(InterfaceError):
             connection.cursor()
-
-        with self.assertRaises(InterfaceError):
-            connection.commit()
 
     def test_closing_twice_is_ok(self):
         connection = connect(dsn)
@@ -46,6 +42,13 @@ class TestConnection(TestCase):
         with self.assertRaises(DatabaseError):
             connection.cursor().execute('SELECT * FROM test_no_autocommit')
 
+    def test_commit_on_closed_connection_raises(self):
+        connection = connect(dsn)
+        connection.close()
+
+        with self.assertRaises(InterfaceError):
+            connection.commit()
+
     def test_commit(self):
         connection = connect(dsn)
 
@@ -62,3 +65,19 @@ class TestConnection(TestCase):
         
         cursor.execute('DROP TABLE test_commit')
         connection.commit()
+
+    def test_rollback_on_closed_connection_raises(self):
+        connection = connect(dsn)
+        connection.close()
+
+        with self.assertRaises(InterfaceError):
+            connection.rollback()
+
+    def test_rollback(self):
+        connection = connect(dsn)
+
+        connection.cursor().execute('CREATE TABLE test_rollback (a INTEGER)')
+        connection.rollback()
+
+        with self.assertRaises(DatabaseError):
+            connection.cursor().execute('SELECT * FROM test_rollback')
