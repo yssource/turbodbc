@@ -73,18 +73,10 @@ class Cursor(object):
 
     @translate_exceptions    
     def fetchall(self):
-        #can be optimized by implementing it in C++. 
-        #But has to make sure that really all remaining rows are fetched,
-        #thereby finishing and closing the associated internal result set buffer.
-        def rows():
-            row = self.fetchone()
-            while (row):
-                yield row
-                row = self.fetchone()
-        return [row for row in rows()]
+        return [row for row in self]
 
     @translate_exceptions    
-    def fetchmany(self, size=arraysize):
+    def fetchmany(self, size=None):
         def rows(maxrows):
             rowcount = 1
             row = self.fetchone()
@@ -95,9 +87,12 @@ class Cursor(object):
                 if not row:
                     break
                 yield row
-                
-        if (size<=0):
-            return []
+
+        if size is None:
+            size = self.arraysize
+        if (size <= 0):
+            raise InterfaceError("Invalid arraysize {} for fetchmany()".format(size))
+
         return [row for row in rows(size)]
 
     def close(self):

@@ -74,7 +74,7 @@ class SelectTests(object):
     def test_single_row_multiple_columns(self):
         self._test_single_row_result_set("SELECT 40, 41, 42, 43", [40, 41, 42, 43])
 
-    def test_multiple_rows(self):
+    def test_fetchone(self):
         with query_fixture(self.cursor, self.fixtures, 'SELECT MULTIPLE INTEGERS') as query:
             self.cursor.execute(query)
             row = self.cursor.fetchone()
@@ -86,6 +86,75 @@ class SelectTests(object):
 
             row = self.cursor.fetchone()
             self.assertIsNone(row)
+
+    def test_fetchall(self):
+        with query_fixture(self.cursor, self.fixtures, 'SELECT MULTIPLE INTEGERS') as query:
+            self.cursor.execute(query)
+            rows = self.cursor.fetchall()
+            self.assertEqual(len(rows), 3)
+            self.assertItemsEqual(rows[0], [42])
+            self.assertItemsEqual(rows[1], [43])
+            self.assertItemsEqual(rows[2], [44])
+
+    def test_fetchmany_with_default_arraysize(self):
+        with query_fixture(self.cursor, self.fixtures, 'SELECT MULTIPLE INTEGERS') as query:
+            self.cursor.execute(query)
+            rows = self.cursor.fetchmany()
+            self.assertEqual(len(rows), 1)
+            self.assertItemsEqual(rows[0], [42])
+
+    def test_fetchmany_with_arraysize_parameter(self):
+        with query_fixture(self.cursor, self.fixtures, 'SELECT MULTIPLE INTEGERS') as query:
+            self.cursor.execute(query)
+            arraysize_parameter = 2
+
+            rows = self.cursor.fetchmany(arraysize_parameter)
+            self.assertEqual(len(rows), arraysize_parameter)
+            self.assertItemsEqual(rows[0], [42])
+            self.assertItemsEqual(rows[1], [43])
+
+            # arraysize exceeds number of remaining rows
+            rows = self.cursor.fetchmany(arraysize_parameter)
+            self.assertEqual(len(rows), 1)
+            self.assertItemsEqual(rows[0], [44])
+
+    def test_fetchmany_with_global_arraysize(self):
+        with query_fixture(self.cursor, self.fixtures, 'SELECT MULTIPLE INTEGERS') as query:
+            self.cursor.execute(query)
+
+            arraysize_parameter = 2
+            self.cursor.arraysize = arraysize_parameter
+
+            rows = self.cursor.fetchmany()
+            self.assertEqual(len(rows), arraysize_parameter)
+            self.assertItemsEqual(rows[0], [42])
+            self.assertItemsEqual(rows[1], [43])
+
+            # arraysize exceeds number of remaining rows
+            rows = self.cursor.fetchmany()
+            self.assertEqual(len(rows), 1)
+            self.assertItemsEqual(rows[0], [44])
+
+    def test_fetchmany_with_bad_arraysize_parameter_raises(self):
+        with query_fixture(self.cursor, self.fixtures, 'SELECT MULTIPLE INTEGERS') as query:
+            self.cursor.execute(query)
+
+            with self.assertRaises(turbodbc.InterfaceError):
+                self.cursor.fetchmany(-1)
+            with self.assertRaises(turbodbc.InterfaceError):
+                self.cursor.fetchmany(0)
+
+    def test_fetchmany_with_bad_global_arraysize_raises(self):
+        with query_fixture(self.cursor, self.fixtures, 'SELECT MULTIPLE INTEGERS') as query:
+            self.cursor.execute(query)
+
+            self.cursor.arraysize = -1
+            with self.assertRaises(turbodbc.InterfaceError):
+                self.cursor.fetchmany()
+
+            self.cursor.arraysize = 0
+            with self.assertRaises(turbodbc.InterfaceError):
+                self.cursor.fetchmany()
 
     def test_number_of_rows_exceeds_buffer_size(self):
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
