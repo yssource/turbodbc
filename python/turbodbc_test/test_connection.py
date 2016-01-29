@@ -45,3 +45,20 @@ class TestConnection(TestCase):
         connection = connect(dsn)
         with self.assertRaises(DatabaseError):
             connection.cursor().execute('SELECT * FROM test_no_autocommit')
+
+    def test_commit(self):
+        connection = connect(dsn)
+
+        connection.cursor().execute('CREATE TABLE test_commit (a INTEGER)')
+        connection.commit()
+
+        connection.close()
+
+        connection = connect(dsn)
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM test_commit')
+        results = cursor.fetchall()
+        self.assertEqual(results, [])
+        
+        cursor.execute('DROP TABLE test_commit')
+        connection.commit()
