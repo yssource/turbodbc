@@ -3,6 +3,7 @@
 #include "cpp_odbc/connection.h"
 #include "turbodbc/query.h"
 #include "mock_classes.h"
+#include <sqlext.h>
 
 
 class query_test : public CppUnit::TestFixture {
@@ -10,7 +11,7 @@ CPPUNIT_TEST_SUITE( query_test );
 
 	CPPUNIT_TEST( fetch_one_if_empty );
 	CPPUNIT_TEST( get_row_count_before_execute );
-	CPPUNIT_TEST( get_row_count_after_execute );
+	CPPUNIT_TEST( get_row_count_after_query_with_result_set );
 
 
 CPPUNIT_TEST_SUITE_END();
@@ -19,7 +20,7 @@ public:
 
 	void fetch_one_if_empty();
 	void get_row_count_before_execute();
-	void get_row_count_after_execute();
+	void get_row_count_after_query_with_result_set();
 
 
 };
@@ -46,9 +47,16 @@ void query_test::get_row_count_before_execute(){
 	CPPUNIT_ASSERT_EQUAL(0, query.get_row_count());
 }
 
-void query_test::get_row_count_after_execute(){
+void query_test::get_row_count_after_query_with_result_set(){
 	long const expected = 17;
 	auto statement = std::make_shared<mock_statement>();
+
+	// define a single column result set
+	ON_CALL( *statement, do_number_of_columns())
+			.WillByDefault(testing::Return(1));
+	ON_CALL( *statement, do_describe_column(testing::_))
+			.WillByDefault(testing::Return(cpp_odbc::column_description{"", SQL_BIGINT, 8, 0, false}));
+
 	EXPECT_CALL( *statement, do_row_count())
 			.WillOnce(testing::Return(expected));
 

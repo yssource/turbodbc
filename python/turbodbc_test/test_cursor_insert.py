@@ -24,6 +24,7 @@ class InsertTests(object):
     def _test_insert_many(self, fixture_name, data):
         with query_fixture(self.cursor, self.fixtures, fixture_name) as table_name:
             self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), data)
+            self.assertEqual(len(data), self.cursor.rowcount)
             self.cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual(data, inserted)
@@ -33,6 +34,7 @@ class InsertTests(object):
 
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
             self.cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+            self.assertEqual(1, self.cursor.rowcount)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual([to_insert], inserted)
@@ -76,9 +78,10 @@ class InsertTests(object):
         # first column makes sure values of "good" columns are not affected
         to_insert = [[23, 1.23],
                      [42, 2]]
- 
+
         with query_fixture(self.cursor, self.fixtures, 'INSERT MIXED') as table_name:
             self.cursor.executemany("INSERT INTO {} VALUES (?, ?)".format(table_name), to_insert)
+            self.assertEqual(len(to_insert), self.cursor.rowcount)
             self.cursor.execute("SELECT a, b FROM {} ORDER BY a".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual(to_insert, inserted)
@@ -86,6 +89,7 @@ class InsertTests(object):
     def test_no_parameter_list(self):
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
             self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name))
+            self.assertEqual(0, self.cursor.rowcount)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertEqual(0, len(inserted))
@@ -95,6 +99,7 @@ class InsertTests(object):
 
         with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
             self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+            self.assertEqual(0, self.cursor.rowcount)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
             inserted = [list(row) for row in self.cursor.fetchall()]
             self.assertItemsEqual(to_insert, inserted)
