@@ -1,3 +1,8 @@
+Version 0.2.1
+=============
+
+*   Change C++ test framework to Google Test
+
 Version 0.2.0
 =============
 

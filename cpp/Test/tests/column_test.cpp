@@ -1,33 +1,11 @@
 #include "turbodbc/column.h"
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
-
+#include <gtest/gtest.h>
 #include "mock_classes.h"
 
 #include <turbodbc/descriptions/string_description.h>
 #include <boost/variant/get.hpp>
 
-
-class column_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( column_test );
-
-	CPPUNIT_TEST( get_field_non_nullable );
-	CPPUNIT_TEST( get_field_nullable );
-	CPPUNIT_TEST( get_info );
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void get_field_non_nullable();
-	void get_field_nullable();
-	void get_info();
-
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( column_test );
 
 namespace {
 	void fill_buffer_with_value(cpp_odbc::multi_value_buffer & buffer, std::size_t row_index, std::string const & value)
@@ -54,7 +32,7 @@ namespace {
 
 }
 
-void column_test::get_field_non_nullable()
+TEST(ColumnTest, GetFieldNonNullable)
 {
 	std::string const expected("this is a test string");
 	std::unique_ptr<turbodbc::string_description> description(new turbodbc::string_description(128));
@@ -68,14 +46,14 @@ void column_test::get_field_non_nullable()
 
 	auto const buffered_rows = 100;
 	turbodbc::column column(statement, column_index, buffered_rows, std::move(description));
-	CPPUNIT_ASSERT( buffer != nullptr);
+	ASSERT_TRUE( buffer != nullptr);
 
 	auto const row_index = 42;
 	fill_buffer_with_value(*buffer, row_index, expected);
-	CPPUNIT_ASSERT_EQUAL(expected, boost::get<std::string>(*column.get_field(row_index)));
+	EXPECT_EQ(expected, boost::get<std::string>(*column.get_field(row_index)));
 }
 
-void column_test::get_field_nullable()
+TEST(ColumnTest, GetFieldNullable)
 {
 	std::unique_ptr<turbodbc::string_description> description(new turbodbc::string_description(128));
 
@@ -87,14 +65,14 @@ void column_test::get_field_nullable()
 
 	auto const buffered_rows = 100;
 	turbodbc::column column(statement, column_index, buffered_rows, std::move(description));
-	CPPUNIT_ASSERT( buffer != nullptr);
+	ASSERT_TRUE( buffer != nullptr);
 
 	auto const row_index = 42;
 	set_buffer_element_to_null(*buffer, row_index);
-	CPPUNIT_ASSERT(not static_cast<bool>(column.get_field(row_index)));
+	EXPECT_FALSE(static_cast<bool>(column.get_field(row_index)));
 }
 
-void column_test::get_info()
+TEST(ColumnTest, GetInfo)
 {
 	std::unique_ptr<turbodbc::string_description> description(new turbodbc::string_description("custom_name", false, 128));
 
@@ -102,7 +80,7 @@ void column_test::get_info()
 	turbodbc::column column(statement, 0, 10, std::move(description));
 
 	auto const info = column.get_info();
-	CPPUNIT_ASSERT_EQUAL("custom_name", info.name);
-	CPPUNIT_ASSERT_EQUAL(false, info.supports_null_values);
-	CPPUNIT_ASSERT(turbodbc::type_code::string == info.type);
+	EXPECT_EQ("custom_name", info.name);
+	EXPECT_FALSE(info.supports_null_values);
+	EXPECT_EQ(turbodbc::type_code::string, info.type);
 }

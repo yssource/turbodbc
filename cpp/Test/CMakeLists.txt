@@ -1,5 +1,6 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(SYSTEM $ENV{CPPUNIT_TOOLBOX_INCLUDE_DIR})
+include_directories(SYSTEM $ENV{GOOGLETEST_INCLUDE_DIR})
+
 
 file(GLOB_RECURSE TEST_FILES "*.cpp")
 
@@ -14,10 +15,10 @@ add_dependencies(turbodbc_test
 target_link_libraries(turbodbc_test
 	turbodbc_intern
 	cpp_odbc
-    cppunit_toolbox
-    cppunit
-    gmock_main
     ${Odbc_LIBRARIES}
+    gmock_main
+    gtest
+    gmock
 )
 
 add_test(Library turbodbc_test)

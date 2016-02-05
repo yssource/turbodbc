@@ -1,51 +1,15 @@
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
+#include <turbodbc/result_set.h>
+
+#include <gtest/gtest.h>
+
 #include "cpp_odbc/connection.h"
 #include "turbodbc/connection.h"
 #include "mock_classes.h"
-#include "turbodbc/result_set.h"
+
 #include <sqlext.h>
 #include <boost/variant/get.hpp>
 #include <cstring>
 
-
-class result_set_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( result_set_test );
-
-	CPPUNIT_TEST( enables_fetching_multiple_rows );
-	CPPUNIT_TEST( fetch_without_columns );
-	CPPUNIT_TEST( fetch_empty_column );
-	CPPUNIT_TEST( fetch_with_single_string_column );
-	CPPUNIT_TEST( fetch_with_single_integer_column );
-	CPPUNIT_TEST( fetch_with_multiple_columns );
-	CPPUNIT_TEST( fetch_rows_2_buffer_3 );
-	CPPUNIT_TEST( fetch_rows_3_buffer_3 );
-	CPPUNIT_TEST( fetch_rows_4_buffer_3 );
-	CPPUNIT_TEST( fetch_rows_6_buffer_3 );
-	CPPUNIT_TEST( get_info );
-
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void enables_fetching_multiple_rows();
-	void fetch_without_columns();
-	void fetch_empty_column();
-	void fetch_with_single_string_column();
-	void fetch_with_single_integer_column();
-	void fetch_with_multiple_columns();
-	void fetch_with_multiple_rows();
-	void fetch_rows_2_buffer_3();
-	void fetch_rows_3_buffer_3();
-	void fetch_rows_4_buffer_3();
-	void fetch_rows_6_buffer_3();
-	void get_info();
-
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( result_set_test );
 
 using turbodbc_test::mock_connection;
 using turbodbc_test::mock_statement;
@@ -105,7 +69,8 @@ namespace {
 
 }
 
-void result_set_test::enables_fetching_multiple_rows()
+
+TEST(ResultSetTest, EnablesFetchingMultipleRows)
 {
 	auto statement = prepare_mock_with_columns({});
 	std::size_t const buffered_rows = 42;
@@ -116,7 +81,7 @@ void result_set_test::enables_fetching_multiple_rows()
 	turbodbc::result_set result_set(statement, buffered_rows);
 }
 
-void result_set_test::fetch_without_columns()
+TEST(ResultSetTest, FetchWithoutColumns)
 {
 	auto statement = prepare_mock_with_columns({});
 
@@ -124,7 +89,7 @@ void result_set_test::fetch_without_columns()
 		.WillByDefault(testing::Return(true));
 
 	turbodbc::result_set result_set(statement, 1);
-	CPPUNIT_ASSERT_EQUAL(0, result_set.fetch_one().size());
+	ASSERT_EQ(0, result_set.fetch_one().size());
 }
 
 
@@ -135,7 +100,7 @@ namespace {
 	}
 }
 
-void result_set_test::fetch_empty_column()
+TEST(ResultSetTest, FetchEmptyColumn)
 {
 	auto statement = prepare_mock_with_columns({SQL_VARCHAR});
 	auto buffers = expect_calls_to_bind_buffer(*statement, {SQL_CHAR});
@@ -144,7 +109,7 @@ void result_set_test::fetch_empty_column()
 	expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
 	auto result_set = turbodbc::result_set(statement, 1);
-	CPPUNIT_ASSERT(buffers[0] != nullptr);
+	ASSERT_TRUE(buffers[0] != nullptr);
 
 	EXPECT_CALL(*statement, do_fetch_next())
 		.WillOnce(testing::DoAll(
@@ -153,7 +118,7 @@ void result_set_test::fetch_empty_column()
 				));
 
 	auto row = result_set.fetch_one();
-	CPPUNIT_ASSERT_EQUAL(0, row.size());
+	ASSERT_EQ(0, row.size());
 }
 
 
@@ -169,7 +134,7 @@ namespace {
 	}
 }
 
-void result_set_test::fetch_with_single_string_column()
+TEST(ResultSetTest, FetchWithSingleStringColumn)
 {
 	auto statement = prepare_mock_with_columns({SQL_VARCHAR});
 	auto buffers = expect_calls_to_bind_buffer(*statement, {SQL_CHAR});
@@ -178,7 +143,7 @@ void result_set_test::fetch_with_single_string_column()
 	expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
 	auto result_set = turbodbc::result_set(statement, 1);
-	CPPUNIT_ASSERT(buffers[0] != nullptr);
+	ASSERT_TRUE(buffers[0] != nullptr);
 
 	std::string const expected_value = "this is a test string";
 	EXPECT_CALL(*statement, do_fetch_next())
@@ -189,8 +154,8 @@ void result_set_test::fetch_with_single_string_column()
 				));
 
 	auto row = result_set.fetch_one();
-	CPPUNIT_ASSERT_EQUAL(1, row.size());
-	CPPUNIT_ASSERT_EQUAL(expected_value, boost::get<std::string>(*row[0]));
+	ASSERT_EQ(1, row.size());
+	EXPECT_EQ(expected_value, boost::get<std::string>(*row[0]));
 }
 
 
@@ -219,7 +184,7 @@ namespace {
 	}
 }
 
-void result_set_test::fetch_with_single_integer_column()
+TEST(ResultSetTest, FetchWithSingleIntegerColumn)
 {
 	auto statement = prepare_mock_with_columns({SQL_INTEGER});
 	auto buffers = expect_calls_to_bind_buffer(*statement, {SQL_C_SBIGINT});
@@ -228,7 +193,7 @@ void result_set_test::fetch_with_single_integer_column()
 	expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
 	auto result_set = turbodbc::result_set(statement, 1);
-	CPPUNIT_ASSERT(buffers[0] != nullptr);
+	ASSERT_TRUE(buffers[0] != nullptr);
 
 	long const expected_value = 42;
 	EXPECT_CALL(*statement, do_fetch_next())
@@ -239,12 +204,12 @@ void result_set_test::fetch_with_single_integer_column()
 				));
 
 	auto row = result_set.fetch_one();
-	CPPUNIT_ASSERT_EQUAL(1, row.size());
-	CPPUNIT_ASSERT_EQUAL(expected_value, boost::get<long>(*row[0]));
+	ASSERT_EQ(1, row.size());
+	EXPECT_EQ(expected_value, boost::get<long>(*row[0]));
 }
 
 
-void result_set_test::fetch_with_multiple_columns()
+TEST(ResultSetTest, FetchWithMultipleColumns)
 {
 	auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_INTEGER});
 	auto buffers = expect_calls_to_bind_buffer(*statement, {SQL_C_SBIGINT, SQL_C_SBIGINT});
@@ -264,9 +229,9 @@ void result_set_test::fetch_with_multiple_columns()
 				));
 
 	auto row = result_set.fetch_one();
-	CPPUNIT_ASSERT_EQUAL(2, row.size());
-	CPPUNIT_ASSERT_EQUAL(expected_values[0], boost::get<long>(*row[0]));
-	CPPUNIT_ASSERT_EQUAL(expected_values[1], boost::get<long>(*row[1]));
+	ASSERT_EQ(2, row.size());
+	EXPECT_EQ(expected_values[0], boost::get<long>(*row[0]));
+	EXPECT_EQ(expected_values[1], boost::get<long>(*row[1]));
 }
 
 
@@ -331,41 +296,41 @@ namespace {
 
 		// assertions
 		for (auto const & value : expected_values) {
-			CPPUNIT_ASSERT_EQUAL( value, boost::get<long>(*result_set.fetch_one()[0]) );
+			EXPECT_EQ( value, boost::get<long>(*result_set.fetch_one()[0]) );
 		}
-		CPPUNIT_ASSERT( result_set.fetch_one().empty() );
+		EXPECT_TRUE( result_set.fetch_one().empty() );
 	}
 
 
 }
 
-void result_set_test::fetch_rows_2_buffer_3()
+TEST(ResultSetTest, FetchRows2Buffer3)
 {
 	test_fetch_multiple_rows(2, 3);
 }
 
-void result_set_test::fetch_rows_3_buffer_3()
+TEST(ResultSetTest, FetchRows3Buffer3)
 {
 	test_fetch_multiple_rows(3, 3);
 }
 
-void result_set_test::fetch_rows_4_buffer_3()
+TEST(ResultSetTest, FetchRows4Buffer3)
 {
 	test_fetch_multiple_rows(4, 3);
 }
 
-void result_set_test::fetch_rows_6_buffer_3()
+TEST(ResultSetTest, FetchRows6Buffer3)
 {
 	test_fetch_multiple_rows(6, 3);
 }
 
-void result_set_test::get_info()
+TEST(ResultSetTest, GetInfo)
 {
 	auto statement = prepare_mock_with_columns({SQL_VARCHAR, SQL_INTEGER});
 
 	auto result_set = turbodbc::result_set(statement, 1);
 	auto const columns = result_set.get_info();
-	CPPUNIT_ASSERT_EQUAL(2, columns.size());
-	CPPUNIT_ASSERT(turbodbc::type_code::string == columns[0].type);
-	CPPUNIT_ASSERT(turbodbc::type_code::integer == columns[1].type);
+	ASSERT_EQ(2, columns.size());
+	EXPECT_EQ(turbodbc::type_code::string, columns[0].type);
+	EXPECT_EQ(turbodbc::type_code::integer, columns[1].type);
 }

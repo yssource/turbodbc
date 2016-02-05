@@ -1,52 +1,27 @@
 #include "turbodbc/descriptions/integer_description.h"
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
+#include <gtest/gtest.h>
 #include <sqlext.h>
 
 
-class integer_description_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( integer_description_test );
-
-	CPPUNIT_TEST( basic_properties );
-	CPPUNIT_TEST( make_field );
-	CPPUNIT_TEST( set_field );
-	CPPUNIT_TEST( get_type_code );
-	CPPUNIT_TEST( custom_name_and_nullable_support );
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void basic_properties();
-	void make_field();
-	void set_field();
-	void get_type_code();
-	void custom_name_and_nullable_support();
-
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( integer_description_test );
-
-void integer_description_test::basic_properties()
+TEST(IntegerDescriptionTest, BasicProperties)
 {
 	turbodbc::integer_description const description;
 
-	CPPUNIT_ASSERT_EQUAL(sizeof(long), description.element_size());
-	CPPUNIT_ASSERT_EQUAL(SQL_C_SBIGINT, description.column_c_type());
-	CPPUNIT_ASSERT_EQUAL(SQL_BIGINT, description.column_sql_type());
+	EXPECT_EQ(sizeof(long), description.element_size());
+	EXPECT_EQ(SQL_C_SBIGINT, description.column_c_type());
+	EXPECT_EQ(SQL_BIGINT, description.column_sql_type());
 }
 
-void integer_description_test::make_field()
+TEST(IntegerDescriptionTest, MakeField)
 {
 	long const expected = 42;
 	turbodbc::integer_description const description;
 
-	CPPUNIT_ASSERT_EQUAL(turbodbc::field{expected}, description.make_field(reinterpret_cast<char const *>(&expected)));
+	EXPECT_EQ(turbodbc::field{expected}, description.make_field(reinterpret_cast<char const *>(&expected)));
 }
 
-void integer_description_test::set_field()
+TEST(IntegerDescriptionTest, SetField)
 {
 	long const expected = 42;
 	turbodbc::integer_description const description;
@@ -55,23 +30,23 @@ void integer_description_test::set_field()
 	auto element = buffer[0];
 
 	description.set_field(element, turbodbc::field{expected});
-	CPPUNIT_ASSERT_EQUAL(expected, *reinterpret_cast<long *>(element.data_pointer));
-	CPPUNIT_ASSERT_EQUAL(description.element_size(), element.indicator);
+	EXPECT_EQ(expected, *reinterpret_cast<long *>(element.data_pointer));
+	EXPECT_EQ(description.element_size(), element.indicator);
 }
 
-void integer_description_test::get_type_code()
+TEST(IntegerDescriptionTest, GetTypeCode)
 {
 	turbodbc::integer_description const description;
-	CPPUNIT_ASSERT( turbodbc::type_code::integer == description.get_type_code() );
+	EXPECT_EQ(turbodbc::type_code::integer, description.get_type_code());
 }
 
-void integer_description_test::custom_name_and_nullable_support()
+TEST(IntegerDescriptionTest, CustomNameAndNullableSupport)
 {
 	std::string const expected_name("my_name");
 	bool const expected_supports_null = false;
 
 	turbodbc::integer_description const description(expected_name, expected_supports_null);
 
-	CPPUNIT_ASSERT_EQUAL(expected_name, description.name());
-	CPPUNIT_ASSERT_EQUAL(expected_supports_null, description.supports_null_values());
+	EXPECT_EQ(expected_name, description.name());
+	EXPECT_EQ(expected_supports_null, description.supports_null_values());
 }

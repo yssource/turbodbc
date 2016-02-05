@@ -1,53 +1,28 @@
 #include "turbodbc/descriptions/timestamp_description.h"
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
+#include <gtest/gtest.h>
 #include <sqlext.h>
 
 
-class timestamp_description_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( timestamp_description_test );
-
-	CPPUNIT_TEST( basic_properties );
-	CPPUNIT_TEST( make_field );
-	CPPUNIT_TEST( set_field );
-	CPPUNIT_TEST( get_type_code );
-	CPPUNIT_TEST( custom_name_and_nullable_support );
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void basic_properties();
-	void make_field();
-	void set_field();
-	void get_type_code();
-	void custom_name_and_nullable_support();
-
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( timestamp_description_test );
-
-void timestamp_description_test::basic_properties()
+TEST(TimestampDescriptionTest, BasicProperties)
 {
 	turbodbc::timestamp_description const description;
 
-	CPPUNIT_ASSERT_EQUAL(16, description.element_size());
-	CPPUNIT_ASSERT_EQUAL(SQL_C_TYPE_TIMESTAMP, description.column_c_type());
-	CPPUNIT_ASSERT_EQUAL(SQL_TYPE_TIMESTAMP, description.column_sql_type());
+	EXPECT_EQ(16, description.element_size());
+	EXPECT_EQ(SQL_C_TYPE_TIMESTAMP, description.column_c_type());
+	EXPECT_EQ(SQL_TYPE_TIMESTAMP, description.column_sql_type());
 }
 
-void timestamp_description_test::make_field()
+TEST(TimestampDescriptionTest, MakeField)
 {
 	boost::posix_time::ptime const expected{{2015, 12, 31}, {1, 2, 3, 123456}};
 	turbodbc::timestamp_description const description;
 
 	SQL_TIMESTAMP_STRUCT const sql_timestamp = {2015, 12, 31, 1, 2, 3, 123456000};
-	CPPUNIT_ASSERT_EQUAL(turbodbc::field{expected}, description.make_field(reinterpret_cast<char const *>(&sql_timestamp)));
+	EXPECT_EQ(turbodbc::field{expected}, description.make_field(reinterpret_cast<char const *>(&sql_timestamp)));
 }
 
-void timestamp_description_test::set_field()
+TEST(TimestampDescriptionTest, SetField)
 {
 	boost::posix_time::ptime const timestamp{{2015, 12, 31}, {1, 2, 3, 123456}};
 	turbodbc::timestamp_description const description;
@@ -57,29 +32,29 @@ void timestamp_description_test::set_field()
 
 	description.set_field(element, turbodbc::field{timestamp});
 	auto const as_sql_date = reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(element.data_pointer);
-	CPPUNIT_ASSERT_EQUAL(2015, as_sql_date->year);
-	CPPUNIT_ASSERT_EQUAL(12, as_sql_date->month);
-	CPPUNIT_ASSERT_EQUAL(31, as_sql_date->day);
-	CPPUNIT_ASSERT_EQUAL(1, as_sql_date->hour);
-	CPPUNIT_ASSERT_EQUAL(2, as_sql_date->minute);
-	CPPUNIT_ASSERT_EQUAL(3, as_sql_date->second);
-	CPPUNIT_ASSERT_EQUAL(123456000, as_sql_date->fraction);
-	CPPUNIT_ASSERT_EQUAL(description.element_size(), element.indicator);
+	EXPECT_EQ(2015, as_sql_date->year);
+	EXPECT_EQ(12, as_sql_date->month);
+	EXPECT_EQ(31, as_sql_date->day);
+	EXPECT_EQ(1, as_sql_date->hour);
+	EXPECT_EQ(2, as_sql_date->minute);
+	EXPECT_EQ(3, as_sql_date->second);
+	EXPECT_EQ(123456000, as_sql_date->fraction);
+	EXPECT_EQ(description.element_size(), element.indicator);
 }
 
-void timestamp_description_test::get_type_code()
+TEST(TimestampDescriptionTest, GetTypeCode)
 {
 	turbodbc::timestamp_description const description;
-	CPPUNIT_ASSERT( turbodbc::type_code::timestamp == description.get_type_code() );
+	EXPECT_EQ(turbodbc::type_code::timestamp, description.get_type_code());
 }
 
-void timestamp_description_test::custom_name_and_nullable_support()
+TEST(TimestampDescriptionTest, CustomNameAndNullableSupport)
 {
 	std::string const expected_name("my_name");
 	bool const expected_supports_null = false;
 
 	turbodbc::timestamp_description const description(expected_name, expected_supports_null);
 
-	CPPUNIT_ASSERT_EQUAL(expected_name, description.name());
-	CPPUNIT_ASSERT_EQUAL(expected_supports_null, description.supports_null_values());
+	EXPECT_EQ(expected_name, description.name());
+	EXPECT_EQ(expected_supports_null, description.supports_null_values());
 }

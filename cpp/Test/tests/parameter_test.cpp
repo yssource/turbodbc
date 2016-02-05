@@ -1,34 +1,11 @@
 #include "turbodbc/parameter.h"
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
-
+#include <gtest/gtest.h>
 #include "mock_classes.h"
 
 #include <turbodbc/descriptions/integer_description.h>
 #include <turbodbc/descriptions/string_description.h>
 #include <boost/variant/get.hpp>
-
-
-class parameter_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( parameter_test );
-
-	CPPUNIT_TEST( set_non_nullable );
-	CPPUNIT_TEST( set_nullable );
-	CPPUNIT_TEST( copy_to_first_row );
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void set_non_nullable();
-	void set_nullable();
-	void copy_to_first_row();
-
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( parameter_test );
 
 namespace {
 
@@ -49,7 +26,7 @@ namespace {
 
 }
 
-void parameter_test::set_non_nullable()
+TEST(ParameterTest, SetNonNullable)
 {
 	std::unique_ptr<turbodbc::integer_description> description(new turbodbc::integer_description());
 
@@ -63,17 +40,17 @@ void parameter_test::set_non_nullable()
 
 	auto const buffered_rows = 100;
 	turbodbc::parameter parameter(statement, parameter_index, buffered_rows, std::move(description));
-	CPPUNIT_ASSERT( buffer != nullptr);
+	ASSERT_TRUE( buffer != nullptr);
 
 	auto const row_index = 42;
 	long const expected = 123;
 	parameter.set(row_index, turbodbc::field{expected});
 
 	auto const actual = *reinterpret_cast<long *>((*buffer)[row_index].data_pointer);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
-void parameter_test::set_nullable()
+TEST(ParameterTest, SetNullable)
 {
 	std::unique_ptr<turbodbc::integer_description> description(new turbodbc::integer_description());
 
@@ -87,16 +64,16 @@ void parameter_test::set_nullable()
 
 	auto const buffered_rows = 100;
 	turbodbc::parameter parameter(statement, parameter_index, buffered_rows, std::move(description));
-	CPPUNIT_ASSERT( buffer != nullptr);
+	ASSERT_TRUE( buffer != nullptr);
 
 	auto const row_index = 42;
 	turbodbc::nullable_field null;
 	parameter.set(row_index, null);
 
-	CPPUNIT_ASSERT_EQUAL(SQL_NULL_DATA, (*buffer)[row_index].indicator);
+	EXPECT_EQ(SQL_NULL_DATA, (*buffer)[row_index].indicator);
 }
 
-void parameter_test::copy_to_first_row()
+TEST(ParameterTest, CopyToFirstRow)
 {
 	std::unique_ptr<turbodbc::string_description> description(new turbodbc::string_description(10));
 
@@ -110,7 +87,7 @@ void parameter_test::copy_to_first_row()
 
 	auto const buffered_rows = 100;
 	turbodbc::parameter parameter(statement, parameter_index, buffered_rows, std::move(description));
-	CPPUNIT_ASSERT( buffer != nullptr);
+	ASSERT_TRUE( buffer != nullptr);
 
 	auto const row_index = 42;
 	std::string const expected("hi there!");
@@ -120,6 +97,6 @@ void parameter_test::copy_to_first_row()
 
 	std::string const actual_content((*buffer)[0].data_pointer);
 	auto const actual_indicator((*buffer)[0].indicator);
-	CPPUNIT_ASSERT_EQUAL(expected, actual_content);
-	CPPUNIT_ASSERT_EQUAL(expected.size(), actual_indicator);
+	EXPECT_EQ(expected, actual_content);
+	EXPECT_EQ(expected.size(), actual_indicator);
 }

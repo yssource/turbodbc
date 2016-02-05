@@ -1,45 +1,8 @@
 #include "turbodbc/description.h"
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
-#include <cppunit_toolbox/helpers/is_abstract_base_class.h>
-
+#include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-
-class description_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( description_test );
-
-	CPPUNIT_TEST( is_base_class );
-	CPPUNIT_TEST( element_size_forwards );
-	CPPUNIT_TEST( column_type_forwards );
-	CPPUNIT_TEST( column_sql_type_forwards );
-	CPPUNIT_TEST( make_field_forwards );
-	CPPUNIT_TEST( set_field_forwards );
-	CPPUNIT_TEST( type_code_forwards );
-	CPPUNIT_TEST( default_name );
-	CPPUNIT_TEST( default_supports_null_values );
-	CPPUNIT_TEST( custom_name_and_nullable_support );
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void is_base_class();
-	void element_size_forwards();
-	void column_type_forwards();
-	void column_sql_type_forwards();
-	void make_field_forwards();
-	void set_field_forwards();
-	void type_code_forwards();
-	void default_name();
-	void default_supports_null_values();
-	void custom_name_and_nullable_support();
-
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( description_test );
 
 namespace {
 
@@ -60,13 +23,8 @@ namespace {
 
 }
 
-void description_test::is_base_class()
-{
-	bool const all_good = cppunit_toolbox::is_abstract_base_class<turbodbc::description>::value;
-	CPPUNIT_ASSERT(all_good);
-}
 
-void description_test::element_size_forwards()
+TEST(DescriptionTest, ElementSizeForwards)
 {
 	std::size_t const expected = 42;
 
@@ -74,10 +32,10 @@ void description_test::element_size_forwards()
 	EXPECT_CALL(description, do_element_size())
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT(expected == description.element_size());
+	EXPECT_EQ(expected, description.element_size());
 }
 
-void description_test::column_type_forwards()
+TEST(DescriptionTest, ColumnTypeForwards)
 {
 	SQLSMALLINT const expected = 42;
 
@@ -85,10 +43,10 @@ void description_test::column_type_forwards()
 	EXPECT_CALL(description, do_column_c_type())
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT(expected == description.column_c_type());
+	EXPECT_EQ(expected, description.column_c_type());
 }
 
-void description_test::column_sql_type_forwards()
+TEST(DescriptionTest, ColumnSqlTypeForwards)
 {
 	SQLSMALLINT const expected = 42;
 
@@ -96,10 +54,10 @@ void description_test::column_sql_type_forwards()
 	EXPECT_CALL(description, do_column_sql_type())
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT(expected == description.column_sql_type());
+	EXPECT_EQ(expected, description.column_sql_type());
 }
 
-void description_test::make_field_forwards()
+TEST(DescriptionTest, MakeFieldForwards)
 {
 	turbodbc::field const expected(42l);
 	char const * data = nullptr;
@@ -108,10 +66,10 @@ void description_test::make_field_forwards()
 	EXPECT_CALL(description, do_make_field(data))
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT(expected == description.make_field(data));
+	EXPECT_EQ(expected, description.make_field(data));
 }
 
-void description_test::set_field_forwards()
+TEST(DescriptionTest, SetFieldForwards)
 {
 	turbodbc::field const value(42l);
 	cpp_odbc::multi_value_buffer buffer(42, 10);
@@ -120,39 +78,39 @@ void description_test::set_field_forwards()
 	mock_description description;
 	EXPECT_CALL(description, do_set_field(testing::Ref(element), value)).Times(1);
 
-	CPPUNIT_ASSERT_NO_THROW(description.set_field(element, value));
+	ASSERT_NO_THROW(description.set_field(element, value));
 }
 
-void description_test::type_code_forwards()
+TEST(DescriptionTest, TypeCodeForwards)
 {
 	auto const expected = turbodbc::type_code::string;
 	mock_description description;
 	EXPECT_CALL(description, do_get_type_code())
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT(expected == description.get_type_code());
+	EXPECT_EQ(expected, description.get_type_code());
 }
 
-void description_test::default_name()
+TEST(DescriptionTest, DefaultName)
 {
 	mock_description description;
 
-	CPPUNIT_ASSERT_EQUAL("parameter", description.name());
+	EXPECT_EQ("parameter", description.name());
 }
 
-void description_test::default_supports_null_values()
+TEST(DescriptionTest, DefaultSupportsNullValues)
 {
 	mock_description description;
 
-	CPPUNIT_ASSERT(description.supports_null_values());
+	EXPECT_TRUE(description.supports_null_values());
 }
 
-void description_test::custom_name_and_nullable_support()
+TEST(DescriptionTest, CustomNameAndNullableSupport)
 {
 	std::string const expected_name("my_name");
 	bool const expected_supports_null = false;
 	mock_description description(expected_name, expected_supports_null);
 
-	CPPUNIT_ASSERT_EQUAL(expected_name, description.name());
-	CPPUNIT_ASSERT_EQUAL(expected_supports_null, description.supports_null_values());
+	EXPECT_EQ(expected_name, description.name());
+	EXPECT_EQ(expected_supports_null, description.supports_null_values());
 }
