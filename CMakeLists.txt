@@ -5,6 +5,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 
 include(default_build_setup)
 
+add_subdirectory(google_test)
 add_subdirectory(cpp)
 add_subdirectory(python)
 
