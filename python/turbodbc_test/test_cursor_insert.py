@@ -114,17 +114,6 @@ class InsertTests(object):
             self.cursor.execute("INSERT INTO {} VALUES (42)".format(table_name))
             self.assertIsNone(self.cursor.description)
 
-    def test_string_to_integer_column(self):
-        to_insert = [[1], ["2"], ["42"], ["321"]]
-        expected = [[1], [2], [42], [321]]
-
-        with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
-            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
-            self.assertEqual(4, self.cursor.rowcount)
-            self.cursor.execute("SELECT a FROM {}".format(table_name))
-            inserted = [list(row) for row in self.cursor.fetchall()]
-            self.assertItemsEqual(expected, inserted)
-
 
 # Actual test cases
 
