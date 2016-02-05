@@ -12,7 +12,7 @@ CPPUNIT_TEST_SUITE( string_description_test );
 	CPPUNIT_TEST( make_field );
 	CPPUNIT_TEST( set_field );
 	CPPUNIT_TEST( set_field_with_maximum_length );
-	CPPUNIT_TEST( set_field_crops_to_maximum_length );
+	CPPUNIT_TEST( set_field_raises_for_too_long_values );
 	CPPUNIT_TEST( get_type_code );
 	CPPUNIT_TEST( custom_name_and_nullable_support );
 
@@ -24,7 +24,7 @@ public:
 	void make_field();
 	void set_field();
 	void set_field_with_maximum_length();
-	void set_field_crops_to_maximum_length();
+	void set_field_raises_for_too_long_values();
 	void get_type_code();
 	void custom_name_and_nullable_support();
 
@@ -77,19 +77,16 @@ void string_description_test::set_field_with_maximum_length()
 	CPPUNIT_ASSERT_EQUAL(expected.size(), element.indicator);
 }
 
-void string_description_test::set_field_crops_to_maximum_length()
+void string_description_test::set_field_raises_for_too_long_values()
 {
 	std::string const basic("another test string");
-	std::string const addition("x", 4000); // add 4000 characters
-	std::string const full(basic + addition);
+	std::string const full(basic + "x");
 	turbodbc::string_description const description(basic.size());
 
 	cpp_odbc::multi_value_buffer buffer(description.element_size(), 1);
 	auto element = buffer[0];
 
-	description.set_field(element, turbodbc::field{full});
-	CPPUNIT_ASSERT_EQUAL(basic, std::string(element.data_pointer));
-	CPPUNIT_ASSERT_EQUAL(basic.size(), element.indicator);
+	CPPUNIT_ASSERT_THROW(description.set_field(element, turbodbc::field{full}), std::runtime_error);
 }
 
 void string_description_test::get_type_code()

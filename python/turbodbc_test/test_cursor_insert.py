@@ -114,6 +114,20 @@ class InsertTests(object):
             self.cursor.execute("INSERT INTO {} VALUES (42)".format(table_name))
             self.assertIsNone(self.cursor.description)
 
+    def test_string_with_differing_lengths(self):
+        long_strings = [['x' * 5], ['x' * 50], ['x' * 500]]
+        to_insert = [[1]] # use integer to force rebind to string buffer afterwards
+        to_insert.extend(long_strings)
+        expected = [['1']]
+        expected.extend(long_strings)
+
+        with query_fixture(self.cursor, self.fixtures, 'INSERT LONG STRING') as table_name:
+            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+            self.assertEqual(len(to_insert), self.cursor.rowcount)
+            self.cursor.execute("SELECT a FROM {}".format(table_name))
+            inserted = [list(row) for row in self.cursor.fetchall()]
+            self.assertItemsEqual(expected, inserted)
+
 
 # Actual test cases
 

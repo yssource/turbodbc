@@ -31,6 +31,14 @@
 		"teardown": ["DROP TABLE {table_name}"]
 	},
 
+	"INSERT LONG STRING": {
+		"setup": [
+			"DROP TABLE IF EXISTS {table_name}",
+			"CREATE TABLE {table_name} (a VARCHAR(1000)) engine=innodb"
+		],
+		"teardown": ["DROP TABLE {table_name}"]
+	},
+
 	"INSERT INTEGER": {
 		"setup": [
 			"DROP TABLE IF EXISTS {table_name}",

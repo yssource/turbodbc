@@ -49,9 +49,7 @@ void string_description::do_set_field(cpp_odbc::writable_buffer_element & elemen
 		std::memcpy(element.data_pointer, as_string.c_str(), length_with_null_termination);
 		element.indicator = as_string.size();
 	} else {
-		std::memcpy(element.data_pointer, as_string.c_str(), maximum_length_);
-		element.data_pointer[maximum_length_] = '\0';
-		element.indicator = maximum_length_;
+		throw std::runtime_error("String exceeds maximum length supported by buffer");
 	}
 }
 

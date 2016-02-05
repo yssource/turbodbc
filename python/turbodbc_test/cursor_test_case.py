@@ -5,6 +5,8 @@ import json
 import turbodbc
 
 
+TestCase.maxDiff = None
+
 class CursorTestCase(TestCase):
     """
     Children are expected to provide the following attributes:

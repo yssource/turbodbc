@@ -132,7 +132,7 @@ void query::add_parameter(std::size_t index, nullable_field const & value)
 {
 	try {
 		parameters_[index]->set(current_parameter_set_, value);
-	} catch (boost::bad_get const &) {
+	} catch (std::exception const &) {
 		auto const last_active_row = execute_batch();
 		recover_unwritten_parameters_below(index, last_active_row);
 		rebind_parameter_to_hold_value(index, *value);
