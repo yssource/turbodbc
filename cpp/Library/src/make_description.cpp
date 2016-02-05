@@ -56,7 +56,24 @@ namespace {
 
 		description_ptr operator()(std::string const & s) const
 		{
-			return new string_description(s.size());
+			auto const target_size = size_after_growth_strategy(s);
+			return new string_description(target_size);
+		}
+	private:
+		/*
+		 * This function returns a buffer size for the given string
+		 * which leaves room for future, larger strings.
+		 *
+		 * The intent is to waste little space for small strings while
+		 * keeping the number of required buffer rebinds small.
+		 */
+		std::size_t size_after_growth_strategy(std::string const & s) const
+		{
+			std::size_t const minimum_size = 10;
+			if (s.size() < minimum_size) {
+				return minimum_size;
+			}
+			return std::ceil(s.size() * 1.2);
 		}
 	};
 

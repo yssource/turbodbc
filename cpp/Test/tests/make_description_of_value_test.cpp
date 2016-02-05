@@ -17,7 +17,8 @@ CPPUNIT_TEST_SUITE( make_description_of_value_test );
 	CPPUNIT_TEST( from_bool );
 	CPPUNIT_TEST( from_date );
 	CPPUNIT_TEST( from_ptime );
-	CPPUNIT_TEST( from_string );
+	CPPUNIT_TEST( from_string_provides_minimum_length );
+	CPPUNIT_TEST( from_string_provides_extra_space_for_large_strings );
 
 CPPUNIT_TEST_SUITE_END();
 
@@ -28,7 +29,8 @@ public:
 	void from_bool();
 	void from_date();
 	void from_ptime();
-	void from_string();
+	void from_string_provides_minimum_length();
+	void from_string_provides_extra_space_for_large_strings();
 
 };
 
@@ -74,12 +76,25 @@ void make_description_of_value_test::from_ptime()
 	CPPUNIT_ASSERT( dynamic_cast<turbodbc::timestamp_description const *>(description.get()) );
 }
 
-void make_description_of_value_test::from_string()
+void make_description_of_value_test::from_string_provides_minimum_length()
 {
-	std::string s("test string");
-	field const value(s);
+	std::string small_string("hi");
+	field const value(small_string);
 	auto description = make_description(value);
 	auto as_string_description = dynamic_cast<turbodbc::string_description const *>(description.get());
 	CPPUNIT_ASSERT( as_string_description != nullptr );
-	CPPUNIT_ASSERT_EQUAL(as_string_description->element_size(), s.size() + 1);
+
+	std::size_t const minimum_length = 10;
+	CPPUNIT_ASSERT_EQUAL(as_string_description->element_size(), minimum_length + 1);
+}
+
+void make_description_of_value_test::from_string_provides_extra_space_for_large_strings()
+{
+	std::string large_string("this is a relatively large string");
+	field const value(large_string);
+	auto description = make_description(value);
+	auto as_string_description = dynamic_cast<turbodbc::string_description const *>(description.get());
+	CPPUNIT_ASSERT( as_string_description != nullptr );
+
+	CPPUNIT_ASSERT(as_string_description->element_size() > (large_string.size() + 1));
 }
