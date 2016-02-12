@@ -1,19 +1,6 @@
-/**
- *  @file raii_statement_test.cpp
- *  @date 23.05.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 15:26:51 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21210 $
- *
- */
-
 #include "cpp_odbc/level3/raii_statement.h"
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
+#include <gtest/gtest.h>
 
 #include "cpp_odbc/level3/raii_environment.h"
 #include "cpp_odbc/level3/raii_connection.h"
@@ -21,65 +8,6 @@
 
 #include <type_traits>
 
-class raii_statement_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( raii_statement_test );
-
-	CPPUNIT_TEST( is_statement );
-	CPPUNIT_TEST( resource_management );
-	CPPUNIT_TEST( keeps_connection_alive );
-	CPPUNIT_TEST( get_integer_attribute );
-	CPPUNIT_TEST( set_integer_attribute );
-	CPPUNIT_TEST( set_pointer_attribute );
-	CPPUNIT_TEST( execute );
-	CPPUNIT_TEST( prepare );
-	CPPUNIT_TEST( bind_input_parameter );
-	CPPUNIT_TEST( unbind_all_parameters );
-	CPPUNIT_TEST( execute_prepared );
-	CPPUNIT_TEST( number_of_columns );
-	CPPUNIT_TEST( number_of_parameters );
-	CPPUNIT_TEST( bind_column );
-	CPPUNIT_TEST( unbind_all_columns );
-	CPPUNIT_TEST( fetch_next );
-	CPPUNIT_TEST( close_cursor );
-	CPPUNIT_TEST( get_integer_column_attribute );
-	CPPUNIT_TEST( get_string_column_attribute );
-	CPPUNIT_TEST( row_count );
-	CPPUNIT_TEST( describe_column );
-	CPPUNIT_TEST( describe_parameter );
-	CPPUNIT_TEST( more_results );
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void is_statement();
-	void resource_management();
-	void keeps_connection_alive();
-	void get_integer_attribute();
-	void set_integer_attribute();
-	void set_pointer_attribute();
-	void execute();
-	void prepare();
-	void bind_input_parameter();
-	void unbind_all_parameters();
-	void execute_prepared();
-	void number_of_columns();
-	void number_of_parameters();
-	void bind_column();
-	void unbind_all_columns();
-	void fetch_next();
-	void close_cursor();
-	void get_integer_column_attribute();
-	void get_string_column_attribute();
-	void row_count();
-	void describe_column();
-	void describe_parameter();
-	void more_results();
-
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( raii_statement_test );
 
 using cpp_odbc::level3::raii_connection;
 using cpp_odbc::level3::raii_environment;
@@ -116,13 +44,13 @@ namespace {
 
 }
 
-void raii_statement_test::is_statement()
+TEST(RaiiStatementTest, IsStatement)
 {
 	bool const derived_from_statement = std::is_base_of<cpp_odbc::statement, raii_statement>::value;
-	CPPUNIT_ASSERT( derived_from_statement );
+	EXPECT_TRUE( derived_from_statement );
 }
 
-void raii_statement_test::resource_management()
+TEST(RaiiStatementTest, ResourceManagement)
 {
 	auto api = std::make_shared<testing::NiceMock<level2_mock_api> const>();
 	ON_CALL(*api, do_allocate_environment_handle())
@@ -146,7 +74,7 @@ void raii_statement_test::resource_management()
 	}
 }
 
-void raii_statement_test::keeps_connection_alive()
+TEST(RaiiStatementTest, KeepsConnectionAlive)
 {
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
@@ -156,10 +84,10 @@ void raii_statement_test::keeps_connection_alive()
 	raii_statement statement(connection);
 	auto const use_count_after = connection.use_count();
 
-	CPPUNIT_ASSERT_EQUAL(1, use_count_after - use_count_before);
+	EXPECT_EQ(1, use_count_after - use_count_before);
 }
 
-void raii_statement_test::get_integer_attribute()
+TEST(RaiiStatementTest, GetIntegerAttribute)
 {
 	SQLINTEGER const attribute = 42;
 	long const expected = 12345;
@@ -171,10 +99,10 @@ void raii_statement_test::get_integer_attribute()
 		.WillOnce(testing::Return(expected));
 
 	raii_statement statement(connection);
-	CPPUNIT_ASSERT_EQUAL( expected, statement.get_integer_attribute(attribute));
+	EXPECT_EQ( expected, statement.get_integer_attribute(attribute));
 }
 
-void raii_statement_test::set_integer_attribute()
+TEST(RaiiStatementTest, SetIntegerAttribute)
 {
 	SQLINTEGER const attribute = 42;
 	long const value = 12345;
@@ -188,7 +116,7 @@ void raii_statement_test::set_integer_attribute()
 	statement.set_attribute(attribute, value);
 }
 
-void raii_statement_test::set_pointer_attribute()
+TEST(RaiiStatementTest, SetPointerAttribute)
 {
 	SQLINTEGER const attribute = 42;
 	SQLULEN value = 12345;
@@ -202,7 +130,7 @@ void raii_statement_test::set_pointer_attribute()
 	statement.set_attribute(attribute, &value);
 }
 
-void raii_statement_test::execute()
+TEST(RaiiStatementTest, Execute)
 {
 	std::string const sql = "SELECT dummy FROM test";
 
@@ -215,7 +143,7 @@ void raii_statement_test::execute()
 	statement.execute(sql);
 }
 
-void raii_statement_test::prepare()
+TEST(RaiiStatementTest, Prepare)
 {
 	std::string const sql = "SELECT dummy FROM test";
 
@@ -228,7 +156,7 @@ void raii_statement_test::prepare()
 	statement.prepare(sql);
 }
 
-void raii_statement_test::bind_input_parameter()
+TEST(RaiiStatementTest, BindInputParameter)
 {
 	SQLUSMALLINT const parameter_id = 17;
 	SQLSMALLINT const value_type = 23;
@@ -244,7 +172,7 @@ void raii_statement_test::bind_input_parameter()
 	statement.bind_input_parameter(parameter_id, value_type, parameter_type, parameter_values);
 }
 
-void raii_statement_test::unbind_all_parameters()
+TEST(RaiiStatementTest, UnbindAllParameters)
 {
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
@@ -255,7 +183,7 @@ void raii_statement_test::unbind_all_parameters()
 	statement.unbind_all_parameters();
 }
 
-void raii_statement_test::execute_prepared()
+TEST(RaiiStatementTest, ExecutePrepared)
 {
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
@@ -266,7 +194,7 @@ void raii_statement_test::execute_prepared()
 	statement.execute_prepared();
 }
 
-void raii_statement_test::number_of_columns()
+TEST(RaiiStatementTest, NumberOfColumns)
 {
 	short int const expected = 23;
 
@@ -277,10 +205,10 @@ void raii_statement_test::number_of_columns()
 		.WillOnce(testing::Return(expected));
 
 	raii_statement statement(connection);
-	CPPUNIT_ASSERT_EQUAL( expected, statement.number_of_columns());
+	EXPECT_EQ( expected, statement.number_of_columns());
 }
 
-void raii_statement_test::number_of_parameters()
+TEST(RaiiStatementTest, NumberOfParameters)
 {
 	short int const expected = 23;
 
@@ -291,10 +219,10 @@ void raii_statement_test::number_of_parameters()
 		.WillOnce(testing::Return(expected));
 
 	raii_statement statement(connection);
-	CPPUNIT_ASSERT_EQUAL( expected, statement.number_of_parameters());
+	EXPECT_EQ( expected, statement.number_of_parameters());
 }
 
-void raii_statement_test::bind_column()
+TEST(RaiiStatementTest, BindColumn)
 {
 	SQLUSMALLINT const column_id = 17;
 	SQLSMALLINT const column_type = 23;
@@ -309,7 +237,7 @@ void raii_statement_test::bind_column()
 	statement.bind_column(column_id, column_type, column_buffer);
 }
 
-void raii_statement_test::unbind_all_columns()
+TEST(RaiiStatementTest, UnbindAllColumns)
 {
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
@@ -320,7 +248,7 @@ void raii_statement_test::unbind_all_columns()
 	statement.unbind_all_columns();
 }
 
-void raii_statement_test::fetch_next()
+TEST(RaiiStatementTest, FetchNext)
 {
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
@@ -331,7 +259,7 @@ void raii_statement_test::fetch_next()
 	statement.fetch_next();
 }
 
-void raii_statement_test::close_cursor()
+TEST(RaiiStatementTest, CloseCursor)
 {
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
@@ -342,7 +270,7 @@ void raii_statement_test::close_cursor()
 	statement.close_cursor();
 }
 
-void raii_statement_test::get_integer_column_attribute()
+TEST(RaiiStatementTest, GetIntegerColumnAttribute)
 {
 	SQLUSMALLINT const column_id = 17;
 	SQLUSMALLINT const field_identifier = 42;
@@ -355,10 +283,10 @@ void raii_statement_test::get_integer_column_attribute()
 		.WillOnce(testing::Return(expected));
 
 	raii_statement statement(connection);
-	CPPUNIT_ASSERT_EQUAL( expected, statement.get_integer_column_attribute(column_id, field_identifier));
+	EXPECT_EQ( expected, statement.get_integer_column_attribute(column_id, field_identifier));
 }
 
-void raii_statement_test::get_string_column_attribute()
+TEST(RaiiStatementTest, GetStringColumnAttribute)
 {
 	SQLUSMALLINT const column_id = 17;
 	SQLUSMALLINT const field_identifier = 42;
@@ -371,10 +299,10 @@ void raii_statement_test::get_string_column_attribute()
 		.WillOnce(testing::Return(expected));
 
 	raii_statement statement(connection);
-	CPPUNIT_ASSERT_EQUAL( expected, statement.get_string_column_attribute(column_id, field_identifier));
+	EXPECT_EQ( expected, statement.get_string_column_attribute(column_id, field_identifier));
 }
 
-void raii_statement_test::row_count()
+TEST(RaiiStatementTest, RowCount)
 {
 	SQLLEN const expected = 23;
 
@@ -385,10 +313,10 @@ void raii_statement_test::row_count()
 		.WillOnce(testing::Return(expected));
 
 	raii_statement statement(connection);
-	CPPUNIT_ASSERT_EQUAL( expected, statement.row_count());
+	EXPECT_EQ( expected, statement.row_count());
 }
 
-void raii_statement_test::describe_column()
+TEST(RaiiStatementTest, DescribeColumn)
 {
 	SQLUSMALLINT const column_id = 23;
 	cpp_odbc::column_description const expected = {"dummy", 1, 2, 3, false};
@@ -400,10 +328,10 @@ void raii_statement_test::describe_column()
 		.WillOnce(testing::Return(expected));
 
 	raii_statement statement(connection);
-	CPPUNIT_ASSERT_EQUAL( expected, statement.describe_column(column_id));
+	EXPECT_EQ( expected, statement.describe_column(column_id));
 }
 
-void raii_statement_test::describe_parameter()
+TEST(RaiiStatementTest, DescribeParameter)
 {
 	SQLUSMALLINT const parameter_id = 23;
 	cpp_odbc::column_description const expected = {"dummy", 1, 2, 3, false};
@@ -415,10 +343,10 @@ void raii_statement_test::describe_parameter()
 		.WillOnce(testing::Return(expected));
 
 	raii_statement statement(connection);
-	CPPUNIT_ASSERT_EQUAL( expected, statement.describe_parameter(parameter_id));
+	EXPECT_EQ( expected, statement.describe_parameter(parameter_id));
 }
 
-void raii_statement_test::more_results()
+TEST(RaiiStatementTest, MoreResults)
 {
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
@@ -426,5 +354,5 @@ void raii_statement_test::more_results()
 	EXPECT_CALL(*api, do_more_results(default_s_handle)).WillOnce(testing::Return(false));
 
 	raii_statement statement(connection);
-	CPPUNIT_ASSERT( not statement.more_results() );
+	EXPECT_TRUE( not statement.more_results() );
 }

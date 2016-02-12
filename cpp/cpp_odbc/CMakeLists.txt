@@ -7,6 +7,5 @@ include_directories(Library)
 add_subdirectory(Library)
 
 if(BUILD_TESTING)
-    find_package(cppunit_toolbox)
     add_subdirectory(Test)
 endif()

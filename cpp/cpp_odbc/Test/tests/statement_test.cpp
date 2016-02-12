@@ -1,91 +1,15 @@
-/**
- *  @file statement_test.cpp
- *  @date 16.05.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 15:26:51 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21210 $
- *
- */
-
-
 #include "cpp_odbc/statement.h"
 
-#include <cppunit/extensions/HelperMacros.h>
-#include "cppunit_toolbox/helpers/is_abstract_base_class.h"
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 #include "cpp_odbc_test/mock_statement.h"
-
-#include "gmock/gmock.h"
-
-class statement_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( statement_test );
-
-	CPPUNIT_TEST( is_suitable_as_base_class );
-	CPPUNIT_TEST( get_integer_attribute_forwards );
-	CPPUNIT_TEST( set_integer_attribute_forwards );
-	CPPUNIT_TEST( set_pointer_attribute_forwards );
-	CPPUNIT_TEST( execute_forwards );
-	CPPUNIT_TEST( prepare_forwards );
-	CPPUNIT_TEST( bind_input_parameter_forwards );
-	CPPUNIT_TEST( unbind_all_parameters_forwards );
-	CPPUNIT_TEST( execute_prepared_forwards );
-	CPPUNIT_TEST( number_of_columns_forwards );
-	CPPUNIT_TEST( number_of_parameters_forwards );
-	CPPUNIT_TEST( bind_column_forwards );
-	CPPUNIT_TEST( unbind_all_columns_forwards );
-	CPPUNIT_TEST( fetch_next_forwards );
-	CPPUNIT_TEST( close_cursor_forwards );
-	CPPUNIT_TEST( get_integer_column_attribute_forwards );
-	CPPUNIT_TEST( get_string_column_attribute_forwards );
-	CPPUNIT_TEST( row_count_forwards );
-	CPPUNIT_TEST( describe_column_forwards );
-	CPPUNIT_TEST( describe_parameter_forwards );
-	CPPUNIT_TEST( more_results_forwards );
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void is_suitable_as_base_class();
-	void get_integer_attribute_forwards();
-	void set_integer_attribute_forwards();
-	void set_pointer_attribute_forwards();
-	void execute_forwards();
-	void prepare_forwards();
-	void bind_input_parameter_forwards();
-	void unbind_all_parameters_forwards();
-	void execute_prepared_forwards();
-	void number_of_columns_forwards();
-	void number_of_parameters_forwards();
-	void bind_column_forwards();
-	void unbind_all_columns_forwards();
-	void fetch_next_forwards();
-	void close_cursor_forwards();
-	void get_integer_column_attribute_forwards();
-	void get_string_column_attribute_forwards();
-	void row_count_forwards();
-	void describe_column_forwards();
-	void describe_parameter_forwards();
-	void more_results_forwards();
-
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( statement_test );
 
 
 using cpp_odbc_test::mock_statement;
 
-void statement_test::is_suitable_as_base_class()
-{
-	bool const is_base = cppunit_toolbox::is_abstract_base_class<cpp_odbc::statement>::value;
-	CPPUNIT_ASSERT( is_base );
-}
 
-void statement_test::get_integer_attribute_forwards()
+TEST(StatementTest, GetIntegerAttributeForwards)
 {
 	SQLINTEGER const attribute = 23;
 	long const expected = 42;
@@ -94,10 +18,10 @@ void statement_test::get_integer_attribute_forwards()
 	EXPECT_CALL( statement, do_get_integer_attribute(attribute))
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT_EQUAL( expected, statement.get_integer_attribute(attribute));
+	EXPECT_EQ( expected, statement.get_integer_attribute(attribute));
 }
 
-void statement_test::set_integer_attribute_forwards()
+TEST(StatementTest, SetIntegerAttributeForwards)
 {
 	SQLINTEGER const attribute = 23;
 	long const value = 42;
@@ -108,7 +32,7 @@ void statement_test::set_integer_attribute_forwards()
 	statement.set_attribute(attribute, value);
 }
 
-void statement_test::set_pointer_attribute_forwards()
+TEST(StatementTest, SetPointerAttributeForwards)
 {
 	SQLINTEGER const attribute = 23;
 	SQLULEN value = 42;
@@ -119,7 +43,7 @@ void statement_test::set_pointer_attribute_forwards()
 	statement.set_attribute(attribute, &value);
 }
 
-void statement_test::execute_forwards()
+TEST(StatementTest, ExecuteForwards)
 {
 	std::string const query = "SELECT * FROM dummy";
 
@@ -129,7 +53,7 @@ void statement_test::execute_forwards()
 	statement.execute(query);
 }
 
-void statement_test::prepare_forwards()
+TEST(StatementTest, PrepareForwards)
 {
 	std::string const query = "SELECT * FROM dummy";
 
@@ -139,7 +63,7 @@ void statement_test::prepare_forwards()
 	statement.prepare(query);
 }
 
-void statement_test::bind_input_parameter_forwards()
+TEST(StatementTest, BindInputParameterForwards)
 {
 	SQLUSMALLINT const parameter = 17;
 	SQLSMALLINT const value_type = 23;
@@ -152,7 +76,7 @@ void statement_test::bind_input_parameter_forwards()
 	statement.bind_input_parameter(parameter, value_type, parameter_type, values);
 }
 
-void statement_test::unbind_all_parameters_forwards()
+TEST(StatementTest, UnbindAllParametersForwards)
 {
 	mock_statement statement;
 	EXPECT_CALL( statement, do_unbind_all_parameters() ).Times(1);
@@ -161,7 +85,7 @@ void statement_test::unbind_all_parameters_forwards()
 }
 
 
-void statement_test::execute_prepared_forwards()
+TEST(StatementTest, ExecutePreparedForwards)
 {
 	mock_statement statement;
 	EXPECT_CALL( statement, do_execute_prepared()).Times(1);
@@ -169,7 +93,7 @@ void statement_test::execute_prepared_forwards()
 	statement.execute_prepared();
 }
 
-void statement_test::number_of_columns_forwards()
+TEST(StatementTest, NumberOfColumnsForwards)
 {
 	short int const expected = 42;
 
@@ -177,10 +101,10 @@ void statement_test::number_of_columns_forwards()
 	EXPECT_CALL( statement, do_number_of_columns())
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT_EQUAL( expected, statement.number_of_columns() );
+	EXPECT_EQ( expected, statement.number_of_columns() );
 }
 
-void statement_test::number_of_parameters_forwards()
+TEST(StatementTest, NumberOfParametersForwards)
 {
 	short int const expected = 42;
 
@@ -188,10 +112,10 @@ void statement_test::number_of_parameters_forwards()
 	EXPECT_CALL( statement, do_number_of_parameters())
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT_EQUAL( expected, statement.number_of_parameters() );
+	EXPECT_EQ( expected, statement.number_of_parameters() );
 }
 
-void statement_test::bind_column_forwards()
+TEST(StatementTest, BindColumnForwards)
 {
 	SQLUSMALLINT const column = 17;
 	SQLSMALLINT const column_type = 23;
@@ -203,7 +127,7 @@ void statement_test::bind_column_forwards()
 	statement.bind_column(column, column_type, values);
 }
 
-void statement_test::unbind_all_columns_forwards()
+TEST(StatementTest, UnbindAllColumnsForwards)
 {
 	mock_statement statement;
 	EXPECT_CALL( statement, do_unbind_all_columns() ).Times(1);
@@ -211,16 +135,16 @@ void statement_test::unbind_all_columns_forwards()
 	statement.unbind_all_columns();
 }
 
-void statement_test::fetch_next_forwards()
+TEST(StatementTest, FetchNextForwards)
 {
 	bool const expected = false;
 	mock_statement statement;
 	EXPECT_CALL( statement, do_fetch_next()).WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT_EQUAL(expected, statement.fetch_next());
+	EXPECT_EQ(expected, statement.fetch_next());
 }
 
-void statement_test::close_cursor_forwards()
+TEST(StatementTest, CloseCursorForwards)
 {
 	mock_statement statement;
 	EXPECT_CALL( statement, do_close_cursor()).Times(1);
@@ -228,7 +152,7 @@ void statement_test::close_cursor_forwards()
 	statement.close_cursor();
 }
 
-void statement_test::get_integer_column_attribute_forwards()
+TEST(StatementTest, GetIntegerColumnAttributeForwards)
 {
 	SQLUSMALLINT const column = 23;
 	SQLUSMALLINT const field_identifier = 42;
@@ -238,10 +162,10 @@ void statement_test::get_integer_column_attribute_forwards()
 	EXPECT_CALL( statement, do_get_integer_column_attribute(column, field_identifier))
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT_EQUAL( expected, statement.get_integer_column_attribute(column, field_identifier));
+	EXPECT_EQ( expected, statement.get_integer_column_attribute(column, field_identifier));
 }
 
-void statement_test::get_string_column_attribute_forwards()
+TEST(StatementTest, GetStringColumnAttributeForwards)
 {
 	SQLUSMALLINT const column = 23;
 	SQLUSMALLINT const field_identifier = 42;
@@ -251,10 +175,10 @@ void statement_test::get_string_column_attribute_forwards()
 	EXPECT_CALL( statement, do_get_string_column_attribute(column, field_identifier))
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT_EQUAL( expected, statement.get_string_column_attribute(column, field_identifier));
+	EXPECT_EQ( expected, statement.get_string_column_attribute(column, field_identifier));
 }
 
-void statement_test::row_count_forwards()
+TEST(StatementTest, RowCountForwards)
 {
 	SQLLEN const expected = 42;
 
@@ -262,10 +186,10 @@ void statement_test::row_count_forwards()
 	EXPECT_CALL( statement, do_row_count())
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT_EQUAL( expected, statement.row_count() );
+	EXPECT_EQ( expected, statement.row_count() );
 }
 
-void statement_test::describe_column_forwards()
+TEST(StatementTest, DescribeColumnForwards)
 {
 	SQLUSMALLINT const column_id = 23;
 	cpp_odbc::column_description const expected = {"dummy", 1, 2, 3, false};
@@ -274,10 +198,10 @@ void statement_test::describe_column_forwards()
 	EXPECT_CALL( statement, do_describe_column(column_id))
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT_EQUAL( expected, statement.describe_column(column_id) );
+	EXPECT_EQ( expected, statement.describe_column(column_id) );
 }
 
-void statement_test::describe_parameter_forwards()
+TEST(StatementTest, DescribeParameterForwards)
 {
 	SQLUSMALLINT const parameter_id = 23;
 	cpp_odbc::column_description const expected = {"dummy", 1, 2, 3, false};
@@ -286,13 +210,13 @@ void statement_test::describe_parameter_forwards()
 	EXPECT_CALL( statement, do_describe_parameter(parameter_id))
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT_EQUAL( expected, statement.describe_parameter(parameter_id) );
+	EXPECT_EQ( expected, statement.describe_parameter(parameter_id) );
 }
 
-void statement_test::more_results_forwards()
+TEST(StatementTest, MoreResultsForwards)
 {
 	mock_statement statement;
 	EXPECT_CALL( statement, do_more_results()).WillOnce(testing::Return(false));
 
-	CPPUNIT_ASSERT( not statement.more_results() );
+	EXPECT_FALSE(statement.more_results());
 }

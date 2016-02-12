@@ -1,19 +1,6 @@
-/**
- *  @file level1_connector_test.cpp
- *  @date 07.03.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 15:26:51 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21210 $
- *
- */
-
-
-#include <cppunit/extensions/HelperMacros.h>
-
 #include "cpp_odbc/level2/level1_connector.h"
+
+#include <gtest/gtest.h>
 
 #include "cpp_odbc/error.h"
 
@@ -23,191 +10,6 @@
 
 #include <type_traits>
 
-class level1_connector_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( level1_connector_test );
-
-	CPPUNIT_TEST( is_handle_api );
-
-	CPPUNIT_TEST( allocate_statement_handle_calls_api );
-	CPPUNIT_TEST( allocate_connection_handle_calls_api );
-	CPPUNIT_TEST( allocate_environment_handle_calls_api );
-
-	CPPUNIT_TEST( allocate_statement_handle_fails );
-	CPPUNIT_TEST( allocate_connection_handle_fails );
-	CPPUNIT_TEST( allocate_environment_handle_fails );
-
-	CPPUNIT_TEST( free_statement_handle_calls_api );
-	CPPUNIT_TEST( free_connection_handle_calls_api );
-	CPPUNIT_TEST( free_environment_handle_calls_api );
-
-	CPPUNIT_TEST( free_statement_handle_fails );
-	CPPUNIT_TEST( free_connection_handle_fails );
-	CPPUNIT_TEST( free_environment_handle_fails );
-
-	CPPUNIT_TEST( get_statement_diagnostic_record_calls_api );
-	CPPUNIT_TEST( get_connection_diagnostic_record_calls_api );
-	CPPUNIT_TEST( get_environment_diagnostic_record_calls_api );
-
-	CPPUNIT_TEST( get_statement_diagnostic_record_fails );
-	CPPUNIT_TEST( get_connection_diagnostic_record_fails );
-	CPPUNIT_TEST( get_environment_diagnostic_record_fails );
-
-	CPPUNIT_TEST( set_environment_attribute_calls_api );
-	CPPUNIT_TEST( set_environment_attribute_fails );
-
-	CPPUNIT_TEST( set_connection_attribute_calls_api );
-	CPPUNIT_TEST( set_connection_attribute_fails );
-
-	CPPUNIT_TEST( establish_connection_calls_api );
-	CPPUNIT_TEST( establish_connection_fails );
-
-	CPPUNIT_TEST( disconnect_calls_api );
-	CPPUNIT_TEST( disconnect_fails );
-
-	CPPUNIT_TEST( end_transaction_calls_api );
-	CPPUNIT_TEST( end_transaction_fails );
-
-	CPPUNIT_TEST( get_string_connection_info_calls_api );
-	CPPUNIT_TEST( get_string_connection_info_fails );
-
-	CPPUNIT_TEST( get_integer_connection_info_calls_api );
-	CPPUNIT_TEST( get_integer_connection_info_fails );
-
-	CPPUNIT_TEST( bind_column_calls_api );
-	CPPUNIT_TEST( bind_column_fails );
-	CPPUNIT_TEST( bind_input_parameter_calls_api );
-	CPPUNIT_TEST( bind_input_parameter_fails );
-	CPPUNIT_TEST( execute_prepared_statement_calls_api );
-	CPPUNIT_TEST( execute_prepared_statement_fails );
-	CPPUNIT_TEST( execute_statement_calls_api );
-	CPPUNIT_TEST( execute_statement_fails );
-	CPPUNIT_TEST( fetch_scroll_calls_api );
-	CPPUNIT_TEST( fetch_scroll_fails );
-	CPPUNIT_TEST( fetch_scroll_has_no_more_data );
-	CPPUNIT_TEST( free_statement_calls_api );
-	CPPUNIT_TEST( free_statement_fails );
-	CPPUNIT_TEST( get_integer_column_attribute_calls_api );
-	CPPUNIT_TEST( get_integer_column_attribute_fails );
-	CPPUNIT_TEST( get_integer_statement_attribute_calls_api );
-	CPPUNIT_TEST( get_integer_statement_attribute_fails );
-	CPPUNIT_TEST( get_string_column_attribute_calls_api );
-	CPPUNIT_TEST( get_string_column_attribute_fails );
-	CPPUNIT_TEST( number_of_result_columns_calls_api );
-	CPPUNIT_TEST( number_of_result_columns_fails );
-	CPPUNIT_TEST( number_of_parameters_calls_api );
-	CPPUNIT_TEST( number_of_parameters_fails );
-	CPPUNIT_TEST( prepare_statement_calls_api );
-	CPPUNIT_TEST( prepare_statement_fails );
-	CPPUNIT_TEST( set_long_statement_attribute_calls_api );
-	CPPUNIT_TEST( set_long_statement_attribute_fails );
-	CPPUNIT_TEST( set_pointer_statement_attribute_calls_api );
-	CPPUNIT_TEST( set_pointer_statement_attribute_fails );
-	CPPUNIT_TEST( row_count_calls_api );
-	CPPUNIT_TEST( row_count_fails );
-	CPPUNIT_TEST( describe_column_calls_api );
-	CPPUNIT_TEST( describe_column_fails );
-	CPPUNIT_TEST( describe_parameter_calls_api );
-	CPPUNIT_TEST( describe_parameter_fails );
-	CPPUNIT_TEST( more_results_calls_api );
-	CPPUNIT_TEST( more_results_fails );
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void is_handle_api();
-
-	void allocate_statement_handle_calls_api();
-	void allocate_connection_handle_calls_api();
-	void allocate_environment_handle_calls_api();
-
-	void allocate_statement_handle_fails();
-	void allocate_connection_handle_fails();
-	void allocate_environment_handle_fails();
-
-	void free_statement_handle_calls_api();
-	void free_connection_handle_calls_api();
-	void free_environment_handle_calls_api();
-
-	void free_statement_handle_fails();
-	void free_connection_handle_fails();
-	void free_environment_handle_fails();
-
-	void get_statement_diagnostic_record_calls_api();
-	void get_connection_diagnostic_record_calls_api();
-	void get_environment_diagnostic_record_calls_api();
-
-	void get_statement_diagnostic_record_fails();
-	void get_connection_diagnostic_record_fails();
-	void get_environment_diagnostic_record_fails();
-
-	void set_environment_attribute_calls_api();
-	void set_environment_attribute_fails();
-
-	void set_connection_attribute_calls_api();
-	void set_connection_attribute_fails();
-
-	void establish_connection_calls_api();
-	void establish_connection_fails();
-
-	void disconnect_calls_api();
-	void disconnect_fails();
-
-	void end_transaction_calls_api();
-	void end_transaction_fails();
-
-	void get_string_connection_info_calls_api();
-	void get_string_connection_info_fails();
-
-	void get_integer_connection_info_calls_api();
-	void get_integer_connection_info_fails();
-
-	void bind_column_calls_api();
-	void bind_column_fails();
-	void bind_input_parameter_calls_api();
-	void bind_input_parameter_fails();
-	void execute_prepared_statement_calls_api();
-	void execute_prepared_statement_fails();
-	void execute_statement_calls_api();
-	void execute_statement_fails();
-	void fetch_scroll_calls_api();
-	void fetch_scroll_fails();
-	void fetch_scroll_has_no_more_data();
-	void free_statement_calls_api();
-	void free_statement_fails();
-	void get_integer_column_attribute_calls_api();
-	void get_integer_column_attribute_fails();
-	void get_integer_statement_attribute_calls_api();
-	void get_integer_statement_attribute_fails();
-	void get_string_column_attribute_calls_api();
-	void get_string_column_attribute_fails();
-	void number_of_result_columns_calls_api();
-	void number_of_result_columns_fails();
-	void number_of_parameters_calls_api();
-	void number_of_parameters_fails();
-	void prepare_statement_calls_api();
-	void prepare_statement_fails();
-	void set_long_statement_attribute_calls_api();
-	void set_long_statement_attribute_fails();
-	void set_pointer_statement_attribute_calls_api();
-	void set_pointer_statement_attribute_fails();
-
-	void row_count_calls_api();
-	void row_count_fails();
-
-	void describe_column_calls_api();
-	void describe_column_fails();
-
-	void describe_parameter_calls_api();
-	void describe_parameter_fails();
-
-	void more_results_calls_api();
-	void more_results_fails();
-
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( level1_connector_test );
 
 namespace level2 = cpp_odbc::level2;
 using level2::level1_connector;
@@ -234,13 +36,13 @@ namespace {
 
 }
 
-void level1_connector_test::is_handle_api()
+TEST(Level1ConnectorTest, IsLevel2API)
 {
-	bool const implements_handle_api = std::is_base_of<cpp_odbc::level2::api, level1_connector>::value;
-	CPPUNIT_ASSERT( implements_handle_api );
+	bool const is_level_2_api = std::is_base_of<cpp_odbc::level2::api, level1_connector>::value;
+	EXPECT_TRUE( is_level_2_api );
 }
 
-void level1_connector_test::allocate_statement_handle_calls_api()
+TEST(Level1ConnectorTest, AllocateStatementHandleCallsAPI)
 {
 	level2::connection_handle input_handle = {&value_a};
 	level2::statement_handle const expected_output_handle = {&value_b};
@@ -255,10 +57,10 @@ void level1_connector_test::allocate_statement_handle_calls_api()
 	level1_connector const connector(api);
 
 	auto const actual_output_handle = connector.allocate_statement_handle(input_handle);
-	CPPUNIT_ASSERT( expected_output_handle == actual_output_handle );
+	EXPECT_EQ(expected_output_handle, actual_output_handle);
 }
 
-void level1_connector_test::allocate_connection_handle_calls_api()
+TEST(Level1ConnectorTest, AllocateConnectionHandleCallsAPI)
 {
 	level2::environment_handle input_handle = {&value_a};
 	level2::connection_handle const expected_output_handle = {&value_b};
@@ -273,10 +75,10 @@ void level1_connector_test::allocate_connection_handle_calls_api()
 	level1_connector const connector(api);
 
 	auto const actual_output_handle = connector.allocate_connection_handle(input_handle);
-	CPPUNIT_ASSERT( expected_output_handle == actual_output_handle );
+	EXPECT_EQ(expected_output_handle, actual_output_handle);
 }
 
-void level1_connector_test::allocate_environment_handle_calls_api()
+TEST(Level1ConnectorTest, AllocateEnvironmentHandleCallsAPI)
 {
 	level2::environment_handle const expected_output_handle = {&value_a};
 
@@ -290,11 +92,10 @@ void level1_connector_test::allocate_environment_handle_calls_api()
 	level1_connector const connector(api);
 
 	auto const actual_output_handle = connector.allocate_environment_handle();
-	CPPUNIT_ASSERT( expected_output_handle == actual_output_handle );
+	EXPECT_EQ(expected_output_handle, actual_output_handle);
 }
 
-
-void level1_connector_test::allocate_statement_handle_fails()
+TEST(Level1ConnectorTest, AllocateStatementHandleFails)
 {
 	level2::connection_handle input_handle = {&value_a};
 
@@ -305,10 +106,10 @@ void level1_connector_test::allocate_statement_handle_fails()
 
 	level1_connector const connector(api);
 
-	CPPUNIT_ASSERT_THROW( connector.allocate_statement_handle(input_handle), cpp_odbc::error );
+	EXPECT_THROW( connector.allocate_statement_handle(input_handle), cpp_odbc::error );
 }
 
-void level1_connector_test::allocate_connection_handle_fails()
+TEST(Level1ConnectorTest, AllocateConnectionHandleFails)
 {
 	level2::environment_handle input_handle = {&value_a};
 
@@ -319,10 +120,10 @@ void level1_connector_test::allocate_connection_handle_fails()
 
 	level1_connector const connector(api);
 
-	CPPUNIT_ASSERT_THROW( connector.allocate_connection_handle(input_handle), cpp_odbc::error );
+	EXPECT_THROW( connector.allocate_connection_handle(input_handle), cpp_odbc::error );
 }
 
-void level1_connector_test::allocate_environment_handle_fails()
+TEST(Level1ConnectorTest, AllocateEnvironmentHandleFails)
 {
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_allocate_handle(testing::_, testing::_, testing::_) )
@@ -330,7 +131,7 @@ void level1_connector_test::allocate_environment_handle_fails()
 
 	level1_connector const connector(api);
 
-	CPPUNIT_ASSERT_THROW( connector.allocate_environment_handle(), cpp_odbc::error );
+	EXPECT_THROW( connector.allocate_environment_handle(), cpp_odbc::error );
 }
 
 namespace {
@@ -349,17 +150,17 @@ namespace {
 	}
 }
 
-void level1_connector_test::free_statement_handle_calls_api()
+TEST(Level1ConnectorTest, FreeStatementHandleCallsAPI)
 {
 	test_free_handle_calls_api<level2::statement_handle>(SQL_HANDLE_STMT);
 }
 
-void level1_connector_test::free_connection_handle_calls_api()
+TEST(Level1ConnectorTest, FreeConnectionHandleCallsAPI)
 {
 	test_free_handle_calls_api<level2::connection_handle>(SQL_HANDLE_DBC);
 }
 
-void level1_connector_test::free_environment_handle_calls_api()
+TEST(Level1ConnectorTest, FreeEnvironmentHandleCallsAPI)
 {
 	test_free_handle_calls_api<level2::environment_handle>(SQL_HANDLE_ENV);
 }
@@ -377,21 +178,21 @@ namespace {
 
 		level1_connector const connector(api);
 
-		CPPUNIT_ASSERT_THROW( connector.free_handle(handle), cpp_odbc::error);
+		EXPECT_THROW( connector.free_handle(handle), cpp_odbc::error);
 	}
 }
 
-void level1_connector_test::free_statement_handle_fails()
+TEST(Level1ConnectorTest, FreeStatementHandleFails)
 {
 	test_free_handle_fails<level2::statement_handle>();
 }
 
-void level1_connector_test::free_connection_handle_fails()
+TEST(Level1ConnectorTest, FreeConnectionHandleFails)
 {
 	test_free_handle_fails<level2::connection_handle>();
 }
 
-void level1_connector_test::free_environment_handle_fails()
+TEST(Level1ConnectorTest, FreeEnvironmentHandleFails)
 {
 	test_free_handle_fails<level2::environment_handle>();
 }
@@ -420,24 +221,24 @@ namespace {
 
 		auto const actual = connector.get_diagnostic_record(handle);
 
-		CPPUNIT_ASSERT_EQUAL( expected_status_code, actual.odbc_status_code );
-		CPPUNIT_ASSERT_EQUAL( expected_native_error, actual.native_error_code );
-		CPPUNIT_ASSERT_EQUAL( expected_message, actual.message );
+		EXPECT_EQ( expected_status_code, actual.odbc_status_code );
+		EXPECT_EQ( expected_native_error, actual.native_error_code );
+		EXPECT_EQ( expected_message, actual.message );
 	}
 
 }
 
-void level1_connector_test::get_statement_diagnostic_record_calls_api()
+TEST(Level1ConnectorTest, GetStatementDiagnosticRecordCallsAPI)
 {
 	test_diagnostic_record_calls_api<level2::statement_handle>(SQL_HANDLE_STMT);
 }
 
-void level1_connector_test::get_connection_diagnostic_record_calls_api()
+TEST(Level1ConnectorTest, GetConnectionDiagnosticRecordCallsAPI)
 {
 	test_diagnostic_record_calls_api<level2::connection_handle>(SQL_HANDLE_DBC);
 }
 
-void level1_connector_test::get_environment_diagnostic_record_calls_api()
+TEST(Level1ConnectorTest, GetEnvironmentDiagnosticRecordCallsAPI)
 {
 	test_diagnostic_record_calls_api<level2::environment_handle>(SQL_HANDLE_ENV);
 }
@@ -455,27 +256,27 @@ namespace {
 
 		level1_connector const connector(api);
 
-		CPPUNIT_ASSERT_THROW( connector.get_diagnostic_record(handle), cpp_odbc::error );
+		EXPECT_THROW( connector.get_diagnostic_record(handle), cpp_odbc::error );
 	}
 
 }
 
-void level1_connector_test::get_statement_diagnostic_record_fails()
+TEST(Level1ConnectorTest, GetStatementDiagnosticRecordFails)
 {
 	test_diagnostic_record_fails<level2::statement_handle>();
 }
 
-void level1_connector_test::get_connection_diagnostic_record_fails()
+TEST(Level1ConnectorTest, GetConnectionDiagnosticRecordFails)
 {
 	test_diagnostic_record_fails<level2::connection_handle>();
 }
 
-void level1_connector_test::get_environment_diagnostic_record_fails()
+TEST(Level1ConnectorTest, GetEnvironmentDiagnosticRecordFails)
 {
 	test_diagnostic_record_fails<level2::environment_handle>();
 }
 
-void level1_connector_test::set_environment_attribute_calls_api()
+TEST(Level1ConnectorTest, SetEnvironmentAttributeCallsAPI)
 {
 	level2::environment_handle const handle = {&value_a};
 	SQLINTEGER const attribute = SQL_ATTR_ODBC_VERSION;
@@ -489,7 +290,7 @@ void level1_connector_test::set_environment_attribute_calls_api()
 	connector.set_environment_attribute(handle, attribute, value);
 }
 
-void level1_connector_test::set_environment_attribute_fails()
+TEST(Level1ConnectorTest, SetEnvironmentAttributeFails)
 {
 	level2::environment_handle const handle = {&value_a};
 
@@ -499,10 +300,10 @@ void level1_connector_test::set_environment_attribute_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.set_environment_attribute(handle, 0, 0), cpp_odbc::error );
+	EXPECT_THROW( connector.set_environment_attribute(handle, 0, 0), cpp_odbc::error );
 }
 
-void level1_connector_test::set_connection_attribute_calls_api()
+TEST(Level1ConnectorTest, SetConnectionAttributeCallsAPI)
 {
 	level2::connection_handle const handle = {&value_a};
 	SQLINTEGER const attribute = SQL_ATTR_AUTOCOMMIT;
@@ -516,7 +317,7 @@ void level1_connector_test::set_connection_attribute_calls_api()
 	connector.set_connection_attribute(handle, attribute, value);
 }
 
-void level1_connector_test::set_connection_attribute_fails()
+TEST(Level1ConnectorTest, SetConnectionAttributeFails)
 {
 	level2::connection_handle const handle = {&value_a};
 
@@ -526,10 +327,10 @@ void level1_connector_test::set_connection_attribute_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.set_connection_attribute(handle, 0, 0), cpp_odbc::error );
+	EXPECT_THROW( connector.set_connection_attribute(handle, 0, 0), cpp_odbc::error );
 }
 
-void level1_connector_test::establish_connection_calls_api()
+TEST(Level1ConnectorTest, EstablishConnectionCallsAPI)
 {
 	level2::connection_handle handle = {&value_a};
 	std::string const connection_string = "dummy connection string";
@@ -542,7 +343,7 @@ void level1_connector_test::establish_connection_calls_api()
 	connector.establish_connection(handle, connection_string);
 }
 
-void level1_connector_test::establish_connection_fails()
+TEST(Level1ConnectorTest, EstablishConnectionFails)
 {
 	level2::connection_handle handle = {&value_a};
 
@@ -552,10 +353,10 @@ void level1_connector_test::establish_connection_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.establish_connection(handle, "dummy connection string"), cpp_odbc::error);
+	EXPECT_THROW( connector.establish_connection(handle, "dummy connection string"), cpp_odbc::error);
 }
 
-void level1_connector_test::disconnect_calls_api()
+TEST(Level1ConnectorTest, DisconnectCallsAPI)
 {
 	level2::connection_handle handle = {&value_a};
 
@@ -567,7 +368,7 @@ void level1_connector_test::disconnect_calls_api()
 	connector.disconnect(handle);
 }
 
-void level1_connector_test::disconnect_fails()
+TEST(Level1ConnectorTest, DisconnectFails)
 {
 	level2::connection_handle handle = {&value_a};
 
@@ -577,10 +378,10 @@ void level1_connector_test::disconnect_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.disconnect(handle), cpp_odbc::error);
+	EXPECT_THROW( connector.disconnect(handle), cpp_odbc::error);
 }
 
-void level1_connector_test::end_transaction_calls_api()
+TEST(Level1ConnectorTest, EndTransactionCallsAPI)
 {
 	level2::connection_handle handle = {&value_a};
 	SQLSMALLINT const completion_type = SQL_COMMIT;
@@ -593,7 +394,7 @@ void level1_connector_test::end_transaction_calls_api()
 	connector.end_transaction(handle, completion_type);
 }
 
-void level1_connector_test::end_transaction_fails()
+TEST(Level1ConnectorTest, EndTransactionFails)
 {
 	level2::connection_handle handle = {&value_a};
 	SQLSMALLINT const completion_type = SQL_COMMIT;
@@ -604,10 +405,10 @@ void level1_connector_test::end_transaction_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.end_transaction(handle, completion_type), cpp_odbc::error);
+	EXPECT_THROW( connector.end_transaction(handle, completion_type), cpp_odbc::error);
 }
 
-void level1_connector_test::get_string_connection_info_calls_api()
+TEST(Level1ConnectorTest, GetStringConnectionInfoCallsAPI)
 {
 	level2::connection_handle handle = {&value_a};
 	SQLUSMALLINT const info_type = SQL_ODBC_VER;
@@ -626,10 +427,10 @@ void level1_connector_test::get_string_connection_info_calls_api()
 				));
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_EQUAL(expected_info, connector.get_string_connection_info(handle, info_type));
+	EXPECT_EQ(expected_info, connector.get_string_connection_info(handle, info_type));
 }
 
-void level1_connector_test::get_string_connection_info_fails()
+TEST(Level1ConnectorTest, GetStringConnectionInfoFails)
 {
 	level2::connection_handle handle = {&value_a};
 	SQLUSMALLINT const info_type = SQL_ODBC_VER;
@@ -640,10 +441,10 @@ void level1_connector_test::get_string_connection_info_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW(connector.get_string_connection_info(handle, info_type), cpp_odbc::error);
+	EXPECT_THROW(connector.get_string_connection_info(handle, info_type), cpp_odbc::error);
 }
 
-void level1_connector_test::get_integer_connection_info_calls_api()
+TEST(Level1ConnectorTest, GetIntegerConnectionInfoCallsAPI)
 {
 	level2::connection_handle handle = {&value_a};
 	SQLUSMALLINT const info_type = SQL_ODBC_VER;
@@ -661,10 +462,10 @@ void level1_connector_test::get_integer_connection_info_calls_api()
 				));
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_EQUAL(expected_info, connector.get_integer_connection_info(handle, info_type));
+	EXPECT_EQ(expected_info, connector.get_integer_connection_info(handle, info_type));
 }
 
-void level1_connector_test::get_integer_connection_info_fails()
+TEST(Level1ConnectorTest, GetIntegerConnectionInfoFails)
 {
 	level2::connection_handle handle = {&value_a};
 	SQLUSMALLINT const info_type = SQL_ODBC_VER;
@@ -675,10 +476,10 @@ void level1_connector_test::get_integer_connection_info_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW(connector.get_integer_connection_info(handle, info_type), cpp_odbc::error);
+	EXPECT_THROW(connector.get_integer_connection_info(handle, info_type), cpp_odbc::error);
 }
 
-void level1_connector_test::bind_column_calls_api()
+TEST(Level1ConnectorTest, BindColumnCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const column_id = 42;
@@ -692,7 +493,7 @@ void level1_connector_test::bind_column_calls_api()
 	level1_connector const connector(api);
 	connector.bind_column(handle, column_id, column_type, column_buffer);
 }
-void level1_connector_test::bind_column_fails()
+TEST(Level1ConnectorTest, BindColumnFails)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const column_id = 42;
@@ -705,9 +506,9 @@ void level1_connector_test::bind_column_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW(connector.bind_column(handle, column_id, column_type, column_buffer), cpp_odbc::error);
+	EXPECT_THROW(connector.bind_column(handle, column_id, column_type, column_buffer), cpp_odbc::error);
 }
-void level1_connector_test::bind_input_parameter_calls_api()
+TEST(Level1ConnectorTest, BindInputParameterCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const parameter_id = 42;
@@ -722,7 +523,7 @@ void level1_connector_test::bind_input_parameter_calls_api()
 	level1_connector const connector(api);
 	connector.bind_input_parameter(handle, parameter_id, value_type, parameter_type, buffer);
 }
-void level1_connector_test::bind_input_parameter_fails()
+TEST(Level1ConnectorTest, BindInputParameterFails)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const parameter_id = 42;
@@ -736,10 +537,10 @@ void level1_connector_test::bind_input_parameter_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.bind_input_parameter(handle, parameter_id, value_type, parameter_type, buffer), cpp_odbc::error);
+	EXPECT_THROW( connector.bind_input_parameter(handle, parameter_id, value_type, parameter_type, buffer), cpp_odbc::error);
 }
 
-void level1_connector_test::execute_prepared_statement_calls_api()
+TEST(Level1ConnectorTest, ExecutePreparedStatementCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 
@@ -751,7 +552,7 @@ void level1_connector_test::execute_prepared_statement_calls_api()
 	connector.execute_prepared_statement(handle);
 }
 
-void level1_connector_test::execute_prepared_statement_fails()
+TEST(Level1ConnectorTest, ExecutePreparedStatementFails)
 {
 	level2::statement_handle handle = {&value_a};
 
@@ -761,7 +562,7 @@ void level1_connector_test::execute_prepared_statement_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.execute_prepared_statement(handle), cpp_odbc::error);
+	EXPECT_THROW( connector.execute_prepared_statement(handle), cpp_odbc::error);
 }
 
 namespace {
@@ -783,7 +584,7 @@ namespace {
 
 }
 
-void level1_connector_test::execute_statement_calls_api()
+TEST(Level1ConnectorTest, ExecuteStatementCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	std::string const sql = "XXX";
@@ -796,7 +597,7 @@ void level1_connector_test::execute_statement_calls_api()
 	connector.execute_statement(handle, sql);
 }
 
-void level1_connector_test::execute_statement_fails()
+TEST(Level1ConnectorTest, ExecuteStatementFails)
 {
 	level2::statement_handle handle = {&value_a};
 	std::string const sql = "XXX";
@@ -807,10 +608,10 @@ void level1_connector_test::execute_statement_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.execute_statement(handle, sql), cpp_odbc::error );
+	EXPECT_THROW( connector.execute_statement(handle, sql), cpp_odbc::error );
 }
 
-void level1_connector_test::fetch_scroll_calls_api()
+TEST(Level1ConnectorTest, FetchScrollCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLSMALLINT const orientation = 42;
@@ -821,10 +622,10 @@ void level1_connector_test::fetch_scroll_calls_api()
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT(connector.fetch_scroll(handle, orientation, offset));
+	EXPECT_TRUE(connector.fetch_scroll(handle, orientation, offset));
 }
 
-void level1_connector_test::fetch_scroll_fails()
+TEST(Level1ConnectorTest, FetchScrollFails)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLSMALLINT const orientation = 42;
@@ -836,10 +637,10 @@ void level1_connector_test::fetch_scroll_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.fetch_scroll(handle, orientation, offset), cpp_odbc::error );
+	EXPECT_THROW( connector.fetch_scroll(handle, orientation, offset), cpp_odbc::error );
 }
 
-void level1_connector_test::fetch_scroll_has_no_more_data()
+TEST(Level1ConnectorTest, FetchScrollHasNoMoreData)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLSMALLINT const orientation = 42;
@@ -850,10 +651,10 @@ void level1_connector_test::fetch_scroll_has_no_more_data()
 		.WillOnce(testing::Return(SQL_NO_DATA));
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT(not connector.fetch_scroll(handle, orientation, offset));
+	EXPECT_FALSE(connector.fetch_scroll(handle, orientation, offset));
 }
 
-void level1_connector_test::free_statement_calls_api()
+TEST(Level1ConnectorTest, FreeStatementCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const option = 42;
@@ -866,7 +667,7 @@ void level1_connector_test::free_statement_calls_api()
 	connector.free_statement(handle, option);
 }
 
-void level1_connector_test::free_statement_fails()
+TEST(Level1ConnectorTest, FreeStatementFails)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const option = 42;
@@ -877,10 +678,10 @@ void level1_connector_test::free_statement_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.free_statement(handle, option), cpp_odbc::error );
+	EXPECT_THROW( connector.free_statement(handle, option), cpp_odbc::error );
 }
 
-void level1_connector_test::get_integer_column_attribute_calls_api()
+TEST(Level1ConnectorTest, GetIntegerColumnAttributeCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const column_id = 17;
@@ -895,10 +696,10 @@ void level1_connector_test::get_integer_column_attribute_calls_api()
 				));
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_EQUAL( expected, connector.get_integer_column_attribute(handle, column_id, field_identifier) );
+	EXPECT_EQ( expected, connector.get_integer_column_attribute(handle, column_id, field_identifier) );
 }
 
-void level1_connector_test::get_integer_column_attribute_fails()
+TEST(Level1ConnectorTest, GetIntegerColumnAttributeFails)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const column_id = 17;
@@ -910,10 +711,10 @@ void level1_connector_test::get_integer_column_attribute_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.get_integer_column_attribute(handle, column_id, field_identifier), cpp_odbc::error );
+	EXPECT_THROW( connector.get_integer_column_attribute(handle, column_id, field_identifier), cpp_odbc::error );
 }
 
-void level1_connector_test::get_integer_statement_attribute_calls_api()
+TEST(Level1ConnectorTest, GetIntegerStatementAttributeCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLINTEGER const attribute = 23;
@@ -931,10 +732,10 @@ void level1_connector_test::get_integer_statement_attribute_calls_api()
 				));
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_EQUAL( expected, connector.get_integer_statement_attribute(handle, attribute) );
+	EXPECT_EQ( expected, connector.get_integer_statement_attribute(handle, attribute) );
 }
 
-void level1_connector_test::get_integer_statement_attribute_fails()
+TEST(Level1ConnectorTest, GetIntegerStatementAttributeFails)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLINTEGER const attribute = 23;
@@ -945,10 +746,10 @@ void level1_connector_test::get_integer_statement_attribute_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.get_integer_statement_attribute(handle, attribute), cpp_odbc::error );
+	EXPECT_THROW( connector.get_integer_statement_attribute(handle, attribute), cpp_odbc::error );
 }
 
-void level1_connector_test::get_string_column_attribute_calls_api()
+TEST(Level1ConnectorTest, GetStringColumnAttributeCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const column_id = 17;
@@ -968,10 +769,10 @@ void level1_connector_test::get_string_column_attribute_calls_api()
 				));
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_EQUAL( expected, connector.get_string_column_attribute(handle, column_id, field_identifier) );
+	EXPECT_EQ( expected, connector.get_string_column_attribute(handle, column_id, field_identifier) );
 }
 
-void level1_connector_test::get_string_column_attribute_fails()
+TEST(Level1ConnectorTest, GetStringColumnAttributeFails)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const column_id = 17;
@@ -983,10 +784,10 @@ void level1_connector_test::get_string_column_attribute_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.get_string_column_attribute(handle, column_id, field_identifier), cpp_odbc::error );
+	EXPECT_THROW( connector.get_string_column_attribute(handle, column_id, field_identifier), cpp_odbc::error );
 }
 
-void level1_connector_test::number_of_result_columns_calls_api()
+TEST(Level1ConnectorTest, NumberOfResultColumnsCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	short int const expected = 42;
@@ -999,10 +800,10 @@ void level1_connector_test::number_of_result_columns_calls_api()
 				));
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_EQUAL( expected, connector.number_of_result_columns(handle) );
+	EXPECT_EQ( expected, connector.number_of_result_columns(handle) );
 }
 
-void level1_connector_test::number_of_result_columns_fails()
+TEST(Level1ConnectorTest, NumberOfResultColumnsFails)
 {
 	level2::statement_handle handle = {&value_a};
 
@@ -1012,10 +813,10 @@ void level1_connector_test::number_of_result_columns_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.number_of_result_columns(handle), cpp_odbc::error );
+	EXPECT_THROW( connector.number_of_result_columns(handle), cpp_odbc::error );
 }
 
-void level1_connector_test::number_of_parameters_calls_api()
+TEST(Level1ConnectorTest, NumberOfParametersCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	short int const expected = 42;
@@ -1028,10 +829,10 @@ void level1_connector_test::number_of_parameters_calls_api()
 				));
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_EQUAL( expected, connector.number_of_parameters(handle) );
+	EXPECT_EQ( expected, connector.number_of_parameters(handle) );
 }
 
-void level1_connector_test::number_of_parameters_fails()
+TEST(Level1ConnectorTest, NumberOfParametersFails)
 {
 	level2::statement_handle handle = {&value_a};
 
@@ -1041,10 +842,10 @@ void level1_connector_test::number_of_parameters_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.number_of_parameters(handle), cpp_odbc::error );
+	EXPECT_THROW( connector.number_of_parameters(handle), cpp_odbc::error );
 }
 
-void level1_connector_test::prepare_statement_calls_api()
+TEST(Level1ConnectorTest, PrepareStatementCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	std::string const sql = "XXX";
@@ -1057,7 +858,7 @@ void level1_connector_test::prepare_statement_calls_api()
 	connector.prepare_statement(handle, sql);
 }
 
-void level1_connector_test::prepare_statement_fails()
+TEST(Level1ConnectorTest, PrepareStatementFails)
 {
 	level2::statement_handle handle = {&value_a};
 	std::string const sql = "XXX";
@@ -1068,10 +869,10 @@ void level1_connector_test::prepare_statement_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.prepare_statement(handle, sql), cpp_odbc::error );
+	EXPECT_THROW( connector.prepare_statement(handle, sql), cpp_odbc::error );
 }
 
-void level1_connector_test::set_long_statement_attribute_calls_api()
+TEST(Level1ConnectorTest, SetLongStatementAttributeCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLINTEGER const attribute = 42;
@@ -1089,7 +890,7 @@ void level1_connector_test::set_long_statement_attribute_calls_api()
 	connector.set_statement_attribute(handle, attribute, value);
 }
 
-void level1_connector_test::set_long_statement_attribute_fails()
+TEST(Level1ConnectorTest, SetLongStatementAttributeFails)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLINTEGER const attribute = 42;
@@ -1101,10 +902,10 @@ void level1_connector_test::set_long_statement_attribute_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.set_statement_attribute(handle, attribute, value), cpp_odbc::error );
+	EXPECT_THROW( connector.set_statement_attribute(handle, attribute, value), cpp_odbc::error );
 }
 
-void level1_connector_test::set_pointer_statement_attribute_calls_api()
+TEST(Level1ConnectorTest, SetPointerStatementAttributeCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLINTEGER const attribute = 42;
@@ -1118,7 +919,7 @@ void level1_connector_test::set_pointer_statement_attribute_calls_api()
 	connector.set_statement_attribute(handle, attribute, &value);
 }
 
-void level1_connector_test::set_pointer_statement_attribute_fails()
+TEST(Level1ConnectorTest, SetPointerStatementAttributeFails)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLINTEGER const attribute = 42;
@@ -1130,10 +931,10 @@ void level1_connector_test::set_pointer_statement_attribute_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.set_statement_attribute(handle, attribute, &value), cpp_odbc::error );
+	EXPECT_THROW( connector.set_statement_attribute(handle, attribute, &value), cpp_odbc::error );
 }
 
-void level1_connector_test::row_count_calls_api()
+TEST(Level1ConnectorTest, RowCountCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLLEN const expected = 42;
@@ -1146,10 +947,10 @@ void level1_connector_test::row_count_calls_api()
 				));
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_EQUAL( expected, connector.row_count(handle) );
+	EXPECT_EQ( expected, connector.row_count(handle) );
 }
 
-void level1_connector_test::row_count_fails()
+TEST(Level1ConnectorTest, RowCountFails)
 {
 	level2::statement_handle handle = {&value_a};
 
@@ -1159,7 +960,7 @@ void level1_connector_test::row_count_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.row_count(handle), cpp_odbc::error );
+	EXPECT_THROW( connector.row_count(handle), cpp_odbc::error );
 }
 
 namespace {
@@ -1188,19 +989,19 @@ namespace {
 					));
 
 		level1_connector const connector(api);
-		CPPUNIT_ASSERT_EQUAL_MESSAGE( message, expected, connector.describe_column(handle, column_id));
+		EXPECT_EQ(expected, connector.describe_column(handle, column_id)) << message;
 	}
 
 }
 
-void level1_connector_test::describe_column_calls_api()
+TEST(Level1ConnectorTest, DescribeColumnCallsAPI)
 {
 	test_describe_column(true, SQL_NULLABLE, "SQL_NULLABLE");
 	test_describe_column(false, SQL_NO_NULLS, "SQL_NO_NULLS");
 	test_describe_column(true, SQL_NULLABLE_UNKNOWN, "SQL_NULLABLE_UNKNOWN");
 }
 
-void level1_connector_test::describe_column_fails()
+TEST(Level1ConnectorTest, DescribeColumnFails)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const column_id = 17;
@@ -1211,7 +1012,7 @@ void level1_connector_test::describe_column_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.describe_column(handle, column_id), cpp_odbc::error );
+	EXPECT_THROW( connector.describe_column(handle, column_id), cpp_odbc::error );
 }
 
 
@@ -1236,19 +1037,19 @@ namespace {
 					));
 
 		level1_connector const connector(api);
-		CPPUNIT_ASSERT_EQUAL_MESSAGE( message, expected, connector.describe_parameter(handle, parameter_id));
+		EXPECT_EQ(expected, connector.describe_parameter(handle, parameter_id)) << message;
 	}
 
 }
 
-void level1_connector_test::describe_parameter_calls_api()
+TEST(Level1ConnectorTest, DescribeParameterCallsAPI)
 {
 	test_describe_parameter(true, SQL_NULLABLE, "SQL_NULLABLE");
 	test_describe_parameter(false, SQL_NO_NULLS, "SQL_NO_NULLS");
 	test_describe_parameter(true, SQL_NULLABLE_UNKNOWN, "SQL_NULLABLE_UNKNOWN");
 }
 
-void level1_connector_test::describe_parameter_fails()
+TEST(Level1ConnectorTest, DescribeParameterFails)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const parameter_id = 17;
@@ -1259,10 +1060,10 @@ void level1_connector_test::describe_parameter_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.describe_parameter(handle, parameter_id), cpp_odbc::error );
+	EXPECT_THROW( connector.describe_parameter(handle, parameter_id), cpp_odbc::error );
 }
 
-void level1_connector_test::more_results_calls_api()
+TEST(Level1ConnectorTest, MoreResultsCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 
@@ -1273,12 +1074,12 @@ void level1_connector_test::more_results_calls_api()
 		.WillOnce(testing::Return(SQL_NO_DATA));
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT( connector.more_results(handle) );
-	CPPUNIT_ASSERT( connector.more_results(handle) );
-	CPPUNIT_ASSERT( not connector.more_results(handle) );
+	EXPECT_TRUE( connector.more_results(handle) );
+	EXPECT_TRUE( connector.more_results(handle) );
+	EXPECT_FALSE( connector.more_results(handle) );
 }
 
-void level1_connector_test::more_results_fails()
+TEST(Level1ConnectorTest, MoreResultsFails)
 {
 	level2::statement_handle handle = {&value_a};
 
@@ -1288,5 +1089,5 @@ void level1_connector_test::more_results_fails()
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	CPPUNIT_ASSERT_THROW( connector.more_results(handle), cpp_odbc::error);
+	EXPECT_THROW( connector.more_results(handle), cpp_odbc::error);
 }

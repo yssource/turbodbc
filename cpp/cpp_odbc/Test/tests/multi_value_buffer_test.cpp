@@ -1,68 +1,29 @@
-/**
- *  @file multi_value_buffer_test.cpp
- *  @date 11.04.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 11:57:29 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21205 $
- *
- */
-
-
 #include "cpp_odbc/multi_value_buffer.h"
 
-#include <cppunit/extensions/HelperMacros.h>
-#include "cppunit_toolbox/extensions/assert_equal_with_different_types.h"
+#include <gtest/gtest.h>
 
 #include <cstring>
 #include <stdexcept>
 
-class multi_value_buffer_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( multi_value_buffer_test );
-
-	CPPUNIT_TEST( constructor_enforces_positive_parameters );
-	CPPUNIT_TEST( capacity_per_element );
-	CPPUNIT_TEST( data_pointer );
-	CPPUNIT_TEST( indicator_pointer );
-	CPPUNIT_TEST( mutable_element_access );
-	CPPUNIT_TEST( const_element_access );
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void constructor_enforces_positive_parameters();
-	void capacity_per_element();
-	void data_pointer();
-	void indicator_pointer();
-	void mutable_element_access();
-	void const_element_access();
-
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( multi_value_buffer_test );
 
 using cpp_odbc::multi_value_buffer;
 
-void multi_value_buffer_test::constructor_enforces_positive_parameters()
+TEST(MultiValueBufferTest, ConstructorEnforcesPositiveParameters)
 {
-	CPPUNIT_ASSERT_THROW( multi_value_buffer(0, 1), std::logic_error );
-	CPPUNIT_ASSERT_THROW( multi_value_buffer(1, 0), std::logic_error );
-	CPPUNIT_ASSERT_NO_THROW( multi_value_buffer(1, 1) );
+	EXPECT_THROW( multi_value_buffer(0, 1), std::logic_error );
+	EXPECT_THROW( multi_value_buffer(1, 0), std::logic_error );
+	EXPECT_NO_THROW( multi_value_buffer(1, 1) );
 }
 
-void multi_value_buffer_test::capacity_per_element()
+TEST(MultiValueBufferTest, CapacityPerElement)
 {
 	std::size_t const element_size = 100;
 	multi_value_buffer buffer(element_size, 42);
 
-	CPPUNIT_ASSERT_EQUAL( element_size, buffer.capacity_per_element() );
+	EXPECT_EQ( element_size, buffer.capacity_per_element() );
 }
 
-void multi_value_buffer_test::data_pointer()
+TEST(MultiValueBufferTest, DataPointer)
 {
 	std::size_t const element_size = 100;
 	std::size_t const number_of_elements = 42;
@@ -72,7 +33,7 @@ void multi_value_buffer_test::data_pointer()
 	std::memset( buffer.data_pointer(), 0xff, element_size * number_of_elements );
 }
 
-void multi_value_buffer_test::indicator_pointer()
+TEST(MultiValueBufferTest, IndicatorPointer)
 {
 	std::size_t const number_of_elements = 42;
 	multi_value_buffer buffer(3, number_of_elements);
@@ -81,7 +42,7 @@ void multi_value_buffer_test::indicator_pointer()
 	buffer.indicator_pointer()[number_of_elements - 1] = 17;
 }
 
-void multi_value_buffer_test::mutable_element_access()
+TEST(MultiValueBufferTest, MutableElementAccess)
 {
 	std::size_t const element_size = 3;
 	std::size_t const number_of_elements = 2;
@@ -89,14 +50,14 @@ void multi_value_buffer_test::mutable_element_access()
 
 	std::strcpy( buffer[0].data_pointer, "abc" );
 	std::strcpy( buffer[1].data_pointer, "def" );
-	CPPUNIT_ASSERT_EQUAL( 0, std::memcmp(buffer.data_pointer(), "abcdef", 6));
+	EXPECT_EQ( 0, std::memcmp(buffer.data_pointer(), "abcdef", 6));
 
 	long const expected_indicator = 42;
 	buffer[1].indicator = expected_indicator;
-	CPPUNIT_ASSERT_EQUAL( expected_indicator, buffer.indicator_pointer()[1]);
+	EXPECT_EQ( expected_indicator, buffer.indicator_pointer()[1]);
 }
 
-void multi_value_buffer_test::const_element_access()
+TEST(MultiValueBufferTest, ConstElementAccess)
 {
 	std::size_t const element_size = 3;
 	std::size_t const number_of_elements = 2;
@@ -110,6 +71,6 @@ void multi_value_buffer_test::const_element_access()
 
 	auto const & const_buffer = buffer;
 
-	CPPUNIT_ASSERT_EQUAL( data[element_size], *const_buffer[1].data_pointer );
-	CPPUNIT_ASSERT_EQUAL( expected_indicator, const_buffer[1].indicator );
+	EXPECT_EQ( data[element_size], *const_buffer[1].data_pointer );
+	EXPECT_EQ( expected_indicator, const_buffer[1].indicator );
 }

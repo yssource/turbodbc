@@ -1,97 +1,11 @@
-/**
- *  @file level1_api_test.cpp
- *  @date 03.03.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 15:26:51 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21210 $
- *
- */
-
-
-#include <cppunit/extensions/HelperMacros.h>
-#include "cppunit_toolbox/helpers/is_abstract_base_class.h"
-
 #include "cpp_odbc/level1/api.h"
+
+#include <gtest/gtest.h>
+
 #include "cpp_odbc_test/level1_mock_api.h"
 
-#include "gmock/gmock.h"
 
 #include <array>
-
-class level1_api_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( level1_api_test );
-
-	CPPUNIT_TEST( abstract_base );
-	CPPUNIT_TEST( allocate_handle_forwards );
-	CPPUNIT_TEST( free_handle_forwards );
-	CPPUNIT_TEST( get_diagnostic_record_forwards );
-
-	CPPUNIT_TEST( set_environment_attribute_forwards );
-
-	CPPUNIT_TEST( set_connection_attribute_forwards );
-	CPPUNIT_TEST( establish_connection_forwards );
-	CPPUNIT_TEST( disconnect_forwards );
-	CPPUNIT_TEST( end_transaction_forwards );
-	CPPUNIT_TEST( get_connection_info_forwards );
-
-	CPPUNIT_TEST( bind_column_forwards );
-	CPPUNIT_TEST( bind_parameter_forwards );
-	CPPUNIT_TEST( column_attribute_forwards );
-	CPPUNIT_TEST( execute_prepared_statement_forwards );
-	CPPUNIT_TEST( execute_statement_forwards );
-	CPPUNIT_TEST( fetch_scroll_forwards );
-	CPPUNIT_TEST( free_statement_forwards );
-	CPPUNIT_TEST( get_statement_attribute_forwards );
-	CPPUNIT_TEST( number_of_result_columns_forwards );
-	CPPUNIT_TEST( number_of_parameters_forwards );
-	CPPUNIT_TEST( prepare_statement_forwards );
-	CPPUNIT_TEST( set_statement_attribute_forwards );
-	CPPUNIT_TEST( row_count_forwards );
-	CPPUNIT_TEST( describe_column_forwards );
-	CPPUNIT_TEST( describe_parameter_forwards );
-	CPPUNIT_TEST( more_results_forwards );
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void abstract_base();
-	void allocate_handle_forwards();
-	void free_handle_forwards();
-	void get_diagnostic_record_forwards();
-
-	void set_environment_attribute_forwards();
-
-	void set_connection_attribute_forwards();
-	void establish_connection_forwards();
-	void disconnect_forwards();
-	void end_transaction_forwards();
-	void get_connection_info_forwards();
-
-	void bind_column_forwards();
-	void bind_parameter_forwards();
-	void column_attribute_forwards();
-	void execute_prepared_statement_forwards();
-	void execute_statement_forwards();
-	void fetch_scroll_forwards();
-	void free_statement_forwards();
-	void get_statement_attribute_forwards();
-	void number_of_result_columns_forwards();
-	void number_of_parameters_forwards();
-	void prepare_statement_forwards();
-	void set_statement_attribute_forwards();
-	void row_count_forwards();
-	void describe_column_forwards();
-	void describe_parameter_forwards();
-	void more_results_forwards();
-
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( level1_api_test );
 
 namespace level1 = cpp_odbc::level1;
 using cpp_odbc_test::level1_mock_api;
@@ -104,13 +18,8 @@ namespace {
 
 }
 
-void level1_api_test::abstract_base()
-{
-	bool const is_abstract_base = cppunit_toolbox::is_abstract_base_class<level1::api>::value;
-	CPPUNIT_ASSERT( is_abstract_base );
-}
 
-void level1_api_test::allocate_handle_forwards()
+TEST(Level1APITest, AllocateHandleForwards)
 {
 	SQLRETURN const expected = 42;
 	SQLSMALLINT const handle_type = 17;
@@ -122,10 +31,10 @@ void level1_api_test::allocate_handle_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.allocate_handle(handle_type, input_handle, &output_handle);
-	CPPUNIT_ASSERT_EQUAL( expected, actual );
+	EXPECT_EQ( expected, actual );
 }
 
-void level1_api_test::free_handle_forwards()
+TEST(Level1APITest, FreeHandleForwards)
 {
 	SQLRETURN const expected = 42;
 	SQLSMALLINT const handle_type = 17;
@@ -136,10 +45,10 @@ void level1_api_test::free_handle_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.free_handle(handle_type, input_handle);
-	CPPUNIT_ASSERT_EQUAL( expected, actual );
+	EXPECT_EQ( expected, actual );
 }
 
-void level1_api_test::get_diagnostic_record_forwards()
+TEST(Level1APITest, GetDiagnosticRecordForwards)
 {
 	SQLRETURN const expected = 1;
 	SQLSMALLINT const handle_type = 42;
@@ -156,10 +65,10 @@ void level1_api_test::get_diagnostic_record_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.get_diagnostic_record(handle_type, handle, record_id, status_code.data(), &native_error_ptr, message_text.data(), buffer_length, &text_length);
-	CPPUNIT_ASSERT_EQUAL( expected, actual );
+	EXPECT_EQ( expected, actual );
 }
 
-void level1_api_test::set_environment_attribute_forwards()
+TEST(Level1APITest, SetEnvironmentAttributeForwards)
 {
 	SQLRETURN const expected = 1;
 	SQLHENV const handle = &value_a;
@@ -171,10 +80,10 @@ void level1_api_test::set_environment_attribute_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.set_environment_attribute(handle, attribute, value.data(), value.size());
-	CPPUNIT_ASSERT_EQUAL( expected, actual );
+	EXPECT_EQ( expected, actual );
 }
 
-void level1_api_test::set_connection_attribute_forwards()
+TEST(Level1APITest, SetConnectionAttributeForwards)
 {
 	SQLRETURN const expected = 1;
 	SQLHDBC const handle = &value_a;
@@ -186,10 +95,10 @@ void level1_api_test::set_connection_attribute_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.set_connection_attribute(handle, attribute, value.data(), value.size());
-	CPPUNIT_ASSERT_EQUAL( expected, actual );
+	EXPECT_EQ( expected, actual );
 }
 
-void level1_api_test::establish_connection_forwards()
+TEST(Level1APITest, EstablishConnectionForwards)
 {
 	SQLRETURN const expected = 27;
 	SQLHDBC connection_handle = &value_a;
@@ -204,10 +113,10 @@ void level1_api_test::establish_connection_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.establish_connection(connection_handle, window_handle, input_string.data(), input_string.size(), output_string.data(), output_string.size(), &output_string_length, driver_completion);
-	CPPUNIT_ASSERT_EQUAL( expected, actual );
+	EXPECT_EQ( expected, actual );
 }
 
-void level1_api_test::disconnect_forwards()
+TEST(Level1APITest, DisconnectForwards)
 {
 	SQLHDBC connection_handle = &value_a;
 	SQLRETURN const expected = 27;
@@ -219,7 +128,7 @@ void level1_api_test::disconnect_forwards()
 	api.disconnect(connection_handle);
 }
 
-void level1_api_test::end_transaction_forwards()
+TEST(Level1APITest, EndTransactionForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLSMALLINT const handle_type = 17;
@@ -231,10 +140,10 @@ void level1_api_test::end_transaction_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.end_transaction(handle_type, handle, completion_type);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
-void level1_api_test::get_connection_info_forwards()
+TEST(Level1APITest, GetConnectionInfoForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHDBC handle = &value_a;
@@ -247,10 +156,10 @@ void level1_api_test::get_connection_info_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.get_connection_info(handle, info_type, buffer.data(), buffer.size(), &string_length);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
-void level1_api_test::bind_column_forwards()
+TEST(Level1APITest, BindColumnForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHDBC handle = &value_a;
@@ -264,10 +173,10 @@ void level1_api_test::bind_column_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.bind_column(handle, column_id, target_type, buffer.data(), buffer.size(), &buffer_length);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
-void level1_api_test::bind_parameter_forwards()
+TEST(Level1APITest, BindParameterForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHDBC handle = &value_a;
@@ -286,10 +195,10 @@ void level1_api_test::bind_parameter_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.bind_parameter(handle, parameter_id, input_output_type, value_type, parameter_type, column_size, decimal_digits, buffer.data(), buffer.size(), &buffer_length);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
-void level1_api_test::column_attribute_forwards()
+TEST(Level1APITest, ColumnAttributeForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHDBC handle = &value_a;
@@ -304,11 +213,11 @@ void level1_api_test::column_attribute_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.column_attribute(handle, column_id, field_identifier, buffer.data(), buffer.size(), &buffer_length, &numeric_attribute);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
 
-void level1_api_test::execute_prepared_statement_forwards()
+TEST(Level1APITest, ExecutePreparedStatementForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHDBC handle = &value_a;
@@ -318,11 +227,11 @@ void level1_api_test::execute_prepared_statement_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.execute_prepared_statement(handle);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
 
-void level1_api_test::execute_statement_forwards()
+TEST(Level1APITest, ExecuteStatementForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHDBC handle = &value_a;
@@ -333,11 +242,11 @@ void level1_api_test::execute_statement_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.execute_statement(handle, statement.data(), statement.size());
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
 
-void level1_api_test::fetch_scroll_forwards()
+TEST(Level1APITest, FetchScrollForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHDBC handle = &value_a;
@@ -349,11 +258,11 @@ void level1_api_test::fetch_scroll_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.fetch_scroll(handle, fetch_orientation, fetch_offset);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
 
-void level1_api_test::free_statement_forwards()
+TEST(Level1APITest, FreeStatementForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHSTMT handle = &value_a;
@@ -364,11 +273,11 @@ void level1_api_test::free_statement_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.free_statement(handle, option);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
 
-void level1_api_test::get_statement_attribute_forwards()
+TEST(Level1APITest, GetStatementAttributeForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHSTMT handle = &value_a;
@@ -381,11 +290,11 @@ void level1_api_test::get_statement_attribute_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.get_statement_attribute(handle, attribute, buffer.data(), buffer.size(), &string_length);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
 
-void level1_api_test::number_of_result_columns_forwards()
+TEST(Level1APITest, NumberOfResultColumnsForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHSTMT handle = &value_a;
@@ -396,11 +305,11 @@ void level1_api_test::number_of_result_columns_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.number_of_result_columns(handle, &number_of_columns);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
 
-void level1_api_test::number_of_parameters_forwards()
+TEST(Level1APITest, NumberOfParametersForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHSTMT handle = &value_a;
@@ -411,11 +320,11 @@ void level1_api_test::number_of_parameters_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.number_of_parameters(handle, &number_of_parameters);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
 
-void level1_api_test::prepare_statement_forwards()
+TEST(Level1APITest, PrepareStatementForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHDBC handle = &value_a;
@@ -426,10 +335,10 @@ void level1_api_test::prepare_statement_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.prepare_statement(handle, statement.data(), statement.size());
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
-void level1_api_test::set_statement_attribute_forwards()
+TEST(Level1APITest, SetStatementAttributeForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHSTMT handle = &value_a;
@@ -441,10 +350,10 @@ void level1_api_test::set_statement_attribute_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.set_statement_attribute(handle, attribute, buffer.data(), buffer.size());
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
-void level1_api_test::row_count_forwards()
+TEST(Level1APITest, RowCountForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHSTMT handle = &value_a;
@@ -455,10 +364,10 @@ void level1_api_test::row_count_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.row_count(handle, &count);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
-void level1_api_test::describe_column_forwards()
+TEST(Level1APITest, DescribeColumnForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHSTMT handle = &value_a;
@@ -476,10 +385,10 @@ void level1_api_test::describe_column_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.describe_column(handle, column_id, column_name.data(), buffer_length, &name_length, &data_type, &column_size, &decimal_digits, &nullable);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
-void level1_api_test::describe_parameter_forwards()
+TEST(Level1APITest, DescribeParameterForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHSTMT handle = &value_a;
@@ -494,10 +403,10 @@ void level1_api_test::describe_parameter_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.describe_parameter(handle, parameter_id, &data_type, &column_size, &decimal_digits, &nullable);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }
 
-void level1_api_test::more_results_forwards()
+TEST(Level1APITest, MoreResultsForwards)
 {
 	SQLRETURN const expected = 23;
 	SQLHDBC handle = &value_a;
@@ -507,5 +416,5 @@ void level1_api_test::more_results_forwards()
 		.WillOnce(testing::Return(expected));
 
 	auto const actual = api.more_results(handle);
-	CPPUNIT_ASSERT_EQUAL(expected, actual);
+	EXPECT_EQ(expected, actual);
 }

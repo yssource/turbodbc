@@ -1,18 +1,6 @@
-/**
- *  @file raii_environment_test.cpp
- *  @date 13.03.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 15:26:51 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21210 $
- *
- */
-
 #include "cpp_odbc/level3/raii_environment.h"
 
-#include <cppunit/extensions/HelperMacros.h>
+#include <gtest/gtest.h>
 
 #include "cpp_odbc/level3/raii_connection.h"
 #include "cpp_odbc_test/level2_mock_api.h"
@@ -21,35 +9,6 @@
 
 #include <type_traits>
 
-class raii_environment_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( raii_environment_test );
-
-	CPPUNIT_TEST( is_environment );
-	CPPUNIT_TEST( resource_management );
-	CPPUNIT_TEST( sets_odbc_version_on_construction );
-	CPPUNIT_TEST( get_api );
-	CPPUNIT_TEST( get_handle );
-
-	CPPUNIT_TEST( make_connection );
-	CPPUNIT_TEST( set_attribute );
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void is_environment();
-	void resource_management();
-	void sets_odbc_version_on_construction();
-	void get_api();
-	void get_handle();
-
-	void make_connection();
-	void set_attribute();
-
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( raii_environment_test );
 
 using cpp_odbc::level3::raii_connection;
 using cpp_odbc::level3::raii_environment;
@@ -79,13 +38,13 @@ namespace {
 
 }
 
-void raii_environment_test::is_environment()
+TEST(RaiiEnvironmentTest, IsEnvironment)
 {
 	bool const derived_from_environment = std::is_base_of<cpp_odbc::environment, raii_environment>::value;
-	CPPUNIT_ASSERT( derived_from_environment );
+	EXPECT_TRUE( derived_from_environment );
 }
 
-void raii_environment_test::resource_management()
+TEST(RaiiEnvironmentTest, ResourceManagement)
 {
 	environment_handle internal_handle = {&value_a};
 
@@ -103,7 +62,7 @@ void raii_environment_test::resource_management()
 	}
 }
 
-void raii_environment_test::sets_odbc_version_on_construction()
+TEST(RaiiEnvironmentTest, SetsODBCVersionOnConstruction)
 {
 	auto api = make_default_api();
 	EXPECT_CALL(*api, do_set_environment_attribute(default_e_handle, SQL_ATTR_ODBC_VERSION, SQL_OV_ODBC3)).
@@ -112,26 +71,26 @@ void raii_environment_test::sets_odbc_version_on_construction()
 	raii_environment instance(api);
 }
 
-void raii_environment_test::get_api()
+TEST(RaiiEnvironmentTest, GetAPI)
 {
 	auto expected_api = make_default_api();
 
 	raii_environment instance(expected_api);
-	CPPUNIT_ASSERT( expected_api == instance.get_api());
+	EXPECT_TRUE( expected_api == instance.get_api());
 }
 
-void raii_environment_test::get_handle()
+TEST(RaiiEnvironmentTest, GetHandle)
 {
 	auto api = make_default_api();
 
 	raii_environment instance(api);
 	bool const returns_handle_ref = std::is_same<environment_handle const &, decltype(instance.get_handle())>::value;
 
-	CPPUNIT_ASSERT( returns_handle_ref );
+	EXPECT_TRUE( returns_handle_ref );
 	instance.get_handle(); // make sure function symbol is there
 }
 
-void raii_environment_test::make_connection()
+TEST(RaiiEnvironmentTest, MakeConnection)
 {
 	std::string const connection_string("dummy connection string");
 	auto api = make_default_api();
@@ -144,10 +103,10 @@ void raii_environment_test::make_connection()
 
 	auto connection = environment->make_connection(connection_string);
 	bool const is_raii_connection = (std::dynamic_pointer_cast<raii_connection const>(connection) != nullptr);
-	CPPUNIT_ASSERT( is_raii_connection );
+	EXPECT_TRUE( is_raii_connection );
 }
 
-void raii_environment_test::set_attribute()
+TEST(RaiiEnvironmentTest, SetAttribute)
 {
 	SQLINTEGER const attribute = 42;
 	long const value = 1234;

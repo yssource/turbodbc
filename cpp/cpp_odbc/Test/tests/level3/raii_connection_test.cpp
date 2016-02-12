@@ -1,20 +1,6 @@
-/**
- *  @file raii_connection_test.cpp
- *  @date 21.03.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 15:26:51 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21210 $
- *
- */
-
-
 #include "cpp_odbc/level3/raii_connection.h"
 
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit_toolbox/extensions/assert_equal_with_different_types.h>
+#include <gtest/gtest.h>
 
 #include "cpp_odbc/level3/raii_statement.h"
 #include "cpp_odbc/level3/raii_environment.h"
@@ -22,42 +8,6 @@
 
 #include <type_traits>
 
-class raii_connection_test : public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( raii_connection_test );
-
-	CPPUNIT_TEST( is_connection );
-	CPPUNIT_TEST( raii_connect_and_disconnect );
-	CPPUNIT_TEST( keeps_environment_alive );
-	CPPUNIT_TEST( get_api );
-	CPPUNIT_TEST( get_handle );
-
-	CPPUNIT_TEST( make_statement );
-	CPPUNIT_TEST( set_attribute );
-	CPPUNIT_TEST( commit );
-	CPPUNIT_TEST( rollback );
-	CPPUNIT_TEST( get_string_info );
-	CPPUNIT_TEST( get_integer_info );
-
-CPPUNIT_TEST_SUITE_END();
-
-public:
-
-	void is_connection();
-	void raii_connect_and_disconnect();
-	void keeps_environment_alive();
-	void get_api();
-	void get_handle();
-
-	void make_statement();
-	void set_attribute();
-	void commit();
-	void rollback();
-	void get_string_info();
-	void get_integer_info();
-};
-
-// Registers the fixture with the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( raii_connection_test );
 
 using cpp_odbc::level3::raii_connection;
 using cpp_odbc::level3::raii_environment;
@@ -93,14 +43,14 @@ namespace {
 
 }
 
-void raii_connection_test::is_connection()
+TEST(RaiiConnectionTest, IsConnection)
 {
 	bool const derived_from_connection = std::is_base_of<cpp_odbc::connection, raii_connection>::value;
-	CPPUNIT_ASSERT( derived_from_connection );
+	EXPECT_TRUE( derived_from_connection );
 }
 
 
-void raii_connection_test::raii_connect_and_disconnect()
+TEST(RaiiConnectionTest, RaiiConnectAndDisconnect)
 {
 	auto api = std::make_shared<testing::NiceMock<level2_mock_api> const>();
 	ON_CALL(*api, do_allocate_environment_handle()).
@@ -121,7 +71,7 @@ void raii_connection_test::raii_connect_and_disconnect()
 	}
 }
 
-void raii_connection_test::keeps_environment_alive()
+TEST(RaiiConnectionTest, KeepsEnvironmentAlive)
 {
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
@@ -130,19 +80,19 @@ void raii_connection_test::keeps_environment_alive()
 	raii_connection connection(environment, "dummy");
 	auto const use_count_after = environment.use_count();
 
-	CPPUNIT_ASSERT_EQUAL(1, use_count_after - use_count_before);
+	EXPECT_EQ(1, use_count_after - use_count_before);
 }
 
-void raii_connection_test::get_api()
+TEST(RaiiConnectionTest, GetAPI)
 {
 	auto expected_api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(expected_api);
 
 	raii_connection instance(environment, "dummy");
-	CPPUNIT_ASSERT( expected_api == instance.get_api());
+	EXPECT_TRUE( expected_api == instance.get_api());
 }
 
-void raii_connection_test::get_handle()
+TEST(RaiiConnectionTest, GetHandle)
 {
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
@@ -152,11 +102,11 @@ void raii_connection_test::get_handle()
 
 	bool const returns_handle_ref = std::is_same<connection_handle const &, decltype(instance.get_handle())>::value;
 
-	CPPUNIT_ASSERT( returns_handle_ref );
+	EXPECT_TRUE( returns_handle_ref );
 	instance.get_handle(); // make sure function symbol is there
 }
 
-void raii_connection_test::make_statement()
+TEST(RaiiConnectionTest, MakeStatement)
 {
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
@@ -167,10 +117,10 @@ void raii_connection_test::make_statement()
 
 	auto statement = connection->make_statement();
 	bool const is_raii_statement = (std::dynamic_pointer_cast<raii_statement const>(statement) != nullptr);
-	CPPUNIT_ASSERT( is_raii_statement );
+	EXPECT_TRUE( is_raii_statement );
 }
 
-void raii_connection_test::set_attribute()
+TEST(RaiiConnectionTest, SetAttribute)
 {
 	SQLINTEGER const attribute = 42;
 	long const value = 1234;
@@ -184,7 +134,7 @@ void raii_connection_test::set_attribute()
 	connection.set_attribute(attribute, value);
 }
 
-void raii_connection_test::commit()
+TEST(RaiiConnectionTest, Commit)
 {
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
@@ -195,7 +145,7 @@ void raii_connection_test::commit()
 	connection.commit();
 }
 
-void raii_connection_test::rollback()
+TEST(RaiiConnectionTest, Rollback)
 {
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
@@ -206,7 +156,7 @@ void raii_connection_test::rollback()
 	connection.rollback();
 }
 
-void raii_connection_test::get_string_info()
+TEST(RaiiConnectionTest, GetStringInfo)
 {
 	SQLUSMALLINT const info_type = 42;
 	std::string const expected("dummy");
@@ -217,10 +167,10 @@ void raii_connection_test::get_string_info()
 	EXPECT_CALL(*api, do_get_string_connection_info(default_c_handle, info_type))
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT_EQUAL(expected, connection.get_string_info(info_type));
+	EXPECT_EQ(expected, connection.get_string_info(info_type));
 }
 
-void raii_connection_test::get_integer_info()
+TEST(RaiiConnectionTest, GetIntegerInfo)
 {
 	SQLUSMALLINT const info_type = 42;
 	SQLUINTEGER const expected = 23;
@@ -231,5 +181,5 @@ void raii_connection_test::get_integer_info()
 	EXPECT_CALL(*api, do_get_integer_connection_info(default_c_handle, info_type))
 		.WillOnce(testing::Return(expected));
 
-	CPPUNIT_ASSERT_EQUAL(expected, connection.get_integer_info(info_type));
+	EXPECT_EQ(expected, connection.get_integer_info(info_type));
 }
