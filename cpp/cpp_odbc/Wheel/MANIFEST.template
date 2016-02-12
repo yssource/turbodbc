@@ -1,3 +1,0 @@
-include @CMAKE_INSTALL_PREFIX@/bin/*
-include @CMAKE_INSTALL_PREFIX@/lib/*.so
-include @CMAKE_INSTALL_PREFIX@/etc/*
