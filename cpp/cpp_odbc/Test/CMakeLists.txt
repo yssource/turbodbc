@@ -16,4 +16,4 @@ target_link_libraries(cpp_odbc_test
     ${Odbc_LIBRARIES}
 )
 
-add_test(Library cpp_odbc_test)
+add_test(Library cpp_odbc_test --xml-output ${CMAKE_BINARY_DIR}/cpp_odbc_test.xml)

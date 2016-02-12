@@ -19,7 +19,7 @@ setup(
       author='Michael König',
       url='http://jira.phi-tps.local',
       author_email='michael.koenig@blue-yonder.com',
-      install_requires=['cpp_odbc'],
+      install_requires=[],
       include_package_data=True,
       packages=['turbodbc'],
 )
