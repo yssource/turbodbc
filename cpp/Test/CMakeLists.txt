@@ -21,4 +21,4 @@ target_link_libraries(turbodbc_test
     gmock
 )
 
-add_test(Library turbodbc_test)
+add_test(Library turbodbc_test --gtest_output=xml:${CMAKE_BINARY_DIR}/turbodbc_test.xml)
