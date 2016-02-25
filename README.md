@@ -40,3 +40,11 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/your/virtualenv/lib
 ```
 
 Replace `<your_os>` with `Ubuntu_12.04` or `Debian_7` as applicable.
+
+
+Source build requirements
+-------------------------
+
+* g++ 4.7.2+ compiler
+* boost development headers (Contained in: libboost-all-devel)
+* CMake
