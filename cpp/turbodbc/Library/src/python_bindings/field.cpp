@@ -1,5 +1,6 @@
 #include <turbodbc/field.h>
 
+#include <boost/variant/apply_visitor.hpp>
 #include <boost/python/to_python_converter.hpp>
 #include <boost/python/implicit.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>

@@ -3,6 +3,8 @@
 #include <turbodbc/descriptions.h>
 #include <sqlext.h>
 
+#include <boost/variant/apply_visitor.hpp>
+
 #include <stdexcept>
 #include <sstream>
 
