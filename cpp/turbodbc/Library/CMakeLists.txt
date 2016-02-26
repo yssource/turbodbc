@@ -26,9 +26,16 @@ install(
 )
 
 install(
-	DIRECTORY turbodbc_intern
+	DIRECTORY turbodbc
 	DESTINATION include
 	FILES_MATCHING PATTERN "*.h"
+	PATTERN ".git" EXCLUDE
+)
+
+install(
+	DIRECTORY src/
+	DESTINATION src/turbodbc
+	FILES_MATCHING PATTERN "*.cpp"
 	PATTERN ".git" EXCLUDE
 )
 

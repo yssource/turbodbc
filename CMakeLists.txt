@@ -14,3 +14,8 @@ if(BUILD_TESTING)
 endif()
 
 add_subdirectory(Wheel)
+
+install(
+	FILES setup.py MANIFEST.in
+	DESTINATION .
+)

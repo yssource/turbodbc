@@ -24,6 +24,13 @@ install(
 	PATTERN ".git" EXCLUDE
 )
 
+install(
+	DIRECTORY src/
+	DESTINATION src/cpp_odbc
+	FILES_MATCHING PATTERN "*.cpp"
+	PATTERN ".git" EXCLUDE
+)
+
 file(GLOB USE_SCRIPTS "use_*.sh")
 install(
     FILES ${USE_SCRIPTS}
