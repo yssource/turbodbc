@@ -33,3 +33,6 @@ source ${CENTRAL_SOFTWARE_REPOSITORY}/cppunit_toolbox/0_3/use_cppunit_toolbox.sh
 source /data/software/${label}/unixODBC/unixODBC-2.2.14/use_unixodbc.sh
 
 export PYTHONPATH=${BY_HOME_BASE}/workspace/pydbc_build/
+
+#help cmake to find boost
+export BOOST_ROOT=${BOOST_HOME}
