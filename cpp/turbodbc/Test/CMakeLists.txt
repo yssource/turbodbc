@@ -20,6 +20,7 @@ target_link_libraries(turbodbc_test
     gmock_main
     gtest
     gmock
+    pthread
 )
 
 add_test(NAME turbodbc_unit_test
