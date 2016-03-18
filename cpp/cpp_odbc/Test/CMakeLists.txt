@@ -17,6 +17,7 @@ target_link_libraries(cpp_odbc_test
     gmock_main
     gtest
     gmock
+    pthread
     ${Odbc_LIBRARIES}
 )
 
