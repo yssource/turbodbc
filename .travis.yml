@@ -3,6 +3,7 @@ dist: trusty
 sudo: required
 before_install:
   - sudo apt-get install -y unixodbc unixodbc-dev
+  - sudo apt-get install -y python2.7-dev
   - sudo apt-get install -y libboost-all-dev
 script:
-  - mkdir build && cd build && cmake .. && make -j4
+  - mkdir build && cd build && cmake .. && make
