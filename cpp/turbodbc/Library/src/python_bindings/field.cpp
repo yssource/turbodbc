@@ -111,9 +111,9 @@ struct nullable_field_from_object{
 		}
 
 		if (PyDateTime_Check(object)) {
-			int const year = PyDateTime_GET_YEAR(object);
-			int const month = PyDateTime_GET_MONTH(object);
-			int const day = PyDateTime_GET_DAY(object);
+			auto const year = static_cast<short unsigned int>(PyDateTime_GET_YEAR(object));
+			auto const month = static_cast<short unsigned int>(PyDateTime_GET_MONTH(object));
+			auto const day = static_cast<short unsigned int>(PyDateTime_GET_DAY(object));
 			int const hours = PyDateTime_DATE_GET_HOUR(object);
 			int const minutes = PyDateTime_DATE_GET_MINUTE(object);
 			int const seconds = PyDateTime_DATE_GET_SECOND(object);
