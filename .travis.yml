@@ -15,3 +15,7 @@ script:
   - make install
   - cd dist
   - python setup.py sdist
+  - cd dist
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install *.tar.gz
