@@ -22,24 +22,14 @@ Features
 *   Bulk transfer of query parameters
 *   Automatic conversion of decimal type to integer, float, and string as
     appropriate
-*   Supported data types for result sets: `int`, `float`, `str`, `bool`,
-    `datetime.date`, `datetime.datetime`
-*   Supported data types for parameters: `int`, `float`, `str`, `bool`,
-    `datetime.date`, `datetime.datetime`
+*   Supported data types for both result sets and parameters:
+    `int`, `float`, `str`, `bool`, `datetime.date`, `datetime.datetime`
 
 
 Installation
 ------------
 
-The installation is still a little rough, I fear. Here is what to do:
-
-```
-source /path/to/your/virtualenv/bin/activate
-pip install -i https://software.blue-yonder.org/for_dev/<your_os> turbodbc
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/your/virtualenv/lib
-```
-
-Replace `<your_os>` with `Ubuntu_12.04` or `Debian_7` as applicable.
+To be done...
 
 
 Source build requirements
