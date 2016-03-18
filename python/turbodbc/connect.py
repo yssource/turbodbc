@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from .turbodbc_intern import connect as intern_connect
+from turbodbc_intern import connect as intern_connect
 
 from .exceptions import translate_exceptions
 from .connection import Connection

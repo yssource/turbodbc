@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from functools import wraps
 from exceptions import StandardError
 
-from .turbodbc_intern import Error as InternError
+from turbodbc_intern import Error as InternError
 
 
 class Error(StandardError):

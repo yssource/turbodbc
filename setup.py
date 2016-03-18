@@ -39,6 +39,6 @@ setup(name = 'turbodbc',
       url = 'foo',
       author='Michael Koenig',
       author_email = 'michael.koenig@blue-yonder.com',
-      packages = [],
+      packages = ['turbodbc'],
       ext_modules = [turbodbc_intern]
       )
