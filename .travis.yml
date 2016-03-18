@@ -1,10 +1,8 @@
 language: cpp
 dist: trusty
-addons:
-  apt:
-    packages:
-      - unixodbc
-      - unixodbc-dev
-      - libboost-all-dev
+sudo: required
+before_install:
+  - sudo apt-get install unixodbc unixodbc-dev --force
+  - sudo apt-get install libboost-all-dev --force
 script:
   - mkdir build && cd build && cmake .. && make -j4
