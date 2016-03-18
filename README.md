@@ -1,6 +1,8 @@
 Turbodbc
 ========
 
+[![Build Status](https://travis-ci.org/blue-yonder/turbodbc.svg?branch=master)](https://travis-ci.org/blue-yonder/turbodbc)
+
 Turbodbc is a Python module to access relational databases via the Open Database
 Connectivity (ODBC) interface. The module complies with the Python Database API
 Specification 2.0.
