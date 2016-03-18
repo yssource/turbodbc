@@ -9,7 +9,7 @@ before_install:
   - sudo apt-get install -y unixodbc unixodbc-dev
   - sudo apt-get install -y libboost-all-dev
 script:
-  - mkdir build && cd build && cmake .. 
+  - mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=./dist .. 
   - make -j4
   - ctest --verbose
   - make install
