@@ -14,35 +14,35 @@ using turbodbc::field;
 
 TEST(MakeDescriptionOfValueTest, FromInteger)
 {
-	field const value = 42l;
+	field const value(42l);
 	auto description = make_description(value);
 	ASSERT_TRUE( dynamic_cast<turbodbc::integer_description const *>(description.get()) );
 }
 
 TEST(MakeDescriptionOfValueTest, FromDouble)
 {
-	field const value = 3.14;
+	field const value(3.14);
 	auto description = make_description(value);
 	ASSERT_TRUE( dynamic_cast<turbodbc::floating_point_description const *>(description.get()) );
 }
 
 TEST(MakeDescriptionOfValueTest, FromBool)
 {
-	field const value = true;
+	field const value(true);
 	auto description = make_description(value);
 	ASSERT_TRUE( dynamic_cast<turbodbc::boolean_description const *>(description.get()) );
 }
 
 TEST(MakeDescriptionOfValueTest, FromDate)
 {
-	field const value = boost::gregorian::date(2016, 1, 7);
+	field const value(boost::gregorian::date(2016, 1, 7));
 	auto description = make_description(value);
 	ASSERT_TRUE( dynamic_cast<turbodbc::date_description const *>(description.get()) );
 }
 
 TEST(MakeDescriptionOfValueTest, FromPtime)
 {
-	field const value = boost::posix_time::ptime({2016, 1, 7}, {1, 2, 3, 123456});
+	field const value(boost::posix_time::ptime({2016, 1, 7}, {1, 2, 3, 123456}));
 	auto description = make_description(value);
 	ASSERT_TRUE( dynamic_cast<turbodbc::timestamp_description const *>(description.get()) );
 }
