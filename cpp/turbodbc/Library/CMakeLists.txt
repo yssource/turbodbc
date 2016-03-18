@@ -18,7 +18,9 @@ target_link_libraries(turbodbc_intern
 	cpp_odbc
 )
 
-
+add_custom_command(TARGET turbodbc_intern POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy
+                   ${CMAKE_CURRENT_BINARY_DIR}/turbodbc_intern.so ${CMAKE_BINARY_DIR})
 
 install(
     TARGETS turbodbc_intern
@@ -38,7 +40,3 @@ install(
 	FILES_MATCHING PATTERN "*.cpp"
 	PATTERN ".git" EXCLUDE
 )
-
-add_custom_command(TARGET turbodbc_intern POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy
-                   ${CMAKE_CURRENT_BINARY_DIR}/turbodbc_intern.so ${CMAKE_BINARY_DIR}/turbodbc)
