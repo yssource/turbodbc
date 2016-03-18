@@ -12,3 +12,6 @@ script:
   - mkdir build && cd build && cmake .. 
   - make -j4
   - ctest --verbose
+  - make install
+  - cd dist
+  - python setup.py sdist
