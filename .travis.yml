@@ -22,4 +22,4 @@ script:
   - virtualenv venv
   - source venv/bin/activate
   - pip install *.tar.gz
-  - echo "Hi, I am your password: $PASSWORD"
+  - echo $PASSWORD
