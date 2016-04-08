@@ -3,6 +3,9 @@ language: python
 python:
   - "2.7"
 
+env:
+  - secure: "dkV8dMmVCkddID8GPK0gL7BPSjWBlh2IpUOH4NdERQ2wrdy+xp2JDEXlbXgQLvCKvpYNlvKSaTwfgT7qVXhG/xlii3JzciCMhLR1+ezdzbPOaaWdTZxtMn3KQsj219sVzhZ9cZd6lZzroeZLt22UzbR1YEOsogphqVU4HEKKjZTnmNfuYs4/wzjpwIpoNF1tejtz9LSy3ZCfC46hw+3prEcE2lIByikMPX/eekcsbmNlOqWfng80k7fzn8+Bi7vMwsOOPwOv3eA72wWzsg4eKM/mxoDyJYrD8NC8nl6T5P2x3DhldKOOqwcYOvkuTusHsJB0mZfz34a8YXXC/HYdIrfRzgOpO2RbPpTFDdPinkpqYLPGo2pxR+IXKWi3tQpA9kt2zMIACjfEPscK+QK1c6/lMdHsZOVMLwbQZGakcsWF95qLlGhsB/cCgHJwux1W1JSTzjh5spnd6fJ07OePBV/0McCSeKJ5rg/2p/gsJDou5902uY6qNRMugGOhG8L2HVm1yEtMORkw3U/UdPwD4NF6yEt4rMsHvxReIAzZvoBAczPuBYrmmgRUDBHDy4wZa4qf3nWcEQ+G/dLDEu0biYuEHQq09S0Rzs9myQ844Hq50TtHNQo7paUrpwdH5lmtoVGIS5TFaO6Bs9L7Vx57FL+wXYJBZczo9f7WmwOLleM="
+
 dist: trusty
 sudo: required
 before_install:
@@ -19,3 +22,4 @@ script:
   - virtualenv venv
   - source venv/bin/activate
   - pip install *.tar.gz
+  - echo "Hi, I am your password: $PASSWORD"
