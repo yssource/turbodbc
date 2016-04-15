@@ -17,9 +17,7 @@ def generate_microseconds_with_precision(digits):
 class InsertTests(object):
     """
     Parent class for database-specific INSERT tests. Children are expected to provide
-    the following attributes:
-
-    self.fractional_second_digits
+    the following configuration option:
     """
     def _test_insert_many(self, fixture_name, data):
         with query_fixture(self.cursor, self.configuration, fixture_name) as table_name:
@@ -62,7 +60,7 @@ class InsertTests(object):
                                 [datetime.date(2016, 2, 3)]])
 
     def test_timestamp_column(self):
-        fractional = generate_microseconds_with_precision(self.fractional_second_digits)
+        fractional = generate_microseconds_with_precision(self.capabilities['fractional_second_digits'])
 
         self._test_insert_many('INSERT TIMESTAMP',
                                [[datetime.datetime(2015, 12, 31, 1, 2, 3, fractional)],
@@ -133,14 +131,11 @@ class InsertTests(object):
 
 class TestCursorInsertExasol(InsertTests, CursorTestCase):
     fixture_file_name = 'query_fixtures_exasol.json'
-    fractional_second_digits = 3
 
 
 class TestCursorInsertPostgreSQL(InsertTests, CursorTestCase):
     fixture_file_name = 'query_fixtures_postgresql.json'
-    fractional_second_digits = 6
 
 
 class TestCursorInsertMySQL(InsertTests, CursorTestCase):
     fixture_file_name = 'query_fixtures_mysql.json'
-    fractional_second_digits = 0

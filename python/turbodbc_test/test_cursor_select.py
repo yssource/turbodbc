@@ -9,11 +9,7 @@ from cursor_test_case import CursorTestCase
 class SelectTests(object):
     """
     Parent class for database-specific SELECT tests. Children are expected to provide
-    the following attributes:
-
-    self.supports_row_count
-    self.indicates_null_columns
-    self.reports_column_names_as_upper_case
+    the following configuration option:
     """
     def test_too_many_parameters_raise(self):
         with self.assertRaises(turbodbc.Error):
