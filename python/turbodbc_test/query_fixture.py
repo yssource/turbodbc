@@ -30,7 +30,7 @@ def query_fixture(cursor, fixtures, fixture_key):
     Setup, payload, and teardown sections are optional. Queries may contain
     "{table_name}" to be replaced with a random table name.
     """
-    fixture = fixtures[fixture_key]
+    fixture = fixtures['queries'][fixture_key]
     table_name = table_name = 'test_{}'.format(random.randint(0, 1000000000))
     
     def _execute_queries(section_key):

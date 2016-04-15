@@ -1,97 +1,99 @@
 {
-	"SELECT DOUBLE": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a DOUBLE) engine=innodb",
-			"INSERT INTO {table_name} (a) values (3.14)"
-		],
-		"payload": "SELECT a FROM {table_name}",
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-	
-	"SELECT MULTIPLE INTEGERS": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a INTEGER) engine=innodb",
-			"INSERT INTO {table_name} VALUES (42), (43), (44)"
-		],
-		"payload": "SELECT a FROM {table_name} ORDER BY a ASC",
-		"teardown": "DROP TABLE {table_name}"
-	},
-	
-	"SELECT TIMESTAMP": {
-		"payload": "SELECT CAST('2015-12-31 01:02:03' AS DATETIME) AS a"
-	},
-
-	"INSERT STRING": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a VARCHAR(20)) engine=innodb"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-
-	"INSERT LONG STRING": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a VARCHAR(1000)) engine=innodb"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-
-	"INSERT INTEGER": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a INTEGER) engine=innodb"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-	
-	"INSERT MIXED": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a INTEGER, b DOUBLE) engine=innodb"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-
-	"INSERT DOUBLE": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a DOUBLE) engine=innodb"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-
-	"INSERT BOOL": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a BOOLEAN) engine=innodb"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-
-	"INSERT DATE": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a DATE) engine=innodb"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-	
-	"INSERT TIMESTAMP": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a TIMESTAMP) engine=innodb"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
+	"queries": {	
+		"SELECT DOUBLE": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a DOUBLE) engine=innodb",
+				"INSERT INTO {table_name} (a) values (3.14)"
+			],
+			"payload": "SELECT a FROM {table_name}",
+			"teardown": ["DROP TABLE {table_name}"]
+		},
 		
-	"DESCRIPTION": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (as_int INTEGER, as_double DOUBLE, as_varchar VARCHAR(100), as_date DATE, as_timestamp TIMESTAMP, as_int_not_null INTEGER NOT NULL) engine=innodb"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
+		"SELECT MULTIPLE INTEGERS": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a INTEGER) engine=innodb",
+				"INSERT INTO {table_name} VALUES (42), (43), (44)"
+			],
+			"payload": "SELECT a FROM {table_name} ORDER BY a ASC",
+			"teardown": "DROP TABLE {table_name}"
+		},
+		
+		"SELECT TIMESTAMP": {
+			"payload": "SELECT CAST('2015-12-31 01:02:03' AS DATETIME) AS a"
+		},
+	
+		"INSERT STRING": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a VARCHAR(20)) engine=innodb"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+	
+		"INSERT LONG STRING": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a VARCHAR(1000)) engine=innodb"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+	
+		"INSERT INTEGER": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a INTEGER) engine=innodb"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+		
+		"INSERT MIXED": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a INTEGER, b DOUBLE) engine=innodb"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+	
+		"INSERT DOUBLE": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a DOUBLE) engine=innodb"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+	
+		"INSERT BOOL": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a BOOLEAN) engine=innodb"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+	
+		"INSERT DATE": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a DATE) engine=innodb"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+		
+		"INSERT TIMESTAMP": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a TIMESTAMP) engine=innodb"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+			
+		"DESCRIPTION": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (as_int INTEGER, as_double DOUBLE, as_varchar VARCHAR(100), as_date DATE, as_timestamp TIMESTAMP, as_int_not_null INTEGER NOT NULL) engine=innodb"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		}
 	}
 }

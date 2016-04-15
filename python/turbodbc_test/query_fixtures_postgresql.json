@@ -1,93 +1,95 @@
 {
-	"SELECT DOUBLE": {
-		"setup": ["CREATE OR REPLACE VIEW {table_name} AS SELECT CAST(3.14 AS DOUBLE PRECISION) AS a"],
-		"payload": "SELECT a FROM {table_name}",
-		"teardown": ["DROP VIEW {table_name}"]
-	},
+	"queries": {
+		"SELECT DOUBLE": {
+			"setup": ["CREATE OR REPLACE VIEW {table_name} AS SELECT CAST(3.14 AS DOUBLE PRECISION) AS a"],
+			"payload": "SELECT a FROM {table_name}",
+			"teardown": ["DROP VIEW {table_name}"]
+		},
+		
+		"SELECT MULTIPLE INTEGERS": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a INTEGER)",
+				"INSERT INTO {table_name} VALUES (42), (43), (44)"
+			],
+			"payload": "SELECT a FROM {table_name} ORDER BY a ASC",
+			"teardown": "DROP TABLE {table_name}"
+		},
+		
+		"SELECT TIMESTAMP": {
+			"payload": "SELECT CAST('2015-12-31 01:02:03' AS TIMESTAMP) AS a"
+		},
 	
-	"SELECT MULTIPLE INTEGERS": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a INTEGER)",
-			"INSERT INTO {table_name} VALUES (42), (43), (44)"
-		],
-		"payload": "SELECT a FROM {table_name} ORDER BY a ASC",
-		"teardown": "DROP TABLE {table_name}"
-	},
+		"INSERT STRING": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a VARCHAR(20))"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
 	
-	"SELECT TIMESTAMP": {
-		"payload": "SELECT CAST('2015-12-31 01:02:03' AS TIMESTAMP) AS a"
-	},
-
-	"INSERT STRING": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a VARCHAR(20))"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-
-	"INSERT LONG STRING": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a VARCHAR(1000))"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-
-	"INSERT INTEGER": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a INTEGER)"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-
-	"INSERT MIXED": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a INTEGER, b DOUBLE PRECISION)"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-
-	"INSERT DOUBLE": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a DOUBLE PRECISION)"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
+		"INSERT LONG STRING": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a VARCHAR(1000))"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
 	
-	"INSERT BOOL": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a BOOLEAN)"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-
-	"INSERT DATE": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a DATE)"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-
-	"INSERT TIMESTAMP": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (a TIMESTAMP)"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
-	},
-
-	"DESCRIPTION": {
-		"setup": [
-			"DROP TABLE IF EXISTS {table_name}",
-			"CREATE TABLE {table_name} (as_int INTEGER, as_double DOUBLE PRECISION, as_varchar VARCHAR(100), as_date DATE, as_timestamp TIMESTAMP, as_int_not_null INTEGER NOT NULL)"
-		],
-		"teardown": ["DROP TABLE {table_name}"]
+		"INSERT INTEGER": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a INTEGER)"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+	
+		"INSERT MIXED": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a INTEGER, b DOUBLE PRECISION)"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+	
+		"INSERT DOUBLE": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a DOUBLE PRECISION)"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+		
+		"INSERT BOOL": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a BOOLEAN)"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+	
+		"INSERT DATE": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a DATE)"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+	
+		"INSERT TIMESTAMP": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (a TIMESTAMP)"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		},
+	
+		"DESCRIPTION": {
+			"setup": [
+				"DROP TABLE IF EXISTS {table_name}",
+				"CREATE TABLE {table_name} (as_int INTEGER, as_double DOUBLE PRECISION, as_varchar VARCHAR(100), as_date DATE, as_timestamp TIMESTAMP, as_int_not_null INTEGER NOT NULL)"
+			],
+			"teardown": ["DROP TABLE {table_name}"]
+		}
 	}
 }
