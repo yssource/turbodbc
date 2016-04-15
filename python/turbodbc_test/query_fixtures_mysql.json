@@ -1,4 +1,6 @@
 {
+	"data_source_name": "MySQL R&D test database",
+
 	"capabilities": {
 		"supports_row_count": true,
 		"indicates_null_columns": true,

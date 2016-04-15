@@ -193,14 +193,12 @@ class SelectTests(object):
 # Actual test cases
 
 class TestCursorSelectExasol(SelectTests, CursorTestCase):
-    dsn = "Exasol R&D test database"
     fixture_file_name = 'query_fixtures_exasol.json'
 
 
 class TestCursorSelectPostgreSQL(SelectTests, CursorTestCase):
-    dsn = "PostgreSQL R&D test database"
     fixture_file_name = 'query_fixtures_postgresql.json'
 
+
 class TestCursorSelectMySQL(SelectTests, CursorTestCase):
-    dsn = "MySQL R&D test database"
     fixture_file_name = 'query_fixtures_mysql.json'

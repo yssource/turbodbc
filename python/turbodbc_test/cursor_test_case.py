@@ -20,6 +20,7 @@ class CursorTestCase(TestCase):
         with open(cls.fixture_file_name, 'r') as f:
             cls.configuration = json.load(f)
             cls.capabilities = cls.configuration['capabilities']
+            cls.dsn = cls.configuration['data_source_name']
 
     def setUp(self):
         self.parameter_sets_to_buffer = 100

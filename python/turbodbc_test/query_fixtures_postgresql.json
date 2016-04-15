@@ -1,4 +1,6 @@
 {
+	"data_source_name": "PostgreSQL R&D test database",
+
 	"capabilities": {
 		"supports_row_count": false,
 		"indicates_null_columns": true,

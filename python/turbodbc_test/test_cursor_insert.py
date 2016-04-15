@@ -132,18 +132,15 @@ class InsertTests(object):
 # Actual test cases
 
 class TestCursorInsertExasol(InsertTests, CursorTestCase):
-    dsn = "Exasol R&D test database"
     fixture_file_name = 'query_fixtures_exasol.json'
     fractional_second_digits = 3
 
 
 class TestCursorInsertPostgreSQL(InsertTests, CursorTestCase):
-    dsn = "PostgreSQL R&D test database"
     fixture_file_name = 'query_fixtures_postgresql.json'
     fractional_second_digits = 6
 
 
 class TestCursorInsertMySQL(InsertTests, CursorTestCase):
-    dsn = "MySQL R&D test database"
     fixture_file_name = 'query_fixtures_mysql.json'
     fractional_second_digits = 0
