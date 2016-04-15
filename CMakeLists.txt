@@ -13,8 +13,6 @@ if(BUILD_TESTING)
     enable_testing()
 endif()
 
-add_subdirectory(Wheel)
-
 install(
 	FILES setup.py MANIFEST.in
 	DESTINATION .
