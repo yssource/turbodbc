@@ -18,7 +18,7 @@ class CursorTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         with open(cls.fixture_file_name, 'r') as f:
-            cls.fixtures = json.load(f)
+            cls.configuration = json.load(f)
 
     def setUp(self):
         self.parameter_sets_to_buffer = 100

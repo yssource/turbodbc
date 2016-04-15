@@ -22,7 +22,7 @@ class InsertTests(object):
     self.fractional_second_digits
     """
     def _test_insert_many(self, fixture_name, data):
-        with query_fixture(self.cursor, self.fixtures, fixture_name) as table_name:
+        with query_fixture(self.cursor, self.configuration, fixture_name) as table_name:
             self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), data)
             self.assertEqual(len(data), self.cursor.rowcount)
             self.cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
@@ -32,7 +32,7 @@ class InsertTests(object):
     def test_insert_single(self):
         to_insert = [1]
 
-        with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
+        with query_fixture(self.cursor, self.configuration, 'INSERT INTEGER') as table_name:
             self.cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
             self.assertEqual(1, self.cursor.rowcount)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
@@ -79,7 +79,7 @@ class InsertTests(object):
         to_insert = [[23, 1.23],
                      [42, 2]]
 
-        with query_fixture(self.cursor, self.fixtures, 'INSERT MIXED') as table_name:
+        with query_fixture(self.cursor, self.configuration, 'INSERT MIXED') as table_name:
             self.cursor.executemany("INSERT INTO {} VALUES (?, ?)".format(table_name), to_insert)
             self.assertEqual(len(to_insert), self.cursor.rowcount)
             self.cursor.execute("SELECT a, b FROM {} ORDER BY a".format(table_name))
@@ -87,7 +87,7 @@ class InsertTests(object):
             self.assertItemsEqual(to_insert, inserted)
 
     def test_no_parameter_list(self):
-        with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
+        with query_fixture(self.cursor, self.configuration, 'INSERT INTEGER') as table_name:
             self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name))
             self.assertEqual(0, self.cursor.rowcount)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
@@ -97,7 +97,7 @@ class InsertTests(object):
     def test_empty_parameter_list(self):
         to_insert = []
 
-        with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
+        with query_fixture(self.cursor, self.configuration, 'INSERT INTEGER') as table_name:
             self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
             self.assertEqual(0, self.cursor.rowcount)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
@@ -110,7 +110,7 @@ class InsertTests(object):
                                [[i] for i in xrange(numbers)])
 
     def test_description_after_insert(self):
-        with query_fixture(self.cursor, self.fixtures, 'INSERT INTEGER') as table_name:
+        with query_fixture(self.cursor, self.configuration, 'INSERT INTEGER') as table_name:
             self.cursor.execute("INSERT INTO {} VALUES (42)".format(table_name))
             self.assertIsNone(self.cursor.description)
 
@@ -121,7 +121,7 @@ class InsertTests(object):
         expected = [['1']]
         expected.extend(long_strings)
 
-        with query_fixture(self.cursor, self.fixtures, 'INSERT LONG STRING') as table_name:
+        with query_fixture(self.cursor, self.configuration, 'INSERT LONG STRING') as table_name:
             self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
             self.assertEqual(len(to_insert), self.cursor.rowcount)
             self.cursor.execute("SELECT a FROM {}".format(table_name))
