@@ -25,7 +25,7 @@ class SelectTests(object):
     def _test_single_row_result_set(self, query, expected_row):
         self.cursor.execute(query)
 
-        if self.supports_row_count:
+        if self.capabilities['supports_row_count']:
             self.assertEqual(self.cursor.rowcount, 1)
         else:
             self.assertEqual(self.cursor.rowcount, -1)
@@ -172,7 +172,7 @@ class SelectTests(object):
         self.assertIsNone(self.cursor.description)
         
         def fix_case(string):
-            if self.reports_column_names_as_upper_case:
+            if self.capabilities['reports_column_names_as_upper_case']:
                 return string.upper()
             else:
                 return string
@@ -180,7 +180,7 @@ class SelectTests(object):
         with query_fixture(self.cursor, self.configuration, 'DESCRIPTION') as table_name:
             self.cursor.execute("SELECT * FROM {}".format(table_name))
 
-            nullness_for_null_column = not self.indicates_null_columns
+            nullness_for_null_column = not self.capabilities['indicates_null_columns']
 
             expected = [(fix_case('as_int'), turbodbc.NUMBER, None, None, None, None, True),
                         (fix_case('as_double'), turbodbc.NUMBER, None, None, None, None, True),
@@ -195,21 +195,12 @@ class SelectTests(object):
 class TestCursorSelectExasol(SelectTests, CursorTestCase):
     dsn = "Exasol R&D test database"
     fixture_file_name = 'query_fixtures_exasol.json'
-    supports_row_count = True
-    indicates_null_columns = False
-    reports_column_names_as_upper_case = True
 
 
 class TestCursorSelectPostgreSQL(SelectTests, CursorTestCase):
     dsn = "PostgreSQL R&D test database"
     fixture_file_name = 'query_fixtures_postgresql.json'
-    supports_row_count = False
-    indicates_null_columns = True
-    reports_column_names_as_upper_case = False
 
 class TestCursorSelectMySQL(SelectTests, CursorTestCase):
     dsn = "MySQL R&D test database"
     fixture_file_name = 'query_fixtures_mysql.json'
-    supports_row_count = True
-    indicates_null_columns = True
-    reports_column_names_as_upper_case = False

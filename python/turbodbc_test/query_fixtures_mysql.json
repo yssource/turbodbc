@@ -1,4 +1,10 @@
 {
+	"capabilities": {
+		"supports_row_count": true,
+		"indicates_null_columns": true,
+		"reports_column_names_as_upper_case": false
+	},
+
 	"setup": {
 		"table": {
 			"create": [
