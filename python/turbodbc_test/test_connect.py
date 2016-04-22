@@ -1,34 +1,36 @@
-from unittest import TestCase
+import pytest
 
 from turbodbc import connect, DatabaseError
 from turbodbc.connection import Connection
 
-VALID_DSN = "Exasol R&D test database"
+from helpers import for_one_database
 
 
-class TestConnect(TestCase):
+@for_one_database
+def test_connect_returns_connection_when_successful(dsn, configuration):
+    connection = connect(dsn)
+    assert isinstance(connection, Connection)
 
-    def test_returns_connection_when_successful(self):
-        connection = connect(VALID_DSN)
-        self.assertTrue(isinstance(connection, Connection))
+@for_one_database
+def test_connect_returns_connection_with_explicit_dsn(dsn, configuration):
+    connection = connect(dsn=dsn)
+    assert isinstance(connection, Connection)
 
-    def test_returns_connection_with_explicit_dsn(self):
-        connection = connect(dsn=VALID_DSN)
-        self.assertTrue(isinstance(connection, Connection))
+def test_connect_raises_on_invalid_dsn():
+    invalid_dsn = 'This data source does not exist'
+    with pytest.raises(DatabaseError):
+        connect(invalid_dsn)
 
-    def test_raises_on_invalid_dsn(self):
-        invalid_dsn = 'This data source does not exist'
-        with self.assertRaises(DatabaseError):
-            connect(invalid_dsn)
+@for_one_database
+def test_connect_raises_on_invalid_additional_option(dsn, configuration):
+    with pytest.raises(DatabaseError):
+        connect(dsn=dsn, exauid='invalid user')
 
-    def test_raises_on_invalid_additional_option(self):
-        with self.assertRaises(DatabaseError):
-            connect(dsn=VALID_DSN, exauid='invalid user')
+@for_one_database
+def test_connect_buffer_sizes_default_values(dsn, configuration):
+    connection = connect(dsn=dsn,
+                         rows_to_buffer=317,
+                         parameter_sets_to_buffer=123)
 
-    def test_buffer_sizes_default_values(self):
-        connection = connect("Exasol R&D test database",
-                             rows_to_buffer=317,
-                             parameter_sets_to_buffer=123)
-
-        self.assertEqual(connection.impl.rows_to_buffer, 317)
-        self.assertEqual(connection.impl.parameter_sets_to_buffer, 123)
+    assert connection.impl.rows_to_buffer == 317
+    assert connection.impl.parameter_sets_to_buffer == 123

@@ -55,7 +55,7 @@ def test_important_stuff(dsn, configuration):
     assert 1 == 2
 """
 for_one_database = pytest.mark.parametrize("dsn,configuration",
-                                           _get_configuration(CONFIG_FILES[0]))
+                                           [_get_configuration(CONFIG_FILES[0])])
 
 
 
