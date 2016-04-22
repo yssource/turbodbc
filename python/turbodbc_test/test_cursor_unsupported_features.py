@@ -1,23 +1,24 @@
-from unittest import TestCase
+import pytest
 
 from turbodbc import connect
 
+from helpers import for_one_database
 
-dsn = "Exasol R&D test database"
+"""
+Test optional features mentioned in PEP-249 "behave" as specified 
+"""
+
+@for_one_database
+def test_callproc_unsupported(dsn, configuration):
+    cursor = connect(dsn).cursor()
+
+    with pytest.raises(AttributeError):
+        cursor.callproc()
 
 
-class TestCursorUnsupportedFeatures(TestCase):
-    """
-    Test optional features mentioned in PEP-249 "behave" as specified 
-    """
-    def test_callproc_unsupported(self):
-        cursor = connect(dsn).cursor()
+@for_one_database
+def test_nextset_unsupported(dsn, configuration):
+    cursor = connect(dsn).cursor()
 
-        with self.assertRaises(AttributeError):
-            cursor.callproc()
-
-    def test_nextset_unsupported(self):
-        cursor = connect(dsn).cursor()
-
-        with self.assertRaises(AttributeError):
-            cursor.nextset()
+    with pytest.raises(AttributeError):
+        cursor.nextset()
