@@ -1,4 +1,5 @@
 from unittest import TestCase
+from contextlib import contextmanager
 
 import json
 
@@ -6,6 +7,23 @@ import turbodbc
 
 
 TestCase.maxDiff = None
+
+
+@contextmanager
+def open_connection(configuration, parameter_sets_to_buffer=100):
+    dsn = configuration['data_source_name']
+    connection = turbodbc.connect(dsn, parameter_sets_to_buffer=parameter_sets_to_buffer)
+    yield connection
+    connection.close()
+
+
+@contextmanager
+def open_cursor(configuration, parameter_sets_to_buffer=100):
+    with open_connection(configuration, parameter_sets_to_buffer) as connection:
+        cursor = connection.cursor()
+        yield cursor
+        cursor.close()
+
 
 class CursorTestCase(TestCase):
     """

@@ -1,7 +1,8 @@
 import datetime
 
-from cursor_test_case import CursorTestCase
+from cursor_test_case import open_cursor
 from query_fixture import query_fixture
+from for_each_database import for_each_database
 
 
 def generate_microseconds_with_precision(digits):
@@ -14,128 +15,158 @@ def generate_microseconds_with_precision(digits):
     return microseconds
 
 
-class InsertTests(object):
-    """
-    Parent class for database-specific INSERT tests. Children are expected to provide
-    the following configuration option:
-    """
-    def _test_insert_many(self, fixture_name, data):
-        with query_fixture(self.cursor, self.configuration, fixture_name) as table_name:
-            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), data)
-            self.assertEqual(len(data), self.cursor.rowcount)
-            self.cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
-            inserted = [list(row) for row in self.cursor.fetchall()]
-            self.assertItemsEqual(data, inserted)
-
-    def test_insert_single(self):
-        to_insert = [1]
-
-        with query_fixture(self.cursor, self.configuration, 'INSERT INTEGER') as table_name:
-            self.cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
-            self.assertEqual(1, self.cursor.rowcount)
-            self.cursor.execute("SELECT a FROM {}".format(table_name))
-            inserted = [list(row) for row in self.cursor.fetchall()]
-            self.assertItemsEqual([to_insert], inserted)
-
-    def test_string_column(self):
-        self._test_insert_many('INSERT STRING',
-                               [['hello'], ['my'], ['test case']])
-
-    def test_bool_column(self):
-        self._test_insert_many('INSERT BOOL',
-                               [[True], [True], [False]])
-
-    def test_integer_column(self):
-        self._test_insert_many('INSERT INTEGER',
-                               [[1], [2], [3]])
-
-    def test_double_column(self):
-        self._test_insert_many('INSERT DOUBLE',
-                               [[1.23], [2.71], [3.14]])
-
-    def test_date_column(self):
-        self._test_insert_many('INSERT DATE',
-                               [[datetime.date(2015, 12, 31)],
-                                [datetime.date(2016, 1, 15)],
-                                [datetime.date(2016, 2, 3)]])
-
-    def test_timestamp_column(self):
-        fractional = generate_microseconds_with_precision(self.capabilities['fractional_second_digits'])
-
-        self._test_insert_many('INSERT TIMESTAMP',
-                               [[datetime.datetime(2015, 12, 31, 1, 2, 3, fractional)],
-                                [datetime.datetime(2016, 1, 15, 4, 5, 6, fractional * 2)],
-                                [datetime.datetime(2016, 2, 3, 7, 8, 9, fractional * 3)]])
-
-    def test_null(self):
-        self._test_insert_many('INSERT INTEGER',
-                               [[None]])
-
-    def test_mixed_data_columns(self):
-        # second column has mixed data types in the same column
-        # first column makes sure values of "good" columns are not affected
-        to_insert = [[23, 1.23],
-                     [42, 2]]
-
-        with query_fixture(self.cursor, self.configuration, 'INSERT MIXED') as table_name:
-            self.cursor.executemany("INSERT INTO {} VALUES (?, ?)".format(table_name), to_insert)
-            self.assertEqual(len(to_insert), self.cursor.rowcount)
-            self.cursor.execute("SELECT a, b FROM {} ORDER BY a".format(table_name))
-            inserted = [list(row) for row in self.cursor.fetchall()]
-            self.assertItemsEqual(to_insert, inserted)
-
-    def test_no_parameter_list(self):
-        with query_fixture(self.cursor, self.configuration, 'INSERT INTEGER') as table_name:
-            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name))
-            self.assertEqual(0, self.cursor.rowcount)
-            self.cursor.execute("SELECT a FROM {}".format(table_name))
-            inserted = [list(row) for row in self.cursor.fetchall()]
-            self.assertEqual(0, len(inserted))
-
-    def test_empty_parameter_list(self):
-        to_insert = []
-
-        with query_fixture(self.cursor, self.configuration, 'INSERT INTEGER') as table_name:
-            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
-            self.assertEqual(0, self.cursor.rowcount)
-            self.cursor.execute("SELECT a FROM {}".format(table_name))
-            inserted = [list(row) for row in self.cursor.fetchall()]
-            self.assertItemsEqual(to_insert, inserted)
-
-    def test_number_of_rows_exceeds_buffer_size(self):
-        numbers = self.parameter_sets_to_buffer * 2 + 17
-        self._test_insert_many('INSERT INTEGER',
-                               [[i] for i in xrange(numbers)])
-
-    def test_description_after_insert(self):
-        with query_fixture(self.cursor, self.configuration, 'INSERT INTEGER') as table_name:
-            self.cursor.execute("INSERT INTO {} VALUES (42)".format(table_name))
-            self.assertIsNone(self.cursor.description)
-
-    def test_string_with_differing_lengths(self):
-        long_strings = [['x' * 5], ['x' * 50], ['x' * 500]]
-        to_insert = [[1]] # use integer to force rebind to string buffer afterwards
-        to_insert.extend(long_strings)
-        expected = [['1']]
-        expected.extend(long_strings)
-
-        with query_fixture(self.cursor, self.configuration, 'INSERT LONG STRING') as table_name:
-            self.cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
-            self.assertEqual(len(to_insert), self.cursor.rowcount)
-            self.cursor.execute("SELECT a FROM {}".format(table_name))
-            inserted = [list(row) for row in self.cursor.fetchall()]
-            self.assertItemsEqual(expected, inserted)
+def _test_insert_many(configuration, fixture_name, data):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, fixture_name) as table_name:
+            cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), data)
+            assert len(data) == cursor.rowcount
+            cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
+            inserted = [list(row) for row in cursor.fetchall()]
+            assert data == inserted
 
 
-# Actual test cases
+@for_each_database
+def test_insert_with_execute(dsn, configuration):
+    to_insert = [1]
 
-class TestCursorInsertExasol(InsertTests, CursorTestCase):
-    fixture_file_name = 'query_fixtures_exasol.json'
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+            assert 1 == cursor.rowcount
+            cursor.execute("SELECT a FROM {}".format(table_name))
+            inserted = [list(row) for row in cursor.fetchall()]
+            assert [to_insert] == inserted
 
 
-class TestCursorInsertPostgreSQL(InsertTests, CursorTestCase):
-    fixture_file_name = 'query_fixtures_postgresql.json'
+@for_each_database
+def test_insert_string_column(dsn, configuration):
+    _test_insert_many(configuration,
+                      'INSERT STRING',
+                      [['hello'], ['my'], ['test case']])
 
 
-class TestCursorInsertMySQL(InsertTests, CursorTestCase):
-    fixture_file_name = 'query_fixtures_mysql.json'
+@for_each_database
+def test_insert_bool_column(dsn, configuration):
+    _test_insert_many(configuration,
+                      'INSERT BOOL',
+                      [[False], [True], [True]])
+
+
+@for_each_database
+def test_insert_integer_column(dsn, configuration):
+    _test_insert_many(configuration,
+                      'INSERT INTEGER',
+                      [[1], [2], [3]])
+
+
+@for_each_database
+def test_insert_double_column(dsn, configuration):
+    _test_insert_many(configuration,
+                      'INSERT DOUBLE',
+                      [[1.23], [2.71], [3.14]])
+
+
+@for_each_database
+def test_insert_date_column(dsn, configuration):
+    _test_insert_many(configuration,
+                      'INSERT DATE',
+                      [[datetime.date(2015, 12, 31)],
+                       [datetime.date(2016, 1, 15)],
+                       [datetime.date(2016, 2, 3)]])
+
+@for_each_database
+def test_insert_timestamp_column(dsn, configuration):
+    supported_digits = configuration['capabilities']['fractional_second_digits']
+    fractional = generate_microseconds_with_precision(supported_digits)
+
+    _test_insert_many(configuration,
+                      'INSERT TIMESTAMP',
+                      [[datetime.datetime(2015, 12, 31, 1, 2, 3, fractional)],
+                       [datetime.datetime(2016, 1, 15, 4, 5, 6, fractional * 2)],
+                       [datetime.datetime(2016, 2, 3, 7, 8, 9, fractional * 3)]])
+
+
+@for_each_database
+def test_insert_null(dsn, configuration):
+    _test_insert_many(configuration,
+                      'INSERT INTEGER',
+                      [[None]])
+
+@for_each_database
+def test_insert_mixed_data_columns(dsn, configuration):
+    # second column has mixed data types in the same column
+    # first column makes sure values of "good" columns are not affected
+    to_insert = [[23, 1.23],
+                 [42, 2]]
+
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT MIXED') as table_name:
+            cursor.executemany("INSERT INTO {} VALUES (?, ?)".format(table_name), to_insert)
+            assert len(to_insert) == cursor.rowcount
+            cursor.execute("SELECT a, b FROM {} ORDER BY a".format(table_name))
+            inserted = [list(row) for row in cursor.fetchall()]
+            assert to_insert == inserted
+
+
+@for_each_database
+def test_insert_no_parameter_list(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name))
+            assert 0 == cursor.rowcount
+            cursor.execute("SELECT a FROM {}".format(table_name))
+            inserted = [list(row) for row in cursor.fetchall()]
+            assert 0 == len(inserted)
+
+
+@for_each_database
+def test_insert_empty_parameter_list(dsn, configuration):
+    to_insert = []
+
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+            assert 0 == cursor.rowcount
+            cursor.execute("SELECT a FROM {}".format(table_name))
+            inserted = [list(row) for row in cursor.fetchall()]
+            assert to_insert == inserted
+
+
+@for_each_database
+def test_insert_number_of_rows_exceeds_buffer_size(dsn, configuration):
+    buffer_size = 100
+    numbers = buffer_size * 2 + 17
+    data = [[i] for i in xrange(numbers)]
+    
+    with open_cursor(configuration, parameter_sets_to_buffer=buffer_size) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), data)
+            assert len(data) == cursor.rowcount
+            cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
+            inserted = [list(row) for row in cursor.fetchall()]
+            assert data == inserted
+
+
+@for_each_database
+def test_description_after_insert(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.execute("INSERT INTO {} VALUES (42)".format(table_name))
+            assert None == cursor.description
+
+
+@for_each_database
+def test_string_with_differing_lengths(dsn, configuration):
+    long_strings = [['x' * 5], ['x' * 50], ['x' * 500]]
+    to_insert = [[1]] # use integer to force rebind to string buffer afterwards
+    to_insert.extend(long_strings)
+    expected = [['1']]
+    expected.extend(long_strings)
+
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT LONG STRING') as table_name:
+            cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
+            assert len(to_insert) == cursor.rowcount
+            cursor.execute("SELECT a FROM {}".format(table_name))
+            inserted = [list(row) for row in cursor.fetchall()]
+            assert expected == inserted

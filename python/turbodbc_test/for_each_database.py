@@ -8,10 +8,10 @@ def _get_configuration(file_name):
 
 
 def _get_configurations():
-    config_files = ['query_fixtures_exasol.json',
+    config_files = [#'query_fixtures_exasol.json',
                     'query_fixtures_mysql.json',
                     'query_fixtures_postgresql.json']
-
+ 
     configurations = [_get_configuration(file_name) for file_name in config_files]
     return [(conf['data_source_name'], conf) for conf in configurations]
 
