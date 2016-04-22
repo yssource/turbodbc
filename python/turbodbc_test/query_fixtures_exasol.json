@@ -1,5 +1,5 @@
 {
-	"data_source_name": "Exasol R&D test database",
+	"data_source_name": "Exasol",
 
 	"capabilities": {
 		"supports_row_count": true,

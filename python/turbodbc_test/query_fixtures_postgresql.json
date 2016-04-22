@@ -1,5 +1,5 @@
 {
-	"data_source_name": "PostgreSQL R&D test database",
+	"data_source_name": "PostgreSQL",
 
 	"capabilities": {
 		"supports_row_count": false,
