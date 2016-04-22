@@ -1,67 +1,73 @@
-from unittest import TestCase
+import pytest
 
 from turbodbc import connect, InterfaceError
 
+from helpers import for_one_database
 
-dsn = "Exasol R&D test database"
+
+@for_one_database
+def test_new_cursor_properties(dsn, configuration):
+    connection = connect(dsn)
+    cursor = connection.cursor()
+
+    # https://www.python.org/dev/peps/pep-0249/#rowcount
+    assert cursor.rowcount == -1
+    assert None == cursor.description
+    assert cursor.arraysize == 1
 
 
-class TestCursorBasics(TestCase):
+@for_one_database
+def test_closed_cursor_raises_when_used(dsn, configuration):
+    connection = connect(dsn)
+    cursor = connection.cursor()
 
-    def test_new_cursor_properties(self):
-        connection = connect(dsn)
-        cursor = connection.cursor()
+    cursor.close()
 
-        # https://www.python.org/dev/peps/pep-0249/#rowcount
-        self.assertEqual(cursor.rowcount, -1)
-        self.assertIsNone(cursor.description)
-        self.assertEqual(cursor.arraysize, 1)
+    with pytest.raises(InterfaceError):
+        cursor.execute("SELECT 42")
 
-    def test_closed_cursor_raises_when_used(self):
-        connection = connect(dsn)
-        cursor = connection.cursor()
+    with pytest.raises(InterfaceError):
+        cursor.executemany("SELECT 42")
 
-        cursor.close()
+    with pytest.raises(InterfaceError):
+        cursor.fetchone()
 
-        with self.assertRaises(InterfaceError):
-            cursor.execute("SELECT 42")
+    with pytest.raises(InterfaceError):
+        cursor.fetchmany()
 
-        with self.assertRaises(InterfaceError):
-            cursor.executemany("SELECT 42")
+    with pytest.raises(InterfaceError):
+        cursor.fetchall()
 
-        with self.assertRaises(InterfaceError):
-            cursor.fetchone()
+    with pytest.raises(InterfaceError):
+        cursor.next()
 
-        with self.assertRaises(InterfaceError):
-            cursor.fetchmany()
 
-        with self.assertRaises(InterfaceError):
-            cursor.fetchall()
+@for_one_database
+def test_closing_twice_does_not_raise(dsn, configuration):
+    connection = connect(dsn)
+    cursor = connection.cursor()
 
-        with self.assertRaises(InterfaceError):
-            cursor.next()
+    cursor.close()
+    cursor.close()
 
-    def test_closing_twice_is_ok(self):
-        connection = connect(dsn)
-        cursor = connection.cursor()
 
-        cursor.close()
-        cursor.close()
+@for_one_database
+def test_setinputsizes_does_not_raise(dsn, configuration):
+    """
+    It is legal for setinputsizes() to do nothing, so anything except
+    raising an exception is ok
+    """
+    cursor = connect(dsn).cursor()
+    cursor.setinputsizes([10, 20])
 
-    def test_setinputsizes_does_not_raise(self):
-        """
-        It is legal for setinputsizes() to do nothing, so anything except
-        raising an exception is ok
-        """
-        cursor = connect(dsn).cursor()
-        cursor.setinputsizes([10, 20])
 
-    def test_setoutputsize_does_not_raise(self):
-        """
-        It is legal for setinputsizes() to do nothing, so anything except
-        raising an exception is ok
-        """
-        cursor = connect(dsn).cursor()
-        cursor.setoutputsize(1000, 42) # with column
-        cursor.setoutputsize(1000, column=42) # with column
-        cursor.setoutputsize(1000) # without column
+@for_one_database
+def test_setoutputsize_does_not_raise(dsn, configuration):
+    """
+    It is legal for setinputsizes() to do nothing, so anything except
+    raising an exception is ok
+    """
+    cursor = connect(dsn).cursor()
+    cursor.setoutputsize(1000, 42) # with column
+    cursor.setoutputsize(1000, column=42) # with column
+    cursor.setoutputsize(1000) # without column
