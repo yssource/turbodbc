@@ -33,7 +33,7 @@ turbodbc_intern = distutils.core.Extension('turbodbc_intern',
                                            libraries=['odbc', 'boost_python'])
 
 setup(name = 'turbodbc',
-      version = '0.2.1',
+      version = '0.2.2',
       description = 'turbodbc is a Python DB API 2.0 compatible ODBC driver',
       include_package_data = True,
       url = 'https://github.com/blue-yonder/turbodbc',

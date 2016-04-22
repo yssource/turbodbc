@@ -5,7 +5,8 @@
 		"supports_row_count": false,
 		"indicates_null_columns": true,
 		"reports_column_names_as_upper_case": false,
-		"fractional_second_digits": 6
+		"fractional_second_digits": 6,
+		"connection_user_option": "username"
 	},
 
 	"setup": {

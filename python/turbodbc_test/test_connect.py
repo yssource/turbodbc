@@ -23,8 +23,9 @@ def test_connect_raises_on_invalid_dsn():
 
 @for_one_database
 def test_connect_raises_on_invalid_additional_option(dsn, configuration):
+    additional_option = {configuration['capabilities']['connection_user_option']: 'invalid user'}
     with pytest.raises(DatabaseError):
-        connect(dsn=dsn, exauid='invalid user')
+        connect(dsn=dsn, **additional_option)
 
 @for_one_database
 def test_connect_buffer_sizes_default_values(dsn, configuration):

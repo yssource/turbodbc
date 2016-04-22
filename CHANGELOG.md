@@ -1,3 +1,11 @@
+Version 0.2.2
+=============
+
+*   First version to run on Travis.
+*   Use pytest instead of unittest for testing
+*   Allow for integration tests to run in custom environment
+*   Simplify integration test configuration
+
 Version 0.2.1
 =============
 
