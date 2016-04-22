@@ -1,14 +1,19 @@
 from contextlib import contextmanager
 
 import json
+import os
 import pytest
 
 import turbodbc
 
-
-CONFIG_FILES = ['query_fixtures_exasol.json',
-                'query_fixtures_mysql.json',
-                'query_fixtures_postgresql.json']
+def _get_config_files():
+    variable = 'TURBODBC_TEST_CONFIGURATION_FILES'
+    try:
+        raw = os.environ[variable]
+        file_names = raw.split(',')
+        return [file_name.strip() for file_name in file_names]
+    except KeyError:
+        raise KeyError('Please set the environment variable {} to specify the configuration files as a comma-separated list'.format(variable))
 
 
 def _load_configuration(file_name):
@@ -22,7 +27,7 @@ def _get_configuration(file_name):
 
 
 def _get_configurations():
-    return [_get_configuration(file_name) for file_name in CONFIG_FILES]
+    return [_get_configuration(file_name) for file_name in _get_config_files()]
 
 
 """
@@ -55,7 +60,7 @@ def test_important_stuff(dsn, configuration):
     assert 1 == 2
 """
 for_one_database = pytest.mark.parametrize("dsn,configuration",
-                                           [_get_configuration(CONFIG_FILES[0])])
+                                           [_get_configuration(_get_config_files()[0])])
 
 
 
