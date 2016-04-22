@@ -1,83 +1,98 @@
+import pytest
+
 from unittest import TestCase
 
 from turbodbc import connect, InterfaceError, DatabaseError
 
+from helpers import for_one_database
 
-dsn = "Exasol R&D test database"
+
+@for_one_database
+def test_cursor_on_closed_connection_raises(dsn, configuration):
+    connection = connect(dsn)
+    connection.close()
+
+    with pytest.raises(InterfaceError):
+        connection.cursor()
 
 
-class TestConnection(TestCase):
-    def test_cursor_on_closed_connection_raises(self):
-        connection = connect(dsn)
-        connection.close()
+@for_one_database
+def test_closing_twice_is_ok(dsn, configuration):
+    connection = connect(dsn)
 
-        with self.assertRaises(InterfaceError):
-            connection.cursor()
+    connection.close()
+    connection.close()
 
-    def test_closing_twice_is_ok(self):
-        connection = connect(dsn)
- 
-        connection.close()
-        connection.close()
 
-    def test_closing_connection_closes_all_cursors(self):
-        connection = connect(dsn)
-        cursor_1 = connection.cursor()
-        cursor_2 = connection.cursor()
-        connection.close()
+@for_one_database
+def test_closing_connection_closes_all_cursors(dsn, configuration):
+    connection = connect(dsn)
+    cursor_1 = connection.cursor()
+    cursor_2 = connection.cursor()
+    connection.close()
 
-        with self.assertRaises(InterfaceError):
-            cursor_1.execute("SELECT 42")
+    with pytest.raises(InterfaceError):
+        cursor_1.execute("SELECT 42")
 
-        with self.assertRaises(InterfaceError):
-            cursor_2.execute("SELECT 42")
+    with pytest.raises(InterfaceError):
+        cursor_2.execute("SELECT 42")
 
-    def test_no_autocommit(self):
-        connection = connect(dsn)
 
-        connection.cursor().execute('CREATE TABLE test_no_autocommit (a INTEGER)')
-        connection.close()
+@for_one_database
+def test_no_autocommit(dsn, configuration):
+    connection = connect(dsn)
 
-        connection = connect(dsn)
-        with self.assertRaises(DatabaseError):
-            connection.cursor().execute('SELECT * FROM test_no_autocommit')
+    connection.cursor().execute('CREATE TABLE test_no_autocommit (a INTEGER)')
+    connection.close()
 
-    def test_commit_on_closed_connection_raises(self):
-        connection = connect(dsn)
-        connection.close()
+    connection = connect(dsn)
+    with pytest.raises(DatabaseError):
+        connection.cursor().execute('SELECT * FROM test_no_autocommit')
 
-        with self.assertRaises(InterfaceError):
-            connection.commit()
 
-    def test_commit(self):
-        connection = connect(dsn)
+@for_one_database
+def test_commit_on_closed_connection_raises(dsn, configuration):
+    connection = connect(dsn)
+    connection.close()
 
-        connection.cursor().execute('CREATE TABLE test_commit (a INTEGER)')
+    with pytest.raises(InterfaceError):
         connection.commit()
 
-        connection.close()
 
-        connection = connect(dsn)
-        cursor = connection.cursor()
-        cursor.execute('SELECT * FROM test_commit')
-        results = cursor.fetchall()
-        self.assertEqual(results, [])
-        
-        cursor.execute('DROP TABLE test_commit')
-        connection.commit()
+@for_one_database
+def test_commit(dsn, configuration):
+    connection = connect(dsn)
 
-    def test_rollback_on_closed_connection_raises(self):
-        connection = connect(dsn)
-        connection.close()
+    connection.cursor().execute('CREATE TABLE test_commit (a INTEGER)')
+    connection.commit()
 
-        with self.assertRaises(InterfaceError):
-            connection.rollback()
+    connection.close()
 
-    def test_rollback(self):
-        connection = connect(dsn)
+    connection = connect(dsn)
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM test_commit')
+    results = cursor.fetchall()
+    assert results == []
+    
+    cursor.execute('DROP TABLE test_commit')
+    connection.commit()
 
-        connection.cursor().execute('CREATE TABLE test_rollback (a INTEGER)')
+
+@for_one_database
+def test_rollback_on_closed_connection_raises(dsn, configuration):
+    connection = connect(dsn)
+    connection.close()
+
+    with pytest.raises(InterfaceError):
         connection.rollback()
 
-        with self.assertRaises(DatabaseError):
-            connection.cursor().execute('SELECT * FROM test_rollback')
+
+@for_one_database
+def test_rollback(dsn, configuration):
+    connection = connect(dsn)
+
+    connection.cursor().execute('CREATE TABLE test_rollback (a INTEGER)')
+    connection.rollback()
+
+    with pytest.raises(DatabaseError):
+        connection.cursor().execute('SELECT * FROM test_rollback')
