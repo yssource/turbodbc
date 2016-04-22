@@ -22,4 +22,4 @@ class TestDataTypes(TestCase):
         for type_code in ALL_TYPE_CODES:
             mismatches = [type for type in ALL_DATA_TYPES if type_code != type]
             expected = len(ALL_DATA_TYPES) - 1
-            self.assertEqual(expected, len(mismatches))    
+            self.assertEqual(expected, len(mismatches))

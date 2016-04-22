@@ -1,8 +1,7 @@
 import datetime
 
-from cursor_test_case import open_cursor
 from query_fixture import query_fixture
-from for_each_database import for_each_database
+from helpers import for_each_database, open_cursor
 
 
 def generate_microseconds_with_precision(digits):

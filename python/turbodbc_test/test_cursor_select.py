@@ -4,8 +4,7 @@ import pytest
 import turbodbc
 
 from query_fixture import query_fixture
-from cursor_test_case import open_cursor
-from for_each_database import for_each_database
+from helpers import open_cursor, for_each_database
 
 
 def _test_single_row_result_set(configuration, query, expected_row):
