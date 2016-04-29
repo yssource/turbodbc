@@ -23,7 +23,7 @@ script:
   - export ODBCSYSINI=${PWD}/travis/odbc
   - mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=./dist .. 
   - make -j4
-  - export TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql,query_fixtures_mysql.json"
+  - export TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
   - ctest --verbose
   - make install
   - cd dist
