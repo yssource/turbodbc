@@ -204,9 +204,10 @@ def test_fetchmany_with_bad_global_arraysize_raises(dsn, configuration):
 
 @for_each_database
 def test_number_of_rows_exceeds_buffer_size(dsn, configuration):
-    with open_cursor(configuration) as cursor:
+    buffer_size = 3
+    with open_cursor(configuration, rows_to_buffer=buffer_size) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
-            numbers = 123
+            numbers = buffer_size * 2 + 1
             for i in xrange(numbers):
                 cursor.execute("INSERT INTO {} VALUES ({})".format(table_name, i))
 

@@ -65,16 +65,18 @@ for_one_database = pytest.mark.parametrize("dsn,configuration",
 
 
 @contextmanager
-def open_connection(configuration, parameter_sets_to_buffer=100):
+def open_connection(configuration, rows_to_buffer=100, parameter_sets_to_buffer=100):
     dsn = configuration['data_source_name']
-    connection = turbodbc.connect(dsn, parameter_sets_to_buffer=parameter_sets_to_buffer)
+    connection = turbodbc.connect(dsn,
+                                  rows_to_buffer=rows_to_buffer,
+                                  parameter_sets_to_buffer=parameter_sets_to_buffer)
     yield connection
     connection.close()
 
 
 @contextmanager
-def open_cursor(configuration, parameter_sets_to_buffer=100):
-    with open_connection(configuration, parameter_sets_to_buffer) as connection:
+def open_cursor(configuration, rows_to_buffer=100, parameter_sets_to_buffer=100):
+    with open_connection(configuration, rows_to_buffer, parameter_sets_to_buffer) as connection:
         cursor = connection.cursor()
         yield cursor
         cursor.close()

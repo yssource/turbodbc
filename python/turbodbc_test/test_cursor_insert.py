@@ -133,8 +133,8 @@ def test_insert_empty_parameter_list(dsn, configuration):
 
 @for_each_database
 def test_insert_number_of_rows_exceeds_buffer_size(dsn, configuration):
-    buffer_size = 100
-    numbers = buffer_size * 2 + 17
+    buffer_size = 3
+    numbers = buffer_size * 2 + 1
     data = [[i] for i in xrange(numbers)]
     
     with open_cursor(configuration, parameter_sets_to_buffer=buffer_size) as cursor:
