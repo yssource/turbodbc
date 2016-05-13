@@ -6,7 +6,8 @@ from .exceptions import translate_exceptions
 from .connection import Connection
 
 def _make_connection_string(dsn, **kwargs):
-    kwargs['dsn'] = dsn
+    if dsn:
+        kwargs['dsn'] = dsn
     return ';'.join(["{}={}".format(key, value) for key, value in kwargs.iteritems()])
 
 

@@ -1,10 +1,19 @@
 import pytest
 
 from turbodbc import connect, DatabaseError
+from turbodbc.connect import _make_connection_string
 from turbodbc.connection import Connection
 
 from helpers import for_one_database
 
+
+def test_make_connection_string_with_dsn():
+    connection_string = _make_connection_string('my_dsn', user='my_user')
+    assert connection_string == 'dsn=my_dsn;user=my_user'
+
+def test_make_connection_string_without_dsn():
+    connection_string = _make_connection_string(None, user='my_user')
+    assert connection_string == 'user=my_user'
 
 @for_one_database
 def test_connect_returns_connection_when_successful(dsn, configuration):
