@@ -38,7 +38,7 @@ script:
 
 
 before_deploy:
-  - pip install twine
+  - sudo pip install twine
 
 deploy:
   skip_cleanup: true
