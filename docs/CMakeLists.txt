@@ -1,0 +1,7 @@
+file(GLOB_RECURSE DOC_FILES "*.rst")
+
+install(
+	DIRECTORY .
+	DESTINATION docs
+	PATTERN ".git" EXCLUDE
+)

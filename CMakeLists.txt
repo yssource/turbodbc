@@ -8,12 +8,13 @@ include(default_build_setup)
 add_subdirectory(google_test)
 add_subdirectory(cpp)
 add_subdirectory(python)
+add_subdirectory(docs)
 
 if(BUILD_TESTING)
     enable_testing()
 endif()
 
 install(
-	FILES setup.py MANIFEST.in
+	FILES setup.py setup.cfg MANIFEST.in Makefile
 	DESTINATION .
 )
