@@ -1,15 +1,19 @@
 Version 0.2.2
 =============
 
-*   First version to run on Travis.
-*   Use pytest instead of unittest for testing
-*   Allow for integration tests to run in custom environment
-*   Simplify integration test configuration
+*   Fix issue that `dsn` parameter was always present in the connection string
+    even if it was not set by the user with her call to `connect()`
+*   Internal: First version to run on Travis.
+*   Internal: Use pytest instead of unittest for testing
+*   Internal: Allow for integration tests to run in custom environment
+*   Internal: Simplify integration test configuration
+
 
 Version 0.2.1
 =============
 
-*   Change C++ test framework to Google Test
+*   Internal: Change C++ test framework to Google Test
+
 
 Version 0.2.0
 =============
