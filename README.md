@@ -28,8 +28,55 @@ Features
     `int`, `float`, `str`, `bool`, `datetime.date`, `datetime.datetime`
 
 
-Usage
------
+Installation
+------------
+
+To install turbodbc, please make sure you have the following things installed:
+
+*   A modern g++ compiler (works with 4.7.2+)
+*   Boost development headers (typical package name: libboost-all-devel)
+*   Unixodbc development headers
+*   Python 2.7 development headers
+
+To install turbodbc, please use the following command:
+
+    pip install turbodbc
+
+
+Basic usage
+-----------
+
+Turbodbc follows the specification of the Python database API v2, which you can
+find at https://www.python.org/dev/peps/pep-0249/. Here is a short summary,
+including the parts not specified.
+
+To establish a connection, use any of the following commands:
+
+    >>> from turbodbc import connect
+    >>> connection = connect(dsn='My data source name as given by odbc.ini')
+    >>> connection = connect(dsn='my dsn', user='my user has precedence')
+    >>> connection = connect(dsn='my dsn', username='field names depend on the driver')
+
+To execute a query, you need a `cursor` object:
+
+    >>> cursor = connection.cursor()
+
+Here is how to execute a `SELECT` query:
+
+    >>> cursor.execute('SELECT 42')
+    >>> for row in cursor:
+    >>>     print list(row)
+
+Here is how to execute an `INSERT` query with many parameters:
+
+    >>> parameter_sets = [['hi', 42],
+                          ['there', 23]]
+    >>> cursor.executemany('INSERT INTO my_table VALUES (?, ?)',
+                           parameter_sets)
+
+
+Development version
+-------------------
 
 To use the latest version of turbodbc, you need to follow these steps:
 
@@ -59,8 +106,9 @@ To use the latest version of turbodbc, you need to follow these steps:
 Source build requirements
 -------------------------
 
-*   g++ 4.7.2+ compiler
-*   boost development headers (Contained in: libboost-all-devel)
+For the development build, you also require the following additional 
+dependencies:
+
 *   CMake
 
 
