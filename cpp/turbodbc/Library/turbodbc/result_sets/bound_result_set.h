@@ -9,8 +9,16 @@
 
 namespace turbodbc { namespace result_sets {
 
+/**
+ * @brief This class implements result_set by associating buffers with a
+ *        real ODBC statement.
+ */
 class bound_result_set : public turbodbc::result_sets::result_set {
 public:
+	/**
+	 * @brief Prepare and bind buffers suitable of holding buffered_rows to
+	 *        the given statement.
+	 */
 	bound_result_set(std::shared_ptr<cpp_odbc::statement const> statement, std::size_t buffered_rows);
 	virtual ~bound_result_set();
 private:
