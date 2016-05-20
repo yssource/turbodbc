@@ -93,3 +93,21 @@ TEST(MultiValueBufferTest, ConstElementAccess)
 	EXPECT_EQ( data[element_size], *const_buffer[1].data_pointer );
 	EXPECT_EQ( expected_indicator, const_buffer[1].indicator );
 }
+
+TEST(MultiValueBufferTest, MoveConstructor)
+{
+	std::size_t const element_size = 100;
+	std::size_t const number_of_elements = 42;
+	multi_value_buffer moved(element_size, number_of_elements);
+	multi_value_buffer buffer(std::move(moved));
+
+	EXPECT_EQ(0, moved.capacity_per_element());
+	EXPECT_EQ(nullptr, moved.data_pointer());
+	EXPECT_EQ(nullptr, moved.indicator_pointer());
+
+	EXPECT_EQ(element_size, buffer.capacity_per_element());
+	auto element = buffer[number_of_elements - 1];
+	// write something to be sure there is memory behind all this
+	element.indicator = 42;
+	std::strcpy(element.data_pointer, "abc");
+}
