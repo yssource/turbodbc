@@ -38,7 +38,7 @@ void cursor::execute()
 	query_->execute();
 	auto raw_result_set = query_->get_results();
 	if (raw_result_set) {
-		results_ = std::make_shared<result_sets::field_result_set>(*raw_result_set);
+		results_ = std::make_shared<result_sets::python_result_set>(*raw_result_set);
 	}
 }
 
@@ -47,7 +47,7 @@ void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set
 	query_->add_parameter_set(parameter_set);
 }
 
-std::vector<nullable_field> cursor::fetch_one()
+boost::python::object cursor::fetch_one()
 {
 	if (results_) {
 		return results_->fetch_row();
