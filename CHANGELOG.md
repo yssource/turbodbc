@@ -1,8 +1,14 @@
+Version 0.2.3
+=============
+
+*   Fix issue that only lists were allowed for specifying parameters for queries
+*   Internal: Provides more low-level ways to access the result set
+
 Version 0.2.2
 =============
 
 *   Fix issue that `dsn` parameter was always present in the connection string
-    even if it was not set by the user with her call to `connect()`
+    even if it was not set by the user's call to `connect()`
 *   Internal: First version to run on Travis.
 *   Internal: Use pytest instead of unittest for testing
 *   Internal: Allow for integration tests to run in custom environment
