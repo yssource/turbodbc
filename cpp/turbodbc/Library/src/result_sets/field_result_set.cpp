@@ -21,13 +21,17 @@ std::vector<column_info> field_result_set::get_column_info() const
 std::vector<nullable_field> field_result_set::fetch_row()
 {
 	auto const row = row_based_.fetch_row();
-	std::vector<nullable_field> results;
-	results.reserve(translators_.size());
+	if (not row.empty()) {
+		std::vector<nullable_field> results;
+		results.reserve(translators_.size());
 
-	for (std::size_t i = 0; i != translators_.size(); ++i) {
-		results.emplace_back(translators_[i]->make_field(row[i]));
+		for (std::size_t i = 0; i != translators_.size(); ++i) {
+			results.emplace_back(translators_[i]->make_field(row[i]));
+		}
+		return results;
+	} else {
+		return {};
 	}
-	return results;
 }
 
 

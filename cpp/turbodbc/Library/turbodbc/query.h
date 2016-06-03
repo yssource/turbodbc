@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cpp_odbc/statement.h>
-#include <turbodbc/result_set.h>
+#include <turbodbc/result_sets/result_set.h>
 #include <turbodbc/parameter.h>
 #include <memory>
 #include <vector>
@@ -18,12 +18,10 @@ public:
 		  std::size_t parameter_sets_to_buffer);
 
 	void execute();
+	std::shared_ptr<turbodbc::result_sets::result_set> get_results();
 	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
 
-	std::vector<nullable_field> fetch_one();
 	long get_row_count();
-
-	std::vector<column_info> get_result_set_info() const;
 
 	~query();
 
@@ -40,7 +38,7 @@ private:
 	std::size_t rows_to_buffer_;
 	std::size_t parameter_sets_to_buffer_;
 	std::vector<std::shared_ptr<turbodbc::parameter>> parameters_;
-	std::shared_ptr<result_set> result_;
+	std::shared_ptr<result_sets::result_set> results_;
 	std::size_t current_parameter_set_;
 	std::size_t row_count_;
 	SQLULEN rows_processed_;

@@ -55,3 +55,20 @@ TEST(FieldResultSetTest, FetchRow)
 	EXPECT_EQ(expected_int, boost::get<long>(*row[0]));
 	EXPECT_EQ(expected_float, boost::get<double>(*row[1]));
 }
+
+TEST(FieldResultSetTest, FetchRowEmptyResultSet)
+{
+	cpp_odbc::multi_value_buffer buffer(8, 3);
+	std::vector<turbodbc::column_info> const infos = {{"my column", turbodbc::type_code::integer, true}};
+
+	std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>> buffers = {std::cref(buffer)};
+
+	testing::NiceMock<mock_result_set> base;
+	ON_CALL(base, do_get_buffers()).WillByDefault(testing::Return(buffers));
+	ON_CALL(base, do_get_column_info()).WillByDefault(testing::Return(infos));
+	field_result_set rs(base);
+
+	EXPECT_CALL(base, do_fetch_next_batch()).WillOnce(testing::Return(0));
+	auto const row = rs.fetch_row();
+	ASSERT_TRUE(row.empty());
+}

@@ -1,6 +1,7 @@
 #include <turbodbc/query.h>
 #include <turbodbc/make_description.h>
 #include <turbodbc/descriptions/integer_description.h>
+#include <turbodbc/result_sets/bound_result_set.h>
 
 #include <cpp_odbc/error.h>
 
@@ -46,8 +47,13 @@ void query::execute()
 
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
-		result_ = std::make_shared<result_set>(statement_, rows_to_buffer_);
+		results_ = std::make_shared<result_sets::bound_result_set>(statement_, rows_to_buffer_);
 	}
+}
+
+std::shared_ptr<turbodbc::result_sets::result_set> query::get_results()
+{
+	return results_;
 }
 
 void query::add_parameter_set(std::vector<nullable_field> const & parameter_set)
@@ -65,27 +71,9 @@ void query::add_parameter_set(std::vector<nullable_field> const & parameter_set)
 	++current_parameter_set_;
 }
 
-std::vector<nullable_field> query::fetch_one()
-{
-	if (result_) {
-		return result_->fetch_one();
-	} else {
-		throw std::runtime_error("No active result set");
-	}
-}
-
 long query::get_row_count()
 {
 	return row_count_;
-}
-
-std::vector<column_info> query::get_result_set_info() const
-{
-	if (result_) {
-		return result_->get_info();
-	} else {
-		return {};
-	}
 }
 
 std::size_t query::execute_batch()

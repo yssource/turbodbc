@@ -26,6 +26,7 @@ cursor::~cursor() = default;
 
 void cursor::prepare(std::string const & sql)
 {
+	results_.reset();
 	query_.reset();
 	auto statement = connection_->make_statement();
 	statement->prepare(sql);
@@ -35,6 +36,10 @@ void cursor::prepare(std::string const & sql)
 void cursor::execute()
 {
 	query_->execute();
+	auto raw_result_set = query_->get_results();
+	if (raw_result_set) {
+		results_ = std::make_shared<result_sets::field_result_set>(*raw_result_set);
+	}
 }
 
 void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set)
@@ -44,7 +49,11 @@ void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set
 
 std::vector<nullable_field> cursor::fetch_one()
 {
-	return query_->fetch_one();
+	if (results_) {
+		return results_->fetch_row();
+	} else {
+		throw std::runtime_error("No active result set");
+	}
 }
 
 long cursor::get_row_count()
@@ -54,8 +63,8 @@ long cursor::get_row_count()
 
 std::vector<column_info> cursor::get_result_set_info() const
 {
-	if (query_) {
-		return query_->get_result_set_info();
+	if (results_) {
+		return results_->get_column_info();
 	} else {
 		return {};
 	}

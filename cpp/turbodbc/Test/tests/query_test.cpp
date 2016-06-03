@@ -11,14 +11,6 @@ using turbodbc_test::mock_connection;
 using turbodbc_test::mock_statement;
 
 
-TEST(QueryTest, FetchOneIfEmpty)
-{
-	auto statement = std::make_shared<mock_statement>();
-	turbodbc::query query(statement, 1, 1);
-	ASSERT_THROW(query.fetch_one(), std::runtime_error);
-}
-
-
 TEST(QueryTest, GetRowCountBeforeExecuted)
 {
 	auto statement = std::make_shared<mock_statement>();
