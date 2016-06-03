@@ -13,14 +13,6 @@ TEST(FloatingPointDescriptionTest, BasicProperties)
 	EXPECT_EQ(SQL_DOUBLE, description.column_sql_type());
 }
 
-TEST(FloatingPointDescriptionTest, MakeField)
-{
-	double const expected = 3.14;
-	turbodbc::floating_point_description const description;
-
-	EXPECT_EQ(turbodbc::field{expected}, description.make_field(reinterpret_cast<char const *>(&expected)));
-}
-
 TEST(FloatingPointDescriptionTest, SetField)
 {
 	double const expected = 42;

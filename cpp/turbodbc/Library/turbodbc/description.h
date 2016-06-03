@@ -29,11 +29,6 @@ public:
 	SQLSMALLINT column_sql_type() const;
 
 	/**
-	 * @brief Return a field based on the bytes pointed to by data_pointer
-	 */
-	field make_field(char const * data_pointer) const;
-
-	/**
 	 * @brief Set a buffer element to the value of a field
 	 */
 	void set_field(cpp_odbc::writable_buffer_element & element, field const & value) const;
@@ -64,7 +59,6 @@ private:
 	virtual std::size_t do_element_size() const = 0;
 	virtual SQLSMALLINT do_column_c_type() const = 0;
 	virtual SQLSMALLINT do_column_sql_type() const = 0;
-	virtual field do_make_field(char const * data_pointer) const = 0;
 	virtual void do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const = 0;
 	virtual type_code do_get_type_code() const = 0;
 

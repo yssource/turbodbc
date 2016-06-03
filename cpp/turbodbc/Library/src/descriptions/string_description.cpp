@@ -35,11 +35,6 @@ SQLSMALLINT string_description::do_column_sql_type() const
 	return SQL_VARCHAR;
 }
 
-field string_description::do_make_field(char const * data_pointer) const
-{
-	return {std::string(data_pointer)};
-}
-
 void string_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
 {
 	auto const & as_string = boost::get<std::string>(value);

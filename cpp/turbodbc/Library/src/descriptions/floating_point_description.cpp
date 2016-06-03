@@ -31,11 +31,6 @@ SQLSMALLINT floating_point_description::do_column_sql_type() const
 	return SQL_DOUBLE;
 }
 
-field floating_point_description::do_make_field(char const * data_pointer) const
-{
-	return {*reinterpret_cast<double const *>(data_pointer)};
-}
-
 void floating_point_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
 {
 	auto const as_double = boost::get<double>(value);

@@ -17,16 +17,6 @@ column::column(column && other) :
 
 column::~column() = default;
 
-nullable_field column::get_field(std::size_t row_index) const
-{
-	auto const element = buffer_[row_index];
-	if (element.indicator == SQL_NULL_DATA) {
-		return {};
-	} else {
-		return description_->make_field(element.data_pointer);
-	}
-}
-
 column_info column::get_info() const
 {
 	return {description_->name(), description_->get_type_code(), description_->supports_null_values()};

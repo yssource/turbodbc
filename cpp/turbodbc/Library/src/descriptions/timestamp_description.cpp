@@ -31,18 +31,6 @@ SQLSMALLINT timestamp_description::do_column_sql_type() const
 	return SQL_TYPE_TIMESTAMP;
 }
 
-field timestamp_description::do_make_field(char const * data_pointer) const
-{
-	auto const ts = reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(data_pointer);
-	// map SQL nanosecond precision to posix_time microsecond precision
-	long const adjusted_fraction = ts->fraction / 1000;
-	return {boost::posix_time::ptime{
-										{static_cast<short unsigned int>(ts->year), ts->month, ts->day},
-										{ts->hour, ts->minute, ts->second, adjusted_fraction}
-									}
-			};
-}
-
 void timestamp_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
 {
 	auto const & as_ts = boost::get<boost::posix_time::ptime>(value);

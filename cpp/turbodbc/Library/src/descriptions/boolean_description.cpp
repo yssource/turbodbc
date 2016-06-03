@@ -30,11 +30,6 @@ SQLSMALLINT boolean_description::do_column_sql_type() const
 	return SQL_BIT;
 }
 
-field boolean_description::do_make_field(char const * data_pointer) const
-{
-	return {static_cast<bool>(*data_pointer)};
-}
-
 void boolean_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
 {
 	*element.data_pointer = boost::get<bool>(value) ? 1 : 0;

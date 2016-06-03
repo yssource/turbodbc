@@ -26,12 +26,6 @@ public:
 	 */
 	column(column && other);
 
-	/**
-	 * @brief Retrieve the field of the current result set row associated with this column
-	 * @param row_index Index of the row for which the field is retrieved
-	 */
-	nullable_field get_field(std::size_t row_index) const;
-
 	column_info get_info() const;
 
 	/**

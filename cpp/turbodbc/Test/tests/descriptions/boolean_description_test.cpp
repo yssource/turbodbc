@@ -11,16 +11,6 @@ TEST(BooleanDescriptionTest, BasicProperties)
 	EXPECT_EQ(SQL_BIT, description.column_sql_type());
 }
 
-TEST(BooleanDescriptionTest, MakeField)
-{
-	turbodbc::boolean_description const description;
-
-	char as_bool = 0;
-	EXPECT_EQ(turbodbc::field{false}, description.make_field(&as_bool));
-	as_bool = 1;
-	EXPECT_EQ(turbodbc::field{true}, description.make_field(&as_bool));
-}
-
 TEST(BooleanDescriptionTest, SetField)
 {
 	turbodbc::boolean_description const description;

@@ -12,16 +12,6 @@ TEST(DateDescriptionTest, BasicProperties)
 	EXPECT_EQ(SQL_TYPE_DATE, description.column_sql_type());
 }
 
-
-TEST(DateDescriptionTest, MakeField)
-{
-	boost::gregorian::date const expected{2015, 12, 31};
-	turbodbc::date_description const description;
-
-	SQL_DATE_STRUCT const sql_date = {2015, 12, 31};
-	EXPECT_EQ(turbodbc::field{expected}, description.make_field(reinterpret_cast<char const *>(&sql_date)));
-}
-
 TEST(DateDescriptionTest, SetField)
 {
 	boost::gregorian::date const date{2015, 12, 31};
