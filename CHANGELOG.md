@@ -2,6 +2,8 @@ Version 0.2.3
 =============
 
 *   Fix issue that only lists were allowed for specifying parameters for queries
+*   Improve parameter memory consumption when the database reports very large
+    string parameter sizes 
 *   Internal: Provides more low-level ways to access the result set
 
 Version 0.2.2
