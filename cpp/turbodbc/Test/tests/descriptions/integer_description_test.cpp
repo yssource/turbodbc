@@ -13,14 +13,6 @@ TEST(IntegerDescriptionTest, BasicProperties)
 	EXPECT_EQ(SQL_BIGINT, description.column_sql_type());
 }
 
-TEST(IntegerDescriptionTest, MakeField)
-{
-	long const expected = 42;
-	turbodbc::integer_description const description;
-
-	EXPECT_EQ(turbodbc::field{expected}, description.make_field(reinterpret_cast<char const *>(&expected)));
-}
-
 TEST(IntegerDescriptionTest, SetField)
 {
 	long const expected = 42;

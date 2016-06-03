@@ -33,6 +33,16 @@ TEST(MultiValueBufferTest, DataPointer)
 	std::memset( buffer.data_pointer(), 0xff, element_size * number_of_elements );
 }
 
+TEST(MultiValueBufferTest, ConstDataPointer)
+{
+	std::size_t const element_size = 100;
+	std::size_t const number_of_elements = 42;
+	multi_value_buffer buffer(element_size, number_of_elements);
+	multi_value_buffer const & as_const(buffer);
+
+	EXPECT_EQ(buffer.data_pointer(), as_const.data_pointer());
+}
+
 TEST(MultiValueBufferTest, IndicatorPointer)
 {
 	std::size_t const number_of_elements = 42;
@@ -40,6 +50,15 @@ TEST(MultiValueBufferTest, IndicatorPointer)
 
 	// write something to have some protection against segmentation faults
 	buffer.indicator_pointer()[number_of_elements - 1] = 17;
+}
+
+TEST(MultiValueBufferTest, ConstIndicatorPointer)
+{
+	std::size_t const number_of_elements = 42;
+	multi_value_buffer buffer(3, number_of_elements);
+	multi_value_buffer const & as_const(buffer);
+
+	EXPECT_EQ(buffer.indicator_pointer(), as_const.indicator_pointer());
 }
 
 TEST(MultiValueBufferTest, MutableElementAccess)
@@ -73,4 +92,22 @@ TEST(MultiValueBufferTest, ConstElementAccess)
 
 	EXPECT_EQ( data[element_size], *const_buffer[1].data_pointer );
 	EXPECT_EQ( expected_indicator, const_buffer[1].indicator );
+}
+
+TEST(MultiValueBufferTest, MoveConstructor)
+{
+	std::size_t const element_size = 100;
+	std::size_t const number_of_elements = 42;
+	multi_value_buffer moved(element_size, number_of_elements);
+	multi_value_buffer buffer(std::move(moved));
+
+	EXPECT_EQ(0, moved.capacity_per_element());
+	EXPECT_EQ(nullptr, moved.data_pointer());
+	EXPECT_EQ(nullptr, moved.indicator_pointer());
+
+	EXPECT_EQ(element_size, buffer.capacity_per_element());
+	auto element = buffer[number_of_elements - 1];
+	// write something to be sure there is memory behind all this
+	element.indicator = 42;
+	std::strcpy(element.data_pointer, "abc");
 }

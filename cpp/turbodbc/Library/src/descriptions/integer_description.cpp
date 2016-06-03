@@ -31,11 +31,6 @@ SQLSMALLINT integer_description::do_column_sql_type() const
 	return SQL_BIGINT;
 }
 
-field integer_description::do_make_field(char const * data_pointer) const
-{
-	return {*reinterpret_cast<long const *>(data_pointer)};
-}
-
 void integer_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
 {
 	auto const as_long = boost::get<long>(value);

@@ -14,14 +14,6 @@ TEST(StringDescriptionTest, BasicProperties)
 	EXPECT_EQ(SQL_VARCHAR, description.column_sql_type());
 }
 
-TEST(StringDescriptionTest, MakeField)
-{
-	std::string const expected("test string");
-	turbodbc::string_description const description(42);
-
-	EXPECT_EQ(turbodbc::field{expected}, description.make_field(expected.c_str()));
-}
-
 TEST(StringDescriptionTest, SetField)
 {
 	std::string const expected("another test string");

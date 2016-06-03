@@ -31,12 +31,6 @@ SQLSMALLINT date_description::do_column_sql_type() const
 	return SQL_TYPE_DATE;
 }
 
-field date_description::do_make_field(char const * data_pointer) const
-{
-	auto const date = reinterpret_cast<SQL_DATE_STRUCT const *>(data_pointer);
-	return {boost::gregorian::date(date->year, date->month, date->day)};
-}
-
 void date_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
 {
 	auto const & as_date = boost::get<boost::gregorian::date>(value);

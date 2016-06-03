@@ -13,15 +13,6 @@ TEST(TimestampDescriptionTest, BasicProperties)
 	EXPECT_EQ(SQL_TYPE_TIMESTAMP, description.column_sql_type());
 }
 
-TEST(TimestampDescriptionTest, MakeField)
-{
-	boost::posix_time::ptime const expected{{2015, 12, 31}, {1, 2, 3, 123456}};
-	turbodbc::timestamp_description const description;
-
-	SQL_TIMESTAMP_STRUCT const sql_timestamp = {2015, 12, 31, 1, 2, 3, 123456000};
-	EXPECT_EQ(turbodbc::field{expected}, description.make_field(reinterpret_cast<char const *>(&sql_timestamp)));
-}
-
 TEST(TimestampDescriptionTest, SetField)
 {
 	boost::posix_time::ptime const timestamp{{2015, 12, 31}, {1, 2, 3, 123456}};

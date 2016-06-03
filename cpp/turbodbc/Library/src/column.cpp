@@ -9,21 +9,22 @@ column::column(cpp_odbc::statement const & statement, std::size_t one_based_inde
 	statement.bind_column(one_based_index, description_->column_c_type(), buffer_);
 }
 
-column::~column() = default;
-
-nullable_field column::get_field(std::size_t row_index) const
+column::column(column && other) :
+	description_(std::move(other.description_)),
+	buffer_(std::move(other.buffer_))
 {
-	auto const element = buffer_[row_index];
-	if (element.indicator == SQL_NULL_DATA) {
-		return {};
-	} else {
-		return description_->make_field(element.data_pointer);
-	}
 }
+
+column::~column() = default;
 
 column_info column::get_info() const
 {
 	return {description_->name(), description_->get_type_code(), description_->supports_null_values()};
+}
+
+cpp_odbc::multi_value_buffer const & column::get_buffer() const
+{
+	return buffer_;
 }
 
 }

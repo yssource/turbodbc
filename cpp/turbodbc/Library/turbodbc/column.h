@@ -22,12 +22,16 @@ public:
 	column(cpp_odbc::statement const & statement, std::size_t one_based_index, std::size_t buffered_rows, std::unique_ptr<description const> description);
 
 	/**
-	 * @brief Retrieve the field of the current result set row associated with this column
-	 * @param row_index Index of the row for which the field is retrieved
+	 * @brief Move constructor
 	 */
-	nullable_field get_field(std::size_t row_index) const;
+	column(column && other);
 
 	column_info get_info() const;
+
+	/**
+	 * @brief Retrieve a reference to the internal buffer
+	 */
+	cpp_odbc::multi_value_buffer const & get_buffer() const;
 
 	~column();
 private:

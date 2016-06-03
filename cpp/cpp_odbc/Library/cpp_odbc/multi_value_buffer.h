@@ -42,6 +42,11 @@ public:
 	multi_value_buffer(std::size_t element_size, std::size_t number_of_elements);
 
 	/**
+	 * @brief Move constructor. Will leave the old buffer empty.
+	 */
+	multi_value_buffer(multi_value_buffer &&);
+
+	/**
 	 * @brief Retrieve the number of bytes reserved for each element
 	 * @return The number of bytes
 	 */
@@ -55,12 +60,27 @@ public:
 	char * data_pointer();
 
 	/**
+	 * @brief Provides read-only raw access to a contiguous strip of memory
+	 *        which holds the actual data.
+	 * @return A pointer to the data array
+	 */
+	char const * data_pointer() const;
+
+	/**
 	 * @brief Provides raw access to a contiguous strip of memory which holds the length/indicator
 	 *        information (for example, that a value is NULL). Intended to be used where
 	 *        StrLen_or_IndPtrs appear in ODBC calls
 	 * @return A pointer to the length/indicator array
 	 */
 	long * indicator_pointer();
+
+	/**
+	 * @brief Provides read-only raw access to a contiguous strip of memory which
+	 *        holds the length/indicator information (for example, that a value
+	 *        is NULL).
+	 * @return A pointer to the length/indicator array
+	 */
+	long const * indicator_pointer() const;
 
 	/**
 	 * @brief Read/write access to the element with index element_index

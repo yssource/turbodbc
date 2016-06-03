@@ -3,6 +3,7 @@
 #include <cpp_odbc/connection.h>
 #include <turbodbc/query.h>
 #include <turbodbc/column_info.h>
+#include <turbodbc/result_sets/field_result_set.h>
 #include <memory>
 
 
@@ -35,6 +36,7 @@ private:
 	std::size_t rows_to_buffer_;
 	std::size_t parameter_sets_to_buffer_;
 	std::shared_ptr<turbodbc::query> query_;
+	std::shared_ptr<result_sets::field_result_set> results_;
 };
 
 }
