@@ -32,6 +32,7 @@ public:
 
 private:
 	row_based_result_set row_based_;
+	std::vector<type_code> types_;
 };
 
 } }

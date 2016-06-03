@@ -38,9 +38,9 @@ python_result_set::python_result_set(result_set & base) :
 	row_based_(base)
 {
 	PyDateTime_IMPORT;
-//	for (auto const & info : row_based_.get_column_info()) {
-//		translators_.emplace_back(make_field_translator(info));
-//	}
+	for (auto const & info : row_based_.get_column_info()) {
+		types_.emplace_back(info.type);
+	}
 }
 
 std::vector<column_info> python_result_set::get_column_info() const
@@ -58,7 +58,7 @@ boost::python::object python_result_set::fetch_row()
 			if (row[column].indicator == SQL_NULL_DATA) {
 				python_row.append(boost::python::object());
 			} else {
-				switch (row_based_.get_column_info()[column].type) {
+				switch (types_[column]) {
 					case type_code::boolean:
 						python_row.append(boost::python::object(*reinterpret_cast<bool const *>(row[column].data_pointer)));
 						break;
