@@ -39,7 +39,9 @@ class Cursor(object):
         self._assert_valid()
         self.impl.prepare(sql)
         if parameters:
-            self.impl.add_parameter_set(parameters)
+            # TODO: The list call here is probably inefficient
+            # will go once the translation layer is better
+            self.impl.add_parameter_set(list(parameters))
         self.impl.execute()
         self.rowcount = self.impl.get_row_count()
 
@@ -51,7 +53,9 @@ class Cursor(object):
 
         if parameters:
             for parameter_set in parameters:
-                self.impl.add_parameter_set(parameter_set)
+                # TODO: The list call here is probably inefficient
+                # will go once the translation layer is better
+                self.impl.add_parameter_set(list(parameter_set))
 
         self.impl.execute()
         self.rowcount = self.impl.get_row_count()

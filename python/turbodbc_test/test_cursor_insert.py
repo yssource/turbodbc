@@ -1,7 +1,7 @@
 import datetime
 
 from query_fixture import query_fixture
-from helpers import for_each_database, open_cursor
+from helpers import for_each_database, for_one_database, open_cursor
 
 
 def generate_microseconds_with_precision(digits):
@@ -21,20 +21,30 @@ def _test_insert_many(configuration, fixture_name, data):
             assert len(data) == cursor.rowcount
             cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
             inserted = [list(row) for row in cursor.fetchall()]
+            data = [list(row) for row in data]
             assert data == inserted
+
+
+def _test_insert_one(configuration, fixture_name, data):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, fixture_name) as table_name:
+            cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), data)
+            assert 1 == cursor.rowcount
+            cursor.execute("SELECT a FROM {}".format(table_name))
+            inserted = [list(row) for row in cursor.fetchall()]
+            assert [list(data)] == inserted
+
+
+@for_one_database
+def test_execute_with_tuple(dsn, configuration):
+    as_tuple = (1, )
+    _test_insert_one(configuration, 'INSERT INTEGER', as_tuple)
 
 
 @for_each_database
 def test_insert_with_execute(dsn, configuration):
-    to_insert = [1]
-
-    with open_cursor(configuration) as cursor:
-        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
-            cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), to_insert)
-            assert 1 == cursor.rowcount
-            cursor.execute("SELECT a FROM {}".format(table_name))
-            inserted = [list(row) for row in cursor.fetchall()]
-            assert [to_insert] == inserted
+    as_list = [1]
+    _test_insert_one(configuration, 'INSERT INTEGER', as_list)
 
 
 @for_each_database
@@ -50,6 +60,12 @@ def test_insert_bool_column(dsn, configuration):
                       'INSERT BOOL',
                       [[False], [True], [True]])
 
+
+@for_one_database
+def test_execute_many_with_tuple(dsn, configuration):
+    _test_insert_many(configuration,
+                      'INSERT INTEGER',
+                      [(1, ), (2, ), (3, )])
 
 @for_each_database
 def test_insert_integer_column(dsn, configuration):
