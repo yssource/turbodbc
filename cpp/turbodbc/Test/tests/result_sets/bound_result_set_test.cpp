@@ -14,12 +14,6 @@ using turbodbc::result_sets::bound_result_set;
 using turbodbc::column_info;
 using turbodbc_test::mock_statement;
 
-//struct mock_result_set : public turbodbc::result_sets::result_set
-//{
-//	MOCK_METHOD0(do_fetch_next_batch, std::size_t());
-//	MOCK_CONST_METHOD0(do_get_column_info, std::vector<turbodbc::column_info>());
-//	MOCK_CONST_METHOD0(do_get_buffers, std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>>());
-//};
 
 namespace {
 
