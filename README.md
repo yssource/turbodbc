@@ -8,8 +8,8 @@ Connectivity (ODBC) interface. The module complies with the Python Database API
 Specification 2.0.
 
 
-Why should I use turbodbc instead of other ODBC libraries?
-----------------------------------------------------------
+Why should I use turbodbc instead of other ODBC modules?
+--------------------------------------------------------
 
 Short answer: turbodbc is faster.
 
@@ -19,6 +19,15 @@ and corresponding ODBC drivers. I found turbodbc to be consistently faster.
 
 For retrieving result sets, I found speedups between 1.5 and 7. For inserting
 data, I found speedups of up to 100.
+
+Is this completely scientific? Not at all. I have not told you about which
+hardware I used, which operating systems, drivers, database versions, network
+bandwidth, database layout, SQL queries, what is measured, and how I performed
+was measured.
+
+All I can tell you is that if I exchange pyodbc with turbodbc, my benchmarks
+took less time, often approaching one (reading) or two (writing) orders of
+magnitude. Give it a spin for yourself, and tell me if you liked it.
 
 
 Smooth. What is the trick?
