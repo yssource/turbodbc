@@ -17,6 +17,7 @@ void column::bind()
 
 column::column(column && other) :
 	statement_(other.statement_),
+	one_based_index_(other.one_based_index_),
 	description_(std::move(other.description_)),
 	buffer_(std::move(other.buffer_))
 {

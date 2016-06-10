@@ -54,8 +54,8 @@ void query::execute()
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
 		// TODO make this choice an option!
-		results_ = std::make_shared<result_sets::bound_result_set>(statement_, rows_to_buffer_);
-//		results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, rows_to_buffer_);
+//		results_ = std::make_shared<result_sets::bound_result_set>(statement_, rows_to_buffer_);
+		results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, rows_to_buffer_);
 	}
 }
 
