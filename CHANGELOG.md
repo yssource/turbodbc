@@ -1,3 +1,9 @@
+Version 0.2.5
+=============
+
+*   C++ backend: `turbodbc::column` no longer automatically binds on
+    construction. Call `bind()` instead.
+
 Version 0.2.4
 =============
 

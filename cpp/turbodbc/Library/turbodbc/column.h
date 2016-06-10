@@ -13,9 +13,9 @@ namespace turbodbc {
 class column {
 public:
 	/**
-	 * @brief Create a new column, binding an internal buffer to the statement
-	 * @param statement The statement for which to bind a buffer
-	 * @param one_based_index One-based column index for bind command
+	 * @brief Create a new column
+	 * @param statement The statement a subsequent call to bind() to column would attach to
+	 * @param one_based_index One-based column index for bind() command
 	 * @param buffered_rows Number of rows for which the buffer should be allocated
 	 * @param desription Description concerning data type of column
 	 */
@@ -26,6 +26,11 @@ public:
 	 */
 	column(column && other);
 
+	/**
+	 * (Re-) Bind the column to the statement
+	 */
+	void bind();
+
 	column_info get_info() const;
 
 	/**
@@ -35,6 +40,8 @@ public:
 
 	~column();
 private:
+	cpp_odbc::statement const & statement_;
+	std::size_t one_based_index_;
 	std::unique_ptr<description const> description_;
 	cpp_odbc::multi_value_buffer buffer_;
 };

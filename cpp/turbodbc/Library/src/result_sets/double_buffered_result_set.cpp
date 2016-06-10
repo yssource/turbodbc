@@ -14,6 +14,7 @@ double_buffered_result_set::double_buffered_result_set(std::shared_ptr<cpp_odbc:
 	for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
 		auto column_description = make_description(statement_->describe_column(one_based_index));
 		batches_[0].columns.emplace_back(*statement, one_based_index, buffered_rows, std::move(column_description));
+		batches_[0].columns.back().bind();
 	}
 
 	auto rows_per_single_buffer = buffered_rows / 2 + buffered_rows % 2;
