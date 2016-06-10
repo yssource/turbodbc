@@ -88,6 +88,7 @@ namespace {
 	public:
 		statement_with_fake_int_result_set(std::vector<size_t> batch_sizes) :
 			rows_fetched_pointer_(nullptr),
+			buffer_(nullptr),
 			batch_sizes_(std::move(batch_sizes)),
 			batch_index_(0)
 		{}
@@ -109,10 +110,20 @@ namespace {
 			}
 		};
 
+		void do_bind_column(SQLUSMALLINT, SQLSMALLINT, cpp_odbc::multi_value_buffer & buffer) const final
+		{
+			buffer_ = &buffer;
+		}
+
 		bool do_fetch_next() const final
 		{
 			if (batch_index_ < batch_sizes_.size()) {
 				*rows_fetched_pointer_ = batch_sizes_[batch_index_];
+				for (std::size_t i = 0; i != batch_sizes_[batch_index_]; ++i) {
+					auto element = (*buffer_)[i];
+					*reinterpret_cast<long *>(element.data_pointer) = (batch_index_ + 1);
+					element.indicator = sizeof(long);
+				}
 				++batch_index_;
 			} else {
 				*rows_fetched_pointer_ = 0;
@@ -122,6 +133,7 @@ namespace {
 
 	private:
 		mutable SQLULEN * rows_fetched_pointer_;
+		mutable cpp_odbc::multi_value_buffer * buffer_;
 		std::vector<size_t> batch_sizes_;
 		mutable std::size_t batch_index_;
 	};
@@ -139,19 +151,28 @@ TEST(DoubleBufferedResultSetTest, FetchNextBatch)
 }
 
 
-//TEST(DoubleBufferedResultSetTest, GetBuffers)
-//{
-//	auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_VARCHAR});
-//	std::size_t const buffered_rows = 1234;
-//
-//	double_buffered_result_set rs(statement, buffered_rows);
-//	auto const buffers = rs.get_buffers();
-//	ASSERT_EQ(2, buffers.size());
-//
-//	// make sure we can read the last elements for both columns
-//	auto last_of_col_a = buffers[0].get()[buffered_rows - 1];
-//	auto last_of_col_b = buffers[1].get()[buffered_rows - 1];
-//
-//	EXPECT_EQ(last_of_col_a.indicator, last_of_col_a.indicator);
-//	EXPECT_EQ(last_of_col_b.indicator, last_of_col_b.indicator);
-//}
+TEST(DoubleBufferedResultSetTest, GetBuffers)
+{
+	std::vector<size_t> batch_sizes = {4, 4, 2, 0};
+	auto statement = std::make_shared<testing::NiceMock<statement_with_fake_int_result_set>>(batch_sizes);
+
+	double_buffered_result_set rs(statement, 8);
+
+	// first batch
+	ASSERT_EQ(4, rs.fetch_next_batch());
+	ASSERT_EQ(1, rs.get_buffers().size());
+	EXPECT_EQ(1, *reinterpret_cast<long const *>(rs.get_buffers()[0].get()[3].data_pointer));
+
+	// second batch
+	ASSERT_EQ(4, rs.fetch_next_batch());
+	ASSERT_EQ(1, rs.get_buffers().size());
+	EXPECT_EQ(2, *reinterpret_cast<long const *>(rs.get_buffers()[0].get()[3].data_pointer));
+
+	// third batch (partially filled)
+	ASSERT_EQ(2, rs.fetch_next_batch());
+	ASSERT_EQ(1, rs.get_buffers().size());
+	EXPECT_EQ(3, *reinterpret_cast<long const *>(rs.get_buffers()[0].get()[1].data_pointer));
+
+	// fourth, non-existing batch
+	ASSERT_EQ(0, rs.fetch_next_batch());
+}
