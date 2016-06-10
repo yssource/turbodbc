@@ -10,6 +10,8 @@
 #include <datetime.h> // Python header
 
 
+namespace turbodbc { namespace result_sets {
+
 namespace {
 
 	boost::python::object make_date(SQL_DATE_STRUCT const & date)
@@ -29,10 +31,28 @@ namespace {
 			);
 	}
 
+	boost::python::object make_object(turbodbc::type_code code, char const * data_pointer)
+	{
+		switch (code) {
+			case type_code::boolean:
+				return boost::python::object(*reinterpret_cast<bool const *>(data_pointer));
+			case type_code::integer:
+				return boost::python::object(*reinterpret_cast<long const *>(data_pointer));
+			case type_code::floating_point:
+				return boost::python::object(*reinterpret_cast<double const *>(data_pointer));
+			case type_code::string:
+				return boost::python::object(boost::python::handle<>(PyUnicode_FromString(data_pointer)));
+			case type_code::date:
+				return make_date(*reinterpret_cast<SQL_DATE_STRUCT const *>(data_pointer));
+			case type_code::timestamp:
+				return make_timestamp(*reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(data_pointer));
+			default:
+				throw std::logic_error("Encountered unsupported type code");
+		}
+	}
+
 }
 
-
-namespace turbodbc { namespace result_sets {
 
 python_result_set::python_result_set(result_set & base) :
 	row_based_(base)
@@ -58,28 +78,7 @@ boost::python::object python_result_set::fetch_row()
 			if (row[column].indicator == SQL_NULL_DATA) {
 				python_row.append(boost::python::object());
 			} else {
-				switch (types_[column]) {
-					case type_code::boolean:
-						python_row.append(boost::python::object(*reinterpret_cast<bool const *>(row[column].data_pointer)));
-						break;
-					case type_code::integer:
-						python_row.append(boost::python::object(*reinterpret_cast<long const *>(row[column].data_pointer)));
-						break;
-					case type_code::floating_point:
-						python_row.append(boost::python::object(*reinterpret_cast<double const *>(row[column].data_pointer)));
-						break;
-					case type_code::string:
-						python_row.append(boost::python::object(boost::python::handle<>(PyUnicode_FromString(row[column].data_pointer))));
-						break;
-					case type_code::date:
-						python_row.append(make_date(*reinterpret_cast<SQL_DATE_STRUCT const *>(row[column].data_pointer)));
-						break;
-					case type_code::timestamp:
-						python_row.append(make_timestamp(*reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(row[column].data_pointer)));
-						break;
-					default:
-						python_row.append(boost::python::object());
-				}
+				python_row.append(make_object(types_[column], row[column].data_pointer));
 			}
 		}
 		return python_row;
