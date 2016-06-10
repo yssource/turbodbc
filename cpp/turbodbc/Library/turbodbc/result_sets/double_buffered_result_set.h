@@ -35,6 +35,7 @@ private:
 
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	std::array<batch_buffer, 2> batches_;
+	std::size_t active_reading_batch_;
 };
 
 

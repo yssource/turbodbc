@@ -18,6 +18,9 @@ public:
 
 	/**
 	 * @brief Tell the result set to fetch the next batch of rows
+	 *
+	 *        Invalidates buffers previously retrieved with get_buffers()
+	 *
 	 * @return The number of rows which came with this batch
 	 */
 	std::size_t fetch_next_batch();
@@ -28,7 +31,8 @@ public:
 	std::vector<column_info> get_column_info() const;
 
 	/**
-	 * @brief Get references to buffers representing chunked columns
+	 * @brief Get references to buffers representing chunked columns.
+	 *        A call to fetch_next_batch may invalidate the references!
 	 */
 	std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>> get_buffers() const;
 

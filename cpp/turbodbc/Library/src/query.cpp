@@ -2,6 +2,7 @@
 #include <turbodbc/make_description.h>
 #include <turbodbc/descriptions/integer_description.h>
 #include <turbodbc/result_sets/bound_result_set.h>
+#include <turbodbc/result_sets/double_buffered_result_set.h>
 
 #include <cpp_odbc/error.h>
 
@@ -52,7 +53,9 @@ void query::execute()
 
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
+		// TODO make this choice an option!
 		results_ = std::make_shared<result_sets::bound_result_set>(statement_, rows_to_buffer_);
+//		results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, rows_to_buffer_);
 	}
 }
 
