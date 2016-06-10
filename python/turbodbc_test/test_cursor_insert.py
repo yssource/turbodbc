@@ -20,7 +20,7 @@ def _test_insert_many(configuration, fixture_name, data):
             cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name), data)
             assert len(data) == cursor.rowcount
             cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
-            inserted = [list(row) for row in cursor.fetchall()]
+            inserted = cursor.fetchall()
             data = [list(row) for row in data]
             assert data == inserted
 
@@ -31,7 +31,7 @@ def _test_insert_one(configuration, fixture_name, data):
             cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), data)
             assert 1 == cursor.rowcount
             cursor.execute("SELECT a FROM {}".format(table_name))
-            inserted = [list(row) for row in cursor.fetchall()]
+            inserted = cursor.fetchall()
             assert [list(data)] == inserted
 
 

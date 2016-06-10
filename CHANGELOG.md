@@ -1,6 +1,8 @@
 Version 0.2.4
 =============
 
+*   Result set rows are returned as native Python lists instead of a not easily
+    printable custom type.
 *   Improve performance of Python object conversion while reading result sets.
     In tests with an Exasol database, performance got about 15% better.
 *   C++ backend: `turbodbc::cursor` no longer allows direct access to the C++
