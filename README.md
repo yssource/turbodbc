@@ -7,14 +7,27 @@ Turbodbc is a Python module to access relational databases via the Open Database
 Connectivity (ODBC) interface. The module complies with the Python Database API
 Specification 2.0.
 
-Turbodbc implements both sending queries and retrieving result sets with
-support for bulk operations. This allows fast inserts of large batches of
-records without relying on vendor-specific mechanism such as uploads of CSV
-files.
 
-Under the Python hood, turbodbc uses several layers of C++11 code to abstract
-from the low-level C API provided by the unixODBC package. This allows for
-comparatively easy implementation of high-level features. 
+Why should I use turbodbc instead of other ODBC libraries?
+----------------------------------------------------------
+
+Short answer: turbodbc is faster.
+
+Slightly longer answer: I have tested turbodbc and pyodbc (probably the most
+popular Python ODBC module) with various databases (Exasol, PostgreSQL, MySQL)
+and corresponding ODBC drivers. I found turbodbc to be consistently faster.
+
+For retrieving result sets, I found speedups between 1.5 and 7. For inserting
+data, I found speedups of up to 100.
+
+
+Smooth. What is the trick?
+--------------------------
+
+There is not really a trick. Turbodbc implements both sending parameters and
+retrieving result sets using buffers of multiple rows/parameter sets. This
+avoids round trips to the ODBC driver and (depending how well the ODBC driver
+is written) to the database. 
 
 
 Features
@@ -26,6 +39,7 @@ Features
     appropriate
 *   Supported data types for both result sets and parameters:
     `int`, `float`, `str`, `bool`, `datetime.date`, `datetime.datetime`
+*   Also provides a high-level C++11 database driver under the hood
 
 
 Installation
