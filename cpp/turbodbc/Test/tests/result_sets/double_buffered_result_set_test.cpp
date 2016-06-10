@@ -66,56 +66,6 @@ TEST(DoubleBufferedResultSetTest, BindsArraySizeInContructor)
 }
 
 
-namespace {
-
-	/**
-	* Change the address of the given target_pointer to point to the second argument of the mocked function
-	*/
-	ACTION_P(store_length_buffer_address_in, target_pointer) {
-		*target_pointer = arg1;
-	}
-
-	void expect_rows_fetched_pointer_set(mock_statement & statement, SQLULEN * & rows_fetched)
-	{
-		EXPECT_CALL(statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>()))
-				.WillOnce(store_length_buffer_address_in(&rows_fetched));
-	}
-
-	ACTION_P2(set_pointer_to_value, target_pointer, new_value) {
-		*target_pointer = new_value;
-		return (new_value != 0);
-	}
-
-	void expect_fetch_next(mock_statement & statement, SQLULEN * rows_fetched_ptr, std::vector<std::size_t> values_to_set)
-	{
-		EXPECT_CALL(statement, do_fetch_next())
-				.WillRepeatedly(set_pointer_to_value(rows_fetched_ptr, 0));
-
-		std::reverse(values_to_set.begin(), values_to_set.end());
-		for (auto value : values_to_set) {
-			EXPECT_CALL(statement, do_fetch_next())
-					.WillOnce(set_pointer_to_value(rows_fetched_ptr, value));
-		}
-	}
-
-}
-
-
-TEST(DoubleBufferedResultSetTest, FetchNextBatch)
-{
-	std::vector<SQLSMALLINT> const sql_column_types = {SQL_INTEGER};
-	SQLULEN * rows_fetched = nullptr;
-	auto statement = prepare_mock_with_columns(sql_column_types);
-	expect_rows_fetched_pointer_set(*statement, rows_fetched);
-
-	double_buffered_result_set rs(statement, 1000);
-	ASSERT_TRUE(rows_fetched != nullptr);
-
-	expect_fetch_next(*statement, rows_fetched, {123});
-	EXPECT_EQ(123, rs.fetch_next_batch());
-}
-
-
 TEST(DoubleBufferedResultSetTest, GetColumnInfo)
 {
 	auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_VARCHAR});
@@ -125,6 +75,67 @@ TEST(DoubleBufferedResultSetTest, GetColumnInfo)
 	ASSERT_EQ(2, rs.get_column_info().size());
 	EXPECT_EQ(turbodbc::type_code::integer, rs.get_column_info()[0].type);
 	EXPECT_EQ(turbodbc::type_code::string, rs.get_column_info()[1].type);
+}
+
+
+namespace {
+
+	/**
+	 * This class is a fake statement which implements functions relevant for
+	 * the result set handling on top of a mock object.
+	 */
+	class statement_with_fake_int_result_set : public mock_statement {
+	public:
+		statement_with_fake_int_result_set(std::vector<size_t> batch_sizes) :
+			rows_fetched_pointer_(nullptr),
+			batch_sizes_(std::move(batch_sizes)),
+			batch_index_(0)
+		{}
+
+		short int do_number_of_columns() const final
+		{
+			return 1;
+		}
+
+		cpp_odbc::column_description do_describe_column(SQLUSMALLINT) const final
+		{
+			return {"dummy_name", SQL_INTEGER, 42, 17, true};
+		}
+
+		void do_set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const final
+		{
+			if (attribute == SQL_ATTR_ROWS_FETCHED_PTR) {
+				rows_fetched_pointer_ = pointer;
+			}
+		};
+
+		bool do_fetch_next() const final
+		{
+			if (batch_index_ < batch_sizes_.size()) {
+				*rows_fetched_pointer_ = batch_sizes_[batch_index_];
+				++batch_index_;
+			} else {
+				*rows_fetched_pointer_ = 0;
+			}
+			return (*rows_fetched_pointer_ != 0);
+		};
+
+	private:
+		mutable SQLULEN * rows_fetched_pointer_;
+		std::vector<size_t> batch_sizes_;
+		mutable std::size_t batch_index_;
+	};
+
+}
+
+
+TEST(DoubleBufferedResultSetTest, FetchNextBatch)
+{
+	std::vector<size_t> batch_sizes = {123};
+	auto statement = std::make_shared<testing::NiceMock<statement_with_fake_int_result_set>>(batch_sizes);
+
+	double_buffered_result_set rs(statement, 1000);
+	EXPECT_EQ(123, rs.fetch_next_batch());
 }
 
 
