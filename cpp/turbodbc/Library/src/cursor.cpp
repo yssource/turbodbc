@@ -75,5 +75,10 @@ std::shared_ptr<cpp_odbc::connection const> cursor::get_connection() const
 	return connection_;
 }
 
+std::shared_ptr<turbodbc::query> cursor::get_query()
+{
+	return query_;
+}
+
 
 }

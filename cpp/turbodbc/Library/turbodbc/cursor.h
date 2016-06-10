@@ -29,6 +29,8 @@ public:
 
 	std::shared_ptr<cpp_odbc::connection const> get_connection() const;
 
+	std::shared_ptr<turbodbc::query> get_query();
+
 	~cursor();
 
 private:
