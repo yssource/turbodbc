@@ -3,7 +3,7 @@
 #include <cpp_odbc/connection.h>
 #include <turbodbc/query.h>
 #include <turbodbc/column_info.h>
-#include <turbodbc/result_sets/field_result_set.h>
+#include <turbodbc/result_sets/python_result_set.h>
 #include <memory>
 
 
@@ -22,12 +22,14 @@ public:
 	void execute();
 	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
 
-	std::vector<nullable_field> fetch_one();
+	boost::python::object fetch_one();
 	long get_row_count();
 
 	std::vector<column_info> get_result_set_info() const;
 
 	std::shared_ptr<cpp_odbc::connection const> get_connection() const;
+
+	std::shared_ptr<turbodbc::query> get_query();
 
 	~cursor();
 
@@ -36,7 +38,7 @@ private:
 	std::size_t rows_to_buffer_;
 	std::size_t parameter_sets_to_buffer_;
 	std::shared_ptr<turbodbc::query> query_;
-	std::shared_ptr<result_sets::field_result_set> results_;
+	std::shared_ptr<result_sets::python_result_set> results_;
 };
 
 }

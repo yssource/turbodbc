@@ -17,7 +17,7 @@ def _test_single_row_result_set(configuration, query, expected_row):
             assert cursor.rowcount == -1
     
         row = cursor.fetchone()
-        assert list(row) == expected_row
+        assert row == expected_row
     
         row = cursor.fetchone()
         assert None == row
@@ -67,7 +67,7 @@ def test_select_single_row_double_result(configuration, dsn):
         with query_fixture(cursor, configuration, 'SELECT DOUBLE') as query:
             cursor.execute(query)
             row = cursor.fetchone()
-            assert list(row) == [3.14]
+            assert row == [3.14]
 
 
 @for_each_database
@@ -82,7 +82,7 @@ def test_select_single_row_timestamp_result(configuration, dsn):
         with query_fixture(cursor, configuration, 'SELECT TIMESTAMP') as query:
             cursor.execute(query)
             row = cursor.fetchone()
-            assert list(row) == [datetime.datetime(2015, 12, 31, 1, 2, 3)]
+            assert row == [datetime.datetime(2015, 12, 31, 1, 2, 3)]
 
 
 @for_each_database
@@ -105,11 +105,11 @@ def test_fetchone(dsn, configuration):
         with query_fixture(cursor, configuration, 'SELECT MULTIPLE INTEGERS') as query:
             cursor.execute(query)
             row = cursor.fetchone()
-            assert list(row) == [42]
+            assert row == [42]
             row = cursor.fetchone()
-            assert list(row) == [43]
+            assert row == [43]
             row = cursor.fetchone()
-            assert list(row) == [44]
+            assert row == [44]
     
             row = cursor.fetchone()
             assert None == row
@@ -122,9 +122,9 @@ def test_fetchall(dsn, configuration):
             cursor.execute(query)
             rows = cursor.fetchall()
             assert len(rows) == 3
-            assert list(rows[0]) == [42]
-            assert list(rows[1]) == [43]
-            assert list(rows[2]) == [44]
+            assert rows[0] == [42]
+            assert rows[1] == [43]
+            assert rows[2] == [44]
 
 
 @for_each_database
@@ -134,7 +134,7 @@ def test_fetchmany_with_default_arraysize(dsn, configuration):
             cursor.execute(query)
             rows = cursor.fetchmany()
             assert len(rows) == 1
-            assert list(rows[0]) == [42]
+            assert rows[0] == [42]
 
 
 @for_each_database
@@ -146,13 +146,13 @@ def test_fetchmany_with_arraysize_parameter(dsn, configuration):
 
             rows = cursor.fetchmany(arraysize_parameter)
             assert len(rows) == arraysize_parameter
-            assert list(rows[0]) == [42]
-            assert list(rows[1]) == [43]
+            assert rows[0] == [42]
+            assert rows[1] == [43]
 
             # arraysize exceeds number of remaining rows
             rows = cursor.fetchmany(arraysize_parameter)
             assert len(rows) == 1
-            assert list(rows[0]) == [44]
+            assert rows[0] == [44]
 
 
 @for_each_database
@@ -166,13 +166,13 @@ def test_fetchmany_with_global_arraysize(dsn, configuration):
 
             rows = cursor.fetchmany()
             assert len(rows) == arraysize_parameter
-            assert list(rows[0]) == [42]
-            assert list(rows[1]) == [43]
+            assert rows[0] == [42]
+            assert rows[1] == [43]
 
             # arraysize exceeds number of remaining rows
             rows = cursor.fetchmany()
             assert len(rows) == 1
-            assert list(rows[0]) == [44]
+            assert rows[0] == [44]
 
 
 @for_each_database
