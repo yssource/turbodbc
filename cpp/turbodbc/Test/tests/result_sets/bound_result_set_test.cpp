@@ -146,3 +146,19 @@ TEST(BoundResultSetTest, Rebind)
 	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>()));
 	rs.rebind();
 }
+
+
+TEST(BoundResultSetTest, MoveConstructorRebinds)
+{
+	auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_VARCHAR});
+
+	bound_result_set moved(statement, 123);
+
+	// rebind includes setting fetched pointer
+	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>()));
+
+	bound_result_set rs(std::move(moved));
+	ASSERT_EQ(2, rs.get_column_info().size());
+	EXPECT_EQ(turbodbc::type_code::integer, rs.get_column_info()[0].type);
+	EXPECT_EQ(turbodbc::type_code::string, rs.get_column_info()[1].type);
+}

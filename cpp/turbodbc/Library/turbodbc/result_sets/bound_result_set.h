@@ -20,6 +20,12 @@ public:
 	 *        the given statement.
 	 */
 	bound_result_set(std::shared_ptr<cpp_odbc::statement const> statement, std::size_t buffered_rows);
+
+	/**
+	 * @brief Move constructor
+	 */
+	bound_result_set(bound_result_set && other);
+
 	virtual ~bound_result_set();
 
 	/**

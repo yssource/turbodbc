@@ -24,6 +24,14 @@ bound_result_set::bound_result_set(std::shared_ptr<cpp_odbc::statement const> st
 bound_result_set::~bound_result_set() = default;
 
 
+bound_result_set::bound_result_set(bound_result_set && other) :
+	statement_(std::move(other.statement_)),
+	columns_(std::move(other.columns_)),
+	rows_fetched_(other.rows_fetched_)
+{
+	rebind();
+}
+
 void bound_result_set::rebind()
 {
 	for (auto & column : columns_) {
