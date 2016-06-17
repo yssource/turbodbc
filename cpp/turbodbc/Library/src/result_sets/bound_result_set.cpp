@@ -15,14 +15,23 @@ bound_result_set::bound_result_set(std::shared_ptr<cpp_odbc::statement const> st
 	for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
 		auto column_description = make_description(statement_->describe_column(one_based_index));
 		columns_.emplace_back(*statement, one_based_index, buffered_rows, std::move(column_description));
-		columns_.back().bind();
 	}
 
 	statement_->set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffered_rows);
-	statement_->set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, &rows_fetched_);
+	rebind();
 }
 
 bound_result_set::~bound_result_set() = default;
+
+
+void bound_result_set::rebind()
+{
+	for (auto & column : columns_) {
+		column.bind();
+	}
+	statement_->set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, &rows_fetched_);
+}
+
 
 std::size_t bound_result_set::do_fetch_next_batch()
 {

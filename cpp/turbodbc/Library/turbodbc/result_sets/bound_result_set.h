@@ -21,6 +21,11 @@ public:
 	 */
 	bound_result_set(std::shared_ptr<cpp_odbc::statement const> statement, std::size_t buffered_rows);
 	virtual ~bound_result_set();
+
+	/**
+	 * @brief Rebind the internal buffers to the statement.
+	 */
+	void rebind();
 private:
 	std::size_t do_fetch_next_batch() final;
 	std::vector<column_info> do_get_column_info() const final;
