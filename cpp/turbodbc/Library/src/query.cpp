@@ -44,6 +44,7 @@ query::query(std::shared_ptr<cpp_odbc::statement const> statement, std::size_t r
 
 query::~query()
 {
+	results_.reset(); // result may access statement concurrently!
 	statement_->close_cursor();
 }
 

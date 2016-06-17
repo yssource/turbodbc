@@ -60,7 +60,8 @@ TEST(DoubleBufferedResultSetTest, BindsArraySizeInContructor)
 	std::size_t const buffered_rows = 1001;
 
 	auto statement = prepare_mock_with_columns(sql_column_types);
-	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 501));
+	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 501))
+		.Times(testing::AtLeast(1));
 
 	double_buffered_result_set rs(statement, buffered_rows);
 }

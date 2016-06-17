@@ -1,11 +1,15 @@
 #pragma once
 
-#include <turbodbc/result_sets/result_set.h>
+#include <turbodbc/result_sets/bound_result_set.h>
 #include <turbodbc/column.h>
 
 #include <cpp_odbc/statement.h>
 #include <memory>
 #include <array>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <queue>
 
 
 namespace turbodbc { namespace result_sets {
@@ -23,19 +27,24 @@ public:
 	 */
 	double_buffered_result_set(std::shared_ptr<cpp_odbc::statement const> statement, std::size_t buffered_rows);
 	virtual ~double_buffered_result_set();
+
 private:
 	std::size_t do_fetch_next_batch() final;
 	std::vector<column_info> do_get_column_info() const final;
 	std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>> do_get_buffers() const final;
 
-	struct batch_buffer {
-		std::vector<column> columns;
-		std::size_t rows_fetched;
-	};
+	void trigger_next_fetch();
 
 	std::shared_ptr<cpp_odbc::statement const> statement_;
-	std::array<batch_buffer, 2> batches_;
+	std::array<bound_result_set, 2> batches_;
 	std::size_t active_reading_batch_;
+	std::mutex message_mutex_;
+	std::condition_variable message_condition_;
+	std::queue<std::size_t> messages_;
+	std::mutex rows_mutex_;
+	std::condition_variable rows_condition_;
+	std::queue<std::size_t> rows_;
+	std::thread reader_;
 };
 
 
