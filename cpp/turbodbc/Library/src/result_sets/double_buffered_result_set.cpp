@@ -15,16 +15,11 @@ double_buffered_result_set::double_buffered_result_set(std::shared_ptr<cpp_odbc:
 
 	statement_->set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, rows_per_single_buffer);
 
-	for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
-		auto column_description = make_description(statement_->describe_column(one_based_index));
-		batches_[0].columns.emplace_back(*statement, one_based_index, buffered_rows, std::move(column_description));
-		batches_[0].columns.back().bind();
-		statement_->set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, &(batches_[0].rows_fetched));
-	}
-
-	for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
-		auto column_description = make_description(statement_->describe_column(one_based_index));
-		batches_[1].columns.emplace_back(*statement, one_based_index, buffered_rows, std::move(column_description));
+	for (auto & batch : batches_) {
+		for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
+			auto column_description = make_description(statement_->describe_column(one_based_index));
+			batch.columns.emplace_back(*statement, one_based_index, buffered_rows, std::move(column_description));
+		}
 	}
 
 }
