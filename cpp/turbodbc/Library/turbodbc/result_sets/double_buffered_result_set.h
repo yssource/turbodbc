@@ -14,6 +14,25 @@
 
 namespace turbodbc { namespace result_sets {
 
+namespace detail {
+
+	/**
+	 * @brief Implement a very basic thread-safe message queue
+	 */
+	class message_queue {
+	public:
+		message_queue();
+		~message_queue();
+		void push(std::size_t value);
+		std::size_t pull();
+	private:
+		std::mutex mutex_;
+		std::condition_variable condition_;
+		std::queue<std::size_t> messages_;
+	};
+
+}
+
 /**
  * @brief This class implements result_set by double buffering real ODBC
  *        result sets. This means that while one buffer is filled by the database,
@@ -33,17 +52,11 @@ private:
 	std::vector<column_info> do_get_column_info() const final;
 	std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>> do_get_buffers() const final;
 
-	void trigger_next_fetch();
-
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	std::array<bound_result_set, 2> batches_;
 	std::size_t active_reading_batch_;
-	std::mutex message_mutex_;
-	std::condition_variable message_condition_;
-	std::queue<std::size_t> messages_;
-	std::mutex rows_mutex_;
-	std::condition_variable rows_condition_;
-	std::queue<std::size_t> rows_;
+	detail::message_queue read_requests_;
+	detail::message_queue read_responses_;
 	std::thread reader_;
 };
 
