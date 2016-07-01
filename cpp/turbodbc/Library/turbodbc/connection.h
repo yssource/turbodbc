@@ -39,6 +39,8 @@ public:
 	std::size_t rows_to_buffer;
 	///< Indicate number of parameter sets which shall be buffered by queries
 	std::size_t parameter_sets_to_buffer;
+	///< Indicate whether asynchronous i/o should be used
+	bool use_async_io;
 
 private:
 	std::shared_ptr<cpp_odbc::connection const> connection_;

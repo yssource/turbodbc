@@ -12,6 +12,7 @@ void for_connection()
     		.def("cursor", &turbodbc::connection::make_cursor)
     		.def_readwrite("rows_to_buffer", &turbodbc::connection::rows_to_buffer)
     		.def_readwrite("parameter_sets_to_buffer", &turbodbc::connection::parameter_sets_to_buffer)
+			.def_readwrite("use_async_io", &turbodbc::connection::use_async_io)
     	;
 }
 

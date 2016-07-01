@@ -18,10 +18,28 @@ bound_result_set::bound_result_set(std::shared_ptr<cpp_odbc::statement const> st
 	}
 
 	statement_->set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffered_rows);
-	statement_->set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, &rows_fetched_);
+	rebind();
 }
 
 bound_result_set::~bound_result_set() = default;
+
+
+bound_result_set::bound_result_set(bound_result_set && other) :
+	statement_(std::move(other.statement_)),
+	columns_(std::move(other.columns_)),
+	rows_fetched_(other.rows_fetched_)
+{
+	rebind();
+}
+
+void bound_result_set::rebind()
+{
+	for (auto & column : columns_) {
+		column.bind();
+	}
+	statement_->set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, &rows_fetched_);
+}
+
 
 std::size_t bound_result_set::do_fetch_next_batch()
 {

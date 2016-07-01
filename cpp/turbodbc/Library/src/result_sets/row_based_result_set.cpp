@@ -5,8 +5,7 @@ namespace turbodbc { namespace result_sets {
 row_based_result_set::row_based_result_set(result_set & base) :
 	base_(base),
 	rows_in_batch_(0),
-	current_row_in_batch_(0),
-	buffers_(base_.get_buffers())
+	current_row_in_batch_(0)
 {
 }
 
@@ -20,6 +19,7 @@ std::vector<cpp_odbc::buffer_element> row_based_result_set::fetch_row()
 {
 	if (current_row_in_batch_ == rows_in_batch_) {
 		rows_in_batch_ = base_.fetch_next_batch();
+		buffers_ = base_.get_buffers(); // fetch_next_batch invalidates buffers
 		current_row_in_batch_ = 0;
 	}
 

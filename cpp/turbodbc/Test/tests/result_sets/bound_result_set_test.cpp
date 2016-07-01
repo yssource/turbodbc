@@ -129,3 +129,36 @@ TEST(BoundResultSetTest, GetBuffers)
 	EXPECT_EQ(last_of_col_a.indicator, last_of_col_a.indicator);
 	EXPECT_EQ(last_of_col_b.indicator, last_of_col_b.indicator);
 }
+
+
+TEST(BoundResultSetTest, Rebind)
+{
+	std::vector<SQLSMALLINT> const sql_column_types = {SQL_INTEGER, SQL_VARCHAR};
+	std::vector<SQLSMALLINT> const c_column_types = {SQL_C_SBIGINT, SQL_CHAR};
+	std::size_t const buffered_rows = 1234;
+
+	auto statement = prepare_mock_with_columns(sql_column_types);
+	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffered_rows));
+
+	bound_result_set rs(statement, buffered_rows);
+
+	expect_calls_to_bind_buffer(*statement, c_column_types);
+	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>()));
+	rs.rebind();
+}
+
+
+TEST(BoundResultSetTest, MoveConstructorRebinds)
+{
+	auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_VARCHAR});
+
+	bound_result_set moved(statement, 123);
+
+	// rebind includes setting fetched pointer
+	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>()));
+
+	bound_result_set rs(std::move(moved));
+	ASSERT_EQ(2, rs.get_column_info().size());
+	EXPECT_EQ(turbodbc::type_code::integer, rs.get_column_info()[0].type);
+	EXPECT_EQ(turbodbc::type_code::string, rs.get_column_info()[1].type);
+}

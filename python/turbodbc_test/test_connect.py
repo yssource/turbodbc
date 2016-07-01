@@ -37,10 +37,12 @@ def test_connect_raises_on_invalid_additional_option(dsn, configuration):
         connect(dsn=dsn, **additional_option)
 
 @for_one_database
-def test_connect_buffer_sizes_default_values(dsn, configuration):
+def test_connect_performance_settings(dsn, configuration):
     connection = connect(dsn=dsn,
                          rows_to_buffer=317,
-                         parameter_sets_to_buffer=123)
+                         parameter_sets_to_buffer=123,
+                         use_async_io=True)
 
     assert connection.impl.rows_to_buffer == 317
     assert connection.impl.parameter_sets_to_buffer == 123
+    assert connection.impl.use_async_io == True

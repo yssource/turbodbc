@@ -45,7 +45,7 @@ TEST(ConnectionTest, MakeCursorForwardsSelf)
 	EXPECT_EQ(connection, cursor.get_connection());
 }
 
-TEST(ConnectionTest, RowsToBuffer)
+TEST(ConnectionTest, RowsToBufferDefault)
 {
 	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
 
@@ -53,10 +53,18 @@ TEST(ConnectionTest, RowsToBuffer)
 	EXPECT_EQ(1000, test_connection.rows_to_buffer);
 }
 
-TEST(ConnectionTest, ParameterSetsToBuffer)
+TEST(ConnectionTest, ParameterSetsToBufferDefault)
 {
 	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
 
 	turbodbc::connection test_connection(connection);
 	EXPECT_EQ(1000, test_connection.parameter_sets_to_buffer);
+}
+
+TEST(ConnectionTest, AsyncIODefault)
+{
+	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
+
+	turbodbc::connection test_connection(connection);
+	EXPECT_FALSE(test_connection.use_async_io);
 }

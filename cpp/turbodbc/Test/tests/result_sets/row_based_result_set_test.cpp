@@ -32,11 +32,11 @@ TEST(RowBasedResultSetTest, FetchRowBatchHandling)
 	std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>> buffers = {std::cref(buffer)};
 
 	testing::NiceMock<mock_result_set> base;
-	ON_CALL(base, do_get_buffers()).WillByDefault(testing::Return(buffers));
 	row_based_result_set rs(base);
 
 	// first batch: 3 rows
 	EXPECT_CALL(base, do_fetch_next_batch()).WillOnce(testing::Return(3));
+	EXPECT_CALL(base, do_get_buffers()).WillOnce(testing::Return(buffers));
 	buffer[0].indicator = 0;
 	buffer[1].indicator = 1;
 	buffer[2].indicator = 2;
@@ -47,12 +47,14 @@ TEST(RowBasedResultSetTest, FetchRowBatchHandling)
 
 	// second batch: 1 row
 	EXPECT_CALL(base, do_fetch_next_batch()).WillOnce(testing::Return(1));
+	EXPECT_CALL(base, do_get_buffers()).WillOnce(testing::Return(buffers));
 	buffer[0].indicator = 3;
 
 	EXPECT_EQ(3, rs.fetch_row().at(0).indicator);
 
 	// third batch: empty
 	EXPECT_CALL(base, do_fetch_next_batch()).WillOnce(testing::Return(0));
+	EXPECT_CALL(base, do_get_buffers()).WillOnce(testing::Return(buffers));
 
 	EXPECT_TRUE(rs.fetch_row().empty());
 }

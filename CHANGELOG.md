@@ -1,3 +1,22 @@
+Version 0.3.0
+=============
+
+*   turbodbc now supports asynchronous I/O operations for retrieving result sets.
+    This means that while the main thread is busy converting an already retrieved
+    batch of results to Python objects, another thread fetches an additional
+    batch in the background. This may yield substantial performance improvements
+    in the right circumstances (results are retrieved in roughly the same speed
+    as they are converted to Python objects).
+    
+    Ansynchronous I/O support is experimental. Enable it with
+    `turbodbc.connect('My data source name', use_async_io=True)`
+
+Version 0.2.5
+=============
+
+*   C++ backend: `turbodbc::column` no longer automatically binds on
+    construction. Call `bind()` instead.
+
 Version 0.2.4
 =============
 
