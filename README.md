@@ -36,7 +36,11 @@ Smooth. What is the trick?
 There is not really a trick. Turbodbc implements both sending parameters and
 retrieving result sets using buffers of multiple rows/parameter sets. This
 avoids round trips to the ODBC driver and (depending how well the ODBC driver
-is written) to the database. 
+is written) to the database.
+
+In addition, turbodbc uses asynchronous I/O to interleave Python object
+conversion and direct database interaction (see performance options
+below).
 
 
 Features
@@ -44,6 +48,7 @@ Features
 
 *   Bulk retrieval of select statements
 *   Bulk transfer of query parameters
+*   Asynchronous I/O for result sets
 *   Automatic conversion of decimal type to integer, float, and string as
     appropriate
 *   Supported data types for both result sets and parameters:
