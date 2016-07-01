@@ -10,6 +10,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <queue>
+#include <future>
 
 
 namespace turbodbc { namespace result_sets {
@@ -19,16 +20,30 @@ namespace detail {
 	/**
 	 * @brief Implement a very basic thread-safe message queue
 	 */
+	template <typename Value>
 	class message_queue {
 	public:
-		message_queue();
-		~message_queue();
-		void push(std::size_t value);
-		std::size_t pull();
+		void push(Value value)
+		{
+			{
+				std::lock_guard<std::mutex> lock(mutex_);
+				messages_.push(std::move(value));
+			}
+			condition_.notify_one();
+		}
+
+		Value pull()
+		{
+			std::unique_lock<std::mutex> lock(mutex_);
+			condition_.wait(lock, [&](){return not messages_.empty();});
+			auto value = messages_.front();
+			messages_.pop();
+			return value;
+		}
 	private:
 		std::mutex mutex_;
 		std::condition_variable condition_;
-		std::queue<std::size_t> messages_;
+		std::queue<Value> messages_;
 	};
 
 }
@@ -55,8 +70,8 @@ private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	std::array<bound_result_set, 2> batches_;
 	std::size_t active_reading_batch_;
-	detail::message_queue read_requests_;
-	detail::message_queue read_responses_;
+	detail::message_queue<std::size_t> read_requests_;
+	detail::message_queue<std::shared_future<std::size_t>> read_responses_;
 	std::thread reader_;
 };
 

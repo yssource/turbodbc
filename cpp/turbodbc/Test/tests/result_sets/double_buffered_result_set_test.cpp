@@ -177,3 +177,40 @@ TEST(DoubleBufferedResultSetTest, GetBuffers)
 	// fourth, non-existing batch
 	ASSERT_EQ(0, rs.fetch_next_batch());
 }
+
+
+namespace {
+	/**
+	 * This class is a fake statement which implements functions relevant for
+	 * the result set handling on top of a mock object.
+	 * THIS STATEMENT WILL THROW AN EXCEPTION WHILE FETCHING!
+	 */
+	class statement_with_fake_failing_result_set : public mock_statement {
+	public:
+		statement_with_fake_failing_result_set() = default;
+
+		short int do_number_of_columns() const final
+		{
+			return 1;
+		}
+
+		cpp_odbc::column_description do_describe_column(SQLUSMALLINT) const final
+		{
+			return {"dummy_name", SQL_INTEGER, 42, 17, true};
+		}
+
+		bool do_fetch_next() const final
+		{
+			throw std::runtime_error("FAILURE WHILE FETCHING");
+		};
+	};
+}
+
+
+TEST(DoubleBufferedResultSetTest, FetchNextBatchFails)
+{
+	auto statement = std::make_shared<testing::NiceMock<statement_with_fake_failing_result_set>>();
+
+	double_buffered_result_set rs(statement, 1000);
+	EXPECT_THROW(rs.fetch_next_batch(), std::runtime_error);
+}
