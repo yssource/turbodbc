@@ -16,7 +16,8 @@ class cursor {
 public:
 	cursor(std::shared_ptr<cpp_odbc::connection const> connection,
 		   std::size_t rows_to_buffer,
-		   std::size_t parameter_sets_to_buffer);
+		   std::size_t parameter_sets_to_buffer,
+		   bool use_async_io);
 
 	void prepare(std::string const & sql);
 	void execute();
@@ -37,6 +38,7 @@ private:
 	std::shared_ptr<cpp_odbc::connection const> connection_;
 	std::size_t rows_to_buffer_;
 	std::size_t parameter_sets_to_buffer_;
+	bool use_async_io_;
 	std::shared_ptr<turbodbc::query> query_;
 	std::shared_ptr<result_sets::python_result_set> results_;
 };
