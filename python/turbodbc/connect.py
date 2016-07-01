@@ -12,7 +12,7 @@ def _make_connection_string(dsn, **kwargs):
 
 
 @translate_exceptions
-def connect(dsn=None, rows_to_buffer=None, parameter_sets_to_buffer=None, **kwargs):
+def connect(dsn=None, rows_to_buffer=None, parameter_sets_to_buffer=None, use_async_io=False, **kwargs):
     """
     Create a connection with the database identified by the dsn
     :param dsn: data source name as given in the odbc.ini file
@@ -35,5 +35,7 @@ def connect(dsn=None, rows_to_buffer=None, parameter_sets_to_buffer=None, **kwar
 
     if parameter_sets_to_buffer:
         connection.impl.parameter_sets_to_buffer = parameter_sets_to_buffer
+
+    connection.impl.use_async_io = use_async_io
 
     return connection
