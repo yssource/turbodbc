@@ -31,10 +31,14 @@ namespace {
 
 }
 
-query::query(std::shared_ptr<cpp_odbc::statement const> statement, std::size_t rows_to_buffer, std::size_t parameter_sets_to_buffer) :
+query::query(std::shared_ptr<cpp_odbc::statement const> statement,
+             std::size_t rows_to_buffer,
+             std::size_t parameter_sets_to_buffer,
+             bool use_double_buffering) :
 	statement_(statement),
 	rows_to_buffer_(rows_to_buffer),
 	parameter_sets_to_buffer_(parameter_sets_to_buffer),
+	use_double_buffering_(use_double_buffering),
 	current_parameter_set_(0),
 	row_count_(0),
 	rows_processed_(0)
@@ -54,9 +58,11 @@ void query::execute()
 
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
-		// TODO make this choice an option!
-//		results_ = std::make_shared<result_sets::bound_result_set>(statement_, rows_to_buffer_);
-		results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, rows_to_buffer_);
+		if (use_double_buffering_) {
+			results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, rows_to_buffer_);
+		} else {
+			results_ = std::make_shared<result_sets::bound_result_set>(statement_, rows_to_buffer_);
+		}
 	}
 }
 

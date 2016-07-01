@@ -30,7 +30,7 @@ void cursor::prepare(std::string const & sql)
 	query_.reset();
 	auto statement = connection_->make_statement();
 	statement->prepare(sql);
-	query_ = std::make_shared<query>(statement, rows_to_buffer_, parameter_sets_to_buffer_);
+	query_ = std::make_shared<query>(statement, rows_to_buffer_, parameter_sets_to_buffer_, false);
 }
 
 void cursor::execute()
