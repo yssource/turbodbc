@@ -78,7 +78,7 @@ To establish a connection, use any of the following commands:
     >>> from turbodbc import connect
     >>> connection = connect(dsn='My data source name as given by odbc.ini')
     >>> connection = connect(dsn='my dsn', user='my user has precedence')
-    >>> connection = connect(dsn='my dsn', username='field names depend on the driver')
+    >>> connection = connect(dsn='my dsn', username='field names may depend on the driver')
 
 To execute a query, you need a `cursor` object:
 
@@ -96,6 +96,36 @@ Here is how to execute an `INSERT` query with many parameters:
                           ['there', 23]]
     >>> cursor.executemany('INSERT INTO my_table VALUES (?, ?)',
                            parameter_sets)
+
+
+Performance options
+-------------------
+
+Turbodbc offers some options to tune the performance for your database:
+
+    >>> connection.connect(dsn="my dsn",
+                           rows_to_buffer=10000,
+                           parameter_sets_to_buffer=5000,
+                           use_async_io=True)
+
+`rows_to_buffer` affects how many result set rows are retrieved per batch
+of results. Larger numbers may yield better performance because database
+roundtrips are avoided. However, larger numbers also improve the memory
+footprint, since more data is kept in internal buffers.
+
+Similarly, `parameter_sets_to_buffer` changes the number of parameter sets
+which are transferred per batch of parameters (e.g., as sent with `executemany()`).
+
+Finally, set `use_async_io` to `True` if you would like to benefit from
+asynchronous I/O operations (limited to result sets for the time being).
+Asynchronous I/O means that while the main thread converts result set rows
+retrieved from the database to Python objects, another thread fetches a
+new batch of results from the database in the background. This may yield
+significant speedups when retrieving and converting are similarly fast
+operations.
+
+    Asynchronous I/O is experimental and has to fully prove itself yet.
+    Don't be afraid to give it a try, though.
 
 
 Development version

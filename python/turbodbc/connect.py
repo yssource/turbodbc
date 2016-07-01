@@ -23,6 +23,11 @@ def connect(dsn=None, rows_to_buffer=None, parameter_sets_to_buffer=None, use_as
                            shall be buffered when bulk queries are sent
                            to the server.
                            None means that the default value is used.
+    :param use_async_io: Set this value to true if you want to use
+                         asynchronous I/O. Asynchronous I/O means that
+                         while the main thread converts a batch of
+                         results to Python objects, another thread
+                         fetches additional results in the background.
     :param \**kwargs: You may specify additional options as you please.
                       These options will go into the connection string.
                       Valid options depend on the specific database you
