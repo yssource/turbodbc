@@ -1,2 +1,3 @@
 add_subdirectory(cpp_odbc)
 add_subdirectory(turbodbc)
+add_subdirectory(turbodbc_numpy)

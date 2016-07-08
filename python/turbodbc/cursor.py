@@ -7,6 +7,14 @@ from turbodbc_intern import has_result_set, make_row_based_result_set
 from .exceptions import translate_exceptions, InterfaceError
 
 
+def _has_numpy_support():
+    try:
+        import turbodbc_numpy
+        return True
+    except ImportError:
+        return False
+
+
 class Cursor(object):
     def __init__(self, impl):
         self.impl = impl
