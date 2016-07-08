@@ -61,15 +61,6 @@ long cursor::get_row_count()
 	return query_->get_row_count();
 }
 
-std::vector<column_info> cursor::get_result_set_info() const
-{
-	if (results_) {
-		return results_->get_column_info();
-	} else {
-		return {};
-	}
-}
-
 std::shared_ptr<cpp_odbc::connection const> cursor::get_connection() const
 {
 	return connection_;

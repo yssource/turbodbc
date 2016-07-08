@@ -26,7 +26,6 @@ public:
 	long get_row_count();
 
 	std::shared_ptr<result_sets::result_set> get_result_set() const;
-	std::vector<column_info> get_result_set_info() const;
 
 	std::shared_ptr<cpp_odbc::connection const> get_connection() const;
 

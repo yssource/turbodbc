@@ -34,11 +34,11 @@ class Cursor(object):
 
     @property
     def description(self):
-        info = self.impl.get_result_set_info()
-        if len(info) == 0:
-            return None
-        else:
+        if self.result_set:
+            info = self.result_set.get_column_info()
             return [(c['name'], c['type_code'], None, None, None, None, c['supports_null_values']) for c in info]
+        else:
+            return None
 
     @translate_exceptions
     def execute(self, sql, parameters=None):
