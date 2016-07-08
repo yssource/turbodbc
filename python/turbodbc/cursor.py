@@ -2,12 +2,15 @@ from __future__ import absolute_import
 
 from itertools import islice
 
+from turbodbc_intern import has_result_set, make_row_based_result_set
+
 from .exceptions import translate_exceptions, InterfaceError
 
 
 class Cursor(object):
     def __init__(self, impl):
         self.impl = impl
+        self.result_set = None
         self.rowcount = -1
         self.arraysize = 1
 
@@ -24,6 +27,10 @@ class Cursor(object):
     def _assert_valid(self):
         if self.impl is None:
             raise InterfaceError("Cursor already closed")
+
+    def _assert_valid_result_set(self):
+        if self.result_set is None:
+            raise InterfaceError("No active result set")
 
     @property
     def description(self):
@@ -44,6 +51,11 @@ class Cursor(object):
             self.impl.add_parameter_set(list(parameters))
         self.impl.execute()
         self.rowcount = self.impl.get_row_count()
+        cpp_result_set = self.impl.get_result_set()
+        if has_result_set(cpp_result_set):
+            self.result_set = make_row_based_result_set(cpp_result_set)
+        else:
+            self.result_set = None
 
     @translate_exceptions
     def executemany(self, sql, parameters=None):
@@ -59,11 +71,16 @@ class Cursor(object):
 
         self.impl.execute()
         self.rowcount = self.impl.get_row_count()
+        cpp_result_set = self.impl.get_result_set()
+        if has_result_set(cpp_result_set):
+            self.result_set = make_row_based_result_set(cpp_result_set)
+        else:
+            self.result_set = None
 
     @translate_exceptions
     def fetchone(self):
-        self._assert_valid()
-        result = self.impl.fetchone()
+        self._assert_valid_result_set()
+        result = self.result_set.fetch_row()
         if len(result) == 0:
             return None 
         else:
@@ -83,6 +100,7 @@ class Cursor(object):
         return [row for row in islice(self, size)]
 
     def close(self):
+        self.result_set = None
         self.impl = None
 
     def setinputsizes(self, sizes):

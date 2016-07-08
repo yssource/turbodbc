@@ -46,18 +46,14 @@ void cursor::execute()
 	}
 }
 
+std::shared_ptr<result_sets::result_set> cursor::get_result_set() const
+{
+	return query_->get_results();
+}
+
 void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set)
 {
 	query_->add_parameter_set(parameter_set);
-}
-
-boost::python::object cursor::fetch_one()
-{
-	if (results_) {
-		return results_->fetch_row();
-	} else {
-		throw std::runtime_error("No active result set");
-	}
 }
 
 long cursor::get_row_count()

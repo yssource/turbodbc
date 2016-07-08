@@ -52,6 +52,15 @@ def test_closing_twice_does_not_raise(dsn, configuration):
 
 
 @for_one_database
+def test_open_cursor_without_result_set_raises(dsn, configuration):
+    connection = connect(dsn)
+    cursor = connection.cursor()
+
+    with pytest.raises(InterfaceError):
+        cursor.fetchone()
+
+
+@for_one_database
 def test_setinputsizes_does_not_raise(dsn, configuration):
     """
     It is legal for setinputsizes() to do nothing, so anything except
