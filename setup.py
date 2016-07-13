@@ -41,39 +41,54 @@ def _remove_strict_prototype_option_from_distutils_config():
 
 _remove_strict_prototype_option_from_distutils_config()
 
-turbodbc_sources = _get_source_files('cpp_odbc') + _get_source_files('turbodbc')
 
-"""
-Extension module which is actually a plain C++ library without Python bindings
-"""
-turbodbc_library = distutils.core.Extension('libturbodbc',
-                                            sources=turbodbc_sources,
-                                            include_dirs=['include/'],
-                                            extra_compile_args=['--std=c++11'],
-                                            libraries=['odbc', 'boost_python'])
+def _has_numpy_headers():
+    try:
+        import numpy
+        return True
+    except:
+        return False
 
-"""
-An extension module which contains the main Python bindings for turbodbc
-"""
-turbodbc_python = distutils.core.Extension('turbodbc_intern',
-                                           sources=_get_source_files('turbodbc_python'),
-                                           include_dirs=['include/'],
-                                           extra_compile_args=['--std=c++11'],
-                                           libraries=['odbc', 'boost_python', 'turbodbc'],
-                                           extra_link_args=["-Wl,-rpath,$ORIGIN"],
-                                           library_dirs=[_get_distutils_build_directory()])
 
-"""
-An extension module which contains Python bindings which require numpy support
-to work. Not included in the standard Python bindings so this can stay optional.
-"""
-turbodbc_numpy = distutils.core.Extension('turbodbc_numpy',
-                                           sources=_get_source_files('turbodbc_numpy'),
-                                           include_dirs=['include/'],
-                                           extra_compile_args=['--std=c++11'],
-                                           libraries=['odbc', 'boost_python', 'turbodbc'],
-                                           extra_link_args=["-Wl,-rpath,$ORIGIN"],
-                                           library_dirs=[_get_distutils_build_directory()])
+def get_extension_modules():
+    """
+    Extension module which is actually a plain C++ library without Python bindings
+    """
+    turbodbc_sources = _get_source_files('cpp_odbc') + _get_source_files('turbodbc')
+    turbodbc_library = distutils.core.Extension('libturbodbc',
+                                                sources=turbodbc_sources,
+                                                include_dirs=['include/'],
+                                                extra_compile_args=['--std=c++11'],
+                                                libraries=['odbc', 'boost_python'])
+    
+    """
+    An extension module which contains the main Python bindings for turbodbc
+    """
+    turbodbc_python = distutils.core.Extension('turbodbc_intern',
+                                               sources=_get_source_files('turbodbc_python'),
+                                               include_dirs=['include/'],
+                                               extra_compile_args=['--std=c++11'],
+                                               libraries=['odbc', 'boost_python', 'turbodbc'],
+                                               extra_link_args=["-Wl,-rpath,$ORIGIN"],
+                                               library_dirs=[_get_distutils_build_directory()])
+    
+    """
+    An extension module which contains Python bindings which require numpy support
+    to work. Not included in the standard Python bindings so this can stay optional.
+    """
+    if _has_numpy_headers():
+        import numpy
+        turbodbc_numpy = distutils.core.Extension('turbodbc_numpy',
+                                                  sources=_get_source_files('turbodbc_numpy'),
+                                                  include_dirs=['include/', numpy.get_include()],
+                                                  extra_compile_args=['--std=c++11'],
+                                                  libraries=['odbc', 'boost_python', 'turbodbc'],
+                                                  extra_link_args=["-Wl,-rpath,$ORIGIN"],
+                                                  library_dirs=[_get_distutils_build_directory()])
+        return [turbodbc_library, turbodbc_python, turbodbc_numpy]
+    else:
+        return [turbodbc_library, turbodbc_python]
+
 
 setup(name = 'turbodbc',
       version = '0.4.0',
@@ -90,5 +105,5 @@ setup(name = 'turbodbc',
                      'Programming Language :: C++',
                      'Programming Language :: Python :: 2.7',
                      'Topic :: Database'],
-      ext_modules = [turbodbc_library, turbodbc_python, turbodbc_numpy]
+      ext_modules = get_extension_modules()
       )
