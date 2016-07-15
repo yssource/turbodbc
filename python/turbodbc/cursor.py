@@ -114,8 +114,10 @@ class Cursor(object):
         from turbodbc_numpy import make_numpy_result_set
         from numpy.ma import MaskedArray
         numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
-        return OrderedDict([('A', MaskedArray(data=col, mask=False)) for col in numpy_result_set.fetch_all()])
-#         return OrderedDict([("A", MaskedArray())])
+        column_names = [description[0] for description in self.description]
+        columns = zip(column_names,
+                      [MaskedArray(data=col, mask=False) for col in numpy_result_set.fetch_all()])
+        return OrderedDict(columns)
 
     def close(self):
         self.result_set = None
