@@ -15,6 +15,7 @@ def test_numpy_without_result_set_raises(dsn, configuration):
         with pytest.raises(turbodbc.InterfaceError):
             cursor.fetchallnumpy()
 
+
 @for_each_database
 def test_numpy_empty_column(dsn, configuration):
     with open_cursor(configuration) as cursor:
@@ -25,10 +26,23 @@ def test_numpy_empty_column(dsn, configuration):
             assert len(results) == 1
             assert isinstance(results['A'], MaskedArray)
 
+
 @for_each_database
 def test_numpy_int_column(dsn, configuration):
     with open_cursor(configuration) as cursor:
         cursor.execute("SELECT 42 AS a")
         results = cursor.fetchallnumpy()
         expected = MaskedArray([42], mask=[0])
-        assert results['A'] == expected
+        assert all(results['A'] == expected)
+
+
+@for_each_database
+def test_numpy_large_column(dsn, configuration):
+    with open_cursor(configuration, rows_to_buffer=2) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name),
+                               [[1], [2], [3], [4], [5]])
+            cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
+            results = cursor.fetchallnumpy()
+            expected = MaskedArray([1, 2, 3, 4, 5], mask=False)
+            assert all(results['A'] == expected)

@@ -12,6 +12,7 @@
 #include <Python.h>
 
 #include <cstring>
+#include <vector>
 
 namespace turbodbc { namespace result_sets {
 
@@ -43,11 +44,31 @@ namespace {
 		                                                                               nullptr))};
 	}
 
-	long * get_numpy_data_pointer(boost::python::object const & numpy_object)
+	PyArrayObject * get_array_ptr(boost::python::object & object)
 	{
-		return static_cast<long *>(PyArray_DATA(reinterpret_cast<PyArrayObject *>(numpy_object.ptr())));
+		return reinterpret_cast<PyArrayObject *>(object.ptr());
 	}
 
+	void resize_numpy_array(boost::python::object & array, npy_intp new_size)
+	{
+		PyArray_Dims new_dimensions = {&new_size, 1};
+		int const no_reference_check = 0;
+		__extension__ PyArray_Resize(get_array_ptr(array), &new_dimensions, no_reference_check, NPY_ANYORDER);
+	}
+
+	long * get_numpy_data_pointer(boost::python::object & numpy_object)
+	{
+		return static_cast<long *>(PyArray_DATA(get_array_ptr(numpy_object)));
+	}
+
+	boost::python::list as_python_list(std::vector<boost::python::object> const & objects)
+	{
+		boost::python::list result;
+		for (auto const & object : objects) {
+			result.append(object);
+		}
+		return result;
+	}
 }
 
 numpy_result_set::numpy_result_set(result_set & base) :
@@ -58,18 +79,27 @@ numpy_result_set::numpy_result_set(result_set & base) :
 
 boost::python::object numpy_result_set::fetch_all()
 {
-	auto const elements = base_result_.fetch_next_batch();
-	auto const buffers = base_result_.get_buffers();
-	boost::python::list columns;
+	std::vector<boost::python::object> columns;
+	std::size_t processed_rows = 0;
+	std::size_t rows_in_batch = base_result_.fetch_next_batch();;
 
-//	for (auto const & buffer : buffers) {
-	auto column = make_numpy_array(elements, numpy_int_type);
-	std::memcpy(get_numpy_data_pointer(column),
-	            buffers[0].get().data_pointer(),
-	            elements * sizeof(long));
-	columns.append(column);
-//	}
-	return columns;
+	do {
+		auto const buffers = base_result_.get_buffers();
+
+		if (processed_rows == 0) {
+			auto column = make_numpy_array(rows_in_batch, numpy_int_type);
+			columns.push_back(column);
+		} else {
+			resize_numpy_array(columns[0], processed_rows + rows_in_batch);
+		}
+		std::memcpy(get_numpy_data_pointer(columns[0]) + processed_rows,
+					buffers[0].get().data_pointer(),
+					rows_in_batch * numpy_int_type.size);
+		processed_rows += rows_in_batch;
+		rows_in_batch = base_result_.fetch_next_batch();
+	} while (rows_in_batch != 0);
+
+	return as_python_list(columns);
 }
 
 
