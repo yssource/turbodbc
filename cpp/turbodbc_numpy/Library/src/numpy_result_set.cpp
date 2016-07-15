@@ -11,7 +11,35 @@
 
 namespace turbodbc { namespace result_sets {
 
-const int one_dimensional = 1;
+
+
+namespace {
+
+	struct numpy_type {
+		int code;
+		int size;
+	};
+
+	numpy_type const numpy_int_type = {NPY_INT64, 8};
+
+	boost::python::object make_numpy_array(npy_intp elements, numpy_type type)
+	{
+		int const flags = 0;
+		int const one_dimensional = 1;
+		// __extension__ needed because of some C/C++ incompatibility.
+		// see issue https://github.com/numpy/numpy/issues/2539
+		return boost::python::object{boost::python::handle<>(__extension__ PyArray_New(&PyArray_Type,
+		                                                                               one_dimensional,
+		                                                                               &elements,
+		                                                                               type.code,
+		                                                                               nullptr,
+		                                                                               nullptr,
+		                                                                               type.size,
+		                                                                               flags,
+		                                                                               nullptr))};
+	}
+
+}
 
 numpy_result_set::numpy_result_set(result_set & base) :
 	base_result_(base)
@@ -22,20 +50,9 @@ numpy_result_set::numpy_result_set(result_set & base) :
 boost::python::object numpy_result_set::fetch_all()
 {
 	boost::python::list columns;
-	npy_intp size = 0;
-	int const type_code = NPY_INT64;
-	int const type_size = 8;
-	int const flags = 0;
-	boost::python::object column{boost::python::handle<>(PyArray_New(&PyArray_Type,
-	                                                                 one_dimensional,
-	                                                                 &size,
-	                                                                 type_code,
-	                                                                 nullptr,
-	                                                                 nullptr,
-	                                                                 type_size,
-	                                                                 flags,
-	                                                                 nullptr))};
-	columns.append(column);
+	npy_intp elements = 0;
+
+	columns.append(make_numpy_array(elements, numpy_int_type));
 	return columns;
 }
 
