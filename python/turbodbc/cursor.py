@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from itertools import islice
+from collections import OrderedDict
 
 from turbodbc_intern import has_result_set, make_row_based_result_set
 
@@ -21,6 +22,7 @@ class Cursor(object):
         self.result_set = None
         self.rowcount = -1
         self.arraysize = 1
+#         self.has_numpy_support = _has_numpy_support()
 
     def __iter__(self):
         return self
@@ -106,6 +108,14 @@ class Cursor(object):
             raise InterfaceError("Invalid arraysize {} for fetchmany()".format(size))
 
         return [row for row in islice(self, size)]
+
+    def fetchallnumpy(self):
+        self._assert_valid_result_set()
+        from turbodbc_numpy import make_numpy_result_set
+        from numpy.ma import MaskedArray
+        numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
+        return OrderedDict([('A', MaskedArray(data=col, mask=False)) for col in numpy_result_set.fetch_all()])
+#         return OrderedDict([("A", MaskedArray())])
 
     def close(self):
         self.result_set = None
