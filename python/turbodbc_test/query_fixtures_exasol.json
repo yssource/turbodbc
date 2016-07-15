@@ -48,6 +48,10 @@
 			"table": "a INTEGER"
 		},
 		
+		"INSERT TWO INTEGER COLUMNS": {
+			"table": "a INTEGER, b INTEGER"
+		},
+		
 		"INSERT MIXED": {
 			"table": "a INTEGER, b DOUBLE PRECISION"
 		},

@@ -79,22 +79,26 @@ numpy_result_set::numpy_result_set(result_set & base) :
 
 boost::python::object numpy_result_set::fetch_all()
 {
-	std::vector<boost::python::object> columns;
 	std::size_t processed_rows = 0;
-	std::size_t rows_in_batch = base_result_.fetch_next_batch();;
+	std::size_t rows_in_batch = base_result_.fetch_next_batch();
+	auto const n_columns = base_result_.get_column_info().size();
+
+	std::vector<boost::python::object> columns;
+	for (std::size_t i = 0; i != n_columns; ++i) {
+		auto column = make_numpy_array(rows_in_batch, numpy_int_type);
+		columns.push_back(column);
+	}
 
 	do {
 		auto const buffers = base_result_.get_buffers();
 
-		if (processed_rows == 0) {
-			auto column = make_numpy_array(rows_in_batch, numpy_int_type);
-			columns.push_back(column);
-		} else {
-			resize_numpy_array(columns[0], processed_rows + rows_in_batch);
+		for (std::size_t i = 0; i != n_columns; ++i) {
+			resize_numpy_array(columns[i], processed_rows + rows_in_batch);
+
+			std::memcpy(get_numpy_data_pointer(columns[i]) + processed_rows,
+						buffers[i].get().data_pointer(),
+						rows_in_batch * numpy_int_type.size);
 		}
-		std::memcpy(get_numpy_data_pointer(columns[0]) + processed_rows,
-					buffers[0].get().data_pointer(),
-					rows_in_batch * numpy_int_type.size);
 		processed_rows += rows_in_batch;
 		rows_in_batch = base_result_.fetch_next_batch();
 	} while (rows_in_batch != 0);

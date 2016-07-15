@@ -46,3 +46,15 @@ def test_numpy_large_column(dsn, configuration):
             results = cursor.fetchallnumpy()
             expected = MaskedArray([1, 2, 3, 4, 5], mask=False)
             assert all(results['A'] == expected)
+
+
+@for_each_database
+def test_numpy_two_columns(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:
+            cursor.executemany("INSERT INTO {} VALUES (?, ?)".format(table_name),
+                               [[1, 42], [2, 41]])
+            cursor.execute("SELECT a, b FROM {} ORDER BY a".format(table_name))
+            results = cursor.fetchallnumpy()
+            assert all(results['A'] == MaskedArray([1, 2], mask=False))
+            assert all(results['B'] == MaskedArray([42, 41], mask=False))
