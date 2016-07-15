@@ -9,6 +9,10 @@
 #define NO_IMPORT_ARRAY
 #include <numpy/ndarrayobject.h>
 
+#include <Python.h>
+
+#include <cstring>
+
 namespace turbodbc { namespace result_sets {
 
 
@@ -39,6 +43,11 @@ namespace {
 		                                                                               nullptr))};
 	}
 
+	long * get_numpy_data_pointer(boost::python::object const & numpy_object)
+	{
+		return static_cast<long *>(PyArray_DATA(reinterpret_cast<PyArrayObject *>(numpy_object.ptr())));
+	}
+
 }
 
 numpy_result_set::numpy_result_set(result_set & base) :
@@ -49,10 +58,17 @@ numpy_result_set::numpy_result_set(result_set & base) :
 
 boost::python::object numpy_result_set::fetch_all()
 {
+	auto const elements = base_result_.fetch_next_batch();
+	auto const buffers = base_result_.get_buffers();
 	boost::python::list columns;
-	npy_intp elements = 0;
 
-	columns.append(make_numpy_array(elements, numpy_int_type));
+//	for (auto const & buffer : buffers) {
+	auto column = make_numpy_array(elements, numpy_int_type);
+	std::memcpy(get_numpy_data_pointer(column),
+	            buffers[0].get().data_pointer(),
+	            elements * sizeof(long));
+	columns.append(column);
+//	}
 	return columns;
 }
 

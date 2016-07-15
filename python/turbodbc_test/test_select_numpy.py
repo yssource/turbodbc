@@ -25,10 +25,10 @@ def test_numpy_empty_column(dsn, configuration):
             assert len(results) == 1
             assert isinstance(results['A'], MaskedArray)
 
-# @for_each_database
-# def test_numpy_int_column(dsn, configuration):
-#     with open_cursor(configuration) as cursor:
-#         cursor.execute("SELECT 42 AS a")
-#         results = cursor.fetchallnumpy()
-#         expected = MaskedArray([42], mask=[0])
-#         assert results['A'] == expected
+@for_each_database
+def test_numpy_int_column(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        cursor.execute("SELECT 42 AS a")
+        results = cursor.fetchallnumpy()
+        expected = MaskedArray([42], mask=[0])
+        assert results['A'] == expected
