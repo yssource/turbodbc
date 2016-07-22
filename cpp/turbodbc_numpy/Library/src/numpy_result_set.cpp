@@ -22,9 +22,32 @@ namespace turbodbc { namespace result_sets {
 
 namespace {
 
+	PyArrayObject * get_array_ptr(boost::python::object & object)
+	{
+		return reinterpret_cast<PyArrayObject *>(object.ptr());
+	}
+
 	struct masked_column {
 		boost::python::object data;
 		boost::python::object mask;
+
+		long * get_data_pointer()
+		{
+			return static_cast<long *>(PyArray_DATA(get_array_ptr(data)));
+		}
+
+		std::int8_t * get_mask_pointer()
+		{
+			return static_cast<std::int8_t *>(PyArray_DATA(get_array_ptr(mask)));
+		}
+
+		void resize(npy_intp new_size)
+		{
+			PyArray_Dims new_dimensions = {&new_size, 1};
+			int const no_reference_check = 0;
+			__extension__ PyArray_Resize(get_array_ptr(data), &new_dimensions, no_reference_check, NPY_ANYORDER);
+			__extension__ PyArray_Resize(get_array_ptr(mask), &new_dimensions, no_reference_check, NPY_ANYORDER);
+		}
 	};
 
 	struct numpy_type {
@@ -50,23 +73,6 @@ namespace {
 		                                                                               type.size,
 		                                                                               flags,
 		                                                                               nullptr))};
-	}
-
-	PyArrayObject * get_array_ptr(boost::python::object & object)
-	{
-		return reinterpret_cast<PyArrayObject *>(object.ptr());
-	}
-
-	void resize_numpy_array(boost::python::object & array, npy_intp new_size)
-	{
-		PyArray_Dims new_dimensions = {&new_size, 1};
-		int const no_reference_check = 0;
-		__extension__ PyArray_Resize(get_array_ptr(array), &new_dimensions, no_reference_check, NPY_ANYORDER);
-	}
-
-	long * get_numpy_data_pointer(boost::python::object & numpy_object)
-	{
-		return static_cast<long *>(PyArray_DATA(get_array_ptr(numpy_object)));
 	}
 
 	boost::python::list as_python_list(std::vector<masked_column> const & objects)
@@ -102,16 +108,15 @@ boost::python::object numpy_result_set::fetch_all()
 		auto const buffers = base_result_.get_buffers();
 
 		for (std::size_t i = 0; i != n_columns; ++i) {
-			resize_numpy_array(columns[i].data, processed_rows + rows_in_batch);
-			std::memcpy(get_numpy_data_pointer(columns[i].data) + processed_rows,
+			columns[i].resize(processed_rows + rows_in_batch);
+			std::memcpy(columns[i].get_data_pointer() + processed_rows,
 			            buffers[i].get().data_pointer(),
 			            rows_in_batch * numpy_int_type.size);
 
-			resize_numpy_array(columns[i].mask, processed_rows + rows_in_batch);
-			std::memset(reinterpret_cast<std::int8_t *>(get_numpy_data_pointer(columns[i].mask)) + processed_rows,
+			std::memset(columns[i].get_mask_pointer() + processed_rows,
 			            0,
 			            rows_in_batch);
-			auto const mask_pointer = reinterpret_cast<std::int8_t *>(get_numpy_data_pointer(columns[i].mask)) + processed_rows;
+			auto const mask_pointer = columns[i].get_mask_pointer() + processed_rows;
 			auto const indicator_pointer = buffers[i].get().indicator_pointer();
 			for (std::size_t element = 0; element != rows_in_batch; ++element) {
 				if (indicator_pointer[element] == SQL_NULL_DATA) {
