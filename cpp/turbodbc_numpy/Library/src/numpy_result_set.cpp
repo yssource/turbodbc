@@ -36,9 +36,31 @@ namespace {
 	numpy_type const numpy_bool_type = {NPY_BOOL, 1};
 
 
+	boost::python::object make_numpy_array(npy_intp elements, numpy_type type)
+	{
+		int const flags = 0;
+		int const one_dimensional = 1;
+		// __extension__ needed because of some C/C++ incompatibility.
+		// see issue https://github.com/numpy/numpy/issues/2539
+		return boost::python::object{boost::python::handle<>(__extension__ PyArray_New(&PyArray_Type,
+		                                                                               one_dimensional,
+		                                                                               &elements,
+		                                                                               type.code,
+		                                                                               nullptr,
+		                                                                               nullptr,
+		                                                                               type.size,
+		                                                                               flags,
+		                                                                               nullptr))};
+	}
+
 	struct masked_column {
 		boost::python::object data;
 		boost::python::object mask;
+
+		masked_column(numpy_type const & type) :
+			data(make_numpy_array(0, type)),
+			mask(make_numpy_array(0, numpy_bool_type))
+		{}
 
 		long * get_data_pointer()
 		{
@@ -79,23 +101,6 @@ namespace {
 	};
 
 
-	boost::python::object make_numpy_array(npy_intp elements, numpy_type type)
-	{
-		int const flags = 0;
-		int const one_dimensional = 1;
-		// __extension__ needed because of some C/C++ incompatibility.
-		// see issue https://github.com/numpy/numpy/issues/2539
-		return boost::python::object{boost::python::handle<>(__extension__ PyArray_New(&PyArray_Type,
-		                                                                               one_dimensional,
-		                                                                               &elements,
-		                                                                               type.code,
-		                                                                               nullptr,
-		                                                                               nullptr,
-		                                                                               type.size,
-		                                                                               flags,
-		                                                                               nullptr))};
-	}
-
 	boost::python::list as_python_list(std::vector<masked_column> const & objects)
 	{
 		boost::python::list result;
@@ -120,9 +125,7 @@ boost::python::object numpy_result_set::fetch_all()
 
 	std::vector<masked_column> columns;
 	for (std::size_t i = 0; i != n_columns; ++i) {
-		masked_column column = {make_numpy_array(rows_in_batch, numpy_int_type),
-		                        make_numpy_array(rows_in_batch, numpy_bool_type)};
-		columns.push_back(column);
+		columns.emplace_back(numpy_int_type);
 	}
 
 	do {
