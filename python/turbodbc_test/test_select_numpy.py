@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from numpy.ma import MaskedArray
 from numpy.testing import assert_equal
+import numpy
 import pytest
 
 import turbodbc
@@ -45,7 +46,19 @@ def test_numpy_int_column(dsn, configuration):
         cursor.execute("SELECT 42 AS a")
         results = cursor.fetchallnumpy()
         expected = MaskedArray([42], mask=[0])
+        assert results[_fix_case(configuration, 'a')].dtype == numpy.int64
         assert_equal(results[_fix_case(configuration, 'a')], expected)
+
+
+@for_each_database
+def test_numpy_double_column(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'SELECT DOUBLE') as query:
+            cursor.execute(query)
+            results = cursor.fetchallnumpy()
+            expected = MaskedArray([3.14], mask=[0])
+            assert results[_fix_case(configuration, 'a')].dtype == numpy.float64
+            assert_equal(results[_fix_case(configuration, 'a')], expected)
 
 
 @for_each_database

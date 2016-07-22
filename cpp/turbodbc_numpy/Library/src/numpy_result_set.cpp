@@ -33,8 +33,18 @@ namespace {
 	};
 
 	numpy_type const numpy_int_type = {NPY_INT64, 8};
+	numpy_type const numpy_double_type = {NPY_FLOAT64, 8};
 	numpy_type const numpy_bool_type = {NPY_BOOL, 1};
 
+	numpy_type as_numpy_type(type_code type)
+	{
+		switch (type) {
+			case type_code::floating_point:
+				return numpy_double_type;
+			default:
+				return numpy_int_type;
+		}
+	}
 
 	boost::python::object make_numpy_array(npy_intp elements, numpy_type type)
 	{
@@ -62,9 +72,10 @@ namespace {
 			mask(make_numpy_array(0, numpy_bool_type))
 		{}
 
-		long * get_data_pointer()
+		// pointer to 64bit data type is okay for integer and double
+		std::int64_t * get_data_pointer()
 		{
-			return static_cast<long *>(PyArray_DATA(get_array_ptr(data)));
+			return static_cast<int64_t *>(PyArray_DATA(get_array_ptr(data)));
 		}
 
 		std::int8_t * get_mask_pointer()
@@ -121,11 +132,12 @@ boost::python::object numpy_result_set::fetch_all()
 {
 	std::size_t processed_rows = 0;
 	std::size_t rows_in_batch = base_result_.fetch_next_batch();
-	auto const n_columns = base_result_.get_column_info().size();
+	auto const column_info = base_result_.get_column_info();
+	auto const n_columns = column_info.size();
 
 	std::vector<masked_column> columns;
 	for (std::size_t i = 0; i != n_columns; ++i) {
-		columns.emplace_back(numpy_int_type);
+		columns.emplace_back(as_numpy_type(column_info[i].type));
 	}
 
 	do {
