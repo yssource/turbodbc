@@ -45,7 +45,7 @@ def test_numpy_int_column(dsn, configuration):
         cursor.execute("SELECT 42 AS a")
         results = cursor.fetchallnumpy()
         expected = MaskedArray([42], mask=[0])
-        assert all(results[_fix_case(configuration, 'a')] == expected)
+        assert_equal(results[_fix_case(configuration, 'a')], expected)
 
 
 @for_each_database
@@ -69,7 +69,7 @@ def test_numpy_column_larger_than_batch_size(dsn, configuration):
             cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
             results = cursor.fetchallnumpy()
             expected = MaskedArray([1, 2, 3, 4, 5], mask=False)
-            assert all(results[_fix_case(configuration, 'a')] == expected)
+            assert_equal(results[_fix_case(configuration, 'a')], expected)
 
 
 @for_each_database
@@ -80,5 +80,5 @@ def test_numpy_two_columns(dsn, configuration):
                                [[1, 42], [2, 41]])
             cursor.execute("SELECT a, b FROM {} ORDER BY a".format(table_name))
             results = cursor.fetchallnumpy()
-            assert all(results[_fix_case(configuration, 'a')] == MaskedArray([1, 2], mask=False))
-            assert all(results[_fix_case(configuration, 'b')] == MaskedArray([42, 41], mask=False))
+            assert_equal(results[_fix_case(configuration, 'a')], MaskedArray([1, 2], mask=False))
+            assert_equal(results[_fix_case(configuration, 'b')], MaskedArray([42, 41], mask=False))
