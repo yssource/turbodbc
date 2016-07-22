@@ -116,7 +116,7 @@ class Cursor(object):
         numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
         column_names = [description[0] for description in self.description]
         columns = zip(column_names,
-                      [MaskedArray(data=col, mask=False) for col in numpy_result_set.fetch_all()])
+                      [MaskedArray(data=data, mask=mask) for data, mask in numpy_result_set.fetch_all()])
         return OrderedDict(columns)
 
     def close(self):

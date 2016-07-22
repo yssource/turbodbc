@@ -1,6 +1,7 @@
 #include <turbodbc_numpy/numpy_result_set.h>
 
 #include <boost/python/list.hpp>
+#include <boost/python/tuple.hpp>
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 // compare http://docs.scipy.org/doc/numpy/reference/c-api.array.html#importing-the-api
@@ -65,7 +66,7 @@ namespace {
 	{
 		boost::python::list result;
 		for (auto const & object : objects) {
-			result.append(object);
+			result.append(boost::python::make_tuple(object, boost::python::object(false)));
 		}
 		return result;
 	}
