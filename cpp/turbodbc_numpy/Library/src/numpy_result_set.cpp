@@ -27,6 +27,15 @@ namespace {
 		return reinterpret_cast<PyArrayObject *>(object.ptr());
 	}
 
+	struct numpy_type {
+		int code;
+		int size;
+	};
+
+	numpy_type const numpy_int_type = {NPY_INT64, 8};
+	numpy_type const numpy_bool_type = {NPY_BOOL, 1};
+
+
 	struct masked_column {
 		boost::python::object data;
 		boost::python::object mask;
@@ -48,15 +57,27 @@ namespace {
 			__extension__ PyArray_Resize(get_array_ptr(data), &new_dimensions, no_reference_check, NPY_ANYORDER);
 			__extension__ PyArray_Resize(get_array_ptr(mask), &new_dimensions, no_reference_check, NPY_ANYORDER);
 		}
+
+		void fill_values_from_buffer(cpp_odbc::multi_value_buffer const & buffer,
+			                         std::size_t n_values,
+			                         std::size_t offset)
+		{
+			std::memcpy(get_data_pointer() + offset,
+			            buffer.data_pointer(),
+			            n_values * numpy_int_type.size);
+
+			auto const mask_pointer = get_mask_pointer() + offset;
+			std::memset(mask_pointer, 0, n_values);
+
+			auto const indicator_pointer = buffer.indicator_pointer();
+			for (std::size_t element = 0; element != n_values; ++element) {
+				if (indicator_pointer[element] == SQL_NULL_DATA) {
+					mask_pointer[element] = 1;
+				}
+			}
+		}
 	};
 
-	struct numpy_type {
-		int code;
-		int size;
-	};
-
-	numpy_type const numpy_int_type = {NPY_INT64, 8};
-	numpy_type const numpy_bool_type = {NPY_BOOL, 1};
 
 	boost::python::object make_numpy_array(npy_intp elements, numpy_type type)
 	{
@@ -109,20 +130,7 @@ boost::python::object numpy_result_set::fetch_all()
 
 		for (std::size_t i = 0; i != n_columns; ++i) {
 			columns[i].resize(processed_rows + rows_in_batch);
-			std::memcpy(columns[i].get_data_pointer() + processed_rows,
-			            buffers[i].get().data_pointer(),
-			            rows_in_batch * numpy_int_type.size);
-
-			std::memset(columns[i].get_mask_pointer() + processed_rows,
-			            0,
-			            rows_in_batch);
-			auto const mask_pointer = columns[i].get_mask_pointer() + processed_rows;
-			auto const indicator_pointer = buffers[i].get().indicator_pointer();
-			for (std::size_t element = 0; element != rows_in_batch; ++element) {
-				if (indicator_pointer[element] == SQL_NULL_DATA) {
-					mask_pointer[element] = 1;
-				}
-			}
+			columns[i].fill_values_from_buffer(buffers[i].get(), rows_in_batch, processed_rows);
 		}
 		processed_rows += rows_in_batch;
 		rows_in_batch = base_result_.fetch_next_batch();
