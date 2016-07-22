@@ -64,10 +64,10 @@ def test_numpy_double_column(dsn, configuration):
 @for_each_database
 def test_numpy_column_with_null(dsn, configuration):
     with open_cursor(configuration) as cursor:
-        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
-            cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name),
-                               [[42], [None]])
-            cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
+        with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:
+            cursor.executemany("INSERT INTO {} VALUES (?, ?)".format(table_name),
+                               [[42, 1], [None, 2]]) # second column to enforce ordering
+            cursor.execute("SELECT a FROM {} ORDER BY b".format(table_name))
             results = cursor.fetchallnumpy()
             expected = MaskedArray([42, 0], mask=[0, 1])
             assert_equal(results[_fix_case(configuration, 'a')], expected)
