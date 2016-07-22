@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 from numpy.ma import MaskedArray
+from numpy.testing import assert_equal
 import pytest
 
 import turbodbc
@@ -48,7 +49,19 @@ def test_numpy_int_column(dsn, configuration):
 
 
 @for_each_database
-def test_numpy_large_column(dsn, configuration):
+def test_numpy_column_with_null(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name),
+                               [[42], [None]])
+            cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
+            results = cursor.fetchallnumpy()
+            expected = MaskedArray([42, 0], mask=[0, 1])
+            assert_equal(results[_fix_case(configuration, 'a')], expected)
+
+
+@for_each_database
+def test_numpy_column_larger_than_batch_size(dsn, configuration):
     with open_cursor(configuration, rows_to_buffer=2) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
             cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name),
