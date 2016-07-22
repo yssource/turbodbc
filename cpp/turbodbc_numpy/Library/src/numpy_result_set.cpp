@@ -3,12 +3,7 @@
 #include <boost/python/list.hpp>
 #include <boost/python/tuple.hpp>
 
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-// compare http://docs.scipy.org/doc/numpy/reference/c-api.array.html#importing-the-api
-// as to why these defines are necessary
-#define PY_ARRAY_UNIQUE_SYMBOL turbodbc_numpy_API
-#define NO_IMPORT_ARRAY
-#include <numpy/ndarrayobject.h>
+#include <turbodbc_numpy/ndarrayobject.h>
 
 #include <Python.h>
 
