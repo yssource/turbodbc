@@ -4,6 +4,7 @@
 #include <boost/python/tuple.hpp>
 
 #include <turbodbc_numpy/ndarrayobject.h>
+#include <turbodbc_numpy/numpy_type.h>
 
 #include <Python.h>
 
@@ -11,7 +12,8 @@
 #include <vector>
 #include <sql.h>
 
-namespace turbodbc { namespace result_sets {
+
+namespace turbodbc_numpy {
 
 
 
@@ -22,19 +24,10 @@ namespace {
 		return reinterpret_cast<PyArrayObject *>(object.ptr());
 	}
 
-	struct numpy_type {
-		int code;
-		int size;
-	};
-
-	numpy_type const numpy_int_type = {NPY_INT64, 8};
-	numpy_type const numpy_double_type = {NPY_FLOAT64, 8};
-	numpy_type const numpy_bool_type = {NPY_BOOL, 1};
-
-	numpy_type as_numpy_type(type_code type)
+	numpy_type as_numpy_type(turbodbc::type_code type)
 	{
 		switch (type) {
-			case type_code::floating_point:
+			case turbodbc::type_code::floating_point:
 				return numpy_double_type;
 			default:
 				return numpy_int_type;
@@ -117,7 +110,7 @@ namespace {
 	}
 }
 
-numpy_result_set::numpy_result_set(result_set & base) :
+numpy_result_set::numpy_result_set(turbodbc::result_sets::result_set & base) :
 	base_result_(base)
 {
 }
@@ -151,4 +144,4 @@ boost::python::object numpy_result_set::fetch_all()
 
 
 
-} }
+}

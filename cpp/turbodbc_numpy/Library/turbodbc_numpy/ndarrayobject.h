@@ -1,3 +1,5 @@
+#pragma once
+
 /**
  * Include this file instead of the original Numpy header so common
  * problems with the API can be solved at a central position.

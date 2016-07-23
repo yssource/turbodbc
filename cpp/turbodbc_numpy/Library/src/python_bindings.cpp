@@ -10,7 +10,7 @@
 #define PY_ARRAY_UNIQUE_SYMBOL turbodbc_numpy_API
 #include <numpy/ndarrayobject.h>
 
-using turbodbc::result_sets::numpy_result_set;
+using turbodbc_numpy::numpy_result_set;
 
 namespace {
 
