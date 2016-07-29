@@ -1,17 +1,7 @@
 import datetime
 
 from query_fixture import query_fixture
-from helpers import for_each_database, for_one_database, open_cursor
-
-
-def generate_microseconds_with_precision(digits):
-    microseconds = 0;
-    for i in xrange(digits):
-        microseconds = 10 * microseconds + i + 1
-    for i in xrange(6 - digits):
-        microseconds *= 10
-
-    return microseconds
+from helpers import for_each_database, for_one_database, open_cursor, generate_microseconds_with_precision
 
 
 def _test_insert_many(configuration, fixture_name, data):

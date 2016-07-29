@@ -9,7 +9,7 @@ import pytest
 import turbodbc
 
 from query_fixture import query_fixture
-from helpers import open_cursor, for_each_database, for_one_database
+from helpers import open_cursor, for_each_database, for_one_database, generate_microseconds_with_precision
 
 
 def _fix_case(configuration, string):
@@ -101,7 +101,9 @@ def test_numpy_binary_column_larger_than_batch_size(dsn, configuration):
 
 @for_each_database
 def test_numpy_timestamp_column(dsn, configuration):
-    timestamp = datetime.datetime(2015, 12, 31, 1, 2, 3)
+    supported_digits = configuration['capabilities']['fractional_second_digits']
+    fractional = generate_microseconds_with_precision(supported_digits)
+    timestamp = datetime.datetime(2015, 12, 31, 1, 2, 3, fractional)
 
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT TIMESTAMP') as table_name:
@@ -116,14 +118,13 @@ def test_numpy_timestamp_column(dsn, configuration):
 @for_each_database
 def test_numpy_timestamp_column_with_null(dsn, configuration):
     fill_value = 0;
-    
+
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT TIMESTAMP') as table_name:
             cursor.execute('INSERT INTO {} VALUES (?)'.format(table_name), [None])
             cursor.execute('SELECT A FROM {}'.format(table_name))
             results = cursor.fetchallnumpy()
             expected = MaskedArray([42], mask=[1], dtype='datetime64[us]')
-#             assert results[_fix_case(configuration, 'a')][0] == expected[0]
             assert_equal(results[_fix_case(configuration, 'a')].filled(fill_value),
                          expected.filled(fill_value))
 

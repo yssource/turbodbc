@@ -6,6 +6,17 @@ import pytest
 
 import turbodbc
 
+
+def generate_microseconds_with_precision(digits):
+    microseconds = 0;
+    for i in xrange(digits):
+        microseconds = 10 * microseconds + i + 1
+    for i in xrange(6 - digits):
+        microseconds *= 10
+
+    return microseconds
+
+
 def _get_config_files():
     variable = 'TURBODBC_TEST_CONFIGURATION_FILES'
     try:
