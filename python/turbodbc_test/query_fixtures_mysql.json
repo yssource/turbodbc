@@ -73,7 +73,7 @@
 		},
 		
 		"INSERT TIMESTAMP": {
-			"table": "a TIMESTAMP"
+			"table": "a TIMESTAMP NULL"
 		},
 			
 		"DESCRIPTION": {

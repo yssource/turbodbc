@@ -149,7 +149,7 @@ def test_numpy_timelike_column_larger_than_batch_size(dsn, configuration):
                   datetime.datetime(2016, 1, 5, 4, 5, 6),
                   datetime.datetime(2017, 2, 6, 7, 8, 9),
                   datetime.datetime(2018, 3, 7, 10, 11, 12),
-                  datetime.datetime(3999, 4, 8, 13, 14, 15)]
+                  datetime.datetime(2019, 4, 8, 13, 14, 15)]
 
     with open_cursor(configuration, rows_to_buffer=2) as cursor:
         with query_fixture(cursor, configuration, 'INSERT TIMESTAMP') as table_name:
