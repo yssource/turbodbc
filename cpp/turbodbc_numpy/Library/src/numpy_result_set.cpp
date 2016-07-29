@@ -5,6 +5,7 @@
 
 #include <turbodbc_numpy/numpy_type.h>
 #include <turbodbc_numpy/binary_column.h>
+#include <turbodbc_numpy/datetime_column.h>
 
 #include <vector>
 
@@ -14,15 +15,17 @@ namespace turbodbc_numpy {
 
 namespace {
 
-	numpy_type as_numpy_type(turbodbc::type_code type)
+	std::unique_ptr<masked_column> make_masked_column(turbodbc::type_code type)
 	{
 		switch (type) {
 			case turbodbc::type_code::floating_point:
-				return numpy_double_type;
+				return std::unique_ptr<binary_column>(new binary_column(numpy_double_type));
 			case turbodbc::type_code::integer:
-				return numpy_int_type;
+				return std::unique_ptr<binary_column>(new binary_column(numpy_int_type));
+			case turbodbc::type_code::timestamp:
+				return std::unique_ptr<datetime_column>(new datetime_column());
 			default:
-				return numpy_bool_type;
+				return std::unique_ptr<binary_column>(new binary_column(numpy_bool_type));;
 		}
 	}
 
@@ -50,7 +53,7 @@ boost::python::object numpy_result_set::fetch_all()
 
 	std::vector<std::unique_ptr<masked_column>> columns;
 	for (std::size_t i = 0; i != n_columns; ++i) {
-		columns.push_back(std::unique_ptr<binary_column>(new binary_column(as_numpy_type(column_info[i].type))));
+		columns.push_back(make_masked_column(column_info[i].type));
 	}
 
 	do {

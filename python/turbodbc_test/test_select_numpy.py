@@ -1,3 +1,4 @@
+import datetime
 from collections import OrderedDict
 
 from numpy.ma import MaskedArray
@@ -73,6 +74,16 @@ def test_numpy_boolean_column(dsn, configuration):
             assert results[_fix_case(configuration, 'a')].dtype == numpy.bool_
             assert_equal(results[_fix_case(configuration, 'a')], expected)
 
+
+@for_each_database
+def test_numpy_timestamp_column(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'SELECT TIMESTAMP') as query:
+            cursor.execute(query)
+            results = cursor.fetchallnumpy()
+            expected = MaskedArray([datetime.datetime(2015, 12, 31, 1, 2, 3)], mask=[0], dtype='datetime64[us]')
+            assert results[_fix_case(configuration, 'a')].dtype == numpy.dtype('datetime64[us]')
+            assert_equal(results[_fix_case(configuration, 'a')], expected)
 
 
 @for_each_database

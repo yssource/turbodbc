@@ -1,5 +1,6 @@
 #include <turbodbc_numpy/binary_column.h>
 #include <turbodbc_numpy/ndarrayobject.h>
+#include <turbodbc_numpy/make_numpy_array.h>
 
 #include <Python.h>
 
@@ -15,30 +16,12 @@ namespace {
 		return reinterpret_cast<PyArrayObject *>(object.ptr());
 	}
 
-	boost::python::object make_numpy_array(numpy_type const & type)
-	{
-		npy_intp no_elements = 0;
-		int const flags = 0;
-		int const one_dimensional = 1;
-		// __extension__ needed because of some C/C++ incompatibility.
-		// see issue https://github.com/numpy/numpy/issues/2539
-		return boost::python::object{boost::python::handle<>(__extension__ PyArray_New(&PyArray_Type,
-																					   one_dimensional,
-																					   &no_elements,
-																					   type.code,
-																					   nullptr,
-																					   nullptr,
-																					   type.size,
-																					   flags,
-																					   nullptr))};
-	}
-
 }
 
 binary_column::binary_column(numpy_type const & type) :
 	type_(type),
-	data_(make_numpy_array(type)),
-	mask_(make_numpy_array(numpy_bool_type)),
+	data_(make_empty_numpy_array(type)),
+	mask_(make_empty_numpy_array(numpy_bool_type)),
 	size_(0)
 {
 }
