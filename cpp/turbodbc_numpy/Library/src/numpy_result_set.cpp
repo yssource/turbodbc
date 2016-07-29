@@ -23,7 +23,8 @@ namespace {
 			case turbodbc::type_code::integer:
 				return std::unique_ptr<binary_column>(new binary_column(numpy_int_type));
 			case turbodbc::type_code::timestamp:
-				return std::unique_ptr<datetime_column>(new datetime_column());
+			case turbodbc::type_code::date:
+				return std::unique_ptr<datetime_column>(new datetime_column(type));
 			default:
 				return std::unique_ptr<binary_column>(new binary_column(numpy_bool_type));;
 		}

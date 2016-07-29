@@ -115,18 +115,18 @@ def test_numpy_timestamp_column(dsn, configuration):
             assert_equal(results[_fix_case(configuration, 'a')], expected)
 
 
-# @for_each_database
-# def test_numpy_date_column(dsn, configuration):
-#     date = datetime.date(3999, 12, 31)
-# 
-#     with open_cursor(configuration) as cursor:
-#         with query_fixture(cursor, configuration, 'INSERT DATE') as table_name:
-#             cursor.execute('INSERT INTO {} VALUES (?)'.format(table_name), [date])
-#             cursor.execute('SELECT a FROM {}'.format(table_name))
-#             results = cursor.fetchallnumpy()
-#             expected = MaskedArray([date], mask=[0], dtype='datetime64[D]')
-#             assert results[_fix_case(configuration, 'a')].dtype == numpy.dtype('datetime64[D]')
-#             assert_equal(results[_fix_case(configuration, 'a')], expected)
+@for_each_database
+def test_numpy_date_column(dsn, configuration):
+    date = datetime.date(3999, 12, 31)
+
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT DATE') as table_name:
+            cursor.execute('INSERT INTO {} VALUES (?)'.format(table_name), [date])
+            cursor.execute('SELECT a FROM {}'.format(table_name))
+            results = cursor.fetchallnumpy()
+            expected = MaskedArray([date], mask=[0], dtype='datetime64[D]')
+            assert results[_fix_case(configuration, 'a')].dtype == numpy.dtype('datetime64[D]')
+            assert_equal(results[_fix_case(configuration, 'a')], expected)
 
 
 @for_each_database
