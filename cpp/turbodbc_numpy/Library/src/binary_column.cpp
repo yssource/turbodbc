@@ -36,6 +36,7 @@ namespace {
 }
 
 binary_column::binary_column(numpy_type const & type) :
+	type_(type),
 	data_(make_numpy_array(type)),
 	mask_(make_numpy_array(numpy_bool_type)),
 	size_(0)
@@ -50,9 +51,9 @@ void binary_column::do_append(cpp_odbc::multi_value_buffer const & buffer, std::
 	auto const old_size = size_;
 	resize(old_size + n_values);
 
-	std::memcpy(static_cast<int64_t *>(PyArray_DATA(get_array_ptr(data_))) + old_size,
+	std::memcpy(static_cast<unsigned char *>(PyArray_DATA(get_array_ptr(data_))) + old_size * type_.size,
 	            buffer.data_pointer(),
-	            n_values * 8);
+	            n_values * type_.size);
 
 	auto const mask_pointer = static_cast<std::int8_t *>(PyArray_DATA(get_array_ptr(mask_))) + old_size;
 	std::memset(mask_pointer, 0, n_values);

@@ -63,6 +63,10 @@
 		"INSERT BOOL": {
 			"table": "a BOOLEAN"
 		},
+		
+		"INSERT INDEXED BOOL": {
+			"table": "a BOOLEAN, b INTEGER"
+		},
 	
 		"INSERT DATE": {
 			"table": "a DATE"

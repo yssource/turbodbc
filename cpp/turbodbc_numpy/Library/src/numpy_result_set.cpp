@@ -19,8 +19,10 @@ namespace {
 		switch (type) {
 			case turbodbc::type_code::floating_point:
 				return numpy_double_type;
-			default:
+			case turbodbc::type_code::integer:
 				return numpy_int_type;
+			default:
+				return numpy_bool_type;
 		}
 	}
 

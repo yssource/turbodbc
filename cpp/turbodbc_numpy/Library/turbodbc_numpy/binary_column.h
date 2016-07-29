@@ -17,6 +17,7 @@ private:
 
 	void resize(std::size_t new_size);
 
+	numpy_type type_;
 	boost::python::object data_;
 	boost::python::object mask_;
 	std::size_t size_;

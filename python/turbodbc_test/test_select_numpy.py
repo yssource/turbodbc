@@ -62,6 +62,20 @@ def test_numpy_double_column(dsn, configuration):
 
 
 @for_each_database
+def test_numpy_boolean_column(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INDEXED BOOL') as table_name:
+            cursor.executemany('INSERT INTO {} VALUES (?, ?)'.format(table_name),
+                                [[True, 1], [False, 2], [True, 3]])
+            cursor.execute('SELECT A FROM {} ORDER BY B'.format(table_name))
+            results = cursor.fetchallnumpy()
+            expected = MaskedArray([True, False, True], mask=[0])
+            assert results[_fix_case(configuration, 'a')].dtype == numpy.bool_
+            assert_equal(results[_fix_case(configuration, 'a')], expected)
+
+
+
+@for_each_database
 def test_numpy_column_with_null(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:
