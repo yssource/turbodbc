@@ -68,7 +68,7 @@ def test_numpy_boolean_column(dsn, configuration):
         with query_fixture(cursor, configuration, 'INSERT INDEXED BOOL') as table_name:
             cursor.executemany('INSERT INTO {} VALUES (?, ?)'.format(table_name),
                                 [[True, 1], [False, 2], [True, 3]])
-            cursor.execute('SELECT A FROM {} ORDER BY B'.format(table_name))
+            cursor.execute('SELECT a FROM {} ORDER BY b'.format(table_name))
             results = cursor.fetchallnumpy()
             expected = MaskedArray([True, False, True], mask=[0])
             assert results[_fix_case(configuration, 'a')].dtype == numpy.bool_
@@ -108,21 +108,35 @@ def test_numpy_timestamp_column(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT TIMESTAMP') as table_name:
             cursor.execute('INSERT INTO {} VALUES (?)'.format(table_name), [timestamp])
-            cursor.execute('SELECT A FROM {}'.format(table_name))
+            cursor.execute('SELECT a FROM {}'.format(table_name))
             results = cursor.fetchallnumpy()
             expected = MaskedArray([timestamp], mask=[0], dtype='datetime64[us]')
             assert results[_fix_case(configuration, 'a')].dtype == numpy.dtype('datetime64[us]')
             assert_equal(results[_fix_case(configuration, 'a')], expected)
 
 
+# @for_each_database
+# def test_numpy_date_column(dsn, configuration):
+#     date = datetime.date(3999, 12, 31)
+# 
+#     with open_cursor(configuration) as cursor:
+#         with query_fixture(cursor, configuration, 'INSERT DATE') as table_name:
+#             cursor.execute('INSERT INTO {} VALUES (?)'.format(table_name), [date])
+#             cursor.execute('SELECT a FROM {}'.format(table_name))
+#             results = cursor.fetchallnumpy()
+#             expected = MaskedArray([date], mask=[0], dtype='datetime64[D]')
+#             assert results[_fix_case(configuration, 'a')].dtype == numpy.dtype('datetime64[D]')
+#             assert_equal(results[_fix_case(configuration, 'a')], expected)
+
+
 @for_each_database
-def test_numpy_timestamp_column_with_null(dsn, configuration):
+def test_numpy_timelike_column_with_null(dsn, configuration):
     fill_value = 0;
 
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT TIMESTAMP') as table_name:
             cursor.execute('INSERT INTO {} VALUES (?)'.format(table_name), [None])
-            cursor.execute('SELECT A FROM {}'.format(table_name))
+            cursor.execute('SELECT a FROM {}'.format(table_name))
             results = cursor.fetchallnumpy()
             expected = MaskedArray([42], mask=[1], dtype='datetime64[us]')
             assert_equal(results[_fix_case(configuration, 'a')].filled(fill_value),
@@ -130,7 +144,7 @@ def test_numpy_timestamp_column_with_null(dsn, configuration):
 
 
 @for_each_database
-def test_numpy_timestamp_column_larger_than_batch_size(dsn, configuration):
+def test_numpy_timelike_column_larger_than_batch_size(dsn, configuration):
     timestamps = [datetime.datetime(2015, 12, 31, 1, 2, 3),
                   datetime.datetime(2016, 1, 5, 4, 5, 6),
                   datetime.datetime(2017, 2, 6, 7, 8, 9),
@@ -141,7 +155,7 @@ def test_numpy_timestamp_column_larger_than_batch_size(dsn, configuration):
         with query_fixture(cursor, configuration, 'INSERT TIMESTAMP') as table_name:
             cursor.executemany('INSERT INTO {} VALUES (?)'.format(table_name),
                                [[timestamp] for timestamp in timestamps])
-            cursor.execute('SELECT A FROM {}'.format(table_name))
+            cursor.execute('SELECT a FROM {} ORDER BY a'.format(table_name))
             results = cursor.fetchallnumpy()
             expected = MaskedArray(timestamps, mask=[0], dtype='datetime64[us]')
             assert_equal(results[_fix_case(configuration, 'a')], expected)
