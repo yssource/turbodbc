@@ -5,17 +5,14 @@
 #include <Python.h>
 
 #include <boost/date_time/gregorian/gregorian_types.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 
 #include <sql.h>
 #include <cstring>
-#include <chrono>
 
 namespace turbodbc_numpy {
 
 namespace {
-
-	using std::chrono::system_clock;
-	typedef std::chrono::duration<long, std::micro> microseconds;
 
 	std::string get_type_descriptor(turbodbc::type_code type)
 	{
@@ -26,32 +23,18 @@ namespace {
 		}
 	}
 
-	std::tm to_tm(SQL_TIMESTAMP_STRUCT const & value)
-	{
-		std::tm time;
-		time.tm_sec = value.second;
-		time.tm_min = value.minute;
-		time.tm_hour = value.hour;
-		time.tm_mday = value.day;
-		time.tm_mon = value.month - 1;
-		time.tm_year = value.year - 1900;
-		return time;
-	}
-
-	long microseconds_since_epoch(SQL_TIMESTAMP_STRUCT const & value)
-	{
-		std::tm time = to_tm(value);
-		long const microsecond_fraction = value.fraction / 1000;
-		auto const duration_since_epoch = system_clock::from_time_t(std::mktime(&time)).time_since_epoch();
-		return std::chrono::duration_cast<microseconds>(duration_since_epoch).count() + microsecond_fraction;
-	}
+	boost::posix_time::ptime const timestamp_epoch({1970, 1, 1}, {0, 0, 0, 0});
 
 	long timestamp_to_microseconds(char const * data_pointer)
 	{
-		return microseconds_since_epoch(*reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(data_pointer));
+		auto & sql_ts = *reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(data_pointer);
+		long const microseconds = sql_ts.fraction / 1000;
+		boost::posix_time::ptime const ts({static_cast<unsigned short>(sql_ts.year), sql_ts.month, sql_ts.day},
+		                                  {sql_ts.hour, sql_ts.minute, sql_ts.second, microseconds});
+		return (ts - timestamp_epoch).total_microseconds();
 	}
 
-	boost::gregorian::date date_epoch(1970, 1, 1);
+	boost::gregorian::date const date_epoch(1970, 1, 1);
 
 	long date_to_days(char const * data_pointer)
 	{
