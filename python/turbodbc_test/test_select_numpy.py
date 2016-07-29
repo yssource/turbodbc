@@ -112,6 +112,22 @@ def test_numpy_timestamp_column(dsn, configuration):
             assert results[_fix_case(configuration, 'a')].dtype == numpy.dtype('datetime64[us]')
             assert_equal(results[_fix_case(configuration, 'a')], expected)
 
+
+@for_each_database
+def test_numpy_timestamp_column_with_null(dsn, configuration):
+    fill_value = 0;
+    
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT TIMESTAMP') as table_name:
+            cursor.execute('INSERT INTO {} VALUES (?)'.format(table_name), [None])
+            cursor.execute('SELECT A FROM {}'.format(table_name))
+            results = cursor.fetchallnumpy()
+            expected = MaskedArray([42], mask=[1], dtype='datetime64[us]')
+#             assert results[_fix_case(configuration, 'a')][0] == expected[0]
+            assert_equal(results[_fix_case(configuration, 'a')].filled(fill_value),
+                         expected.filled(fill_value))
+
+
 @for_each_database
 def test_numpy_timestamp_column_larger_than_batch_size(dsn, configuration):
     timestamps = [datetime.datetime(2015, 12, 31, 1, 2, 3),
