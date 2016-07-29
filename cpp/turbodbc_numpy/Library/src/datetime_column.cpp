@@ -32,7 +32,7 @@ namespace {
 		std::tm time = to_tm(value);
 		long const microsecond_fraction = value.fraction / 1000;
 		auto const duration_since_epoch = system_clock::from_time_t(std::mktime(&time)).time_since_epoch();
-		return microseconds(duration_since_epoch).count() + microsecond_fraction;
+		return std::chrono::duration_cast<microseconds>(duration_since_epoch).count() + microsecond_fraction;
 	}
 
 	PyArrayObject * get_array_ptr(boost::python::object & object)
