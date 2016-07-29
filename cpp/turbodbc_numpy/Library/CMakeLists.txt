@@ -1,17 +1,17 @@
 file(GLOB_RECURSE LIBRARY_FILES "src/*.cpp")
 
-add_library(turbodbc_numpy ${LIBRARY_FILES})
+add_library(turbodbc_numpy_support ${LIBRARY_FILES})
 
-set_target_properties(turbodbc_numpy PROPERTIES 
+set_target_properties(turbodbc_numpy_support PROPERTIES 
     PREFIX ""
     INSTALL_RPATH "../../.."
 )
 
-add_dependencies(turbodbc_numpy
+add_dependencies(turbodbc_numpy_support
     refresh_cmake_configuration
 )
 
-target_link_libraries(turbodbc_numpy
+target_link_libraries(turbodbc_numpy_support
 	${Boost_LIBRARIES}
 	${Odbc_LIBRARIES}
 	${PYTHON_LIBRARIES}
@@ -19,12 +19,12 @@ target_link_libraries(turbodbc_numpy
 	turbodbc
 )
 
-add_custom_command(TARGET turbodbc_numpy POST_BUILD
+add_custom_command(TARGET turbodbc_numpy_support POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
-                   ${CMAKE_CURRENT_BINARY_DIR}/turbodbc_numpy.so ${CMAKE_BINARY_DIR})
+                   ${CMAKE_CURRENT_BINARY_DIR}/turbodbc_numpy_support.so ${CMAKE_BINARY_DIR})
 
 install(
-    TARGETS turbodbc_numpy
+    TARGETS turbodbc_numpy_support
     LIBRARY DESTINATION lib
 )
 

@@ -22,7 +22,7 @@ numpy_result_set make_numpy_result_set(std::shared_ptr<turbodbc::result_sets::re
 }
 
 
-BOOST_PYTHON_MODULE(turbodbc_numpy)
+BOOST_PYTHON_MODULE(turbodbc_numpy_support)
 {
 	import_array();
 	boost::python::class_<numpy_result_set>("NumpyResultSet", boost::python::no_init)

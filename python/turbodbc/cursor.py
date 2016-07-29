@@ -10,7 +10,7 @@ from .exceptions import translate_exceptions, InterfaceError
 
 def _has_numpy_support():
     try:
-        import turbodbc_numpy
+        import turbodbc_numpy_support
         return True
     except ImportError:
         return False
@@ -22,7 +22,6 @@ class Cursor(object):
         self.result_set = None
         self.rowcount = -1
         self.arraysize = 1
-#         self.has_numpy_support = _has_numpy_support()
 
     def __iter__(self):
         return self
@@ -111,7 +110,7 @@ class Cursor(object):
 
     def fetchallnumpy(self):
         self._assert_valid_result_set()
-        from turbodbc_numpy import make_numpy_result_set
+        from turbodbc_numpy_support import make_numpy_result_set
         from numpy.ma import MaskedArray
         numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
         column_names = [description[0] for description in self.description]

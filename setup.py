@@ -78,7 +78,7 @@ def get_extension_modules():
     """
     if _has_numpy_headers():
         import numpy
-        turbodbc_numpy = distutils.core.Extension('turbodbc_numpy',
+        turbodbc_numpy = distutils.core.Extension('turbodbc_numpy_support',
                                                   sources=_get_source_files('turbodbc_numpy'),
                                                   include_dirs=['include/', numpy.get_include()],
                                                   extra_compile_args=['--std=c++11'],
