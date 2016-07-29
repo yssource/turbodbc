@@ -61,11 +61,11 @@
 		},
 	
 		"INSERT BOOL": {
-			"table": "a BOOLEAN"
+			"table": "a BIT"
 		},
 
 		"INSERT INDEXED BOOL": {
-			"table": "a BOOLEAN, b INTEGER"
+			"table": "a BIT, b INTEGER"
 		},
 			
 		"INSERT DATE": {
