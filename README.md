@@ -149,7 +149,8 @@ Please note a few things:
 *   The column values are `MaskedArray`s. Any `NULL` values you have in your
     database will shop up as masked entries (`NULL` values in string-like columns
     will shop up as `None` objects).
-
+*   Numpy support is limited to result sets, experimental, and will probably change
+    with the next iterations.
 
 Performance options
 -------------------
