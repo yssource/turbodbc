@@ -1,11 +1,12 @@
-Turbodbc
-========
+Turbodbc - Turbocharged database access for data scientists.
+============================================================
 
 [![Build Status](https://travis-ci.org/blue-yonder/turbodbc.svg?branch=master)](https://travis-ci.org/blue-yonder/turbodbc)
 
 Turbodbc is a Python module to access relational databases via the Open Database
-Connectivity (ODBC) interface. The module complies with the Python Database API
-Specification 2.0.
+Connectivity (ODBC) interface. In addition to complying with the Python Database API
+Specification 2.0, turbodbc offers built-in numpy support. Don't wait minutes for your
+results, just blink.
 
 
 Why should I use turbodbc instead of other ODBC modules?
@@ -13,12 +14,15 @@ Why should I use turbodbc instead of other ODBC modules?
 
 Short answer: turbodbc is faster.
 
-Slightly longer answer: I have tested turbodbc and pyodbc (probably the most
+Slightly longer answer: turbodbc is faster, _much_ faster if you want to
+work with numpy.
+
+Medium-length answer: I have tested turbodbc and pyodbc (probably the most
 popular Python ODBC module) with various databases (Exasol, PostgreSQL, MySQL)
 and corresponding ODBC drivers. I found turbodbc to be consistently faster.
 
-For retrieving result sets, I found speedups between 1.5 and 7. For inserting
-data, I found speedups of up to 100.
+For retrieving result sets, I found speedups between 1.5 and 7 retrieving plain
+Python objects. For inserting data, I found speedups of up to 100. 
 
 Is this completely scientific? Not at all. I have not told you about which
 hardware I used, which operating systems, drivers, database versions, network
@@ -33,20 +37,24 @@ magnitude. Give it a spin for yourself, and tell me if you liked it.
 Smooth. What is the trick?
 --------------------------
 
-There is not really a trick. Turbodbc implements both sending parameters and
-retrieving result sets using buffers of multiple rows/parameter sets. This
-avoids round trips to the ODBC driver and (depending how well the ODBC driver
-is written) to the database.
+Turbodbc exploits buffering.
 
-In addition, turbodbc uses asynchronous I/O to interleave Python object
-conversion and direct database interaction (see performance options
+* Turbodbc implements both sending parameters and retrieving result sets using
+buffers of multiple rows/parameter sets. This avoids round trips to the ODBC
+driver and (depending how well the ODBC driver is written) to the database.
+* Multiple buffers are used for asynchronous I/O. This allows to interleave
+Python object conversion and direct database interaction (see performance options
 below).
+* Buffers contain binary representations of data. Numpy arrays contain binary
+representations of data. Good thing they are often the same, so instead of
+converting we can just copy data.
 
 
 Features
 --------
 
-*   Bulk retrieval of select statements
+*   Bulk retrieval of result sets
+*   Built-in numpy conversion
 *   Bulk transfer of query parameters
 *   Asynchronous I/O for result sets
 *   Automatic conversion of decimal type to integer, float, and string as
@@ -54,6 +62,23 @@ Features
 *   Supported data types for both result sets and parameters:
     `int`, `float`, `str`, `bool`, `datetime.date`, `datetime.datetime`
 *   Also provides a high-level C++11 database driver under the hood
+
+
+Supported data types
+--------------------
+
+The following data types are supported:
+
+Database type(s)                  | Python type      | Numpy type
+----------------------------------|------------------|------------
+integers, Decimal(<19,0)          | `int`             | `int64`
+floating point, Decimal(x, >0)    | `float`           | `float64`
+bit, boolean-like                 | `bool`            | `bool_`
+strings, VARCHAR, Decimal(>18, 0) | `unicode`          | `object_`
+timestamp, time                   | `datetime.datetime` | `datetime64[us]`
+date                              | `datetime.date`    | `datetime64[D]`
+
+Numpy types are not yet supported for inserting values.
 
 
 Installation
@@ -101,6 +126,29 @@ Here is how to execute an `INSERT` query with many parameters:
                           ['there', 23]]
     >>> cursor.executemany('INSERT INTO my_table VALUES (?, ?)',
                            parameter_sets)
+
+
+Numpy support
+-------------
+
+Here is how to retrieve a result set in the form of numpy arrays:
+
+    >>> cursor.execute("SELECT A, B FROM my_table")
+    >>> cursor.fetchallnumpy()
+    OrderedDict([('A', masked_array(data = [42 --],
+                                    mask = [False True],
+                                    fill_value = 999999)),
+                 ('B', masked_array(data = [3.14 2.71],
+                                    mask = [False False],
+                                    fill_value = 1e+20))])
+
+Please note a few things:
+
+*   The return value is an `OrderedDict` of column name/value pairs. The column
+    order is the same as in your query.
+*   The column values are `MaskedArray`s. Any `NULL` values you have in your
+    database will shop up as masked entries (`NULL` values in string-like columns
+    will shop up as `None` objects).
 
 
 Performance options
