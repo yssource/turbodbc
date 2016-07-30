@@ -15,6 +15,13 @@ def _has_numpy_support():
     except ImportError:
         return False
 
+def _make_masked_array(data, mask):
+    from numpy.ma import MaskedArray
+    from numpy import object_
+    if isinstance(data, list):
+        return MaskedArray(data=data, mask=mask, dtype=object_)
+    else:
+        return MaskedArray(data=data, mask=mask)
 
 class Cursor(object):
     def __init__(self, impl):
@@ -111,11 +118,10 @@ class Cursor(object):
     def fetchallnumpy(self):
         self._assert_valid_result_set()
         from turbodbc_numpy_support import make_numpy_result_set
-        from numpy.ma import MaskedArray
         numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
         column_names = [description[0] for description in self.description]
         columns = zip(column_names,
-                      [MaskedArray(data=data, mask=mask) for data, mask in numpy_result_set.fetch_all()])
+                      [_make_masked_array(data, mask) for data, mask in numpy_result_set.fetch_all()])
         return OrderedDict(columns)
 
     def close(self):

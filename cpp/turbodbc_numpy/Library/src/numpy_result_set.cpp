@@ -6,6 +6,7 @@
 #include <turbodbc_numpy/numpy_type.h>
 #include <turbodbc_numpy/binary_column.h>
 #include <turbodbc_numpy/datetime_column.h>
+#include <turbodbc_numpy/string_column.h>
 
 #include <vector>
 
@@ -22,11 +23,13 @@ namespace {
 				return std::unique_ptr<binary_column>(new binary_column(numpy_double_type));
 			case turbodbc::type_code::integer:
 				return std::unique_ptr<binary_column>(new binary_column(numpy_int_type));
+			case turbodbc::type_code::boolean:
+				return std::unique_ptr<binary_column>(new binary_column(numpy_bool_type));
 			case turbodbc::type_code::timestamp:
 			case turbodbc::type_code::date:
 				return std::unique_ptr<datetime_column>(new datetime_column(type));
 			default:
-				return std::unique_ptr<binary_column>(new binary_column(numpy_bool_type));;
+				return std::unique_ptr<string_column>(new string_column());
 		}
 	}
 

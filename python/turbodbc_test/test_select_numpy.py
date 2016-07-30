@@ -161,6 +161,45 @@ def test_numpy_timelike_column_larger_than_batch_size(dsn, configuration):
             assert_equal(results[_fix_case(configuration, 'a')], expected)
 
 
+@for_each_database
+def test_numpy_string_column(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT STRING') as table_name:
+            cursor.execute('INSERT INTO {} VALUES (?)'.format(table_name), [u'unicode \u2665'])
+            cursor.execute('SELECT a FROM {}'.format(table_name))
+            results = cursor.fetchallnumpy()
+            expected = MaskedArray([u'unicode \u2665'], mask=[0], dtype=numpy.object_)
+            assert results[_fix_case(configuration, 'a')].dtype == numpy.object_
+            assert_equal(results[_fix_case(configuration, 'a')], expected)
+
+
+@for_each_database
+def test_numpy_string_column_with_null(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT STRING') as table_name:
+            cursor.execute('INSERT INTO {} VALUES (?)'.format(table_name), [None])
+            cursor.execute('SELECT a FROM {}'.format(table_name))
+            results = cursor.fetchallnumpy()
+            expected = MaskedArray([None], mask=[0], dtype=numpy.object_)
+            assert_equal(results[_fix_case(configuration, 'a')], expected)
+
+
+@for_each_database
+def test_numpy_string_column_larger_than_batch_size(dsn, configuration):
+    strings = [u'abc',
+               u'def',
+               u'ghi',
+               u'jkl',
+               u'mno']
+    with open_cursor(configuration, rows_to_buffer=2) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT STRING') as table_name:
+            cursor.executemany('INSERT INTO {} VALUES (?)'.format(table_name),
+                               [[string] for string in strings])
+            cursor.execute('SELECT a FROM {} ORDER BY a'.format(table_name))
+            results = cursor.fetchallnumpy()
+            expected = MaskedArray(strings, mask=[0], dtype=numpy.object_)
+            assert_equal(results[_fix_case(configuration, 'a')], expected)
+
 
 @for_each_database
 def test_numpy_two_columns(dsn, configuration):
