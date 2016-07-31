@@ -69,14 +69,14 @@ Supported data types
 
 The following data types are supported:
 
-Database type(s)                  | Python type      | NumPy type
-----------------------------------|------------------|------------
-integers, Decimal(<19,0)          | `int`             | `int64`
-floating point, Decimal(x, >0)    | `float`           | `float64`
-bit, boolean-like                 | `bool`            | `bool_`
-strings, VARCHAR, Decimal(>18, 0) | `unicode`          | `object_`
-timestamp, time                   | `datetime.datetime` | `datetime64[us]`
-date                              | `datetime.date`    | `datetime64[D]`
+Database type(s)                  | Python type      | NumPy type    | Notes
+----------------------------------|------------------|---------------|-------
+integers, Decimal(<19,0)          | `int`             | `int64`       |
+floating point, Decimal(x, >0)    | `float`           | `float64`      |
+bit, boolean-like                 | `bool`            | `bool_`        |
+timestamp, time                   | `datetime.datetime` | `datetime64[us]` |
+date                              | `datetime.date`    | `datetime64[D]`  |
+strings, VARCHAR, Decimal(>18, 0) | `unicode`          | `object_`      | _slow, WIP_
 
 NumPy types are not yet supported for inserting values.
 
