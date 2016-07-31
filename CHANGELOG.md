@@ -1,3 +1,13 @@
+Version 0.4.0
+=============
+
+*   NumPy support is introduced to turbodbc for retrieving result sets.
+    Use `cursor.fetchallnumpy` to retrieve a result set as an `OrderedDict`
+    of `column_name: column_data` pairs, where `column_data` is a NumPy `MaskedArray`
+    of appropriate type.
+*   Internal: Single `turbodbc_intern` library was split up into three libraries
+    to keep NumPy support optional. A few files were moved because of this.
+
 Version 0.3.0
 =============
 

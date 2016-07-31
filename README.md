@@ -5,7 +5,7 @@ Turbodbc - Turbocharged database access for data scientists.
 
 Turbodbc is a Python module to access relational databases via the Open Database
 Connectivity (ODBC) interface. In addition to complying with the Python Database API
-Specification 2.0, turbodbc offers built-in numpy support. Don't wait minutes for your
+Specification 2.0, turbodbc offers built-in NumPy support. Don't wait minutes for your
 results, just blink.
 
 
@@ -15,7 +15,7 @@ Why should I use turbodbc instead of other ODBC modules?
 Short answer: turbodbc is faster.
 
 Slightly longer answer: turbodbc is faster, _much_ faster if you want to
-work with numpy.
+work with NumPy.
 
 Medium-length answer: I have tested turbodbc and pyodbc (probably the most
 popular Python ODBC module) with various databases (Exasol, PostgreSQL, MySQL)
@@ -45,7 +45,7 @@ driver and (depending how well the ODBC driver is written) to the database.
 * Multiple buffers are used for asynchronous I/O. This allows to interleave
 Python object conversion and direct database interaction (see performance options
 below).
-* Buffers contain binary representations of data. Numpy arrays contain binary
+* Buffers contain binary representations of data. NumPy arrays contain binary
 representations of data. Good thing they are often the same, so instead of
 converting we can just copy data.
 
@@ -54,7 +54,7 @@ Features
 --------
 
 *   Bulk retrieval of result sets
-*   Built-in numpy conversion
+*   Built-in NumPy conversion
 *   Bulk transfer of query parameters
 *   Asynchronous I/O for result sets
 *   Automatic conversion of decimal type to integer, float, and string as
@@ -69,7 +69,7 @@ Supported data types
 
 The following data types are supported:
 
-Database type(s)                  | Python type      | Numpy type
+Database type(s)                  | Python type      | NumPy type
 ----------------------------------|------------------|------------
 integers, Decimal(<19,0)          | `int`             | `int64`
 floating point, Decimal(x, >0)    | `float`           | `float64`
@@ -78,7 +78,7 @@ strings, VARCHAR, Decimal(>18, 0) | `unicode`          | `object_`
 timestamp, time                   | `datetime.datetime` | `datetime64[us]`
 date                              | `datetime.date`    | `datetime64[D]`
 
-Numpy types are not yet supported for inserting values.
+NumPy types are not yet supported for inserting values.
 
 
 Installation
@@ -128,10 +128,10 @@ Here is how to execute an `INSERT` query with many parameters:
                            parameter_sets)
 
 
-Numpy support
+NumPy support
 -------------
 
-Here is how to retrieve a result set in the form of numpy arrays:
+Here is how to retrieve a result set in the form of NumPy arrays:
 
     >>> cursor.execute("SELECT A, B FROM my_table")
     >>> cursor.fetchallnumpy()
@@ -149,7 +149,7 @@ Please note a few things:
 *   The column values are `MaskedArray`s. Any `NULL` values you have in your
     database will shop up as masked entries (`NULL` values in string-like columns
     will shop up as `None` objects).
-*   Numpy support is limited to result sets, experimental, and will probably change
+*   NumPy support is limited to result sets, experimental, and will probably change
     with the next iterations.
 
 Performance options
