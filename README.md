@@ -95,6 +95,10 @@ To install turbodbc, please use the following command:
 
     pip install turbodbc
 
+If you want to leverage turbodbc's NumPy support, please make sure to install
+`numpy` before installing turbodbc, since turbodbc searches for NumPy headers
+at installation time to determine whether NumPy support can be provided.
+
 
 Basic usage
 -----------
