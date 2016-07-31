@@ -5,9 +5,11 @@ from numpy.ma import MaskedArray
 from numpy.testing import assert_equal
 import numpy
 import pytest
+from mock import patch
 
 import turbodbc
 
+from turbodbc.cursor import _has_numpy_support
 from query_fixture import query_fixture
 from helpers import open_cursor, for_each_database, for_one_database, generate_microseconds_with_precision
 
@@ -21,6 +23,15 @@ def _fix_case(configuration, string):
         return string.upper()
     else:
         return string
+
+
+@for_one_database
+def test_no_numpy_support(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        cursor.execute("SELECT 42")
+        with patch('turbodbc.cursor._has_numpy_support', return_value=False):
+            with pytest.raises(turbodbc.Error):
+                cursor.fetchallnumpy()
 
 
 @for_one_database

@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 from turbodbc_intern import has_result_set, make_row_based_result_set
 
-from .exceptions import translate_exceptions, InterfaceError
+from .exceptions import translate_exceptions, InterfaceError, Error
 
 
 def _has_numpy_support():
@@ -15,6 +15,7 @@ def _has_numpy_support():
     except ImportError:
         return False
 
+
 def _make_masked_array(data, mask):
     from numpy.ma import MaskedArray
     from numpy import object_
@@ -22,6 +23,7 @@ def _make_masked_array(data, mask):
         return MaskedArray(data=data, mask=mask, dtype=object_)
     else:
         return MaskedArray(data=data, mask=mask)
+
 
 class Cursor(object):
     def __init__(self, impl):
@@ -117,12 +119,16 @@ class Cursor(object):
 
     def fetchallnumpy(self):
         self._assert_valid_result_set()
-        from turbodbc_numpy_support import make_numpy_result_set
-        numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
-        column_names = [description[0] for description in self.description]
-        columns = zip(column_names,
-                      [_make_masked_array(data, mask) for data, mask in numpy_result_set.fetch_all()])
-        return OrderedDict(columns)
+        if _has_numpy_support():
+            from turbodbc_numpy_support import make_numpy_result_set
+            numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
+            column_names = [description[0] for description in self.description]
+            columns = zip(column_names,
+                          [_make_masked_array(data, mask) for data, mask in numpy_result_set.fetch_all()])
+            return OrderedDict(columns)
+        else:
+            raise Error("turbodbc was compiled without numpy support. Please install "
+                        "numpy and reinstall turbodbc")
 
     def close(self):
         self.result_set = None
