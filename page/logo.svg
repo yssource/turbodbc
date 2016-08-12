@@ -1203,7 +1203,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.9899495"
-     inkscape:cx="331.9478"
+     inkscape:cx="313.25998"
      inkscape:cy="830.21154"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -1230,9 +1230,11 @@
      inkscape:groupmode="layer"
      id="layer1">
     <g
-       id="g21091">
+       id="g21091"
+       inkscape:export-xdpi="268.68048"
+       inkscape:export-ydpi="268.68048">
       <rect
-         ry="6.56599"
+         ry="0"
          y="30.575268"
          x="14.479454"
          height="193.94928"

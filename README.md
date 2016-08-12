@@ -1,3 +1,5 @@
+![turbodbc logo](/page/logo.png?raw=true "turbodbc logo")
+
 Turbodbc - Turbocharged database access for data scientists.
 ============================================================
 
