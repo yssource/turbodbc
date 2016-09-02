@@ -4,13 +4,11 @@
 #include <turbodbc/result_sets/result_set.h>
 #include <turbodbc/parameter_sets/field_parameter_set.h>
 #include <memory>
-#include <vector>
+
 
 namespace turbodbc {
 
-/**
- * TODO: Query needs proper unit tests
- */
+
 class query {
 public:
 	query(std::shared_ptr<cpp_odbc::statement const> statement,

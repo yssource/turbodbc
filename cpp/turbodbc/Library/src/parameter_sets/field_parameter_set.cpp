@@ -1,14 +1,10 @@
 #include <turbodbc/parameter_sets/field_parameter_set.h>
 #include <turbodbc/make_description.h>
-#include <turbodbc/descriptions/integer_description.h>
 
 #include <cpp_odbc/error.h>
 
-#include <boost/variant/get.hpp>
 #include <sqlext.h>
-#include <stdexcept>
 
-#include <cstring>
 #include <sstream>
 
 

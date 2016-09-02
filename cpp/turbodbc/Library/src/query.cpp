@@ -1,17 +1,7 @@
 #include <turbodbc/query.h>
-#include <turbodbc/make_description.h>
-#include <turbodbc/descriptions/integer_description.h>
+
 #include <turbodbc/result_sets/bound_result_set.h>
 #include <turbodbc/result_sets/double_buffered_result_set.h>
-
-#include <cpp_odbc/error.h>
-
-#include <boost/variant/get.hpp>
-#include <sqlext.h>
-#include <stdexcept>
-
-#include <cstring>
-#include <sstream>
 
 
 namespace turbodbc {
