@@ -1,3 +1,9 @@
+Version 0.4.1
+=============
+
+*   Libraries no longer link `libpython.so` (linking is already done by
+    the Python interpreter)
+
 Version 0.4.0
 =============
 

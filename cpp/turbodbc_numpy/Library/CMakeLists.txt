@@ -14,7 +14,6 @@ add_dependencies(turbodbc_numpy_support
 target_link_libraries(turbodbc_numpy_support
 	${Boost_LIBRARIES}
 	${Odbc_LIBRARIES}
-	${PYTHON_LIBRARIES}
 	cpp_odbc
 	turbodbc
 )

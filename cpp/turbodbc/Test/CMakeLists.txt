@@ -14,9 +14,10 @@ add_dependencies(turbodbc_test
 )
 
 target_link_libraries(turbodbc_test
-	turbodbc
-	cpp_odbc
+    turbodbc
+    cpp_odbc
     ${Odbc_LIBRARIES}
+    ${PYTHON_LIBRARIES}
     gmock_main
     gtest
     gmock

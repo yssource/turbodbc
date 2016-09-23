@@ -13,7 +13,6 @@ add_dependencies(turbodbc
 target_link_libraries(turbodbc
 	${Boost_LIBRARIES}
 	${Odbc_LIBRARIES}
-	${PYTHON_LIBRARIES}
 	cpp_odbc
 )
 
