@@ -118,7 +118,7 @@ void field_parameter_set::add_parameter(std::size_t index, nullable_field const 
 void field_parameter_set::recover_unwritten_parameters_below(std::size_t parameter_index, std::size_t last_active_row)
 {
 	for (std::size_t i = 0; i != parameter_index; ++i) {
-		parameters_[i]->copy_to_first_row(last_active_row);
+		move_to_top(*parameters_[i], last_active_row);
 	}
 }
 

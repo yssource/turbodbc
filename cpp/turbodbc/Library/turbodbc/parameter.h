@@ -33,12 +33,6 @@ public:
 	*/
 	cpp_odbc::multi_value_buffer & get_buffer();
 
-	/**
-	 * @brief Copy the value set for the given row_index to the first row (with index 0)
-	 * @param row_index Index of the row whose value is copied
-	 */
-	void copy_to_first_row(std::size_t row_index);
-
 	~parameter();
 private:
 	std::unique_ptr<description const> description_;
