@@ -73,30 +73,48 @@ TEST(ParameterTest, SetNullable)
 	EXPECT_EQ(SQL_NULL_DATA, (*buffer)[row_index].indicator);
 }
 
-TEST(ParameterTest, CopyToFirstRow)
+
+TEST(ParameterTest, GetBuffer)
 {
 	std::unique_ptr<turbodbc::string_description> description(new turbodbc::string_description(10));
 
-	auto const buffer_c_type = description->column_c_type();
-	auto const buffer_sql_type = description->column_sql_type();
 	turbodbc_test::mock_statement statement;
-
-	cpp_odbc::multi_value_buffer * buffer = nullptr;
-	EXPECT_CALL(statement, do_bind_input_parameter(parameter_index, buffer_c_type, buffer_sql_type, testing::_))
-		.WillOnce(store_pointer_to_buffer_in(&buffer));
 
 	auto const buffered_rows = 100;
 	turbodbc::parameter parameter(statement, parameter_index, buffered_rows, std::move(description));
-	ASSERT_TRUE( buffer != nullptr);
 
 	auto const row_index = 42;
 	std::string const expected("hi there!");
 	parameter.set(row_index, turbodbc::field{expected});
 
-	parameter.copy_to_first_row(row_index);
+	auto const & buffer = parameter.get_buffer();
 
-	std::string const actual_content((*buffer)[0].data_pointer);
-	auto const actual_indicator((*buffer)[0].indicator);
+	std::string const actual_content(buffer[row_index].data_pointer);
+	auto const actual_indicator(buffer[row_index].indicator);
 	EXPECT_EQ(expected, actual_content);
 	EXPECT_EQ(expected.size(), actual_indicator);
+}
+
+
+TEST(ParameterTest, MoveToTop)
+{
+	std::unique_ptr<turbodbc::string_description> description(new turbodbc::string_description(10));
+
+	turbodbc_test::mock_statement statement;
+
+	auto const buffered_rows = 100;
+	turbodbc::parameter parameter(statement, parameter_index, buffered_rows, std::move(description));
+
+	auto const row_index = 42;
+	std::string const expected("hi there!");
+	parameter.set(row_index, turbodbc::field{expected});
+
+	move_to_top(parameter, row_index);
+
+	auto const & buffer = parameter.get_buffer();
+
+	std::string const top_content(buffer[0].data_pointer);
+	auto const top_indicator(buffer[0].indicator);
+	EXPECT_EQ(expected, top_content);
+	EXPECT_EQ(expected.size(), top_indicator);
 }

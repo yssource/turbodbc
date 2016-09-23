@@ -23,11 +23,26 @@ void parameter::set(std::size_t row_index, turbodbc::nullable_field const & valu
 	}
 }
 
+cpp_odbc::multi_value_buffer & parameter::get_buffer()
+{
+	return buffer_;
+}
+
 void parameter::copy_to_first_row(std::size_t row_index)
 {
 	auto destination = buffer_[0];
 	auto const & source = buffer_[row_index];
 	std::memcpy(destination.data_pointer, source.data_pointer, buffer_.capacity_per_element());
+	destination.indicator = source.indicator;
+}
+
+
+void move_to_top(parameter & param, std::size_t row_index)
+{
+	auto & buffer = param.get_buffer();
+	auto destination = buffer[0];
+	auto const & source = buffer[row_index];
+	std::memcpy(destination.data_pointer, source.data_pointer, buffer.capacity_per_element());
 	destination.indicator = source.indicator;
 }
 

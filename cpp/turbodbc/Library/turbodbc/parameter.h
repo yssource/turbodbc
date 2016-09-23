@@ -29,6 +29,11 @@ public:
 	void set(std::size_t row_index, turbodbc::nullable_field const & value);
 
 	/**
+	 * @brief Retrieve a reference to the internal buffer
+	*/
+	cpp_odbc::multi_value_buffer & get_buffer();
+
+	/**
 	 * @brief Copy the value set for the given row_index to the first row (with index 0)
 	 * @param row_index Index of the row whose value is copied
 	 */
@@ -39,6 +44,14 @@ private:
 	std::unique_ptr<description const> description_;
 	cpp_odbc::multi_value_buffer buffer_;
 };
+
+
+/**
+ * @brief Move the buffer element contained in the given row_index to the first row (with index 0)
+ * @param param Parameter for which to perform the operation
+ * @param row_index Index of the row whose value is copied
+ */
+void move_to_top(parameter & param, std::size_t row_index);
 
 
 }
