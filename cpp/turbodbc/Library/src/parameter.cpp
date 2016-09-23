@@ -28,6 +28,15 @@ cpp_odbc::multi_value_buffer & parameter::get_buffer()
 	return buffer_;
 }
 
+
+bool parameter::is_suitable_for(type_code code, std::size_t value_size)
+{
+	bool const has_suitable_type = (code == description_->get_type_code());
+	bool const is_large_enough = (value_size <= description_->element_size());
+	return has_suitable_type and is_large_enough;
+}
+
+
 void move_to_top(parameter & param, std::size_t row_index)
 {
 	auto & buffer = param.get_buffer();

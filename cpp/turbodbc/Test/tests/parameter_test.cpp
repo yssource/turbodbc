@@ -118,3 +118,20 @@ TEST(ParameterTest, MoveToTop)
 	EXPECT_EQ(expected, top_content);
 	EXPECT_EQ(expected.size(), top_indicator);
 }
+
+
+TEST(ParameterTest, IsSuitableFor)
+{
+	std::unique_ptr<turbodbc::string_description> description(new turbodbc::string_description(10));
+	std::size_t const supported_size = description->element_size();
+
+	turbodbc_test::mock_statement statement;
+
+	turbodbc::parameter parameter(statement, parameter_index, 100, std::move(description));
+
+	EXPECT_TRUE(parameter.is_suitable_for(turbodbc::type_code::string, supported_size));
+	EXPECT_TRUE(parameter.is_suitable_for(turbodbc::type_code::string, supported_size - 1));
+
+	EXPECT_FALSE(parameter.is_suitable_for(turbodbc::type_code::string, supported_size + 1));
+	EXPECT_FALSE(parameter.is_suitable_for(turbodbc::type_code::integer, supported_size));
+}
