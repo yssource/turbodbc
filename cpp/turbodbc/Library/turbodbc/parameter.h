@@ -35,7 +35,7 @@ public:
 	 * @param value_size The size of the value in bytes
 	 * @return True if the parameter could hold such a value, else false.
 	 */
-	bool is_suitable_for(type_code code, std::size_t value_size);
+	bool is_suitable_for(type_code code, std::size_t value_size) const;
 
 	/**
 	 * @brief Retrieve a reference to the internal buffer

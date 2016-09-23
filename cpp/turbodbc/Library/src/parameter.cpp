@@ -29,7 +29,7 @@ cpp_odbc::multi_value_buffer & parameter::get_buffer()
 }
 
 
-bool parameter::is_suitable_for(type_code code, std::size_t value_size)
+bool parameter::is_suitable_for(type_code code, std::size_t value_size) const
 {
 	bool const has_suitable_type = (code == description_->get_type_code());
 	bool const is_large_enough = (value_size <= description_->element_size());
