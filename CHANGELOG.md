@@ -1,8 +1,10 @@
 Version 0.4.1
 =============
 
-*   Libraries no longer link `libpython.so` (linking is already done by
-    the Python interpreter)
+*   Internal: Libraries no longer link `libpython.so` for local development
+    (linking is already done by the Python interpreter). This was always
+    the case for the libraries in the packages uploaded to PyPI, so no
+    change was necessary here.
 
 Version 0.4.0
 =============
