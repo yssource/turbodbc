@@ -20,7 +20,7 @@ TEST(ConnectionTest, ConstructorDisablesAutoCommit)
 
 TEST(ConnectionTest, Commit)
 {
-	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
+	auto connection = std::make_shared<mock_connection>();
 	EXPECT_CALL(*connection, do_commit()).Times(1);
 
 	turbodbc::connection test_connection(connection);
@@ -29,7 +29,7 @@ TEST(ConnectionTest, Commit)
 
 TEST(ConnectionTest, Rollback)
 {
-	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
+	auto connection = std::make_shared<mock_connection>();
 	EXPECT_CALL(*connection, do_rollback()).Times(1);
 
 	turbodbc::connection test_connection(connection);
@@ -38,7 +38,7 @@ TEST(ConnectionTest, Rollback)
 
 TEST(ConnectionTest, MakeCursorForwardsSelf)
 {
-	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
+	auto connection = std::make_shared<mock_connection>();
 
 	turbodbc::connection test_connection(connection);
 	auto cursor = test_connection.make_cursor();
@@ -47,7 +47,7 @@ TEST(ConnectionTest, MakeCursorForwardsSelf)
 
 TEST(ConnectionTest, RowsToBufferDefault)
 {
-	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
+	auto connection = std::make_shared<mock_connection>();
 
 	turbodbc::connection test_connection(connection);
 	EXPECT_EQ(1000, test_connection.rows_to_buffer);
@@ -55,7 +55,7 @@ TEST(ConnectionTest, RowsToBufferDefault)
 
 TEST(ConnectionTest, ParameterSetsToBufferDefault)
 {
-	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
+	auto connection = std::make_shared<mock_connection>();
 
 	turbodbc::connection test_connection(connection);
 	EXPECT_EQ(1000, test_connection.parameter_sets_to_buffer);
@@ -63,7 +63,7 @@ TEST(ConnectionTest, ParameterSetsToBufferDefault)
 
 TEST(ConnectionTest, AsyncIODefault)
 {
-	auto connection = std::make_shared<testing::NiceMock<mock_connection>>();
+	auto connection = std::make_shared<mock_connection>();
 
 	turbodbc::connection test_connection(connection);
 	EXPECT_FALSE(test_connection.use_async_io);
