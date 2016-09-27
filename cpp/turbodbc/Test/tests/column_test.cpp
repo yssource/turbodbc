@@ -24,7 +24,7 @@ TEST(ColumnTest, GetInfo)
 {
 	std::unique_ptr<turbodbc::string_description> description(new turbodbc::string_description("custom_name", false, 128));
 
-	testing::NiceMock<turbodbc_test::mock_statement> statement;
+	turbodbc_test::mock_statement statement;
 	turbodbc::column column(statement, 0, 10, std::move(description));
 
 	auto const info = column.get_info();
