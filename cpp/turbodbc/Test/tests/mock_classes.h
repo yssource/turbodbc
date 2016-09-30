@@ -12,13 +12,12 @@
 #include "cpp_odbc/connection.h"
 #include "turbodbc/column.h"
 
-
 namespace turbodbc_test {
 
-	class mock_connection : public cpp_odbc::connection {
+	class default_mock_connection : public cpp_odbc::connection {
 	public:
-		mock_connection();
-		~mock_connection();
+		default_mock_connection();
+		~default_mock_connection();
 		MOCK_CONST_METHOD0( do_make_statement, std::shared_ptr<cpp_odbc::statement const>());
 		MOCK_CONST_METHOD2( do_set_attribute, void(SQLINTEGER, long));
 		MOCK_CONST_METHOD0( do_commit, void());
@@ -28,10 +27,10 @@ namespace turbodbc_test {
 	};
 
 
-	class mock_statement : public cpp_odbc::statement {
+	class default_mock_statement : public cpp_odbc::statement {
 	public:
-		mock_statement();
-		~mock_statement();
+		default_mock_statement();
+		~default_mock_statement();
 		MOCK_CONST_METHOD1( do_get_integer_attribute, long(SQLINTEGER));
 		MOCK_CONST_METHOD2( do_set_attribute, void(SQLINTEGER, long));
 		MOCK_CONST_METHOD2( do_set_attribute, void(SQLINTEGER, SQLULEN *));
@@ -54,7 +53,8 @@ namespace turbodbc_test {
 		MOCK_CONST_METHOD0( do_more_results, bool());
 	};
 
-
+    using mock_connection = testing::NiceMock<default_mock_connection>;
+    using mock_statement = testing::NiceMock<default_mock_statement>;
 
 
 }

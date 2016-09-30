@@ -18,9 +18,9 @@ using turbodbc_test::mock_statement;
 
 namespace {
 
-	std::shared_ptr<testing::NiceMock<mock_statement>> prepare_mock_with_columns(std::vector<SQLSMALLINT> const & column_types)
+	std::shared_ptr<mock_statement> prepare_mock_with_columns(std::vector<SQLSMALLINT> const & column_types)
 	{
-		auto statement = std::make_shared<testing::NiceMock<mock_statement>>();
+		auto statement = std::make_shared<mock_statement>();
 
 		ON_CALL(*statement, do_number_of_columns())
 			.WillByDefault(testing::Return(column_types.size()));
