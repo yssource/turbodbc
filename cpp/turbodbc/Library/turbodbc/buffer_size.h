@@ -15,5 +15,3 @@ struct megabytes {
 };
 
 }
-
-turbodbc::rows r(42);
