@@ -10,7 +10,7 @@ void for_connection()
     		.def("commit", &turbodbc::connection::commit)
     		.def("rollback", &turbodbc::connection::rollback)
     		.def("cursor", &turbodbc::connection::make_cursor)
-    		.def_readwrite("rows_to_buffer", &turbodbc::connection::rows_to_buffer)
+    		.def_readwrite("buffer_size", &turbodbc::connection::buffer_size)
     		.def_readwrite("parameter_sets_to_buffer", &turbodbc::connection::parameter_sets_to_buffer)
 			.def_readwrite("use_async_io", &turbodbc::connection::use_async_io)
     	;

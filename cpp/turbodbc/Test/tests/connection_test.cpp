@@ -50,7 +50,7 @@ TEST(ConnectionTest, RowsToBufferDefault)
 	auto connection = std::make_shared<mock_connection>();
 
 	turbodbc::connection test_connection(connection);
-	EXPECT_EQ(1000, test_connection.rows_to_buffer);
+	EXPECT_EQ(1000, test_connection.buffer_size.rows_to_buffer);
 }
 
 TEST(ConnectionTest, ParameterSetsToBufferDefault)
