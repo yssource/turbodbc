@@ -5,25 +5,16 @@
 
 namespace turbodbc { namespace bindings {
 
-//struct buffer_size_to_object : boost::static_visitor<PyObject *> {
-//    static PyObject * convert(buffer_size const& b) {
-//    std::cout << "CONVERT" << std::endl;
-//        return apply_visitor(buffer_size_to_object(), b);
-//    }
-//
-//    template<typename T>
-//    PyObject * operator()(T const& t) const {
-//        std::cout << "CONVERT OPERATOR()" << std::endl;
-//        return boost::python::incref(boost::python::object(t).ptr());
-//    }
-//};
-
 struct buffer_size_to_object : boost::static_visitor<PyObject *> {
-	static result_type convert(buffer_size const & columns) {
-		return boost::python::object().ptr();
-	}
-};
+    static PyObject * convert(buffer_size const& b) {
+        return apply_visitor(buffer_size_to_object(), b);
+    }
 
+    template<typename T>
+    PyObject * operator()(T const& t) const {
+        return boost::python::incref(boost::python::object(t).ptr());
+    }
+};
 
 struct buffer_size_from_object{
     static bool is_convertible (PyObject * object)
@@ -71,15 +62,12 @@ void for_buffer_size()
     ;
 
     boost::python::to_python_converter<buffer_size, buffer_size_to_object>();
-    boost::python::to_python_converter<turbodbc::buffer_size, buffer_size_to_object>();
 
     boost::python::converter::registry::push_back(
 		& boost_python_converter<buffer_size_from_object>::is_convertible,
 		& boost_python_converter<buffer_size_from_object>::convert,
 		boost::python::type_id<typename boost_python_converter<buffer_size_from_object>::target>()
 	);
-//    std::cerr << "Converter registered" << std::endl;
-//    boost::python::to_python_converter<buffer_size, buffer_size_to_object>();
 
 }
 

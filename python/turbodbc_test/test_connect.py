@@ -43,6 +43,6 @@ def test_connect_performance_settings(dsn, configuration):
                          parameter_sets_to_buffer=123,
                          use_async_io=True)
 
-    assert connection.impl.buffer_size #.rows_to_buffer == 317
+    assert connection.impl.get_buffer_size().rows_to_buffer == 317
     assert connection.impl.parameter_sets_to_buffer == 123
     assert connection.impl.use_async_io == True
