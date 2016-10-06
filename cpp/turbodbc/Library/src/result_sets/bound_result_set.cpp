@@ -4,22 +4,24 @@
 
 #include <turbodbc/buffer_size.h>
 
+#include <boost/variant.hpp>
 #include <sqlext.h>
 
 namespace turbodbc { namespace result_sets {
 
-bound_result_set::bound_result_set(std::shared_ptr<cpp_odbc::statement const> statement, turbodbc::rows buffer_size) :
+bound_result_set::bound_result_set(std::shared_ptr<cpp_odbc::statement const> statement, turbodbc::buffer_size buffer_size) :
 	statement_(statement),
 	rows_fetched_(0)
 {
 	std::size_t const n_columns = statement_->number_of_columns();
+	std::size_t rows_to_buffer = boost::apply_visitor(turbodbc::determine_rows_to_buffer(), buffer_size);
 
 	for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
 		auto column_description = make_description(statement_->describe_column(one_based_index));
-		columns_.emplace_back(*statement, one_based_index, buffer_size.rows_to_buffer, std::move(column_description));
+		columns_.emplace_back(*statement, one_based_index, rows_to_buffer, std::move(column_description));
 	}
 
-	statement_->set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffer_size.rows_to_buffer);
+	statement_->set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, rows_to_buffer);
 	rebind();
 }
 

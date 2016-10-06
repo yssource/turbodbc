@@ -6,7 +6,7 @@
 namespace turbodbc {
 
 connection::connection(std::shared_ptr<cpp_odbc::connection const> low_level_connection) :
-	buffer_size(1000),
+	buffer_size(rows(1000)),
 	parameter_sets_to_buffer(1000),
 	use_async_io(false),
 	connection_(low_level_connection)

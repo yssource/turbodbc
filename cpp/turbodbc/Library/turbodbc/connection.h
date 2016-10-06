@@ -38,7 +38,7 @@ public:
 	turbodbc::cursor make_cursor() const;
 
 	/// Object which indicates buffer size
-	turbodbc::rows buffer_size;
+	turbodbc::buffer_size buffer_size;
 	///< Indicate number of parameter sets which shall be buffered by queries
 	std::size_t parameter_sets_to_buffer;
 	///< Indicate whether asynchronous i/o should be used

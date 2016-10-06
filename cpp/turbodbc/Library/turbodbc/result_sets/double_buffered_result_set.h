@@ -61,7 +61,7 @@ public:
 	 * @brief Prepare and bind buffers suitable of holding buffered_rows to
 	 *        the given statement.
 	 */
-	double_buffered_result_set(std::shared_ptr<cpp_odbc::statement const> statement, turbodbc::rows buffer_size);
+	double_buffered_result_set(std::shared_ptr<cpp_odbc::statement const> statement, turbodbc::buffer_size buffer_size);
 	virtual ~double_buffered_result_set();
 
 private:

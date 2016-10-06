@@ -9,7 +9,7 @@
 namespace turbodbc {
 
 query::query(std::shared_ptr<cpp_odbc::statement const> statement,
-             turbodbc::rows buffer_size,
+             turbodbc::buffer_size buffer_size,
              std::size_t parameter_sets_to_buffer,
              bool use_double_buffering) :
 	statement_(statement),

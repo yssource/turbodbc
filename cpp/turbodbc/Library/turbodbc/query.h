@@ -14,7 +14,7 @@ namespace turbodbc {
 class query {
 public:
 	query(std::shared_ptr<cpp_odbc::statement const> statement,
-		  turbodbc::rows buffer_size,
+		  turbodbc::buffer_size buffer_size,
 		  std::size_t parameter_sets_to_buffer,
 		  bool use_double_buffering);
 
@@ -29,7 +29,7 @@ public:
 private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	field_parameter_set parameters_;
-	turbodbc::rows buffer_size_;
+	turbodbc::buffer_size buffer_size_;
 	bool use_double_buffering_;
 	std::shared_ptr<result_sets::result_set> results_;
 };

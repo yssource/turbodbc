@@ -4,6 +4,7 @@
 
 #include <turbodbc/buffer_size.h>
 
+#include <boost/variant.hpp>
 #include <sqlext.h>
 
 #include <future>
@@ -38,15 +39,16 @@ namespace {
 
 	}
 
-	turbodbc::rows rows_per_single_buffer(turbodbc::rows buffer_size)
+	turbodbc::buffer_size rows_per_single_buffer(turbodbc::buffer_size buffer_size)
 	{
-		return {buffer_size.rows_to_buffer / 2 + buffer_size.rows_to_buffer % 2};
+	    std::size_t rows_to_buffer = boost::apply_visitor(turbodbc::determine_rows_to_buffer(), buffer_size);
+		return {turbodbc::rows(rows_to_buffer / 2 + rows_to_buffer % 2)};
 	}
 
 }
 
 
-double_buffered_result_set::double_buffered_result_set(std::shared_ptr<cpp_odbc::statement const> statement, turbodbc::rows buffer_size) :
+double_buffered_result_set::double_buffered_result_set(std::shared_ptr<cpp_odbc::statement const> statement, turbodbc::buffer_size buffer_size) :
 	statement_(statement),
 	batches_{{bound_result_set(statement_, rows_per_single_buffer(buffer_size)),
 	          bound_result_set(statement_, rows_per_single_buffer(buffer_size))}},

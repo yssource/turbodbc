@@ -17,7 +17,7 @@ namespace turbodbc {
 class cursor {
 public:
 	cursor(std::shared_ptr<cpp_odbc::connection const> connection,
-		   turbodbc::rows buffer_size,
+		   turbodbc::buffer_size buffer_size,
 		   std::size_t parameter_sets_to_buffer,
 		   bool use_async_io);
 
@@ -37,7 +37,7 @@ public:
 
 private:
 	std::shared_ptr<cpp_odbc::connection const> connection_;
-	turbodbc::rows buffer_size_;
+	turbodbc::buffer_size buffer_size_;
 	std::size_t parameter_sets_to_buffer_;
 	bool use_async_io_;
 	std::shared_ptr<turbodbc::query> query_;
