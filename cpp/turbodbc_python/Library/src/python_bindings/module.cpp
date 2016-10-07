@@ -2,6 +2,7 @@
 
 namespace turbodbc { namespace bindings {
 
+    void for_buffer_size();
 	void for_column_info();
 	void for_connect();
 	void for_connection();
@@ -15,6 +16,7 @@ namespace turbodbc { namespace bindings {
 BOOST_PYTHON_MODULE(turbodbc_intern)
 {
 	using namespace turbodbc;
+	bindings::for_buffer_size();
 	bindings::for_column_info();
 	bindings::for_connect();
 	bindings::for_connection();
