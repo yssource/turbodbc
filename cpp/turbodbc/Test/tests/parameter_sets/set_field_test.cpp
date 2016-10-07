@@ -15,7 +15,7 @@ std::size_t const n_params = 23;
 }
 
 using namespace turbodbc;
-typedef testing::NiceMock<turbodbc_test::mock_statement> mock_statement;
+typedef turbodbc_test::mock_statement mock_statement;
 
 
 TEST(SetFieldTest, ParameterIsSuitableForBoolean)
