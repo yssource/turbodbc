@@ -1,8 +1,14 @@
 Version 0.4.1
 =============
-*   Using new top level classes Megabytes and Rows to set Buffer Size. Those are given to connect
-    with input parameter read_buffer_size. Default is set to 20 Megabytes.
-
+*   The size of the input buffers for retrieving result sets can now be set
+    to a certain amount of memory instead of using a fixed number of rows.
+    Use the optional `read_buffer_size` parameter of `turbodbc.connect()` and
+    set it to instances of the new top-level classes `Megabytes` and `Rows`.
+*   The read buffer size's default value has changed from 1,000 rows to
+    20 MB.
+*   The parameter `rows_to_buffer` of `turbodbc.connect()` is _deprecated_.
+    You can set the `read_buffer_size` to `turbodbc.Rows(1000)` for the same
+    effect, though it is recommended to specify the buffer size in MB.
 *   Internal: Libraries no longer link `libpython.so` for local development
     (linking is already done by the Python interpreter). This was always
     the case for the libraries in the packages uploaded to PyPI, so no

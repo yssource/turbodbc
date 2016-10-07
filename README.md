@@ -163,18 +163,23 @@ Performance options
 
 Turbodbc offers some options to tune the performance for your database:
 
-    >>> connection.connect(dsn="my dsn",
-                           read_buffer_size=Megabytes(100),
-                           parameter_sets_to_buffer=5000,
-                           use_async_io=True)
-
+    >>> from turbodbc import Megabytes
+    >>> connect(dsn="my dsn",
+                read_buffer_size=Megabytes(100),
+                parameter_sets_to_buffer=5000,
+                use_async_io=True)
 
 `read_buffer_size` affects how many result set rows are retrieved per batch
-of results. You can choose between either a specific number of rows by using
-`Rows("NumberOfRows")`, or you can set the size of each batch by using `Megabytes("Megabytes")`.
+of results. Set the attribute to `turbodbc.Megabytes(42)` to have turbodbc determine
+the optimal number of rows per batch so that the total buffer amounts to
+42 MB. This is recommended for most users and databases. You can also set
+the attribute to `turbodbc.Rows(13)` if you would like to fetch results in
+batches of 13 rows. By default, turbodbc fetches results in batches of 20 MB.
 
 Similarly, `parameter_sets_to_buffer` changes the number of parameter sets
 which are transferred per batch of parameters (e.g., as sent with `executemany()`).
+Please note that it is not (yet) possible to use the `Megabytes` and `Rows` classes
+here.
 
 Finally, set `use_async_io` to `True` if you would like to benefit from
 asynchronous I/O operations (limited to result sets for the time being).
