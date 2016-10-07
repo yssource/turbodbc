@@ -1,5 +1,7 @@
 Version 0.4.1
 =============
+*   Using new top level classes Megabytes and Rows to set Buffer Size. Those are given to connect
+    with input parameter read_buffer_size. Default is set to 20 Megabytes.
 
 *   Internal: Libraries no longer link `libpython.so` for local development
     (linking is already done by the Python interpreter). This was always

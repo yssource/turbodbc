@@ -4,6 +4,8 @@
 #include <cpp_odbc/connection.h>
 #include <memory>
 
+#include <turbodbc/buffer_size.h>
+
 namespace turbodbc {
 
 /**
@@ -35,14 +37,17 @@ public:
 	 */
 	turbodbc::cursor make_cursor() const;
 
-	/// Indicate number of rows which shall be buffered by result sets
-	std::size_t rows_to_buffer;
+    turbodbc::buffer_size get_buffer_size() const;
+
+    void set_buffer_size(turbodbc::buffer_size buffer_size);
+
 	///< Indicate number of parameter sets which shall be buffered by queries
 	std::size_t parameter_sets_to_buffer;
 	///< Indicate whether asynchronous i/o should be used
 	bool use_async_io;
 
 private:
+    turbodbc::buffer_size buffer_size_;
 	std::shared_ptr<cpp_odbc::connection const> connection_;
 };
 

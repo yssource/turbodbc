@@ -3,16 +3,18 @@
 #include <turbodbc/result_sets/bound_result_set.h>
 #include <turbodbc/result_sets/double_buffered_result_set.h>
 
+#include <turbodbc/buffer_size.h>
+
 
 namespace turbodbc {
 
 query::query(std::shared_ptr<cpp_odbc::statement const> statement,
-             std::size_t rows_to_buffer,
+             turbodbc::buffer_size buffer_size,
              std::size_t parameter_sets_to_buffer,
              bool use_double_buffering) :
 	statement_(statement),
 	parameters_(statement, parameter_sets_to_buffer),
-	rows_to_buffer_(rows_to_buffer),
+	buffer_size_(buffer_size),
 	use_double_buffering_(use_double_buffering)
 {
 }
@@ -30,9 +32,9 @@ void query::execute()
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
 		if (use_double_buffering_) {
-			results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, rows_to_buffer_);
+			results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, buffer_size_);
 		} else {
-			results_ = std::make_shared<result_sets::bound_result_set>(statement_, rows_to_buffer_);
+			results_ = std::make_shared<result_sets::bound_result_set>(statement_, buffer_size_);
 		}
 	}
 }

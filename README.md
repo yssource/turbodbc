@@ -164,14 +164,14 @@ Performance options
 Turbodbc offers some options to tune the performance for your database:
 
     >>> connection.connect(dsn="my dsn",
-                           rows_to_buffer=10000,
+                           read_buffer_size=Megabytes(100),
                            parameter_sets_to_buffer=5000,
                            use_async_io=True)
 
-`rows_to_buffer` affects how many result set rows are retrieved per batch
-of results. Larger numbers may yield better performance because database
-roundtrips are avoided. However, larger numbers also improve the memory
-footprint, since more data is kept in internal buffers.
+
+`read_buffer_size` affects how many result set rows are retrieved per batch
+of results. You can choose between either a specific number of rows by using
+`Rows("NumberOfRows")`, or you can set the size of each batch by using `Megabytes("Megabytes")`.
 
 Similarly, `parameter_sets_to_buffer` changes the number of parameter sets
 which are transferred per batch of parameters (e.g., as sent with `executemany()`).
