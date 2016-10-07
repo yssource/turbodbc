@@ -76,18 +76,24 @@ for_one_database = pytest.mark.parametrize("dsn,configuration",
 
 
 @contextmanager
-def open_connection(configuration, rows_to_buffer=100, parameter_sets_to_buffer=100, use_async_io=False):
+def open_connection(configuration, rows_to_buffer=None, parameter_sets_to_buffer=100, use_async_io=False):
     dsn = configuration['data_source_name']
-    connection = turbodbc.connect(dsn,
-                                  rows_to_buffer=rows_to_buffer,
-                                  parameter_sets_to_buffer=parameter_sets_to_buffer,
-                                  use_async_io=use_async_io)
+    if rows_to_buffer:
+        connection = turbodbc.connect(dsn,
+                                      rows_to_buffer=rows_to_buffer,
+                                      parameter_sets_to_buffer=parameter_sets_to_buffer,
+                                      use_async_io=use_async_io)
+    else:
+        connection = turbodbc.connect(dsn,
+                                      read_buffer_size=turbodbc.Megabytes(1),
+                                      parameter_sets_to_buffer=parameter_sets_to_buffer,
+                                      use_async_io=use_async_io)
     yield connection
     connection.close()
 
 
 @contextmanager
-def open_cursor(configuration, rows_to_buffer=100, parameter_sets_to_buffer=100, use_async_io=False):
+def open_cursor(configuration, rows_to_buffer=None, parameter_sets_to_buffer=100, use_async_io=False):
     with open_connection(configuration, rows_to_buffer, parameter_sets_to_buffer, use_async_io) as connection:
         cursor = connection.cursor()
         yield cursor

@@ -3,7 +3,7 @@ import pytest
 from turbodbc import connect, DatabaseError
 from turbodbc.connect import _make_connection_string
 from turbodbc.connection import Connection
-from turbodbc_intern import Rows, Megabytes
+from turbodbc import Rows, Megabytes
 
 from helpers import for_one_database
 
