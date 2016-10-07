@@ -36,11 +36,11 @@ def connect(dsn=None, read_buffer_size=None, rows_to_buffer=None, parameter_sets
     """    
     connection = Connection(intern_connect(_make_connection_string(dsn, **kwargs)))
 
-    if read_buffer_size:
-        connection.impl.set_buffer_size(read_buffer_size)
-
     if rows_to_buffer:
         connection.impl.set_buffer_size(Rows(rows_to_buffer))
+
+    if read_buffer_size:
+        connection.impl.set_buffer_size(read_buffer_size)
 
     if parameter_sets_to_buffer:
         connection.impl.parameter_sets_to_buffer = parameter_sets_to_buffer

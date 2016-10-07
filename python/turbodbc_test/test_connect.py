@@ -57,3 +57,8 @@ def test_connect_with_rows(dsn, configuration):
 def test_connect_with_megabytes(dsn, configuration):
     connection = connect(dsn=dsn, read_buffer_size=Megabytes(1))
     assert connection.impl.get_buffer_size().megabytes_to_buffer == 1
+
+@for_one_database
+def test_read_buffer_size_has_priority_to_rows_to_buffer(dsn, configuration):
+    connection = connect(dsn=dsn, read_buffer_size=Megabytes(1), rows_to_buffer=317)
+    assert connection.impl.get_buffer_size().megabytes_to_buffer == 1
