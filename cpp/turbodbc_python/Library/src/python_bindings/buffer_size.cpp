@@ -19,8 +19,8 @@ struct buffer_size_to_object : boost::static_visitor<PyObject *> {
 struct buffer_size_from_object{
     static bool is_convertible (PyObject * object)
     {
-        return object == Py_None
-            or boost::python::extract<turbodbc::rows>(object).check();
+        return boost::python::extract<turbodbc::rows>(object).check()
+            or boost::python::extract<turbodbc::megabytes>(object).check();
     }
 
     static buffer_size convert(PyObject * object)
@@ -29,7 +29,13 @@ struct buffer_size_from_object{
 
         {
             boost::python::extract<turbodbc::rows> extractor(object);
-            return turbodbc::rows(extractor());
+            if (extractor.check()) {
+                return turbodbc::rows(extractor());
+            }
+        }
+        {
+            boost::python::extract<turbodbc::megabytes> extractor(object);
+            return turbodbc::megabytes(extractor());
         }
     }
 };
@@ -59,6 +65,10 @@ void for_buffer_size()
 {
     boost::python::class_<turbodbc::rows>("Rows", boost::python::init<std::size_t>())
         .def_readwrite("rows_to_buffer", &turbodbc::rows::rows_to_buffer)
+    ;
+
+    boost::python::class_<turbodbc::megabytes>("Megabytes", boost::python::init<std::size_t>())
+        .def_readwrite("bytes_to_buffer", &turbodbc::megabytes::bytes_to_buffer)
     ;
 
     boost::python::to_python_converter<buffer_size, buffer_size_to_object>();

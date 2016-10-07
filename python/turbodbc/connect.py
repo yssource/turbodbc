@@ -13,7 +13,7 @@ def _make_connection_string(dsn, **kwargs):
 
 
 @translate_exceptions
-def connect(dsn=None, rows_to_buffer=None, parameter_sets_to_buffer=None, use_async_io=False, **kwargs):
+def connect(dsn=None, read_buffer_size=None, rows_to_buffer=None, parameter_sets_to_buffer=None, use_async_io=False, **kwargs):
     """
     Create a connection with the database identified by the dsn
     :param dsn: data source name as given in the odbc.ini file
@@ -35,6 +35,9 @@ def connect(dsn=None, rows_to_buffer=None, parameter_sets_to_buffer=None, use_as
                       would like to connect with (e.g. `user` or `password`)
     """    
     connection = Connection(intern_connect(_make_connection_string(dsn, **kwargs)))
+
+    if read_buffer_size:
+        connection.impl.set_buffer_size(read_buffer_size)
 
     if rows_to_buffer:
         connection.impl.set_buffer_size(Rows(rows_to_buffer))

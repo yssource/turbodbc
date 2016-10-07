@@ -41,7 +41,7 @@ namespace {
 
 	turbodbc::buffer_size rows_per_single_buffer(turbodbc::buffer_size buffer_size)
 	{
-	    std::size_t rows_to_buffer = boost::apply_visitor(turbodbc::determine_rows_to_buffer(), buffer_size);
+	    std::size_t rows_to_buffer = boost::apply_visitor(turbodbc::determine_buffer_size(), buffer_size);
 		return {turbodbc::rows(rows_to_buffer / 2 + rows_to_buffer % 2)};
 	}
 

@@ -63,7 +63,7 @@ TEST(DoubleBufferedResultSetTest, BindsArraySizeInContructor)
 	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, 501))
 		.Times(testing::AtLeast(1));
 
-	double_buffered_result_set rs(statement, buffered_rows);
+	double_buffered_result_set rs(statement, turbodbc::rows(buffered_rows));
 }
 
 
@@ -71,7 +71,7 @@ TEST(DoubleBufferedResultSetTest, GetColumnInfo)
 {
 	auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_VARCHAR});
 
-	double_buffered_result_set rs(statement, 123);
+	double_buffered_result_set rs(statement, turbodbc::rows(123));
 
 	ASSERT_EQ(2, rs.get_column_info().size());
 	EXPECT_EQ(turbodbc::type_code::integer, rs.get_column_info()[0].type);
@@ -147,7 +147,7 @@ TEST(DoubleBufferedResultSetTest, FetchNextBatch)
 	std::vector<size_t> batch_sizes = {123};
 	auto statement = std::make_shared<testing::NiceMock<statement_with_fake_int_result_set>>(batch_sizes);
 
-	double_buffered_result_set rs(statement, 1000);
+	double_buffered_result_set rs(statement, turbodbc::rows(1000));
 	EXPECT_EQ(123, rs.fetch_next_batch());
 }
 
@@ -157,7 +157,7 @@ TEST(DoubleBufferedResultSetTest, GetBuffers)
 	std::vector<size_t> batch_sizes = {4, 4, 2, 0};
 	auto statement = std::make_shared<testing::NiceMock<statement_with_fake_int_result_set>>(batch_sizes);
 
-	double_buffered_result_set rs(statement, 8);
+	double_buffered_result_set rs(statement, turbodbc::rows(8));
 
 	// first batch
 	ASSERT_EQ(4, rs.fetch_next_batch());
@@ -211,6 +211,6 @@ TEST(DoubleBufferedResultSetTest, FetchNextBatchFails)
 {
 	auto statement = std::make_shared<testing::NiceMock<statement_with_fake_failing_result_set>>();
 
-	double_buffered_result_set rs(statement, 1000);
+	double_buffered_result_set rs(statement, turbodbc::rows(1000));
 	EXPECT_THROW(rs.fetch_next_batch(), std::runtime_error);
 }

@@ -62,7 +62,7 @@ TEST(BoundResultSetTest, BindsColumnsInContructor)
 	expect_calls_to_bind_buffer(*statement, c_column_types);
 	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffered_rows));
 
-	bound_result_set rs(statement, buffered_rows);
+	bound_result_set rs(statement, turbodbc::rows(buffered_rows));
 }
 
 
@@ -91,7 +91,7 @@ TEST(BoundResultSetTest, FetchNextBatch)
 	auto statement = prepare_mock_with_columns(sql_column_types);
 	expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
-	bound_result_set rs(statement, 1000);
+	bound_result_set rs(statement, turbodbc::rows(1000));
 	ASSERT_TRUE(rows_fetched != nullptr);
 
 	*rows_fetched = 123;
@@ -105,7 +105,7 @@ TEST(BoundResultSetTest, GetColumnInfo)
 {
 	auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_VARCHAR});
 
-	bound_result_set rs(statement, 123);
+	bound_result_set rs(statement, turbodbc::rows(123));
 
 	ASSERT_EQ(2, rs.get_column_info().size());
 	EXPECT_EQ(turbodbc::type_code::integer, rs.get_column_info()[0].type);
@@ -118,7 +118,7 @@ TEST(BoundResultSetTest, GetBuffers)
 	auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_VARCHAR});
 	std::size_t const buffered_rows = 1234;
 
-	bound_result_set rs(statement, buffered_rows);
+	bound_result_set rs(statement, turbodbc::rows(buffered_rows));
 	auto const buffers = rs.get_buffers();
 	ASSERT_EQ(2, buffers.size());
 
@@ -140,7 +140,7 @@ TEST(BoundResultSetTest, Rebind)
 	auto statement = prepare_mock_with_columns(sql_column_types);
 	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffered_rows));
 
-	bound_result_set rs(statement, buffered_rows);
+	bound_result_set rs(statement, turbodbc::rows(buffered_rows));
 
 	expect_calls_to_bind_buffer(*statement, c_column_types);
 	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>()));
@@ -152,7 +152,7 @@ TEST(BoundResultSetTest, MoveConstructorRebinds)
 {
 	auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_VARCHAR});
 
-	bound_result_set moved(statement, 123);
+	bound_result_set moved(statement, turbodbc::rows(123));
 
 	// rebind includes setting fetched pointer
 	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>()));

@@ -25,7 +25,7 @@ TEST(QueryTest, GetRowCountBeforeExecuted)
 {
 	auto statement = std::make_shared<mock_statement>();
 
-	turbodbc::query query(statement, 1, 1, no_double_buffering);
+	turbodbc::query query(statement, turbodbc::rows(1), 1, no_double_buffering);
 	EXPECT_EQ(0, query.get_row_count());
 }
 
@@ -50,7 +50,7 @@ TEST(QueryTest, GetRowCountAfterQueryWithResultSet)
 	EXPECT_CALL( *statement, do_row_count())
 			.WillOnce(testing::Return(expected));
 
-	turbodbc::query query(statement, 1, 1, no_double_buffering);
+	turbodbc::query query(statement, turbodbc::rows(1), 1, no_double_buffering);
 	query.execute();
 	EXPECT_EQ(expected, query.get_row_count());
 }
@@ -64,7 +64,7 @@ namespace {
 		auto statement = std::make_shared<mock_statement>();
 		prepare_single_column_result_set(*statement);
 
-		turbodbc::query query(statement, 1, 1, double_buffering);
+		turbodbc::query query(statement, turbodbc::rows(1), 1, double_buffering);
 		query.execute();
 		EXPECT_TRUE(std::dynamic_pointer_cast<ExpectedResultSetType>(query.get_results()));
 	}

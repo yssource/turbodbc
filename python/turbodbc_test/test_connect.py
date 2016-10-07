@@ -3,6 +3,7 @@ import pytest
 from turbodbc import connect, DatabaseError
 from turbodbc.connect import _make_connection_string
 from turbodbc.connection import Connection
+from turbodbc_intern import Rows, Megabytes
 
 from helpers import for_one_database
 
@@ -46,3 +47,13 @@ def test_connect_performance_settings(dsn, configuration):
     assert connection.impl.get_buffer_size().rows_to_buffer == 317
     assert connection.impl.parameter_sets_to_buffer == 123
     assert connection.impl.use_async_io == True
+
+@for_one_database
+def test_connect_with_rows(dsn, configuration):
+    connection = connect(dsn=dsn, read_buffer_size=Rows(317))
+    assert connection.impl.get_buffer_size().rows_to_buffer == 317
+
+@for_one_database
+def test_connect_with_megabytes(dsn, configuration):
+    connection = connect(dsn=dsn, read_buffer_size=Megabytes(1))
+    assert connection.impl.get_buffer_size().bytes_to_buffer == 1000000

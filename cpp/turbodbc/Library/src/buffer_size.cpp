@@ -12,9 +12,14 @@ megabytes::megabytes(std::size_t megabytes_to_buffer) :
 {
 }
 
-std::size_t determine_rows_to_buffer::operator()(rows const& r) const
+std::size_t determine_buffer_size::operator()(rows const& r) const
 {
     return r.rows_to_buffer;
+}
+
+std::size_t determine_buffer_size::operator()(megabytes const& m) const
+{
+    return m.bytes_to_buffer;
 }
 
 }
