@@ -53,7 +53,7 @@ TEST(DoubleBufferedResultSetTest, IsResultSet)
 }
 
 
-TEST(DoubleBufferedResultSetTest, BindsArraySizeInContructor)
+TEST(DoubleBufferedResultSetTest, BindsArraySizeFixedRowsInContructor)
 {
 	std::vector<SQLSMALLINT> const sql_column_types = {SQL_INTEGER, SQL_VARCHAR};
 	std::vector<SQLSMALLINT> const c_column_types = {SQL_C_SBIGINT, SQL_CHAR};
@@ -65,6 +65,22 @@ TEST(DoubleBufferedResultSetTest, BindsArraySizeInContructor)
 
 	double_buffered_result_set rs(statement, turbodbc::rows(buffered_rows));
 }
+
+
+TEST(DoubleBufferedResultSetTest, BindsArraySizeFixedMegabytesInContructor)
+{
+	std::vector<SQLSMALLINT> const sql_column_types = {SQL_INTEGER};
+	std::vector<SQLSMALLINT> const c_column_types = {SQL_C_SBIGINT};
+	// when the full buffer is set to 3 megabytes, use 2 megabytes per half buffer
+	std::size_t const expected_rows_for_half_buffer = 2 * 1024 * 1024 / 8;
+
+	auto statement = prepare_mock_with_columns(sql_column_types);
+	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, expected_rows_for_half_buffer))
+		.Times(testing::AtLeast(1));
+
+	double_buffered_result_set rs(statement, turbodbc::megabytes(3));
+}
+
 
 
 TEST(DoubleBufferedResultSetTest, GetColumnInfo)

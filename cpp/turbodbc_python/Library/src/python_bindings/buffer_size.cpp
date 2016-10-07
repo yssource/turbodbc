@@ -68,7 +68,7 @@ void for_buffer_size()
     ;
 
     boost::python::class_<turbodbc::megabytes>("Megabytes", boost::python::init<std::size_t>())
-        .def_readwrite("bytes_to_buffer", &turbodbc::megabytes::bytes_to_buffer)
+        .def_readwrite("megabytes_to_buffer", &turbodbc::megabytes::megabytes_to_buffer)
     ;
 
     boost::python::to_python_converter<buffer_size, buffer_size_to_object>();

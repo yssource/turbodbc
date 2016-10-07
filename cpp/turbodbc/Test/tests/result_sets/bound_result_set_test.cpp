@@ -52,7 +52,7 @@ TEST(BoundResultSetTest, IsResultSet)
 }
 
 
-TEST(BoundResultSetTest, BindsColumnsInContructor)
+TEST(BoundResultSetTest, BindColumnsWithFixedRowsInConstructor)
 {
 	std::vector<SQLSMALLINT> const sql_column_types = {SQL_INTEGER, SQL_VARCHAR};
 	std::vector<SQLSMALLINT> const c_column_types = {SQL_C_SBIGINT, SQL_CHAR};
@@ -63,6 +63,20 @@ TEST(BoundResultSetTest, BindsColumnsInContructor)
 	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffered_rows));
 
 	bound_result_set rs(statement, turbodbc::rows(buffered_rows));
+}
+
+TEST(BoundResultSetTest, BindColumnsWithFixedMegabytesInConstructor)
+{
+	std::vector<SQLSMALLINT> const sql_column_types = {SQL_INTEGER};
+	std::vector<SQLSMALLINT> const c_column_types = {SQL_C_SBIGINT};
+
+    std::size_t const expected_rows = 1024 * 1024 / 8;
+
+	auto statement = prepare_mock_with_columns(sql_column_types);
+	expect_calls_to_bind_buffer(*statement, c_column_types);
+	EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, expected_rows));
+
+	bound_result_set rs(statement, turbodbc::megabytes(1));
 }
 
 

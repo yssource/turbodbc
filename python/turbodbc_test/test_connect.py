@@ -56,4 +56,4 @@ def test_connect_with_rows(dsn, configuration):
 @for_one_database
 def test_connect_with_megabytes(dsn, configuration):
     connection = connect(dsn=dsn, read_buffer_size=Megabytes(1))
-    assert connection.impl.get_buffer_size().bytes_to_buffer == 1000000
+    assert connection.impl.get_buffer_size().megabytes_to_buffer == 1
