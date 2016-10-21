@@ -1,4 +1,5 @@
 #include <turbodbc/parameter_sets/field_parameter_set.h>
+#include <turbodbc/parameter_sets/set_field.h>
 #include <turbodbc/make_description.h>
 
 #include <cpp_odbc/error.h>
@@ -105,13 +106,20 @@ void field_parameter_set::check_parameter_set(std::vector<nullable_field> const 
 
 void field_parameter_set::add_parameter(std::size_t index, nullable_field const & value)
 {
-	try {
-		parameters_[index]->set(current_parameter_set_, value);
-	} catch (std::exception const &) {
-		auto const last_active_row = execute_batch();
-		recover_unwritten_parameters_below(index, last_active_row);
-		rebind_parameter_to_hold_value(index, *value);
-		parameters_[index]->set(current_parameter_set_, value);
+	if (value) {
+		if (parameter_is_suitable_for(*parameters_[index], *value)) {
+			auto element = parameters_[index]->get_buffer()[current_parameter_set_];
+			set_field(*value, element);
+		} else {
+			auto const last_active_row = execute_batch();
+			recover_unwritten_parameters_below(index, last_active_row);
+			rebind_parameter_to_hold_value(index, *value);
+			auto element = parameters_[index]->get_buffer()[current_parameter_set_];
+			set_field(*value, element);
+		}
+	} else {
+		auto element = parameters_[index]->get_buffer()[current_parameter_set_];
+		set_null(element);
 	}
 }
 
