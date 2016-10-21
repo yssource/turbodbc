@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+import warnings
+
 from turbodbc_intern import connect as intern_connect
 from turbodbc_intern import Rows
 
@@ -37,6 +39,9 @@ def connect(dsn=None, read_buffer_size=None, rows_to_buffer=None, parameter_sets
     connection = Connection(intern_connect(_make_connection_string(dsn, **kwargs)))
 
     if rows_to_buffer:
+        warnings.warn("Calling turbodbc.connect() with parameter rows_to_buffer is deprecated. "
+                      "Instead, set the parameter read_buffer_size to turbodbc.Megabytes(x) or "
+                      "turbodbc.Rows(y) instead.", DeprecationWarning)
         connection.impl.set_buffer_size(Rows(rows_to_buffer))
 
     if read_buffer_size:

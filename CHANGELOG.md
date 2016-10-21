@@ -13,6 +13,8 @@ Version 0.4.1
     (linking is already done by the Python interpreter). This was always
     the case for the libraries in the packages uploaded to PyPI, so no
     change was necessary here.
+*   Internal: Some modifications to the structure of the underlying 
+    C++ code.
 
 Version 0.4.0
 =============

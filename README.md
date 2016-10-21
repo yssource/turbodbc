@@ -80,7 +80,7 @@ timestamp, time                   | `datetime.datetime` | `datetime64[us]` |
 date                              | `datetime.date`    | `datetime64[D]`  |
 strings, VARCHAR, Decimal(>18, 0) | `unicode`          | `object_`      | _slow, WIP_
 
-NumPy types are not yet supported for inserting values.
+NumPy types are not yet supported for parameters.
 
 
 Installation
