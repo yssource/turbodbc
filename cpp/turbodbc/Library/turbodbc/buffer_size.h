@@ -10,19 +10,26 @@
 
 namespace turbodbc {
 
+/// Struct representing a buffer size with a fixed number of rows
 struct rows {
     rows(std::size_t rows_to_buffer_);
     std::size_t value;
 };
 
+/// Struct representing a buffer size with a fixed number of Megabytes
 struct megabytes {
     megabytes(std::size_t megabytes_to_buffer);
     std::size_t value;
 };
 
+/// A type to encode the size of a buffer
 using buffer_size = boost::variant<rows, megabytes>;
 
 
+/**
+ * @brief A visitor used to determine the appropriate number of rows to buffer
+ *        based on a buffer size and a description of a result set
+ */
 class determine_rows_to_buffer
     : public boost::static_visitor<std::size_t>
 {
@@ -36,6 +43,9 @@ private:
 };
 
 
+/**
+ * @brief A visitor used to reduce the buffer size by a factor of two.
+ */
 class halve_buffer_size
     : public boost::static_visitor<buffer_size>
 {
