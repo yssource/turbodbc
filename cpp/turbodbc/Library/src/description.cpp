@@ -31,11 +31,6 @@ SQLSMALLINT description::column_sql_type() const
 	return do_column_sql_type();
 }
 
-void description::set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
-{
-	do_set_field(element, value);
-}
-
 type_code description::get_type_code() const
 {
 	return do_get_type_code();

@@ -56,18 +56,6 @@ TEST(DescriptionTest, ColumnSqlTypeForwards)
 	EXPECT_EQ(expected, description.column_sql_type());
 }
 
-TEST(DescriptionTest, SetFieldForwards)
-{
-	turbodbc::field const value(42l);
-	cpp_odbc::multi_value_buffer buffer(42, 10);
-	auto element = buffer[0];
-
-	mock_description description;
-	EXPECT_CALL(description, do_set_field(testing::Ref(element), value)).Times(1);
-
-	ASSERT_NO_THROW(description.set_field(element, value));
-}
-
 TEST(DescriptionTest, TypeCodeForwards)
 {
 	auto const expected = turbodbc::type_code::string;

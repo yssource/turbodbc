@@ -14,43 +14,6 @@ TEST(StringDescriptionTest, BasicProperties)
 	EXPECT_EQ(SQL_VARCHAR, description.column_sql_type());
 }
 
-TEST(StringDescriptionTest, SetField)
-{
-	std::string const expected("another test string");
-	turbodbc::string_description const description(expected.size() + 1); // one larger
-
-	cpp_odbc::multi_value_buffer buffer(description.element_size(), 1);
-	auto element = buffer[0];
-
-	description.set_field(element, turbodbc::field{expected});
-	EXPECT_EQ(expected, std::string(element.data_pointer));
-	EXPECT_EQ(expected.size(), element.indicator);
-}
-
-TEST(StringDescriptionTest, SetFieldWithMaximumLength)
-{
-	std::string const expected("another test string");
-	turbodbc::string_description const description(expected.size());
-
-	cpp_odbc::multi_value_buffer buffer(description.element_size(), 1);
-	auto element = buffer[0];
-
-	description.set_field(element, turbodbc::field{expected});
-	EXPECT_EQ(expected, std::string(element.data_pointer));
-	EXPECT_EQ(expected.size(), element.indicator);
-}
-
-TEST(StringDescriptionTest, SetFieldThrowsForTooLongValues)
-{
-	std::string const basic("another test string");
-	std::string const full(basic + "x");
-	turbodbc::string_description const description(basic.size());
-
-	cpp_odbc::multi_value_buffer buffer(description.element_size(), 1);
-	auto element = buffer[0];
-
-	ASSERT_THROW(description.set_field(element, turbodbc::field{full}), std::runtime_error);
-}
 
 TEST(StringDescriptionTest, GetTypeCode)
 {

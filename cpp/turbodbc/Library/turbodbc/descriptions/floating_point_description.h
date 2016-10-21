@@ -17,7 +17,6 @@ private:
 	std::size_t do_element_size() const final;
 	SQLSMALLINT do_column_c_type() const final;
 	SQLSMALLINT do_column_sql_type() const final;
-	void do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const final;
 	type_code do_get_type_code() const final;
 };
 

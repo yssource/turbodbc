@@ -13,19 +13,6 @@ TEST(FloatingPointDescriptionTest, BasicProperties)
 	EXPECT_EQ(SQL_DOUBLE, description.column_sql_type());
 }
 
-TEST(FloatingPointDescriptionTest, SetField)
-{
-	double const expected = 42;
-	turbodbc::floating_point_description const description;
-
-	cpp_odbc::multi_value_buffer buffer(description.element_size(), 1);
-	auto element = buffer[0];
-
-	description.set_field(element, turbodbc::field{expected});
-	EXPECT_EQ(expected, *reinterpret_cast<double *>(element.data_pointer));
-	EXPECT_EQ(description.element_size(), element.indicator);
-}
-
 TEST(FloatingPointDescriptionTest, GetTypeCode)
 {
 	turbodbc::floating_point_description const description;

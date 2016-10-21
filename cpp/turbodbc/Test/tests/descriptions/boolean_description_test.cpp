@@ -11,21 +11,6 @@ TEST(BooleanDescriptionTest, BasicProperties)
 	EXPECT_EQ(SQL_BIT, description.column_sql_type());
 }
 
-TEST(BooleanDescriptionTest, SetField)
-{
-	turbodbc::boolean_description const description;
-
-	cpp_odbc::multi_value_buffer buffer(description.element_size(), 1);
-	auto element = buffer[0];
-
-	description.set_field(element, turbodbc::field{true});
-	EXPECT_EQ(1, *element.data_pointer);
-	EXPECT_EQ(description.element_size(), element.indicator);
-
-	description.set_field(element, turbodbc::field{false});
-	EXPECT_EQ(0, *element.data_pointer);
-	EXPECT_EQ(description.element_size(), element.indicator);
-}
 
 TEST(BooleanDescriptionTest, GetTypeCode)
 {

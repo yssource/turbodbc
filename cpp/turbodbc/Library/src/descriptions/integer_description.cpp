@@ -31,13 +31,6 @@ SQLSMALLINT integer_description::do_column_sql_type() const
 	return SQL_BIGINT;
 }
 
-void integer_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
-{
-	auto const as_long = boost::get<long>(value);
-	memcpy(element.data_pointer, &as_long, element_size());
-	element.indicator = element_size();
-}
-
 type_code integer_description::do_get_type_code() const
 {
 	return type_code::integer;

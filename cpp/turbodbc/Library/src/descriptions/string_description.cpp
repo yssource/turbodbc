@@ -35,19 +35,6 @@ SQLSMALLINT string_description::do_column_sql_type() const
 	return SQL_VARCHAR;
 }
 
-void string_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
-{
-	auto const & as_string = boost::get<std::string>(value);
-
-	if (as_string.size() <= maximum_length_) {
-		auto const length_with_null_termination = as_string.size() + 1;
-		std::memcpy(element.data_pointer, as_string.c_str(), length_with_null_termination);
-		element.indicator = as_string.size();
-	} else {
-		throw std::runtime_error("String exceeds maximum length supported by buffer");
-	}
-}
-
 type_code string_description::do_get_type_code() const
 {
 	return type_code::string;

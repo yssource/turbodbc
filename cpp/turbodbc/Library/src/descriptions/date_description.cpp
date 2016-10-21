@@ -31,18 +31,6 @@ SQLSMALLINT date_description::do_column_sql_type() const
 	return SQL_TYPE_DATE;
 }
 
-void date_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
-{
-	auto const & as_date = boost::get<boost::gregorian::date>(value);
-	auto destination = reinterpret_cast<SQL_DATE_STRUCT *>(element.data_pointer);
-
-	destination->year = as_date.year();
-	destination->month = as_date.month();
-	destination->day = as_date.day();
-
-	element.indicator = element_size();
-}
-
 type_code date_description::do_get_type_code() const
 {
 	return type_code::date;
