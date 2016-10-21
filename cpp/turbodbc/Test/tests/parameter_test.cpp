@@ -26,53 +26,6 @@ namespace {
 
 }
 
-TEST(ParameterTest, SetNonNullable)
-{
-	std::unique_ptr<turbodbc::integer_description> description(new turbodbc::integer_description());
-
-	auto const buffer_c_type = description->column_c_type();
-	auto const buffer_sql_type = description->column_sql_type();
-	turbodbc_test::mock_statement statement;
-
-	cpp_odbc::multi_value_buffer * buffer = nullptr;
-	EXPECT_CALL(statement, do_bind_input_parameter(parameter_index, buffer_c_type, buffer_sql_type, testing::_))
-		.WillOnce(store_pointer_to_buffer_in(&buffer));
-
-	auto const buffered_rows = 100;
-	turbodbc::parameter parameter(statement, parameter_index, buffered_rows, std::move(description));
-	ASSERT_TRUE( buffer != nullptr);
-
-	auto const row_index = 42;
-	long const expected = 123;
-	parameter.set(row_index, turbodbc::field{expected});
-
-	auto const actual = *reinterpret_cast<long *>((*buffer)[row_index].data_pointer);
-	EXPECT_EQ(expected, actual);
-}
-
-TEST(ParameterTest, SetNullable)
-{
-	std::unique_ptr<turbodbc::integer_description> description(new turbodbc::integer_description());
-
-	auto const buffer_c_type = description->column_c_type();
-	auto const buffer_sql_type = description->column_sql_type();
-	turbodbc_test::mock_statement statement;
-
-	cpp_odbc::multi_value_buffer * buffer = nullptr;
-	EXPECT_CALL(statement, do_bind_input_parameter(parameter_index, buffer_c_type, buffer_sql_type, testing::_))
-		.WillOnce(store_pointer_to_buffer_in(&buffer));
-
-	auto const buffered_rows = 100;
-	turbodbc::parameter parameter(statement, parameter_index, buffered_rows, std::move(description));
-	ASSERT_TRUE( buffer != nullptr);
-
-	auto const row_index = 42;
-	turbodbc::nullable_field null;
-	parameter.set(row_index, null);
-
-	EXPECT_EQ(SQL_NULL_DATA, (*buffer)[row_index].indicator);
-}
-
 
 TEST(ParameterTest, GetBuffer)
 {
@@ -83,16 +36,10 @@ TEST(ParameterTest, GetBuffer)
 	auto const buffered_rows = 100;
 	turbodbc::parameter parameter(statement, parameter_index, buffered_rows, std::move(description));
 
-	auto const row_index = 42;
-	std::string const expected("hi there!");
-	parameter.set(row_index, turbodbc::field{expected});
-
-	auto const & buffer = parameter.get_buffer();
-
-	std::string const actual_content(buffer[row_index].data_pointer);
-	auto const actual_indicator(buffer[row_index].indicator);
-	EXPECT_EQ(expected, actual_content);
-	EXPECT_EQ(expected.size(), actual_indicator);
+	auto & buffer = parameter.get_buffer();
+	// test read/write access to last element is valid
+	buffer[99].indicator = 42;
+	EXPECT_EQ(42, buffer[99].indicator);
 }
 
 
@@ -107,7 +54,8 @@ TEST(ParameterTest, MoveToTop)
 
 	auto const row_index = 42;
 	std::string const expected("hi there!");
-	parameter.set(row_index, turbodbc::field{expected});
+	std::memcpy(parameter.get_buffer()[row_index].data_pointer, expected.c_str(), expected.size() + 1);
+	parameter.get_buffer()[row_index].indicator = expected.size();
 
 	move_to_top(parameter, row_index);
 

@@ -22,13 +22,6 @@ public:
 	parameter(cpp_odbc::statement const & statement, std::size_t one_based_index, std::size_t buffered_rows, std::unique_ptr<description const> description);
 
 	/**
-	 * @brief Set the value of the parameter associated with the given row to the given value
-	 * @param row_index Index of the row for which the value is set
-	 * @param value The value which is set
-	 */
-	void set(std::size_t row_index, turbodbc::nullable_field const & value);
-
-	/**
 	 * @brief Determine whether this parameter is suitable to hold a value of
 	 *        given type and size
 	 * @param code The type code for the value

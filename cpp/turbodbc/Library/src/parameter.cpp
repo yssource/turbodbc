@@ -13,16 +13,6 @@ parameter::parameter(cpp_odbc::statement const & statement, std::size_t one_base
 
 parameter::~parameter() = default;
 
-void parameter::set(std::size_t row_index, turbodbc::nullable_field const & value)
-{
-	auto element = buffer_[row_index];
-	if (value) {
-		description_->set_field(element, *value);
-	} else {
-		element.indicator = SQL_NULL_DATA;
-	}
-}
-
 cpp_odbc::multi_value_buffer & parameter::get_buffer()
 {
 	return buffer_;
