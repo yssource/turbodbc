@@ -187,3 +187,14 @@ TEST(SetFieldTest, SetFieldString)
 	EXPECT_EQ(expected, std::string(element.data_pointer));
 	EXPECT_EQ(expected.size(), element.indicator);
 }
+
+
+TEST(SetFieldTest, SetFieldNull)
+{
+	cpp_odbc::multi_value_buffer buffer(8, 1);
+	auto element = buffer[0];
+
+	nullable_field const value;
+	set_null(element);
+	EXPECT_EQ(SQL_NULL_DATA, element.indicator);
+}

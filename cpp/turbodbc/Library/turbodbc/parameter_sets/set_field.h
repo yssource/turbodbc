@@ -19,4 +19,10 @@ bool parameter_is_suitable_for(parameter const &param, field const &value);
  */
 void set_field(field const & value, cpp_odbc::writable_buffer_element & destination);
 
+
+/**
+ * @brief Set the destination's buffer element to NULL
+ */
+void set_null(cpp_odbc::writable_buffer_element & destination);
+
 }

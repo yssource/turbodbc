@@ -123,4 +123,9 @@ void set_field(field const & value, cpp_odbc::writable_buffer_element & destinat
 	boost::apply_visitor(visitor, value);
 }
 
+void set_null(cpp_odbc::writable_buffer_element & destination)
+{
+	destination.indicator = SQL_NULL_DATA;
+}
+
 }
