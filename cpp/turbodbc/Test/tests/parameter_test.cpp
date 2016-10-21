@@ -9,19 +9,6 @@
 
 namespace {
 
-	void set_buffer_element_to_null(cpp_odbc::multi_value_buffer & buffer, std::size_t row_index)
-	{
-		auto element = buffer[row_index];
-		element.indicator = SQL_NULL_DATA;
-	}
-
-	/**
-	* Change the address of the given target_pointer to point to the third argument of the mocked function
-	*/
-	ACTION_P(store_pointer_to_buffer_in, target_pointer) {
-		*target_pointer = &arg3;
-	}
-
 	std::size_t const parameter_index = 42;
 
 }
