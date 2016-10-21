@@ -2,6 +2,7 @@
 
 #include <turbodbc/field.h>
 #include <turbodbc/parameter.h>
+#include <cpp_odbc/multi_value_buffer.h>
 
 namespace turbodbc {
 
@@ -16,6 +17,6 @@ bool parameter_is_suitable_for(parameter const &param, field const &value);
  * @param value The input value
  * @param destination The target which value shall be changed
  */
-//void set_field(field const & value, mutable_buffer_element & destination);
+void set_field(field const & value, cpp_odbc::writable_buffer_element & destination);
 
 }

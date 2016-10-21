@@ -44,12 +44,83 @@ namespace {
 		parameter const & parameter_;
 	};
 
+
+	class set_field_for : public boost::static_visitor<> {
+	public:
+		set_field_for(cpp_odbc::writable_buffer_element & destination) :
+				destination_(destination)
+		{}
+
+		void operator()(bool const & value)
+		{
+			*destination_.data_pointer = (value ? 1 : 0);
+			destination_.indicator = 1;
+		}
+
+		void operator()(long const & value)
+		{
+			*reinterpret_cast<long *>(destination_.data_pointer) = value;
+			destination_.indicator = sizeof(long);
+		}
+
+		void operator()(double const & value)
+		{
+			*reinterpret_cast<double *>(destination_.data_pointer) = boost::get<double>(value);
+			destination_.indicator = sizeof(double);
+		}
+
+		void operator()(boost::posix_time::ptime const & value)
+		{
+			auto const & date = value.date();
+			auto const & time = value.time_of_day();
+			auto destination = reinterpret_cast<SQL_TIMESTAMP_STRUCT *>(destination_.data_pointer);
+
+			destination->year = date.year();
+			destination->month = date.month();
+			destination->day = date.day();
+			destination->hour = time.hours();
+			destination->minute = time.minutes();
+			destination->second = time.seconds();
+			// map posix_time microsecond precision to SQL nanosecond precision
+			destination->fraction = time.fractional_seconds() * 1000;
+
+			destination_.indicator = sizeof(SQL_TIMESTAMP_STRUCT);
+		}
+
+		void operator()(boost::gregorian::date const & value)
+		{
+			auto destination = reinterpret_cast<SQL_DATE_STRUCT *>(destination_.data_pointer);
+
+			destination->year = value.year();
+			destination->month = value.month();
+			destination->day = value.day();
+
+			destination_.indicator = sizeof(SQL_DATE_STRUCT);
+		}
+
+		void operator()(std::string const & value)
+		{
+			auto const length_with_null_termination = value.size() + 1;
+			std::memcpy(destination_.data_pointer, value.c_str(), length_with_null_termination);
+			destination_.indicator = value.size();
+		}
+
+	private:
+		cpp_odbc::writable_buffer_element & destination_;
+	};
+
 }
 
 
 bool parameter_is_suitable_for(parameter const & param, field const & value)
 {
 	return boost::apply_visitor(is_suitable_for(param), value);
+}
+
+void set_field(field const & value, cpp_odbc::writable_buffer_element & destination)
+{
+	set_field_for visitor(destination);
+	boost::apply_visitor(visitor, value);
 }
 
 }

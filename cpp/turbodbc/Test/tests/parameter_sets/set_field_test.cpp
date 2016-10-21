@@ -100,3 +100,90 @@ TEST(SetFieldTest, ParameterIsSuitableForString)
 	EXPECT_FALSE(parameter_is_suitable_for(string_parameter, too_long));
 	EXPECT_FALSE(parameter_is_suitable_for(boolean_parameter, shorter));
 }
+
+
+TEST(SetFieldTest, SetFieldBoolean)
+{
+	cpp_odbc::multi_value_buffer buffer(1, 1);
+	auto element = buffer[0];
+
+	set_field(turbodbc::field{true}, element);
+	EXPECT_EQ(1, *element.data_pointer);
+	EXPECT_EQ(1, element.indicator);
+
+	set_field(turbodbc::field{false}, element);
+	EXPECT_EQ(0, *element.data_pointer);
+	EXPECT_EQ(1, element.indicator);
+}
+
+
+TEST(SetFieldTest, SetFieldInteger)
+{
+	cpp_odbc::multi_value_buffer buffer(8, 1);
+	auto element = buffer[0];
+
+	set_field(turbodbc::field{42l}, element);
+	EXPECT_EQ(42, *reinterpret_cast<long *>(element.data_pointer));
+	EXPECT_EQ(8, element.indicator);
+}
+
+
+TEST(SetFieldTest, SetFieldFloatingPoint)
+{
+	cpp_odbc::multi_value_buffer buffer(8, 1);
+	auto element = buffer[0];
+
+	set_field(turbodbc::field{3.14}, element);
+	EXPECT_EQ(3.14, *reinterpret_cast<double *>(element.data_pointer));
+	EXPECT_EQ(8, element.indicator);
+}
+
+
+TEST(SetFieldTest, SetFieldTimestamp)
+{
+	boost::posix_time::ptime const timestamp{{2015, 12, 31}, {1, 2, 3, 123456}};
+
+	cpp_odbc::multi_value_buffer buffer(sizeof(SQL_DATE_STRUCT), 1);
+	auto element = buffer[0];
+
+	set_field(turbodbc::field{timestamp}, element);
+	auto const as_sql_ts = reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(element.data_pointer);
+	EXPECT_EQ(2015, as_sql_ts->year);
+	EXPECT_EQ(12, as_sql_ts->month);
+	EXPECT_EQ(31, as_sql_ts->day);
+	EXPECT_EQ(1, as_sql_ts->hour);
+	EXPECT_EQ(2, as_sql_ts->minute);
+	EXPECT_EQ(3, as_sql_ts->second);
+	EXPECT_EQ(123456000, as_sql_ts->fraction);
+	EXPECT_EQ(sizeof(SQL_TIMESTAMP_STRUCT), element.indicator);
+}
+
+
+TEST(SetFieldTest, SetFieldDate)
+{
+	boost::gregorian::date const date{2015, 12, 31};
+
+	cpp_odbc::multi_value_buffer buffer(sizeof(SQL_DATE_STRUCT), 1);
+	auto element = buffer[0];
+
+	set_field(turbodbc::field{date}, element);
+	auto const as_sql_date = reinterpret_cast<SQL_DATE_STRUCT const *>(element.data_pointer);
+	EXPECT_EQ(2015, as_sql_date->year);
+	EXPECT_EQ(12, as_sql_date->month);
+	EXPECT_EQ(31, as_sql_date->day);
+	EXPECT_EQ(sizeof(SQL_DATE_STRUCT), element.indicator);
+}
+
+
+TEST(SetFieldTest, SetFieldString)
+{
+	std::string const expected("another test string");
+	auto const bytes_with_null_termination = expected.size() + 1;
+
+	cpp_odbc::multi_value_buffer buffer(bytes_with_null_termination, 1);
+	auto element = buffer[0];
+
+	set_field(turbodbc::field{expected}, element);
+	EXPECT_EQ(expected, std::string(element.data_pointer));
+	EXPECT_EQ(expected.size(), element.indicator);
+}
