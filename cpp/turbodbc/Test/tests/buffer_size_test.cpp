@@ -11,13 +11,13 @@ using turbodbc::integer_description;
 TEST(BufferSizeTest, SetRowsToValue)
 {
     turbodbc::rows one_row(1);
-    EXPECT_EQ(1, one_row.rows_to_buffer);
+    EXPECT_EQ(1, one_row.value);
 }
 
 TEST(BufferSizeTest, SetMegabytesToValue)
 {
     turbodbc::megabytes one_mb(1);
-    EXPECT_EQ(1, one_mb.megabytes_to_buffer);
+    EXPECT_EQ(1, one_mb.value);
 }
 
 TEST(BufferSizeTest, DetermineBufferSizeWithRows)
@@ -68,8 +68,8 @@ TEST(BufferSizeTest, HalveBufferSizeWithRows)
     turbodbc::buffer_size odd(turbodbc::rows(31));
     turbodbc::buffer_size even(turbodbc::rows(42));
 
-    EXPECT_EQ(15 + 1, boost::get<turbodbc::rows>(boost::apply_visitor(turbodbc::halve_buffer_size(), odd)).rows_to_buffer);
-    EXPECT_EQ(21, boost::get<turbodbc::rows>(boost::apply_visitor(turbodbc::halve_buffer_size(), even)).rows_to_buffer);
+    EXPECT_EQ(15 + 1, boost::get<turbodbc::rows>(boost::apply_visitor(turbodbc::halve_buffer_size(), odd)).value);
+    EXPECT_EQ(21, boost::get<turbodbc::rows>(boost::apply_visitor(turbodbc::halve_buffer_size(), even)).value);
 }
 
 TEST(BufferSizeTest, HalveBufferSizeWithMegabytes)
@@ -77,6 +77,6 @@ TEST(BufferSizeTest, HalveBufferSizeWithMegabytes)
     turbodbc::buffer_size odd(turbodbc::megabytes(31));
     turbodbc::buffer_size even(turbodbc::megabytes(42));
 
-    EXPECT_EQ(15 + 1, boost::get<turbodbc::megabytes>(boost::apply_visitor(turbodbc::halve_buffer_size(), odd)).megabytes_to_buffer);
-    EXPECT_EQ(21, boost::get<turbodbc::megabytes>(boost::apply_visitor(turbodbc::halve_buffer_size(), even)).megabytes_to_buffer);
+    EXPECT_EQ(15 + 1, boost::get<turbodbc::megabytes>(boost::apply_visitor(turbodbc::halve_buffer_size(), odd)).value);
+    EXPECT_EQ(21, boost::get<turbodbc::megabytes>(boost::apply_visitor(turbodbc::halve_buffer_size(), even)).value);
 }

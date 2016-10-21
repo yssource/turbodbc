@@ -50,7 +50,7 @@ TEST(ConnectionTest, BufferSizeDefault)
 	auto connection = std::make_shared<mock_connection>();
 
 	turbodbc::connection test_connection(connection);
-	EXPECT_EQ(20, boost::get<turbodbc::megabytes>(test_connection.get_buffer_size()).megabytes_to_buffer);
+	EXPECT_EQ(20, boost::get<turbodbc::megabytes>(test_connection.get_buffer_size()).value);
 }
 
 TEST(ConnectionTest, SetBufferSize)
@@ -59,7 +59,7 @@ TEST(ConnectionTest, SetBufferSize)
 
 	turbodbc::connection test_connection(connection);
 	test_connection.set_buffer_size(turbodbc::buffer_size(turbodbc::rows(999)));
-	EXPECT_EQ(999, boost::get<turbodbc::rows>(test_connection.get_buffer_size()).rows_to_buffer);
+	EXPECT_EQ(999, boost::get<turbodbc::rows>(test_connection.get_buffer_size()).value);
 }
 
 TEST(ConnectionTest, ParameterSetsToBufferDefault)

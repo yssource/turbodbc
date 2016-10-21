@@ -64,11 +64,11 @@ template<typename Converter> struct boost_python_converter
 void for_buffer_size()
 {
     boost::python::class_<turbodbc::rows>("Rows", boost::python::init<std::size_t>())
-        .def_readwrite("rows_to_buffer", &turbodbc::rows::rows_to_buffer)
+        .def_readwrite("rows", &turbodbc::rows::value)
     ;
 
     boost::python::class_<turbodbc::megabytes>("Megabytes", boost::python::init<std::size_t>())
-        .def_readwrite("megabytes_to_buffer", &turbodbc::megabytes::megabytes_to_buffer)
+        .def_readwrite("megabytes", &turbodbc::megabytes::value)
     ;
 
     boost::python::to_python_converter<buffer_size, buffer_size_to_object>();

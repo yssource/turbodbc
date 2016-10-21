@@ -12,15 +12,16 @@ namespace turbodbc {
 
 struct rows {
     rows(std::size_t rows_to_buffer_);
-    std::size_t rows_to_buffer;
+    std::size_t value;
 };
 
 struct megabytes {
     megabytes(std::size_t megabytes_to_buffer);
-    std::size_t megabytes_to_buffer;
+    std::size_t value;
 };
 
 using buffer_size = boost::variant<rows, megabytes>;
+
 
 class determine_rows_to_buffer
     : public boost::static_visitor<std::size_t>
@@ -33,6 +34,7 @@ public:
 private:
     std::vector<std::unique_ptr<description const>> const& descriptions_;
 };
+
 
 class halve_buffer_size
     : public boost::static_visitor<buffer_size>
