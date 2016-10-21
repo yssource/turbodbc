@@ -19,20 +19,3 @@ TEST(BooleanTranslatorTest, MakeField)
 	*element.data_pointer = 1;
 	EXPECT_EQ(turbodbc::field{true}, *(translator.make_field(as_const[0])));
 }
-
-
-TEST(BooleanTranslatorTest, SetField)
-{
-	boolean_translator const translator;
-
-	cpp_odbc::multi_value_buffer buffer(1, 1);
-	auto element = buffer[0];
-
-	translator.set_field(element, {turbodbc::field{true}});
-	EXPECT_EQ(1, *element.data_pointer);
-	EXPECT_EQ(1, element.indicator);
-
-	translator.set_field(element, {turbodbc::field{false}});
-	EXPECT_EQ(0, *element.data_pointer);
-	EXPECT_EQ(1, element.indicator);
-}

@@ -23,23 +23,4 @@ field timestamp_translator::do_make_field(char const * data_pointer) const
 			};
 }
 
-void timestamp_translator::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
-{
-	auto const & as_ts = boost::get<boost::posix_time::ptime>(value);
-	auto const & date = as_ts.date();
-	auto const & time = as_ts.time_of_day();
-	auto destination = reinterpret_cast<SQL_TIMESTAMP_STRUCT *>(element.data_pointer);
-
-	destination->year = date.year();
-	destination->month = date.month();
-	destination->day = date.day();
-	destination->hour = time.hours();
-	destination->minute = time.minutes();
-	destination->second = time.seconds();
-	// map posix_time microsecond precision to SQL nanosecond precision
-	destination->fraction = time.fractional_seconds() * 1000;
-
-	element.indicator = sizeof(SQL_TIMESTAMP_STRUCT);
-}
-
 } }

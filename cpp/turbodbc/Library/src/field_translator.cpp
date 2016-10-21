@@ -17,13 +17,4 @@ nullable_field field_translator::make_field(cpp_odbc::buffer_element const & ele
 	}
 }
 
-void field_translator::set_field(cpp_odbc::writable_buffer_element & element, nullable_field const & value) const
-{
-	if (value) {
-		do_set_field(element, *value);
-	} else {
-		element.indicator = SQL_NULL_DATA;
-	}
-}
-
 }

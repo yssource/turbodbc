@@ -15,9 +15,5 @@ field string_translator::do_make_field(char const * data_pointer) const
 	return {std::string(data_pointer)};
 }
 
-void string_translator::do_set_field(cpp_odbc::writable_buffer_element &, field const &) const
-{
-	throw std::logic_error("Setting string values not implemented yet!");
-}
 
 } }

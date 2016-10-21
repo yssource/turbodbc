@@ -43,26 +43,3 @@ TEST(FieldTranslatorTest, MakeFieldHandlesNull)
 	cpp_odbc::multi_value_buffer const & as_const = buffer;
 	EXPECT_EQ(expected, translator.make_field(as_const[0]));
 }
-
-TEST(FieldTranslatorTest, SetFieldForwards)
-{
-	turbodbc::nullable_field const value(turbodbc::field(42l));
-	cpp_odbc::multi_value_buffer buffer(42, 10);
-	auto element = buffer[0];
-
-	mock_translator translator;
-	EXPECT_CALL(translator, do_set_field(testing::Ref(element), *value)).Times(1);
-
-	ASSERT_NO_THROW(translator.set_field(element, value));
-}
-
-TEST(FieldTranslatorTest, SetFieldHandlesNull)
-{
-	turbodbc::nullable_field const value;
-	cpp_odbc::multi_value_buffer buffer(42, 10);
-	auto element = buffer[0];
-
-	mock_translator translator;
-	translator.set_field(element, value);
-	EXPECT_EQ(element.indicator, SQL_NULL_DATA);
-}

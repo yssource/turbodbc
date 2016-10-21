@@ -17,4 +17,3 @@ TEST(StringTranslatorTest, MakeField)
 	string_translator const translator;
 	EXPECT_EQ(turbodbc::field{expected}, *(translator.make_field(as_const[0])));
 }
-
