@@ -11,7 +11,7 @@ namespace turbodbc {
 class field_parameter_set {
 public:
 	field_parameter_set(std::shared_ptr<cpp_odbc::statement const> statement,
-						std::size_t parameter_sets_to_buffer);
+	                    std::size_t parameter_sets_to_buffer);
 
 	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
 
