@@ -46,6 +46,12 @@ std::size_t bound_parameter_set::transferred_sets() const
 }
 
 
+std::size_t bound_parameter_set::number_of_parameters() const
+{
+	return parameters_.size();
+}
+
+
 std::vector<std::shared_ptr<parameter>> const & bound_parameter_set::get_parameters()
 {
 	return parameters_;

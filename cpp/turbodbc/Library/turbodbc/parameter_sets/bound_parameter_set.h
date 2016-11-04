@@ -26,6 +26,11 @@ public:
 	std::size_t transferred_sets() const;
 
 	/**
+	 * @brief Retrieve the number of parameters in this set
+	 */
+	std::size_t number_of_parameters() const;
+
+	/**
 	 * @brief Retrieve access to the managed parameters
 	 */
 	std::vector<std::shared_ptr<parameter>> const & get_parameters();

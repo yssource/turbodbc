@@ -46,7 +46,7 @@ TEST(BoundParameterSetTest, ConstructorBindsParametersBasedOnDBSuggestion)
 	EXPECT_CALL(statement, do_bind_input_parameter(2, SQL_C_CHAR, SQL_VARCHAR, testing::_)).Times(1);
 
 	bound_parameter_set params(statement, 42);
-	EXPECT_EQ(params.get_parameters().size(), 2);
+	EXPECT_EQ(params.number_of_parameters(), 2);
 	EXPECT_EQ(params.get_parameters()[0]->get_buffer().number_of_elements(), 42);
 }
 
