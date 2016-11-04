@@ -25,7 +25,12 @@ field_parameter_set::~field_parameter_set() = default;
 
 void field_parameter_set::flush()
 {
-	execute_batch();
+	if (parameters_.get_parameters().empty()) {
+		statement_->execute_prepared();
+	} else {
+		parameters_.execute_batch(current_parameter_set_);
+		current_parameter_set_ = 0;
+	}
 }
 
 void field_parameter_set::add_parameter_set(std::vector<nullable_field> const & parameter_set)
@@ -33,7 +38,7 @@ void field_parameter_set::add_parameter_set(std::vector<nullable_field> const & 
 	check_parameter_set(parameter_set);
 
 	if (current_parameter_set_ == parameter_sets_to_buffer_) {
-		execute_batch();
+		flush();
 	}
 
 	for (unsigned int p = 0; p != parameter_set.size(); ++p) {
@@ -46,16 +51,6 @@ void field_parameter_set::add_parameter_set(std::vector<nullable_field> const & 
 long field_parameter_set::get_row_count()
 {
 	return parameters_.transferred_sets();
-}
-
-void field_parameter_set::execute_batch()
-{
-	if (parameters_.get_parameters().empty()) {
-		statement_->execute_prepared();
-	} else {
-		parameters_.execute_batch(current_parameter_set_);
-		current_parameter_set_ = 0;
-	}
 }
 
 void field_parameter_set::check_parameter_set(std::vector<nullable_field> const & parameter_set) const
@@ -78,7 +73,7 @@ void field_parameter_set::add_parameter(std::size_t index, nullable_field const 
 			set_field(*value, element);
 		} else {
 			auto const last_active_set = current_parameter_set_;
-			execute_batch();
+			flush();
 			recover_unwritten_parameters_below(index, last_active_set);
 			rebind_parameter_to_hold_value(index, *value);
 			auto & parameter = *(parameters_.get_parameters()[index]);

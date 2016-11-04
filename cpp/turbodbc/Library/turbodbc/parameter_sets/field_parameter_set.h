@@ -21,7 +21,6 @@ public:
 	~field_parameter_set();
 
 private:
-	void execute_batch();
 	void check_parameter_set(std::vector<nullable_field> const & parameter_set) const;
 	void add_parameter(std::size_t index, nullable_field const & value);
 	void recover_unwritten_parameters_below(std::size_t parameter_index, std::size_t last_active_row);
