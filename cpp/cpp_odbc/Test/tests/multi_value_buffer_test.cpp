@@ -23,6 +23,15 @@ TEST(MultiValueBufferTest, CapacityPerElement)
 	EXPECT_EQ( element_size, buffer.capacity_per_element() );
 }
 
+TEST(MultiValueBufferTest, NumberOfElements)
+{
+	std::size_t const n_elements = 42;
+	multi_value_buffer buffer(100, n_elements);
+
+	EXPECT_EQ(n_elements, buffer.number_of_elements());
+}
+
+
 TEST(MultiValueBufferTest, DataPointer)
 {
 	std::size_t const element_size = 100;

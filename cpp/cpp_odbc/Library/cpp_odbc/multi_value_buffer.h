@@ -53,6 +53,13 @@ public:
 	std::size_t capacity_per_element() const;
 
 	/**
+	 * @brief Retrieve the number of elements that can be stored
+	 *        in this buffer
+	 * @return The number of elements
+	 */
+	std::size_t number_of_elements() const;
+
+	/**
 	 * @brief Provides raw access to a contiguous strip of memory which holds the actual
 	 *        data. Intended to be used where TargetValuePtrs appear in ODBC calls.
 	 * @return A pointer to the data array

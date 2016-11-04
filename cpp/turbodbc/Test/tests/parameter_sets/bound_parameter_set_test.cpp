@@ -1,5 +1,7 @@
 #include "turbodbc/parameter_sets/bound_parameter_set.h"
 
+#include "turbodbc/make_description.h"
+
 #include <gtest/gtest.h>
 #include <tests/mock_classes.h>
 
@@ -45,6 +47,7 @@ TEST(BoundParameterSetTest, ConstructorBindsParametersBasedOnDBSuggestion)
 
 	bound_parameter_set params(statement, 42);
 	EXPECT_EQ(params.get_parameters().size(), 2);
+	EXPECT_EQ(params.get_parameters()[0]->get_buffer().number_of_elements(), 42);
 }
 
 
@@ -71,6 +74,28 @@ TEST(BoundParameterSetTest, ConstructorOverridesStringParameterSuggestions)
 	EXPECT_EQ(params.get_parameters()[1]->get_buffer().capacity_per_element(), string_description_max_length.size + 1);
 	EXPECT_EQ(params.get_parameters()[2]->get_buffer().capacity_per_element(), string_description_max_length.size + 1);
 	EXPECT_EQ(params.get_parameters()[3]->get_buffer().capacity_per_element(), string_description_max_length.size + 1);
+}
+
+
+TEST(BoundParameterSetTest, Rebind)
+{
+	mock_statement statement;
+	ON_CALL(statement, do_number_of_parameters()).WillByDefault(testing::Return(2));
+	ON_CALL(statement, do_describe_parameter(1))
+		.WillByDefault(testing::Return(int_description));
+	ON_CALL(statement, do_describe_parameter(2))
+		.WillByDefault(testing::Return(string_description_short));
+
+	bound_parameter_set params(statement, 42);
+
+	std::size_t const column_index = 1;
+	auto const one_based_column_index = column_index + 1;
+	EXPECT_CALL(statement, do_bind_input_parameter(one_based_column_index, SQL_C_SBIGINT, SQL_BIGINT, testing::_))
+		.Times(1);
+
+	params.rebind(1, make_description(field{23l}));
+	EXPECT_EQ(params.get_parameters()[1]->get_buffer().capacity_per_element(), sizeof(long));
+	EXPECT_EQ(params.get_parameters()[1]->get_buffer().number_of_elements(), 42);
 }
 
 

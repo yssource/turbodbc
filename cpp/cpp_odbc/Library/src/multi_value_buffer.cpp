@@ -43,6 +43,11 @@ std::size_t multi_value_buffer::capacity_per_element() const
 	return element_size_;
 }
 
+std::size_t multi_value_buffer::number_of_elements() const
+{
+	return data_.size() / element_size_;
+}
+
 char * multi_value_buffer::data_pointer()
 {
 	return data_.data();

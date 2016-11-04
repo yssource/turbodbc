@@ -34,7 +34,7 @@ bound_parameter_set::bound_parameter_set(cpp_odbc::statement const & statement,
 {
 	std::size_t const n_parameters = statement_.number_of_parameters();
 	for (std::size_t one_based_index = 1; one_based_index <= n_parameters; ++one_based_index) {
-		parameters_.push_back(make_parameter(statement_, one_based_index, 100));
+		parameters_.push_back(make_parameter(statement_, one_based_index, buffered_sets_));
 	}
 	statement_.set_attribute(SQL_ATTR_PARAMS_PROCESSED_PTR, &confirmed_last_batch_);
 }
@@ -63,6 +63,16 @@ void bound_parameter_set::execute_batch(std::size_t sets_in_batch)
 			throw std::logic_error("A batch cannot be larger than the number of buffered sets");
 		}
 	}
+}
+
+
+void bound_parameter_set::rebind(std::size_t parameter_index,
+                                 std::unique_ptr<description const> parameter_description)
+{
+	parameters_[parameter_index] = std::make_shared<parameter>(statement_,
+	                                                           parameter_index + 1,
+	                                                           buffered_sets_,
+	                                                           std::move(parameter_description));
 }
 
 
