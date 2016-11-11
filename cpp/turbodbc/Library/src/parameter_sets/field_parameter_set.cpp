@@ -24,10 +24,9 @@ field_parameter_set::~field_parameter_set() = default;
 
 void field_parameter_set::flush()
 {
-	if (not parameters_.get_parameters().empty()) {
-		parameters_.execute_batch(current_parameter_set_);
-		current_parameter_set_ = 0;
-	}
+	// bound result set handles empty parameter sets
+	parameters_.execute_batch(current_parameter_set_);
+	current_parameter_set_ = 0;
 }
 
 void field_parameter_set::add_parameter_set(std::vector<nullable_field> const & parameter_set)

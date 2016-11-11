@@ -64,7 +64,7 @@ std::vector<std::shared_ptr<parameter>> const & bound_parameter_set::get_paramet
 
 void bound_parameter_set::execute_batch(std::size_t sets_in_batch)
 {
-	if (sets_in_batch != 0) {
+	if ((sets_in_batch != 0) and not parameters_.empty()) {
 		if (sets_in_batch <= buffered_sets_) {
 			statement_.set_attribute(SQL_ATTR_PARAMSET_SIZE, sets_in_batch);
 			statement_.execute_prepared();

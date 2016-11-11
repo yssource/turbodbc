@@ -24,15 +24,6 @@ namespace {
 }
 
 
-TEST(BoundParameterSetTest, ExecuteBatchThrowsIfBatchTooLarge)
-{
-	mock_statement statement;
-	bound_parameter_set params(statement, 42);
-
-	ASSERT_THROW(params.execute_batch(43), std::logic_error);
-}
-
-
 TEST(BoundParameterSetTest, ConstructorBindsParametersBasedOnDBSuggestion)
 {
 	mock_statement statement;
@@ -99,22 +90,56 @@ TEST(BoundParameterSetTest, Rebind)
 	EXPECT_EQ(params.get_parameters()[1]->get_buffer().number_of_elements(), 42);
 }
 
+namespace {
+	template <typename MockStatement>
+	void configure_single_param(MockStatement & statement) {
+		ON_CALL(statement, do_number_of_parameters()).WillByDefault(testing::Return(1));
+		ON_CALL(statement, do_describe_parameter(1))
+				.WillByDefault(testing::Return(int_description));
+	}
+}
 
 TEST(BoundParameterSetTest, ExecuteBatchNoSets)
 {
 	mock_statement statement;
+	configure_single_param(statement);
+
 	bound_parameter_set params(statement, 42);
 
-	EXPECT_CALL(statement, do_set_attribute(SQL_ATTR_PARAMSET_SIZE, 23)).Times(0);
 	EXPECT_CALL(statement, do_execute_prepared()).Times(0);
 
 	params.execute_batch(0);
+}
+
+TEST(BoundParameterSetTest, ExecuteBatchNoParameters)
+{
+	mock_statement statement;
+	ON_CALL(statement, do_number_of_parameters()).WillByDefault(testing::Return(0));
+
+	bound_parameter_set params(statement, 42);
+
+	EXPECT_CALL(statement, do_execute_prepared()).Times(0);
+
+	params.execute_batch(23);
+}
+
+
+TEST(BoundParameterSetTest, ExecuteBatchThrowsIfBatchTooLarge)
+{
+	mock_statement statement;
+	configure_single_param(statement);
+
+	bound_parameter_set params(statement, 42);
+
+	ASSERT_THROW(params.execute_batch(43), std::logic_error);
 }
 
 
 TEST(BoundParameterSetTest, ExecuteBatch)
 {
 	mock_statement statement;
+	configure_single_param(statement);
+
 	bound_parameter_set params(statement, 42);
 
 	testing::InSequence ordered;
@@ -168,6 +193,8 @@ namespace {
 TEST(BoundParameterSetTest, TransferredSetsRespectsDatabaseFeedback)
 {
 	testing::NiceMock<fake_statement> statement;
+	configure_single_param(statement);
+
 	bound_parameter_set params(statement, 42);
 
 	EXPECT_EQ(params.transferred_sets(), 0);
