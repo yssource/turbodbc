@@ -56,7 +56,7 @@ long command::get_row_count()
 	if (has_result_set) {
 		return statement_->row_count();
 	} else {
-		return parameters_.get_row_count();
+		return params_.transferred_sets();
 	}
 }
 

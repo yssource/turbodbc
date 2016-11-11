@@ -15,8 +15,6 @@ public:
 
 	void flush();
 
-	long get_row_count();
-
 	~field_parameter_set();
 
 private:
