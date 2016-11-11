@@ -12,7 +12,7 @@
 namespace turbodbc {
 
 
-field_parameter_set::field_parameter_set(std::shared_ptr<cpp_odbc::statement const> statement,
+field_parameter_set::field_parameter_set(cpp_odbc::statement const & statement,
                                          bound_parameter_set & parameters) :
 	statement_(statement),
 	parameters_(parameters),
@@ -25,7 +25,7 @@ field_parameter_set::~field_parameter_set() = default;
 void field_parameter_set::flush()
 {
 	if (parameters_.get_parameters().empty()) {
-		statement_->execute_prepared();
+		statement_.execute_prepared();
 	} else {
 		parameters_.execute_batch(current_parameter_set_);
 		current_parameter_set_ = 0;
