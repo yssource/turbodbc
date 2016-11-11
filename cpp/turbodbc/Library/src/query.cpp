@@ -13,7 +13,8 @@ query::query(std::shared_ptr<cpp_odbc::statement const> statement,
              std::size_t parameter_sets_to_buffer,
              bool use_double_buffering) :
 	statement_(statement),
-	parameters_(statement, parameter_sets_to_buffer),
+	params_(*statement, parameter_sets_to_buffer),
+	parameters_(statement, params_),
 	buffer_size_(buffer_size),
 	use_double_buffering_(use_double_buffering)
 {

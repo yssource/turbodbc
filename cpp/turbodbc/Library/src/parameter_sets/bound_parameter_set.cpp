@@ -39,6 +39,10 @@ bound_parameter_set::bound_parameter_set(cpp_odbc::statement const & statement,
 	statement_.set_attribute(SQL_ATTR_PARAMS_PROCESSED_PTR, &confirmed_last_batch_);
 }
 
+std::size_t bound_parameter_set::buffered_sets() const
+{
+	return buffered_sets_;
+}
 
 std::size_t bound_parameter_set::transferred_sets() const
 {

@@ -13,10 +13,9 @@ namespace turbodbc {
 
 
 field_parameter_set::field_parameter_set(std::shared_ptr<cpp_odbc::statement const> statement,
-                                         std::size_t parameter_sets_to_buffer) :
+                                         bound_parameter_set & parameters) :
 	statement_(statement),
-	parameter_sets_to_buffer_(parameter_sets_to_buffer),
-	parameters_(*statement_, parameter_sets_to_buffer_),
+	parameters_(parameters),
 	current_parameter_set_(0)
 {
 }
@@ -37,7 +36,7 @@ void field_parameter_set::add_parameter_set(std::vector<nullable_field> const & 
 {
 	check_parameter_set(parameter_set);
 
-	if (current_parameter_set_ == parameter_sets_to_buffer_) {
+	if (current_parameter_set_ == parameters_.buffered_sets()) {
 		flush();
 	}
 

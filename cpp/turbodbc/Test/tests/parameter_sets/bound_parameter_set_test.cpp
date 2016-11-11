@@ -48,6 +48,7 @@ TEST(BoundParameterSetTest, ConstructorBindsParametersBasedOnDBSuggestion)
 	bound_parameter_set params(statement, 42);
 	EXPECT_EQ(params.number_of_parameters(), 2);
 	EXPECT_EQ(params.get_parameters()[0]->get_buffer().number_of_elements(), 42);
+	EXPECT_EQ(params.buffered_sets(), 42);
 }
 
 

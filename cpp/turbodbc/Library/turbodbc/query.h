@@ -21,6 +21,7 @@ public:
 	void execute();
 	std::shared_ptr<turbodbc::result_sets::result_set> get_results();
 	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
+//	bound_parameter_set & get_parameters();
 
 	long get_row_count();
 
@@ -28,6 +29,7 @@ public:
 
 private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;
+	bound_parameter_set params_;
 	field_parameter_set parameters_;
 	turbodbc::buffer_size buffer_size_;
 	bool use_double_buffering_;

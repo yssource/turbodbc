@@ -20,6 +20,12 @@ public:
 	                    std::size_t buffered_sets);
 
 	/**
+	 * @brief Retrieve the number of buffered sets, i.e, the size
+	 *        of the parameter buffers in rows
+	 */
+	std::size_t buffered_sets() const;
+
+	/**
 	 * @brief Retrieve the number of already transferred sets based on
 	 *        success indicators retrieved by the database.
 	 */
