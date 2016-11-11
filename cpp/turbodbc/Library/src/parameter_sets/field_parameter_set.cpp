@@ -12,9 +12,7 @@
 namespace turbodbc {
 
 
-field_parameter_set::field_parameter_set(cpp_odbc::statement const & statement,
-                                         bound_parameter_set & parameters) :
-	statement_(statement),
+field_parameter_set::field_parameter_set(bound_parameter_set & parameters) :
 	parameters_(parameters),
 	current_parameter_set_(0)
 {

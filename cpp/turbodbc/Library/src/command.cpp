@@ -14,7 +14,6 @@ command::command(std::shared_ptr<cpp_odbc::statement const> statement,
                  bool use_double_buffering) :
 	statement_(statement),
 	params_(*statement, parameter_sets_to_buffer),
-	parameters_(*statement, params_),
 	buffer_size_(buffer_size),
 	use_double_buffering_(use_double_buffering)
 {
@@ -31,7 +30,6 @@ void command::execute()
 	if (params_.get_parameters().empty()) {
 		statement_->execute_prepared();
 	}
-	parameters_.flush();
 
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
@@ -48,9 +46,9 @@ std::shared_ptr<turbodbc::result_sets::result_set> command::get_results()
 	return results_;
 }
 
-void command::add_parameter_set(std::vector<nullable_field> const & parameter_set)
+bound_parameter_set & command::get_parameters()
 {
-	parameters_.add_parameter_set(parameter_set);
+	return params_;
 }
 
 long command::get_row_count()

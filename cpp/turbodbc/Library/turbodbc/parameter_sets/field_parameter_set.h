@@ -8,8 +8,7 @@ namespace turbodbc {
 
 class field_parameter_set {
 public:
-	field_parameter_set(cpp_odbc::statement const & statement,
-	                    bound_parameter_set & parameters);
+	field_parameter_set(bound_parameter_set & parameters);
 
 	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
 
@@ -23,7 +22,6 @@ private:
 	void recover_unwritten_parameters_below(std::size_t parameter_index, std::size_t last_active_row);
 	void rebind_parameter_to_hold_value(std::size_t index, field const & value);
 
-	cpp_odbc::statement const & statement_;
 	bound_parameter_set & parameters_;
 	std::size_t current_parameter_set_;
 };

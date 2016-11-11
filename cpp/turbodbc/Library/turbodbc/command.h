@@ -18,10 +18,24 @@ public:
 	        std::size_t parameter_sets_to_buffer,
 	        bool use_double_buffering);
 
+	/**
+	 * @brief Execute the command and initialize result sets if available
+	 *        If your query has parameters, make sure to use get_parameters()
+	 *        to transfer the parameters before calling execute().
+	 */
 	void execute();
+
+	/**
+	 * @brief Retrieve the pointer to the result set if one exists
+	 * @return Returns empty pointer in case the command has not produced results
+	 */
 	std::shared_ptr<turbodbc::result_sets::result_set> get_results();
-	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
-//	bound_parameter_set & get_parameters();
+
+	/**
+	 * @brief Get a reference to an object that handles all parameters associated
+	 *        with this command
+	 */
+	bound_parameter_set & get_parameters();
 
 	long get_row_count();
 
@@ -30,7 +44,6 @@ public:
 private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	bound_parameter_set params_;
-	field_parameter_set parameters_;
 	turbodbc::buffer_size buffer_size_;
 	bool use_double_buffering_;
 	std::shared_ptr<result_sets::result_set> results_;

@@ -53,11 +53,6 @@ std::shared_ptr<result_sets::result_set> cursor::get_result_set() const
 	return command_->get_results();
 }
 
-void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set)
-{
-	command_->add_parameter_set(parameter_set);
-}
-
 long cursor::get_row_count()
 {
 	return command_->get_row_count();

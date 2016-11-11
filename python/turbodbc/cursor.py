@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from itertools import islice
 from collections import OrderedDict
 
-from turbodbc_intern import has_result_set, make_row_based_result_set
+from turbodbc_intern import has_result_set, make_row_based_result_set, make_parameter_set
 
 from .exceptions import translate_exceptions, InterfaceError, Error
 
@@ -64,9 +64,11 @@ class Cursor(object):
         self._assert_valid()
         self.impl.prepare(sql)
         if parameters:
+            buffer = make_parameter_set(self.impl)
             # TODO: The list call here is probably inefficient
             # will go once the translation layer is better
-            self.impl.add_parameter_set(list(parameters))
+            buffer.add_set(list(parameters))
+            buffer.flush()
         self.impl.execute()
         self.rowcount = self.impl.get_row_count()
         cpp_result_set = self.impl.get_result_set()
@@ -82,10 +84,12 @@ class Cursor(object):
         self.impl.prepare(sql)
 
         if parameters:
+            buffer = make_parameter_set(self.impl)
             for parameter_set in parameters:
                 # TODO: The list call here is probably inefficient
                 # will go once the translation layer is better
-                self.impl.add_parameter_set(list(parameter_set))
+                buffer.add_set(list(parameter_set))
+            buffer.flush()
 
         self.impl.execute()
         self.rowcount = self.impl.get_row_count()

@@ -76,3 +76,11 @@ TEST(CommandTest, UseDoubleBufferingAffectsResultSet)
 	test_double_buffering<turbodbc::result_sets::bound_result_set>(no_double_buffering);
 	test_double_buffering<turbodbc::result_sets::double_buffered_result_set>(use_double_buffering);
 }
+
+TEST(CommandTest, GetParameters)
+{
+	auto statement = std::make_shared<mock_statement>();
+
+	turbodbc::command command(statement, turbodbc::rows(1), 1, no_double_buffering);
+	EXPECT_EQ(0, command.get_parameters().number_of_parameters());
+}
