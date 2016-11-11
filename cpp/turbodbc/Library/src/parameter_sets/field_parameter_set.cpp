@@ -24,9 +24,7 @@ field_parameter_set::~field_parameter_set() = default;
 
 void field_parameter_set::flush()
 {
-	if (parameters_.get_parameters().empty()) {
-		statement_.execute_prepared();
-	} else {
+	if (not parameters_.get_parameters().empty()) {
 		parameters_.execute_batch(current_parameter_set_);
 		current_parameter_set_ = 0;
 	}

@@ -28,6 +28,9 @@ command::~command()
 
 void command::execute()
 {
+	if (params_.get_parameters().empty()) {
+		statement_->execute_prepared();
+	}
 	parameters_.flush();
 
 	std::size_t const columns = statement_->number_of_columns();
