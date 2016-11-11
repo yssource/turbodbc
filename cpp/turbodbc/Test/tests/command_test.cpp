@@ -1,4 +1,4 @@
-#include <turbodbc/query.h>
+#include <turbodbc/command.h>
 
 #include <turbodbc/result_sets/bound_result_set.h>
 #include <turbodbc/result_sets/double_buffered_result_set.h>
@@ -21,12 +21,12 @@ namespace {
 
 }
 
-TEST(QueryTest, GetRowCountBeforeExecuted)
+TEST(CommandTest, GetRowCountBeforeExecuted)
 {
 	auto statement = std::make_shared<mock_statement>();
 
-	turbodbc::query query(statement, turbodbc::rows(1), 1, no_double_buffering);
-	EXPECT_EQ(0, query.get_row_count());
+	turbodbc::command command(statement, turbodbc::rows(1), 1, no_double_buffering);
+	EXPECT_EQ(0, command.get_row_count());
 }
 
 namespace {
@@ -41,7 +41,7 @@ namespace {
 
 }
 
-TEST(QueryTest, GetRowCountAfterQueryWithResultSet)
+TEST(CommandTest, GetRowCountAfterQueryWithResultSet)
 {
 	long const expected = 17;
 	auto statement = std::make_shared<mock_statement>();
@@ -50,9 +50,9 @@ TEST(QueryTest, GetRowCountAfterQueryWithResultSet)
 	EXPECT_CALL( *statement, do_row_count())
 			.WillOnce(testing::Return(expected));
 
-	turbodbc::query query(statement, turbodbc::rows(1), 1, no_double_buffering);
-	query.execute();
-	EXPECT_EQ(expected, query.get_row_count());
+	turbodbc::command command(statement, turbodbc::rows(1), 1, no_double_buffering);
+	command.execute();
+	EXPECT_EQ(expected, command.get_row_count());
 }
 
 
@@ -64,14 +64,14 @@ namespace {
 		auto statement = std::make_shared<mock_statement>();
 		prepare_single_column_result_set(*statement);
 
-		turbodbc::query query(statement, turbodbc::rows(1), 1, double_buffering);
-		query.execute();
-		EXPECT_TRUE(std::dynamic_pointer_cast<ExpectedResultSetType>(query.get_results()));
+		turbodbc::command command(statement, turbodbc::rows(1), 1, double_buffering);
+		command.execute();
+		EXPECT_TRUE(std::dynamic_pointer_cast<ExpectedResultSetType>(command.get_results()));
 	}
 
 }
 
-TEST(QueryTest, UseDoubleBufferingAffectsResultSet)
+TEST(CommandTest, UseDoubleBufferingAffectsResultSet)
 {
 	test_double_buffering<turbodbc::result_sets::bound_result_set>(no_double_buffering);
 	test_double_buffering<turbodbc::result_sets::double_buffered_result_set>(use_double_buffering);

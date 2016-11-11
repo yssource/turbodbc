@@ -1,4 +1,4 @@
-#include <turbodbc/query.h>
+#include <turbodbc/command.h>
 
 #include <turbodbc/result_sets/bound_result_set.h>
 #include <turbodbc/result_sets/double_buffered_result_set.h>
@@ -8,10 +8,10 @@
 
 namespace turbodbc {
 
-query::query(std::shared_ptr<cpp_odbc::statement const> statement,
-             turbodbc::buffer_size buffer_size,
-             std::size_t parameter_sets_to_buffer,
-             bool use_double_buffering) :
+command::command(std::shared_ptr<cpp_odbc::statement const> statement,
+                 turbodbc::buffer_size buffer_size,
+                 std::size_t parameter_sets_to_buffer,
+                 bool use_double_buffering) :
 	statement_(statement),
 	params_(*statement, parameter_sets_to_buffer),
 	parameters_(*statement, params_),
@@ -20,13 +20,13 @@ query::query(std::shared_ptr<cpp_odbc::statement const> statement,
 {
 }
 
-query::~query()
+command::~command()
 {
 	results_.reset(); // result may access statement concurrently!
 	statement_->close_cursor();
 }
 
-void query::execute()
+void command::execute()
 {
 	parameters_.flush();
 
@@ -40,17 +40,17 @@ void query::execute()
 	}
 }
 
-std::shared_ptr<turbodbc::result_sets::result_set> query::get_results()
+std::shared_ptr<turbodbc::result_sets::result_set> command::get_results()
 {
 	return results_;
 }
 
-void query::add_parameter_set(std::vector<nullable_field> const & parameter_set)
+void command::add_parameter_set(std::vector<nullable_field> const & parameter_set)
 {
 	parameters_.add_parameter_set(parameter_set);
 }
 
-long query::get_row_count()
+long command::get_row_count()
 {
 	bool const has_result_set = (statement_->number_of_columns() != 0);
 	if (has_result_set) {

@@ -11,12 +11,12 @@
 namespace turbodbc {
 
 
-class query {
+class command {
 public:
-	query(std::shared_ptr<cpp_odbc::statement const> statement,
-		  turbodbc::buffer_size buffer_size,
-		  std::size_t parameter_sets_to_buffer,
-		  bool use_double_buffering);
+	command(std::shared_ptr<cpp_odbc::statement const> statement,
+	        turbodbc::buffer_size buffer_size,
+	        std::size_t parameter_sets_to_buffer,
+	        bool use_double_buffering);
 
 	void execute();
 	std::shared_ptr<turbodbc::result_sets::result_set> get_results();
@@ -25,7 +25,7 @@ public:
 
 	long get_row_count();
 
-	~query();
+	~command();
 
 private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;
