@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cpp_odbc/statement.h>
 #include <turbodbc/parameter_sets/bound_parameter_set.h>
 #include <vector>
 
