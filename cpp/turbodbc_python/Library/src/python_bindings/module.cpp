@@ -8,9 +8,9 @@ namespace turbodbc { namespace bindings {
 	void for_connection();
 	void for_cursor();
 	void for_error();
-	void for_field();
 	void for_python_result_set();
 	void for_python_parameter_set();
+	void for_unicode();
 
 } }
 
@@ -23,7 +23,7 @@ BOOST_PYTHON_MODULE(turbodbc_intern)
 	bindings::for_connection();
 	bindings::for_cursor();
 	bindings::for_error();
-	bindings::for_field();
 	bindings::for_python_result_set();
 	bindings::for_python_parameter_set();
+	bindings::for_unicode();
 }
