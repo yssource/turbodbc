@@ -1,3 +1,10 @@
+Version 0.5.0
+=============
+*   Massively improved performance of parameter-based operations.
+    Time to insert values into an Exasol database requires 60% less
+    time than the previous version.
+*   Internal: Major modifications to the way parameters are handled.
+
 Version 0.4.1
 =============
 *   The size of the input buffers for retrieving result sets can now be set
