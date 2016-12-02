@@ -1,3 +1,8 @@
+Version 0.5.0
+=============
+*   Improved performance of parameter-based operations.
+*   Internal: Major modifications to the way parameters are handled.
+
 Version 0.4.1
 =============
 *   The size of the input buffers for retrieving result sets can now be set

@@ -65,9 +65,7 @@ class Cursor(object):
         self.impl.prepare(sql)
         if parameters:
             buffer = make_parameter_set(self.impl)
-            # TODO: The list call here is probably inefficient
-            # will go once the translation layer is better
-            buffer.add_set(list(parameters))
+            buffer.add_set(parameters)
             buffer.flush()
         self.impl.execute()
         self.rowcount = self.impl.get_row_count()
@@ -86,9 +84,7 @@ class Cursor(object):
         if parameters:
             buffer = make_parameter_set(self.impl)
             for parameter_set in parameters:
-                # TODO: The list call here is probably inefficient
-                # will go once the translation layer is better
-                buffer.add_set(list(parameter_set))
+                buffer.add_set(parameter_set)
             buffer.flush()
 
         self.impl.execute()

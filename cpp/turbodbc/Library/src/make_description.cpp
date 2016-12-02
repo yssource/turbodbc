@@ -14,6 +14,22 @@ namespace {
 
 	SQLULEN const digits_representable_by_long = 18;
 
+	/*
+	 * This function returns a buffer size for the given string
+	 * which leaves room for future, larger strings.
+	 *
+	 * The intent is to waste little space for small strings while
+	 * keeping the number of required buffer rebinds small.
+	 */
+	std::size_t size_after_growth_strategy(std::size_t const & size)
+	{
+		std::size_t const minimum_size = 10;
+		if (size < minimum_size) {
+			return minimum_size;
+		}
+		return std::ceil(size * 1.2);
+	}
+
 	std::unique_ptr<description const> make_decimal_description(cpp_odbc::column_description const & source)
 	{
 		if (source.size <= digits_representable_by_long) {
@@ -58,24 +74,8 @@ namespace {
 
 		description_ptr operator()(std::string const & s) const
 		{
-			auto const target_size = size_after_growth_strategy(s);
+			auto const target_size = size_after_growth_strategy(s.size());
 			return new string_description(target_size);
-		}
-	private:
-		/*
-		 * This function returns a buffer size for the given string
-		 * which leaves room for future, larger strings.
-		 *
-		 * The intent is to waste little space for small strings while
-		 * keeping the number of required buffer rebinds small.
-		 */
-		std::size_t size_after_growth_strategy(std::string const & s) const
-		{
-			std::size_t const minimum_size = 10;
-			if (s.size() < minimum_size) {
-				return minimum_size;
-			}
-			return std::ceil(s.size() * 1.2);
 		}
 	};
 
@@ -121,6 +121,24 @@ std::unique_ptr<description const> make_description(cpp_odbc::column_description
 std::unique_ptr<description const> make_description(field const & value)
 {
 	return std::unique_ptr<description const>(boost::apply_visitor(description_by_value{}, value));
+}
+
+std::unique_ptr<description const> make_description(type_code type, std::size_t size)
+{
+	switch (type) {
+		case type_code::floating_point:
+			return std::unique_ptr<description const>(new floating_point_description);
+		case type_code::boolean:
+			return std::unique_ptr<description const>(new boolean_description);
+		case type_code::date:
+			return std::unique_ptr<description const>(new date_description);
+		case type_code::timestamp:
+			return std::unique_ptr<description const>(new timestamp_description);
+		case type_code::string:
+			return std::unique_ptr<description const>(new string_description(size_after_growth_strategy(size)));
+		default:
+			return std::unique_ptr<description const>(new integer_description);
+	}
 }
 
 }
