@@ -1,0 +1,44 @@
+file(GLOB_RECURSE LIBRARY_FILES "src/*.cpp")
+
+add_library(turbodbc_arrow_support ${LIBRARY_FILES})
+
+set_target_properties(turbodbc_arrow_support PROPERTIES 
+    PREFIX ""
+    INSTALL_RPATH "../../.."
+)
+
+add_dependencies(turbodbc_arrow_support
+    refresh_cmake_configuration
+)
+
+target_link_libraries(turbodbc_arrow_support
+	${Boost_LIBRARIES}
+	${Odbc_LIBRARIES}
+	cpp_odbc
+	turbodbc
+    arrow
+)
+
+add_custom_command(TARGET turbodbc_arrow_support POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy
+                   ${CMAKE_CURRENT_BINARY_DIR}/turbodbc_arrow_support.so ${CMAKE_BINARY_DIR})
+
+install(
+    TARGETS turbodbc_arrow_support
+    LIBRARY DESTINATION lib
+)
+
+install(
+	DIRECTORY turbodbc_arrow
+	DESTINATION include
+	FILES_MATCHING PATTERN "*.h"
+	PATTERN ".git" EXCLUDE
+)
+
+install(
+	DIRECTORY src/
+	DESTINATION src/turbodbc_arrow
+	FILES_MATCHING PATTERN "*.cpp"
+	PATTERN ".git" EXCLUDE
+)
+
