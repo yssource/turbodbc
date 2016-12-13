@@ -10,4 +10,5 @@
 // as to why these defines are necessary
 #define PY_ARRAY_UNIQUE_SYMBOL turbodbc_numpy_API
 #define NO_IMPORT_ARRAY
+#include <Python.h>
 #include <numpy/ndarrayobject.h>
