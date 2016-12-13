@@ -160,8 +160,8 @@ arrow::Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* 
 	  		case turbodbc::type_code::timestamp: {
             auto builder = static_cast<TimestampBuilder*>(columns[i].get());
             auto buffer = buffers[i];
-	          for (std::size_t i = 0; i < rows_in_batch; ++i) {
-	          	auto element = buffer.get()[i];
+	          for (std::size_t j = 0; j < rows_in_batch; ++j) {
+              auto element = buffer.get()[j];
 	          	if (element.indicator == SQL_NULL_DATA) {
                 builder->AppendNull();
 	          	} else {
@@ -176,12 +176,12 @@ arrow::Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* 
 	  		default: {
           auto builder = static_cast<StringBuilder*>(columns[i].get());
           auto buffer = buffers[i];
-         	for (std::size_t i = 0; i != rows_in_batch; ++i) {
-         		auto const element = buffer.get()[i];
+         	for (std::size_t j = 0; j != rows_in_batch; ++j) {
+         		auto const element = buffer.get()[j];
          		if (element.indicator == SQL_NULL_DATA) {
               builder->AppendNull();
          		} else {
-              builder->Append(element.data_pointer, strlen(element.data_pointer));
+              builder->Append(element.data_pointer, element.indicator);
          		}
          	}
           break;
