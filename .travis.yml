@@ -20,7 +20,7 @@ before_script:
   - sudo -u postgres psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
   - mysql -u root -e 'CREATE DATABASE test_db;'
 script:
-  - sudo pip install mock numpy
+  - sudo pip install mock numpy==1.8.0
   - export ODBCSYSINI=${PWD}/travis/odbc
   - mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=./dist .. 
   - make -j4
