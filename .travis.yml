@@ -10,19 +10,12 @@ env:
 dist: trusty
 sudo: required
 before_install:
-  - sudo apt-get install -y python-pytest
-  - sudo apt-get install -y unixodbc unixodbc-dev
-  - sudo apt-get install -y libboost-all-dev
-  - sudo apt-get install -y mysql-server-5.6 mysql-client-core-5.6 mysql-client-5.6 libmyodbc
-  - sudo apt-get install -y postgresql odbc-postgresql=1:09.02.0100-2ubuntu1
+  - $TRAVIS_BUILD_DIR/travis/travis_before_install.sh
 before_script:
-  - sudo -u postgres psql -U postgres -c 'CREATE DATABASE test_db;'
-  - sudo -u postgres psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
-  - mysql -u root -e 'CREATE DATABASE test_db;'
+  - $TRAVIS_BUILD_DIR/travis/setup_test_dbs.sh
 script:
-  - sudo pip install mock numpy==1.8.0
   - export ODBCSYSINI=${PWD}/travis/odbc
-  - mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=./dist .. 
+  - mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=./dist ..
   - make -j4
   - export TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
   - ctest --verbose
