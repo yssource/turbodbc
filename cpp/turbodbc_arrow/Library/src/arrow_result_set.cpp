@@ -2,13 +2,13 @@
 
 // Somewhere a macro defines BOOL as a constant. This is in conflict with array/type.h
 #undef BOOL
+#include <arrow/array.h>
+#include <arrow/builder.h>
 #include <arrow/column.h>
 #include <arrow/schema.h>
 #include <arrow/table.h>
 #include <arrow/type.h>
-#include <arrow/types/primitive.h>
-#include <arrow/types/string.h>
-#include <arrow/util/memory-pool.h>
+#include <arrow/memory_pool.h>
 
 #include <boost/python/list.hpp>
 

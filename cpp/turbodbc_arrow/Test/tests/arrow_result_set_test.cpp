@@ -1,11 +1,11 @@
 #include <turbodbc_arrow/arrow_result_set.h>
 
 #undef BOOL
+#include <arrow/array.h>
+#include <arrow/builder.h>
+#include <arrow/memory_pool.h>
 #include <arrow/schema.h>
 #include <arrow/test-util.h>
-#include <arrow/types/primitive.h>
-#include <arrow/types/string.h>
-#include <arrow/util/memory-pool.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <sql.h>
