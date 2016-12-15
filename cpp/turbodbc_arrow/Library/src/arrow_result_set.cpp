@@ -56,15 +56,6 @@ namespace {
 		}
 	}
 
-	boost::python::list as_python_list()
-	{
-		boost::python::list result;
-		/*for (auto & object : objects) {
-			result.append(boost::python::make_tuple(object->get_data(), object->get_mask()));
-		}*/
-		return result;
-	}
-
   // Copied from turbodbc_numpy/src/datetime_column.cpp
   boost::posix_time::ptime const timestamp_epoch({1970, 1, 1}, {0, 0, 0, 0});
 

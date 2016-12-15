@@ -16,7 +16,7 @@ target_link_libraries(turbodbc_arrow_support
 	${Odbc_LIBRARIES}
 	cpp_odbc
 	turbodbc
-    arrow
+  arrow
 )
 
 add_custom_command(TARGET turbodbc_arrow_support POST_BUILD
