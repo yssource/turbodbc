@@ -10,6 +10,8 @@
 #include <arrow/type.h>
 #include <arrow/memory_pool.h>
 
+#include <pyarrow/table_api.h>
+
 #include <boost/python/list.hpp>
 
 #include <sql.h>
@@ -205,7 +207,10 @@ arrow::Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* 
 
 boost::python::object arrow_result_set::fetch_all()
 {
-	return as_python_list();
+  std::shared_ptr<arrow::Table> table;
+  fetch_all_native(&table);
+  import_pyarrow__table();
+	return boost::python::object(boost::python::handle<>(__pyx_api_f_7pyarrow_5table_table_from_ctable(table)));
 }
 
 

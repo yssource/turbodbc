@@ -88,3 +88,13 @@ mark_as_advanced(
   ARROW_IO_STATIC_LIB
   ARROW_IO_SHARED_LIB
 )
+
+find_path(
+    PyArrow_INCLUDE_DIR
+    pyarrow/table_api.h
+    HINTS
+        $ENV{VIRTUAL_ENV}/lib/*/site-packages/
+        ENV PYTHON_INCLUDE_DIR
+        /usr/local/lib/python2.7/dist-packages/
+    DOC "Path to the PyArrow headers"
+)
