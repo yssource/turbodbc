@@ -1,3 +1,7 @@
+Version 0.5.1
+=============
+*   Fixed build issue with older numpy versions, e.g., 1.8 (thanks @xhochy)
+
 Version 0.5.0
 =============
 *   Improved performance of parameter-based operations.
@@ -8,7 +12,8 @@ Version 0.4.1
 *   The size of the input buffers for retrieving result sets can now be set
     to a certain amount of memory instead of using a fixed number of rows.
     Use the optional `read_buffer_size` parameter of `turbodbc.connect()` and
-    set it to instances of the new top-level classes `Megabytes` and `Rows`.
+    set it to instances of the new top-level classes `Megabytes` and `Rows`
+    (thanks @LukasDistel).
 *   The read buffer size's default value has changed from 1,000 rows to
     20 MB.
 *   The parameter `rows_to_buffer` of `turbodbc.connect()` is _deprecated_.
