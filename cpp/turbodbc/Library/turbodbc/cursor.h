@@ -5,7 +5,7 @@
 #include <cpp_odbc/connection.h>
 #include <turbodbc/command.h>
 #include <turbodbc/column_info.h>
-#include <turbodbc/result_sets/python_result_set.h>
+#include <turbodbc/result_sets/result_set.h>
 #include <memory>
 
 
@@ -41,7 +41,7 @@ private:
 	std::size_t parameter_sets_to_buffer_;
 	bool use_async_io_;
 	std::shared_ptr<turbodbc::command> command_;
-	std::shared_ptr<result_sets::python_result_set> results_;
+	std::shared_ptr<result_sets::result_set> results_;
 };
 
 }

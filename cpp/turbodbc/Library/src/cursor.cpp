@@ -44,7 +44,7 @@ void cursor::execute()
 	command_->execute();
 	auto raw_result_set = command_->get_results();
 	if (raw_result_set) {
-		results_ = std::make_shared<result_sets::python_result_set>(*raw_result_set);
+		results_ = raw_result_set;
 	}
 }
 

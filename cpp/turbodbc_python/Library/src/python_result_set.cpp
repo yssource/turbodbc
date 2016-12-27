@@ -1,4 +1,4 @@
-#include <turbodbc/result_sets/python_result_set.h>
+#include <turbodbc_python/python_result_set.h>
 
 #include <turbodbc/make_field_translator.h>
 
