@@ -1,3 +1,7 @@
+Version XXX (unreleased)
+========================
+*   Internal: Move remaining stuff depending on python to turbodbc_python
+
 Version 0.5.1
 =============
 *   Fixed build issue with older numpy versions, e.g., 1.8 (thanks @xhochy)
