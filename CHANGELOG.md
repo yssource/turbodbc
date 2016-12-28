@@ -1,6 +1,7 @@
 Version XXX (unreleased)
 ========================
 *   Internal: Move remaining stuff depending on python to turbodbc_python
+*   Internal: Now requires cmake 2.8.12+
 
 Version 0.5.1
 =============
