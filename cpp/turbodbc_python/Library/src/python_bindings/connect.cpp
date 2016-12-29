@@ -1,12 +1,12 @@
 #include <turbodbc/connect.h>
 
-#include <boost/python/def.hpp>
+#include <pybind11/pybind11.h>
 
 namespace turbodbc { namespace bindings {
 
-void for_connect()
+void for_connect(pybind11::module & module)
 {
-    boost::python::def("connect", turbodbc::connect);
+    module.def("connect", turbodbc::connect);
 }
 
 } }

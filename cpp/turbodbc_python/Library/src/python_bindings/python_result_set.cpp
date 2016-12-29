@@ -1,7 +1,7 @@
 #include <turbodbc_python/python_result_set.h>
 
-#include <boost/python/class.hpp>
-#include <boost/python/def.hpp>
+#include <pybind11/pybind11.h>
+
 
 using turbodbc::result_sets::python_result_set;
 
@@ -19,17 +19,17 @@ python_result_set make_python_result_set(std::shared_ptr<turbodbc::result_sets::
 }
 
 
-void for_python_result_set()
+void for_python_result_set(pybind11::module & module)
 {
-	boost::python::class_<python_result_set>("ResultSet", boost::python::no_init)
+	pybind11::class_<python_result_set>(module, "ResultSet")
 			.def("get_column_info", &python_result_set::get_column_info)
 			.def("fetch_row", &python_result_set::fetch_row)
 		;
 
-	boost::python::class_<std::shared_ptr<turbodbc::result_sets::result_set>>("RawResultSetPointer", boost::python::no_init);
+	pybind11::class_<std::shared_ptr<turbodbc::result_sets::result_set>>(module, "RawResultSetPointer");
 
-	boost::python::def("make_row_based_result_set", make_python_result_set);
-	boost::python::def("has_result_set", has_result_set);
+	module.def("make_row_based_result_set", make_python_result_set);
+	module.def("has_result_set", has_result_set);
 }
 
 } }
