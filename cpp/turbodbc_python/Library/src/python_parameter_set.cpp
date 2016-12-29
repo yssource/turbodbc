@@ -34,8 +34,8 @@ void python_parameter_set::flush()
 
 void python_parameter_set::add_parameter_set(pybind11::object const & parameter_set)
 {
-//	check_parameter_set(parameter_set);
-//
+	check_parameter_set(parameter_set);
+
 //	if (current_parameter_set_ == parameters_.buffered_sets()) {
 //		flush();
 //	}
@@ -48,7 +48,6 @@ void python_parameter_set::add_parameter_set(pybind11::object const & parameter_
 //	}
 //
 //	++current_parameter_set_;
-	throw std::runtime_error("Commented out for feedback");
 }
 
 void python_parameter_set::check_parameter_set(pybind11::object const & parameter_set) const

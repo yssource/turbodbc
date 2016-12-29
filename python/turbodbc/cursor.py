@@ -54,7 +54,7 @@ class Cursor(object):
     def description(self):
         if self.result_set:
             info = self.result_set.get_column_info()
-            return [(c['name'], c['type_code'], None, None, None, None, c['supports_null_values']) for c in info]
+            return [(c.name, c.type_code(), None, None, None, None, c.supports_null_values) for c in info]
         else:
             return None
 

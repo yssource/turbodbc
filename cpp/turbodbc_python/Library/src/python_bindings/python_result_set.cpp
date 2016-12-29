@@ -1,6 +1,7 @@
 #include <turbodbc_python/python_result_set.h>
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 
 using base_result_set = turbodbc::result_sets::result_set;
