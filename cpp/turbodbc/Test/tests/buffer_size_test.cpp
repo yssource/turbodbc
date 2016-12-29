@@ -8,16 +8,28 @@ using turbodbc::description;
 using turbodbc::integer_description;
 
 
-TEST(BufferSizeTest, SetRowsToValue)
+TEST(BufferSizeTest, RowsIsDefaultConstructible)
 {
-    turbodbc::rows one_row(1);
+    turbodbc::rows one_row;
     EXPECT_EQ(1, one_row.value);
 }
 
-TEST(BufferSizeTest, SetMegabytesToValue)
+TEST(BufferSizeTest, RowsConstructor)
 {
-    turbodbc::megabytes one_mb(1);
-    EXPECT_EQ(1, one_mb.value);
+    turbodbc::rows r(42);
+    EXPECT_EQ(42, r.value);
+}
+
+TEST(BufferSizeTest, MegabytesConstructor)
+{
+    turbodbc::megabytes mb(42);
+    EXPECT_EQ(42, mb.value);
+}
+
+TEST(BufferSizeTest, BufferSizeIsDefaultConstructible)
+{
+    turbodbc::buffer_size one_row;
+    EXPECT_EQ(1, boost::get<turbodbc::rows>(one_row).value);
 }
 
 TEST(BufferSizeTest, DetermineBufferSizeWithRows)
