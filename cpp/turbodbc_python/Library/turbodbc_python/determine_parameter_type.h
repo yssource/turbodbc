@@ -9,13 +9,13 @@
 namespace turbodbc {
 
 struct python_parameter_info {
-	using parameter_converter = void(*)(pybind11::object const &, cpp_odbc::writable_buffer_element &);
+	using parameter_converter = void(*)(pybind11::handle const &, cpp_odbc::writable_buffer_element &);
 
 	parameter_converter converter;
 	type_code type;
 	std::size_t size;
 };
 
-python_parameter_info determine_parameter_type(pybind11::object const & value);
+python_parameter_info determine_parameter_type(pybind11::handle const & value);
 
 }
