@@ -59,7 +59,7 @@ def get_extension_modules():
                                                 sources=turbodbc_sources,
                                                 include_dirs=['include/'],
                                                 extra_compile_args=['--std=c++11'],
-                                                libraries=['odbc', 'boost_python'])
+                                                libraries=['odbc'])
     
     """
     An extension module which contains the main Python bindings for turbodbc
@@ -68,7 +68,7 @@ def get_extension_modules():
                                                sources=_get_source_files('turbodbc_python'),
                                                include_dirs=['include/'],
                                                extra_compile_args=['--std=c++11'],
-                                               libraries=['odbc', 'boost_python', 'turbodbc'],
+                                               libraries=['odbc', 'turbodbc'],
                                                extra_link_args=["-Wl,-rpath,$ORIGIN"],
                                                library_dirs=[_get_distutils_build_directory()])
     
@@ -82,7 +82,7 @@ def get_extension_modules():
                                                   sources=_get_source_files('turbodbc_numpy'),
                                                   include_dirs=['include/', numpy.get_include()],
                                                   extra_compile_args=['--std=c++11'],
-                                                  libraries=['odbc', 'boost_python', 'turbodbc'],
+                                                  libraries=['odbc', 'turbodbc'],
                                                   extra_link_args=["-Wl,-rpath,$ORIGIN"],
                                                   library_dirs=[_get_distutils_build_directory()])
         return [turbodbc_library, turbodbc_python, turbodbc_numpy]

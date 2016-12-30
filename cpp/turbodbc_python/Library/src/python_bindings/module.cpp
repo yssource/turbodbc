@@ -10,7 +10,6 @@ namespace turbodbc { namespace bindings {
 	void for_error(pybind11::module &);
 	void for_python_result_set(pybind11::module &);
 	void for_python_parameter_set(pybind11::module &);
-	void for_unicode(pybind11::module &);
 
 } }
 
@@ -28,6 +27,5 @@ PYBIND11_PLUGIN(turbodbc_intern)
 	bindings::for_error(module);
 	bindings::for_python_result_set(module);
 	bindings::for_python_parameter_set(module);
-	bindings::for_unicode(module);
 	return module.ptr();
 }
