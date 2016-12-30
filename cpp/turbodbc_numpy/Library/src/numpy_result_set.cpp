@@ -1,8 +1,5 @@
 #include <turbodbc_numpy/numpy_result_set.h>
 
-#include <boost/python/list.hpp>
-#include <boost/python/tuple.hpp>
-
 #include <turbodbc_numpy/numpy_type.h>
 #include <turbodbc_numpy/binary_column.h>
 #include <turbodbc_numpy/datetime_column.h>
@@ -33,11 +30,11 @@ namespace {
 		}
 	}
 
-	boost::python::list as_python_list(std::vector<std::unique_ptr<masked_column>> & objects)
+	pybind11::list as_python_list(std::vector<std::unique_ptr<masked_column>> & objects)
 	{
-		boost::python::list result;
+		pybind11::list result;
 		for (auto & object : objects) {
-			result.append(boost::python::make_tuple(object->get_data(), object->get_mask()));
+			result.append(pybind11::make_tuple(object->get_data(), object->get_mask()));
 		}
 		return result;
 	}
@@ -49,7 +46,7 @@ numpy_result_set::numpy_result_set(turbodbc::result_sets::result_set & base) :
 }
 
 
-boost::python::object numpy_result_set::fetch_all()
+pybind11::object numpy_result_set::fetch_all()
 {
 	std::size_t rows_in_batch = base_result_.fetch_next_batch();
 	auto const column_info = base_result_.get_column_info();

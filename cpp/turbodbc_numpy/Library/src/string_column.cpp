@@ -1,12 +1,12 @@
 #include <turbodbc_numpy/string_column.h>
 
-#include <boost/python/str.hpp>
-
 #include <sql.h>
 #include <cstring>
 
 namespace turbodbc_numpy {
 
+using pybind11::object;
+using pybind11::reinterpret_steal;
 
 string_column::string_column()
 {
@@ -20,21 +20,21 @@ void string_column::do_append(cpp_odbc::multi_value_buffer const & buffer, std::
 	for (std::size_t i = 0; i != n_values; ++i) {
 		auto const element = buffer[i];
 		if (element.indicator == SQL_NULL_DATA) {
-			data_.append(boost::python::object());
+			data_.append(pybind11::none());
 		} else {
-			data_.append(boost::python::object(boost::python::handle<>(PyUnicode_FromString(element.data_pointer))));
+			data_.append(reinterpret_steal<object>(PyUnicode_FromString(element.data_pointer)));
 		}
 	}
 }
 
-boost::python::object string_column::do_get_data()
+object string_column::do_get_data()
 {
 	return data_;
 }
 
-boost::python::object string_column::do_get_mask()
+object string_column::do_get_mask()
 {
-	return boost::python::object(false);
+	return pybind11::cast(false);
 }
 
 

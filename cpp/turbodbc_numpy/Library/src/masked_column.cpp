@@ -11,12 +11,12 @@ void masked_column::append(cpp_odbc::multi_value_buffer const & buffer, std::siz
 	do_append(buffer, n_values);
 }
 
-boost::python::object masked_column::get_data()
+pybind11::object masked_column::get_data()
 {
 	return do_get_data();
 }
 
-boost::python::object masked_column::get_mask()
+pybind11::object masked_column::get_mask()
 {
 	return do_get_mask();
 }

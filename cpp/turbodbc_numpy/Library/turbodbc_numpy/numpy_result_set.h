@@ -3,7 +3,7 @@
 #include <turbodbc/result_sets/row_based_result_set.h>
 #include <turbodbc/field.h>
 #include <turbodbc/field_translator.h>
-#include <boost/python/object.hpp>
+#include <pybind11/pybind11.h>
 
 namespace turbodbc_numpy {
 
@@ -20,10 +20,10 @@ public:
 	numpy_result_set(turbodbc::result_sets::result_set & base);
 
 	/**
-	 * @brief Retrieve a boost Python object which contains
+	 * @brief Retrieve a Python object which contains
 	 *        values and masks for all data
 	 */
-	boost::python::object fetch_all();
+	pybind11::object fetch_all();
 
 private:
 	turbodbc::result_sets::result_set & base_result_;

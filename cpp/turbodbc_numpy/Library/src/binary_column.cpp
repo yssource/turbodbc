@@ -11,7 +11,7 @@ namespace turbodbc_numpy {
 
 namespace {
 
-	PyArrayObject * get_array_ptr(boost::python::object & object)
+	PyArrayObject * get_array_ptr(pybind11::object & object)
 	{
 		return reinterpret_cast<PyArrayObject *>(object.ptr());
 	}
@@ -49,12 +49,12 @@ void binary_column::do_append(cpp_odbc::multi_value_buffer const & buffer, std::
 	}
 }
 
-boost::python::object binary_column::do_get_data()
+pybind11::object binary_column::do_get_data()
 {
 	return data_;
 }
 
-boost::python::object binary_column::do_get_mask()
+pybind11::object binary_column::do_get_mask()
 {
 	return mask_;
 }
