@@ -58,7 +58,7 @@ void python_parameter_set::check_parameter_set(pybind11::iterable const & parame
 
 void python_parameter_set::add_parameter(std::size_t index, pybind11::handle const & value)
 {
-	if (not value.is_none()) {
+	if (value.ptr() != Py_None) {
 		auto info = determine_parameter_type(value);
 
 		if (parameters_.get_parameters()[index]->is_suitable_for(info.type, info.size)) {
