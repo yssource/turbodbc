@@ -18,7 +18,7 @@ using namespace turbodbc;
 
 PYBIND11_PLUGIN(turbodbc_intern)
 {
-	pybind11::module module("turbodbc_intern", "Native helpers for the turbobdc package");
+	pybind11::module module("turbodbc_intern", "Native helpers for the turbodbc package");
 	bindings::for_buffer_size(module);
 	bindings::for_column_info(module);
 	bindings::for_connect(module);

@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from itertools import islice
 from collections import OrderedDict
 
-from turbodbc_intern import has_result_set, make_row_based_result_set, make_parameter_set
+from turbodbc_intern import make_row_based_result_set, make_parameter_set
 
 from .exceptions import translate_exceptions, InterfaceError, Error
 
