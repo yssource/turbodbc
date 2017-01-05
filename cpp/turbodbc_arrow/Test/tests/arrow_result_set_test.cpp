@@ -111,23 +111,7 @@ TEST(ArrowResultSetTest, SingleBatchSingleColumnResultSetConversion)
   turbodbc_arrow::arrow_result_set ars(rs);
   std::shared_ptr<arrow::Table> table;
   ASSERT_OK(ars.fetch_all_native(&table));
-  // TODO(ARROW-415): ASSERT_TRUE(expected_table->Equals(table));
-  ASSERT_EQ(expected_table->name(), table->name());
-  ASSERT_TRUE(expected_table->schema()->Equals(table->schema()));
-  ASSERT_EQ(expected_table->num_columns(), table->num_columns());
-  ASSERT_EQ(expected_table->num_rows(), table->num_rows());
-  for (int i = 0; i < expected_table->num_columns(); i++) {
-    // TODO(ARROW-416): ASSERT_TRUE(expected_table->column(i)->Equals(table->column(i)));
-    ASSERT_EQ(expected_table->column(i)->length(), table->column(i)->length());
-    ASSERT_EQ(expected_table->column(i)->null_count(), table->column(i)->null_count());
-    ASSERT_TRUE(expected_table->column(i)->field()->Equals(table->column(i)->field()));
-    std::shared_ptr<arrow::ChunkedArray> expected_c_array = expected_table->column(i)->data();
-    std::shared_ptr<arrow::ChunkedArray> c_array = table->column(i)->data();
-    // TODO(ARROW-417): ASSERT_TRUE(expected_c_array->Equals(c_array));
-    // .. until then we assume a single chunk:
-    ASSERT_EQ(c_array->num_chunks(), 1);
-    ASSERT_TRUE(expected_c_array->chunk(0)->Equals(c_array->chunk(0)));
-  }
+  ASSERT_TRUE(expected_table->Equals(table));
 }
 
 TEST(ArrowResultSetTest, MultipleBatchSingleColumnResultSetConversion)
@@ -167,23 +151,7 @@ TEST(ArrowResultSetTest, MultipleBatchSingleColumnResultSetConversion)
   turbodbc_arrow::arrow_result_set ars(rs);
   std::shared_ptr<arrow::Table> table;
   ASSERT_OK(ars.fetch_all_native(&table));
-  // TODO(ARROW-415): ASSERT_TRUE(expected_table->Equals(table));
-  ASSERT_EQ(expected_table->name(), table->name());
-  ASSERT_TRUE(expected_table->schema()->Equals(table->schema()));
-  ASSERT_EQ(expected_table->num_columns(), table->num_columns());
-  ASSERT_EQ(expected_table->num_rows(), table->num_rows());
-  for (int i = 0; i < expected_table->num_columns(); i++) {
-    // TODO(ARROW-416): ASSERT_TRUE(expected_table->column(i)->Equals(table->column(i)));
-    ASSERT_EQ(expected_table->column(i)->length(), table->column(i)->length());
-    ASSERT_EQ(expected_table->column(i)->null_count(), table->column(i)->null_count());
-    ASSERT_TRUE(expected_table->column(i)->field()->Equals(table->column(i)->field()));
-    std::shared_ptr<arrow::ChunkedArray> expected_c_array = expected_table->column(i)->data();
-    std::shared_ptr<arrow::ChunkedArray> c_array = table->column(i)->data();
-    // TODO(ARROW-417): ASSERT_TRUE(expected_c_array->Equals(c_array));
-    // .. until then we assume a single chunk:
-    ASSERT_EQ(c_array->num_chunks(), 1);
-    ASSERT_TRUE(expected_c_array->chunk(0)->Equals(c_array->chunk(0)));
-  }
+  ASSERT_TRUE(expected_table->Equals(table));
 }
 
 TEST(ArrowResultSetTest, MultipleBatchMultipleColumnResultSetConversion)
@@ -466,22 +434,6 @@ TEST(ArrowResultSetTest, MultipleBatchMultipleColumnResultSetConversion)
   turbodbc_arrow::arrow_result_set ars(rs);
   std::shared_ptr<arrow::Table> table;
   ASSERT_OK(ars.fetch_all_native(&table));
-  // TODO(ARROW-415): ASSERT_TRUE(expected_table->Equals(table));
-  ASSERT_EQ(expected_table->name(), table->name());
-  ASSERT_TRUE(expected_table->schema()->Equals(table->schema()));
-  ASSERT_EQ(expected_table->num_columns(), table->num_columns());
-  ASSERT_EQ(expected_table->num_rows(), table->num_rows());
-  for (int i = 0; i < expected_table->num_columns(); i++) {
-    // TODO(ARROW-416): ASSERT_TRUE(expected_table->column(i)->Equals(table->column(i)));
-    ASSERT_EQ(expected_table->column(i)->length(), table->column(i)->length());
-    ASSERT_EQ(expected_table->column(i)->null_count(), table->column(i)->null_count());
-    ASSERT_TRUE(expected_table->column(i)->field()->Equals(table->column(i)->field()));
-    std::shared_ptr<arrow::ChunkedArray> expected_c_array = expected_table->column(i)->data();
-    std::shared_ptr<arrow::ChunkedArray> c_array = table->column(i)->data();
-    // TODO(ARROW-417): ASSERT_TRUE(expected_c_array->Equals(c_array));
-    // .. until then we assume a single chunk:
-    ASSERT_EQ(c_array->num_chunks(), 1);
-    ASSERT_TRUE(expected_c_array->chunk(0)->Equals(c_array->chunk(0)));
-  }
+  ASSERT_TRUE(expected_table->Equals(table));
 }
 
