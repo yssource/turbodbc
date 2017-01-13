@@ -19,12 +19,20 @@ numpy_result_set make_numpy_result_set(std::shared_ptr<turbodbc::result_sets::re
 
 }
 
-// this function is required to work around issues between the PYBIND11_PLUGIN
-// and the import_array macros.
-void enable_numpy_support()
-{
-    import_array();
-}
+// this function is required to work around issues and compiler warnings with
+// the import_array() macro on systems with Python 2/3
+#if PY_VERSION_HEX >= 0x03000000
+    void * enable_numpy_support()
+    {
+        import_array();
+        return nullptr;
+    }
+#else
+    void enable_numpy_support()
+    {
+        import_array();
+    }
+#endif
 
 
 PYBIND11_PLUGIN(turbodbc_numpy_support) {

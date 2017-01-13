@@ -20,7 +20,7 @@ target_link_libraries(turbodbc_numpy_support
 
 add_custom_command(TARGET turbodbc_numpy_support POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
-                   ${CMAKE_CURRENT_BINARY_DIR}/turbodbc_numpy_support.so ${CMAKE_BINARY_DIR})
+                   $<TARGET_FILE:turbodbc_numpy_support> ${CMAKE_BINARY_DIR})
 
 install(
     TARGETS turbodbc_numpy_support

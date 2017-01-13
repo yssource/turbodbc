@@ -21,7 +21,7 @@ target_link_libraries(turbodbc_python
 
 add_custom_command(TARGET turbodbc_python POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
-                   ${CMAKE_CURRENT_BINARY_DIR}/turbodbc_intern.so ${CMAKE_BINARY_DIR})
+                   $<TARGET_FILE:turbodbc_python> ${CMAKE_BINARY_DIR})
 
 install(
     TARGETS turbodbc_python
