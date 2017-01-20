@@ -1,4 +1,4 @@
-Version XXX (unreleased)
+Version 1.0.0 (unreleased)
 ========================
 *   Turbodbc uses pybind11 instead of Boost.Python to generate its Python
     bindings. pybind11 is available as a Python package and automatically
