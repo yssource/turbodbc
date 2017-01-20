@@ -111,5 +111,5 @@ setup(name = 'turbodbc',
                      'Programming Language :: Python :: 2.7',
                      'Topic :: Database'],
       ext_modules = get_extension_modules(),
-      install_requires=['pybind11>=2.0.0']
+      install_requires=['pybind11>=2.0.0', 'six']
       )

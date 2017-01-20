@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import warnings
+import six
 
 from turbodbc_intern import connect as intern_connect
 from turbodbc_intern import Rows
@@ -11,7 +12,7 @@ from .connection import Connection
 def _make_connection_string(dsn, **kwargs):
     if dsn:
         kwargs['dsn'] = dsn
-    return ';'.join(["{}={}".format(key, value) for key, value in kwargs.iteritems()])
+    return ';'.join(["{}={}".format(key, value) for key, value in six.iteritems(kwargs)])
 
 
 @translate_exceptions
