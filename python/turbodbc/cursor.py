@@ -35,12 +35,14 @@ class Cursor(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         element = self.fetchone()
         if element is None:
             raise StopIteration
         else:
             return element
+
+    next = __next__  # Python 2 compatibility
 
     def _assert_valid(self):
         if self.impl is None:
