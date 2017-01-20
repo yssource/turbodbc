@@ -7,8 +7,8 @@ env:
     - secure: "lB+X2gQUGKSpcMgPAsL7LdL/0m68pzutLTT5fPh2JJWjAQsJ3a6cqMEiHUsRI8CX01IcuuJ7O+MsRy4/iWvI8UdZsT83sT4sGa9nihLsoldchlmAvo4K4udNpGoXveqkpDGf8TEqEj7OA8JF8L1XTAr63/fU6kzXboV1p4xGaQjqo/OdQBellvIbh4mcZnvE0l+yBRRus9vvgrQEZ6wfQ/CzE9PjMxoveVy1r8G5vhbvi3+/h8aTKI3exH7WZd5NucDk0X6Zkzir7aOnwrBjkgcj25yMoxcFZ4ZBmThBbOE5xFLPAa/3jFNbs2ZorSEims/OXPTV8pTW7WdM1Fa2gSQRiaoZu4ARZ0e+VSTFq/hVJvEMR/fm6V+nWPGzLAG+BhIIlrDgDZ9aAq1ANq3SfFNbq4W1LKVqDwQresQqg9WATHZJ9ZanU9vKwsTabeQKZm9n+BJaoQlE6KOUiNZ85gB79JrWkGdcuLDqB1EKHgABXaygT6RI0kI++z4/FFbBFdf8N8OgR03LiabE6Gp8UpMCFY1/JUBlXV+hncKt8PxhxKa2eUr8uls3J7TFa+0BM5AClM9GTbXnYWbmM0Gcy9ewnk3qSSvJak7ghusuoFM7X80OPSrQyfxPSfBGqu0E0aDSJfHOllfC6g7i8fndr2pbOlEz5HXukOTB5/xRxiM="
     - secure: "IeGJF78ctI4YbBZDi4E6ziOFIMqhw05InvvdT5Do7BaFaKtHLMdSfEFL6IDcuD0932l6m49S2hWNHTWwkWCMp5EqZ1YX6FqpaaXOquN231h6bRA4CtT/1TCouZQ35Q7HZwdwx305pBYRs9/2MB7uf6qAjZwtkWOSuyeBEXYo1vmXizAPNrb/TyjZNmDQ2VqlEgzxUkMm3nhrvbq2y2GeRMf97qXguKnlqcRFXM2ABZUUsQQ8P4BFAF/coGzfAcptIiWbWrfz0wMPhZrVwdAy3Ul647P3npEluOXbFbGkldoFDRv1WaenJA5pk6RtE73HiOitLLf91XDFSeqeYmY5tYrwS44IC7L02tsRTtA/ZHSk6hY8kRq7/s1HZetAjfkZ4VAUBj5bQ+l/fvgh7nNMwsQ6R0EMAipeIMzrMjHmZBoFlJdO1J198RvtcPrdfxbZcHcRKDgNXxnIw9W6KNoC+OCZppQb+pRazr0k+4Bc1G9B38n+4Ntak8u0L5GGebdO5VHBln00h6b2NzEI089JOa8CkocyQV89F3AXOOwubS3oXVWoQCoXkU9/AhYSgMgQ5zH4ky7aV6y5mq5sByM4sEOuo9SFMVnc7gM6cduKyVKbhjY/WriqesGV709JqspgQcqbw6u0ShDntcKEQlz9n1d4gOGWNjo4UMrPqLrNK/w="
   matrix:
-    - PYBIND11_PYTHON_VERSION=2.7
-    - PYBIND11_PYTHON_VERSION=3.4
+    - USED_PYTHON_VERSION=2.7
+    - USED_PYTHON_VERSION=3.4
 
 dist: trusty
 sudo: required
@@ -19,7 +19,7 @@ before_script:
 script:
   - export ODBCSYSINI=${PWD}/travis/odbc
   - mkdir build && cd build
-  - cmake -DCMAKE_INSTALL_PREFIX=./dist ..
+  - cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION=${USED_PYTHON_VERSION} ..
   - make -j4
   - export TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
   - ctest --verbose
