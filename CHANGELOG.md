@@ -1,11 +1,13 @@
 Version 1.0.0 (unreleased)
-========================
+==========================
+*   Added support for Python 3. Python 2 is still supported as well.
+*   Added `six` package as dependency
 *   Turbodbc uses pybind11 instead of Boost.Python to generate its Python
     bindings. pybind11 is available as a Python package and automatically
     installed when you install turbodbc.
     Other boost libraries are still required for other aspects of the code.
 *   Internal: Move remaining stuff depending on python to turbodbc_python
-*   Internal: Now requires cmake 2.8.12+
+*   Internal: Now requires cmake 2.8.12+ (get it with `pip install cmake`)
 
 Version 0.5.1
 =============
