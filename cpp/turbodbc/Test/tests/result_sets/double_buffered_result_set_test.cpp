@@ -33,16 +33,6 @@ namespace {
 		return statement;
 	}
 
-	/**
-	 * Set the mock statement to expect calls to bind_buffer for count times.
-	 */
-	void expect_calls_to_bind_buffer(mock_statement & statement, std::vector<SQLSMALLINT> const & expected_bind_types, std::size_t count)
-	{
-		for (std::size_t i = 0; i != expected_bind_types.size(); ++i) {
-			EXPECT_CALL(statement, do_bind_column(i + 1, expected_bind_types[i], testing::_)).Times(count);
-		}
-	}
-
 }
 
 

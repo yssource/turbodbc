@@ -7,13 +7,7 @@
 
 #include <sqlext.h>
 
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/object.hpp>
-#include <boost/python/extract.hpp>
-
 #include <sstream>
-
-using py_iterator = boost::python::stl_input_iterator<boost::python::object>;
 
 namespace turbodbc {
 
@@ -32,8 +26,9 @@ void python_parameter_set::flush()
 	current_parameter_set_ = 0;
 }
 
-void python_parameter_set::add_parameter_set(boost::python::object const & parameter_set)
+void python_parameter_set::add_parameter_set(pybind11::iterable const & parameter_set)
 {
+	pybind11::iterable iterable(parameter_set);
 	check_parameter_set(parameter_set);
 
 	if (current_parameter_set_ == parameters_.buffered_sets()) {
@@ -41,8 +36,7 @@ void python_parameter_set::add_parameter_set(boost::python::object const & param
 	}
 
 	std::size_t parameter_index = 0;
-	py_iterator end;
-	for (py_iterator it(parameter_set); it != end; ++it) {
+	for (auto it = parameter_set.begin(); it != parameter_set.end(); ++it) {
 		add_parameter(parameter_index, *it);
 		++parameter_index;
 	}
@@ -50,7 +44,7 @@ void python_parameter_set::add_parameter_set(boost::python::object const & param
 	++current_parameter_set_;
 }
 
-void python_parameter_set::check_parameter_set(boost::python::object const & parameter_set) const
+void python_parameter_set::check_parameter_set(pybind11::iterable const & parameter_set) const
 {
 	auto const expected_size = parameters_.number_of_parameters();
 	std::size_t const actual_size = len(parameter_set);
@@ -62,7 +56,7 @@ void python_parameter_set::check_parameter_set(boost::python::object const & par
 	}
 }
 
-void python_parameter_set::add_parameter(std::size_t index, boost::python::object const & value)
+void python_parameter_set::add_parameter(std::size_t index, pybind11::handle const & value)
 {
 	if (not value.is_none()) {
 		auto info = determine_parameter_type(value);

@@ -1,29 +1,31 @@
-#include <boost/python/module.hpp>
+#include <pybind11/pybind11.h>
 
 namespace turbodbc { namespace bindings {
 
-    void for_buffer_size();
-	void for_column_info();
-	void for_connect();
-	void for_connection();
-	void for_cursor();
-	void for_error();
-	void for_python_result_set();
-	void for_python_parameter_set();
-	void for_unicode();
+    void for_buffer_size(pybind11::module &);
+	void for_column_info(pybind11::module &);
+	void for_connect(pybind11::module &);
+	void for_connection(pybind11::module &);
+	void for_cursor(pybind11::module &);
+	void for_error(pybind11::module &);
+	void for_python_result_set(pybind11::module &);
+	void for_python_parameter_set(pybind11::module &);
 
 } }
 
-BOOST_PYTHON_MODULE(turbodbc_intern)
+
+using namespace turbodbc;
+
+PYBIND11_PLUGIN(turbodbc_intern)
 {
-	using namespace turbodbc;
-	bindings::for_buffer_size();
-	bindings::for_column_info();
-	bindings::for_connect();
-	bindings::for_connection();
-	bindings::for_cursor();
-	bindings::for_error();
-	bindings::for_python_result_set();
-	bindings::for_python_parameter_set();
-	bindings::for_unicode();
+	pybind11::module module("turbodbc_intern", "Native helpers for the turbodbc package");
+	bindings::for_buffer_size(module);
+	bindings::for_column_info(module);
+	bindings::for_connect(module);
+	bindings::for_connection(module);
+	bindings::for_cursor(module);
+	bindings::for_error(module);
+	bindings::for_python_result_set(module);
+	bindings::for_python_parameter_set(module);
+	return module.ptr();
 }

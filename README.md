@@ -88,8 +88,10 @@ Installation
 
 To install turbodbc, please make sure you have the following things installed:
 
-*   A modern g++ compiler (works with 4.7.2+)
-*   Boost development headers (typical package name: `libboost-all-dev`)
+*   A modern C++ compiler with C++11 support (works with gcc 4.8+)
+*   Boost development headers (typical package name: `libboost-all-dev`); more
+    specifically, the Boost libraries `variant`, `optional`, and `datetime` are
+    required.
 *   Unixodbc development headers (typical package name: `unixodbc-dev`)
 *   Python 2.7 development headers (typical package name: `python-dev`)
 

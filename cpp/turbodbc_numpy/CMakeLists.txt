@@ -1,8 +1,5 @@
-find_package(Boost REQUIRED COMPONENTS python system)
+find_package(Boost REQUIRED COMPONENTS system)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
-
-find_package(PythonLibs 2.7 REQUIRED)
-include_directories(SYSTEM ${PYTHON_INCLUDE_DIRS})
 
 find_package(odbc REQUIRED)
 include_directories(SYSTEM ${Odbc_INCLUDE_DIR})

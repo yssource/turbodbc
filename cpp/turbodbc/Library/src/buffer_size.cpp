@@ -3,6 +3,11 @@
 namespace turbodbc {
 
 
+rows::rows():
+    value(1)
+{
+}
+
 rows::rows(std::size_t rows_to_buffer_):
     value(rows_to_buffer_)
 {

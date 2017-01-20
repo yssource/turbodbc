@@ -1,12 +1,18 @@
 from __future__ import absolute_import
 
 from functools import wraps
-from exceptions import StandardError
 
 from turbodbc_intern import Error as InternError
 
 
-class Error(StandardError):
+# Python 2/3 compatibility
+try:
+    from exceptions import StandardError as _BaseError
+except ImportError:
+    _BaseError = Exception
+
+
+class Error(_BaseError):
     pass
 
 

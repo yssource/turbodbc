@@ -3,7 +3,7 @@
 #include <turbodbc/result_sets/row_based_result_set.h>
 #include <turbodbc/field.h>
 #include <turbodbc/field_translator.h>
-#include <boost/python/object.hpp>
+#include <pybind11/pybind11.h>
 
 namespace turbodbc { namespace result_sets {
 
@@ -25,10 +25,10 @@ public:
 	std::vector<column_info> get_column_info() const;
 
 	/**
-	 * @brief Retrieve a boost Python object which belong to the next row.
+	 * @brief Retrieve a Python object which belong to the next row.
 	 * @return Returned object is an empty list in case there is no additional row
 	 */
-	boost::python::object fetch_row();
+	pybind11::object fetch_row();
 
 private:
 	row_based_result_set row_based_;

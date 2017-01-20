@@ -1,4 +1,5 @@
 import datetime
+import six
 
 from query_fixture import query_fixture
 from helpers import for_each_database, for_one_database, open_cursor, generate_microseconds_with_precision
@@ -141,7 +142,7 @@ def test_insert_empty_parameter_list(dsn, configuration):
 def test_insert_number_of_rows_exceeds_buffer_size(dsn, configuration):
     buffer_size = 3
     numbers = buffer_size * 2 + 1
-    data = [[i] for i in xrange(numbers)]
+    data = [[i] for i in six.moves.range(numbers)]
     
     with open_cursor(configuration, parameter_sets_to_buffer=buffer_size) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:

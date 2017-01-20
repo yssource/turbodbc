@@ -9,9 +9,9 @@ import turbodbc
 
 def generate_microseconds_with_precision(digits):
     microseconds = 0;
-    for i in xrange(digits):
+    for i in range(digits):
         microseconds = 10 * microseconds + i + 1
-    for i in xrange(6 - digits):
+    for i in range(6 - digits):
         microseconds *= 10
 
     return microseconds

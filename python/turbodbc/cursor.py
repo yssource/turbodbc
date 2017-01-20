@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from itertools import islice
 from collections import OrderedDict
 
-from turbodbc_intern import has_result_set, make_row_based_result_set, make_parameter_set
+from turbodbc_intern import make_row_based_result_set, make_parameter_set
 
 from .exceptions import translate_exceptions, InterfaceError, Error
 
@@ -35,12 +35,14 @@ class Cursor(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         element = self.fetchone()
         if element is None:
             raise StopIteration
         else:
             return element
+
+    next = __next__  # Python 2 compatibility
 
     def _assert_valid(self):
         if self.impl is None:
@@ -54,7 +56,7 @@ class Cursor(object):
     def description(self):
         if self.result_set:
             info = self.result_set.get_column_info()
-            return [(c['name'], c['type_code'], None, None, None, None, c['supports_null_values']) for c in info]
+            return [(c.name, c.type_code(), None, None, None, None, c.supports_null_values) for c in info]
         else:
             return None
 
@@ -70,7 +72,7 @@ class Cursor(object):
         self.impl.execute()
         self.rowcount = self.impl.get_row_count()
         cpp_result_set = self.impl.get_result_set()
-        if has_result_set(cpp_result_set):
+        if cpp_result_set:
             self.result_set = make_row_based_result_set(cpp_result_set)
         else:
             self.result_set = None
@@ -90,7 +92,7 @@ class Cursor(object):
         self.impl.execute()
         self.rowcount = self.impl.get_row_count()
         cpp_result_set = self.impl.get_result_set()
-        if has_result_set(cpp_result_set):
+        if cpp_result_set:
             self.result_set = make_row_based_result_set(cpp_result_set)
         else:
             self.result_set = None

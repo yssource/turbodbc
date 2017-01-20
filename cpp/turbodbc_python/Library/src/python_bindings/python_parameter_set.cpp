@@ -1,8 +1,8 @@
 #include <turbodbc_python/python_parameter_set.h>
 #include <turbodbc/cursor.h>
 
-#include <boost/python/class.hpp>
-#include <boost/python/def.hpp>
+#include <pybind11/pybind11.h>
+
 
 namespace turbodbc { namespace bindings {
 
@@ -13,14 +13,14 @@ python_parameter_set make_parameter_set(cursor & cursor)
 }
 
 
-void for_python_parameter_set()
+void for_python_parameter_set(pybind11::module & module)
 {
-	boost::python::class_<python_parameter_set>("ParameterSet", boost::python::no_init)
+	pybind11::class_<python_parameter_set>(module, "ParameterSet")
 			.def("add_set", &python_parameter_set::add_parameter_set)
 			.def("flush", &python_parameter_set::flush)
 		;
 
-	boost::python::def("make_parameter_set", make_parameter_set);
+	module.def("make_parameter_set", make_parameter_set);
 }
 
 } }

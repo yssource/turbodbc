@@ -1,12 +1,13 @@
 #include <turbodbc/cursor.h>
 
-#include <boost/python/class.hpp>
+#include <pybind11/pybind11.h>
+
 
 namespace turbodbc { namespace bindings {
 
-void for_cursor()
+void for_cursor(pybind11::module & module)
 {
-	boost::python::class_<turbodbc::cursor>("Cursor", boost::python::no_init)
+	pybind11::class_<turbodbc::cursor>(module, "Cursor")
 			.def("prepare", &turbodbc::cursor::prepare)
 			.def("execute", &turbodbc::cursor::execute)
 			.def("get_row_count", &turbodbc::cursor::get_row_count)

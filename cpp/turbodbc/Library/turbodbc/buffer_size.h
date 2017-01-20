@@ -12,6 +12,7 @@ namespace turbodbc {
 
 /// Struct representing a buffer size with a fixed number of rows
 struct rows {
+    rows();
     rows(std::size_t rows_to_buffer_);
     std::size_t value;
 };
@@ -24,6 +25,7 @@ struct megabytes {
 
 /// A type to encode the size of a buffer
 using buffer_size = boost::variant<rows, megabytes>;
+// buffer_size is default constructible when rows is
 
 
 /**

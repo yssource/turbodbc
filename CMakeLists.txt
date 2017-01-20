@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 2.8.12)
 project(turbodbc_intern CXX)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_scripts)
 
 include(default_build_setup)
 
+add_subdirectory(pybind11)
 add_subdirectory(google_test)
 add_subdirectory(cpp)
 add_subdirectory(python)

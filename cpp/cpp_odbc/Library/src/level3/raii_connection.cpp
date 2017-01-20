@@ -1,15 +1,3 @@
-/**
- *  @file raii_connection.cpp
- *  @date 21.03.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-12-05 08:55:14 +0100 (Fr, 05 Dez 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21240 $
- *
- */
-
 #include "cpp_odbc/level3/raii_connection.h"
 
 #include "cpp_odbc/level3/raii_statement.h"
@@ -17,8 +5,6 @@
 
 #include "cpp_odbc/level2/api.h"
 #include "cpp_odbc/level2/handles.h"
-
-#include <boost/format.hpp>
 
 #include <mutex>
 

@@ -1,4 +1,5 @@
 import pytest
+import six
 
 from turbodbc import connect, InterfaceError
 
@@ -39,7 +40,7 @@ def test_closed_cursor_raises_when_used(dsn, configuration):
         cursor.fetchall()
 
     with pytest.raises(InterfaceError):
-        cursor.next()
+        six.next(cursor)
 
 
 @for_one_database
