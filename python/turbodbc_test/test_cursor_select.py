@@ -1,5 +1,6 @@
 import datetime
 import pytest
+import six
 
 import turbodbc
 
@@ -208,13 +209,13 @@ def test_number_of_rows_exceeds_buffer_size(dsn, configuration):
     with open_cursor(configuration, rows_to_buffer=buffer_size) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
             numbers = buffer_size * 2 + 1
-            for i in xrange(numbers):
+            for i in six.moves.range(numbers):
                 cursor.execute("INSERT INTO {} VALUES ({})".format(table_name, i))
 
             cursor.execute("SELECT a FROM {}".format(table_name))
             retrieved = cursor.fetchall()
             actual_sum = sum([row[0] for row in retrieved])
-            expected_sum = sum(xrange(numbers))
+            expected_sum = sum(six.moves.range(numbers))
             assert expected_sum == actual_sum
 
 
