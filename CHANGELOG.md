@@ -6,6 +6,8 @@ Version 1.0.0 (unreleased)
     bindings. pybind11 is available as a Python package and automatically
     installed when you install turbodbc.
     Other boost libraries are still required for other aspects of the code.
+*   A more modern compiler is required due to the pybind11 dependency.
+    GCC 4.8 will suffice.
 *   Internal: Move remaining stuff depending on python to turbodbc_python
 *   Internal: Now requires cmake 2.8.12+ (get it with `pip install cmake`)
 
