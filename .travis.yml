@@ -29,11 +29,9 @@ before_script:
   - $TRAVIS_BUILD_DIR/travis/setup_test_dbs.sh
 
 script:
-  - python --version
-  - env
   - export ODBCSYSINI=${PWD}/travis/odbc
   - mkdir build && cd build
-  - cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION= ..
+  - cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} ..
   - make -j4
   - export TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
   - ctest --verbose
