@@ -93,7 +93,8 @@ To install turbodbc, please make sure you have the following things installed:
     specifically, the Boost libraries `variant`, `optional`, and `datetime` are
     required.
 *   Unixodbc development headers (typical package name: `unixodbc-dev`)
-*   Python 2.7 development headers (typical package name: `python-dev`)
+*   Python (2.7, 3.4, 3.5, 3.6) development headers
+    (typical package name: `python-dev`)
 
 To install turbodbc, please use the following command:
 
@@ -235,5 +236,6 @@ dependencies:
 Supported environments
 ----------------------
 
-*   Linux (successfully built on Ubuntu 12, Ubuntu 14, Debian 7)
-*   Python 2.7 only (yet) 
+*   Linux (successfully built on Ubuntu 12, Ubuntu 14, Debian 7, Debian 8)
+*   Python 2.7, 3.4, 3.5, 3.6 (potentially more, but these are the
+    tested versions)

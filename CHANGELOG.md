@@ -1,6 +1,7 @@
 Version 1.0.0 (unreleased)
 ==========================
 *   Added support for Python 3. Python 2 is still supported as well.
+    Tested with Python 2.7, 3.4, 3.5, and 3.6.
 *   Added `six` package as dependency
 *   Turbodbc uses pybind11 instead of Boost.Python to generate its Python
     bindings. pybind11 is available as a Python package and automatically
