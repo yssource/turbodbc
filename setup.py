@@ -1,4 +1,5 @@
-from setuptools import setup, Extension
+from setuptools import setup, Extension, Distribution
+import setuptools.command.build_ext
 
 import sys
 import sysconfig
@@ -7,6 +8,14 @@ import distutils.sysconfig
 
 import itertools
 from glob import iglob
+
+
+def _get_turbodbc_libname():
+    builder = setuptools.command.build_ext.build_ext(Distribution())
+    full_name = builder.get_ext_filename('libturbodbc')
+    without_lib = full_name.split('lib', 1)[-1]
+    without_so = without_lib.rsplit('.so', 1)[0]
+    return without_so
 
 
 def _get_distutils_build_directory():
@@ -31,7 +40,7 @@ def _get_source_files(directory):
 def _remove_strict_prototype_option_from_distutils_config():
     strict_prototypes = '-Wstrict-prototypes'
     config = distutils.sysconfig.get_config_vars()
-    for key, value in config.iteritems():
+    for key, value in config.items():
         if strict_prototypes in str(value):
             config[key] = config[key].replace(strict_prototypes, '')
 
@@ -62,6 +71,7 @@ def get_extension_modules():
                                  include_dirs=['include/'],
                                  extra_compile_args=['--std=c++11'],
                                  libraries=['odbc'])
+    turbodbc_lib = _get_turbodbc_libname()
 
     """
     An extension module which contains the main Python bindings for turbodbc
@@ -71,7 +81,7 @@ def get_extension_modules():
                                 include_dirs=['include/',
                                               _deferred_pybind11_include()],
                                 extra_compile_args=['--std=c++11'],
-                                libraries=['odbc', 'turbodbc'],
+                                libraries=['odbc', turbodbc_lib],
                                 extra_link_args=["-Wl,-rpath,$ORIGIN"],
                                 library_dirs=[_get_distutils_build_directory()])
 
@@ -87,7 +97,7 @@ def get_extension_modules():
                                                  _deferred_pybind11_include(),
                                                  numpy.get_include()],
                                    extra_compile_args=['--std=c++11'],
-                                   libraries=['odbc', 'turbodbc'],
+                                   libraries=['odbc', turbodbc_lib],
                                    extra_link_args=["-Wl,-rpath,$ORIGIN"],
                                    library_dirs=[_get_distutils_build_directory()])
         return [turbodbc_library, turbodbc_python, turbodbc_numpy]
