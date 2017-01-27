@@ -12,10 +12,10 @@ add_dependencies(turbodbc_numpy_support
 )
 
 target_link_libraries(turbodbc_numpy_support
-    ${Boost_LIBRARIES}
-    ${Odbc_LIBRARIES}
-    cpp_odbc
-    turbodbc
+    PUBLIC ${Boost_LIBRARIES}
+    PUBLIC ${Odbc_LIBRARIES}
+    PUBLIC cpp_odbc
+    PUBLIC turbodbc
 )
 
 add_custom_command(TARGET turbodbc_numpy_support POST_BUILD

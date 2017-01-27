@@ -13,10 +13,10 @@ add_dependencies(turbodbc_python
 )
 
 target_link_libraries(turbodbc_python
-    ${Boost_LIBRARIES}
-    ${Odbc_LIBRARIES}
-    cpp_odbc
-    turbodbc
+    PUBLIC ${Boost_LIBRARIES}
+    PUBLIC ${Odbc_LIBRARIES}
+    PUBLIC cpp_odbc
+    PUBLIC turbodbc
 )
 
 add_custom_command(TARGET turbodbc_python POST_BUILD
