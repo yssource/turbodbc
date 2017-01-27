@@ -22,6 +22,11 @@ add_custom_command(TARGET turbodbc_numpy_support POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
                    $<TARGET_FILE:turbodbc_numpy_support> ${CMAKE_BINARY_DIR})
 
+if (APPLE)
+   set_target_properties(turbodbc_numpy_support PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+endif()
+
+
 install(
     TARGETS turbodbc_numpy_support
     LIBRARY DESTINATION lib

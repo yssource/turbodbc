@@ -55,10 +55,28 @@ def _has_numpy_headers():
         return False
 
 
+
 class _deferred_pybind11_include(object):
     def __str__(self):
         import pybind11
         return pybind11.get_include()
+
+
+extra_compile_args = ['--std=c++11']
+include_dirs = ['include/', _deferred_pybind11_include()]
+
+library_dirs = [_get_distutils_build_directory()]
+extra_link_args = ["-Wl,-rpath,$ORIGIN"]
+
+if sys.platform == 'darwin':
+    extra_compile_args.append('--stdlib=libc++')
+    include_dirs.append(os.getenv('UNIXODBC_INCLUDE_DIR', '/usr/local/include/'))
+    library_dirs.append(os.getenv('UNIXODBC_LIBRARY_DIR', '/usr/local/lib/'))
+
+    from distutils import sysconfig
+    vars = sysconfig.get_config_vars()
+    vars['LDSHARED'] = vars['LDSHARED'].replace('-bundle', '-dynamiclib')
+    vars['SO'] = '.dylib'
 
 
 def get_extension_modules():
@@ -68,9 +86,11 @@ def get_extension_modules():
     turbodbc_sources = _get_source_files('cpp_odbc') + _get_source_files('turbodbc')
     turbodbc_library = Extension('libturbodbc',
                                  sources=turbodbc_sources,
-                                 include_dirs=['include/'],
-                                 extra_compile_args=['--std=c++11'],
-                                 libraries=['odbc'])
+                                 include_dirs=include_dirs,
+                                 extra_compile_args=extra_compile_args,
+                                 libraries=['odbc'],
+                                 library_dirs=library_dirs)
+
     turbodbc_lib = _get_turbodbc_libname()
 
     """
@@ -78,12 +98,11 @@ def get_extension_modules():
     """
     turbodbc_python = Extension('turbodbc_intern',
                                 sources=_get_source_files('turbodbc_python'),
-                                include_dirs=['include/',
-                                              _deferred_pybind11_include()],
-                                extra_compile_args=['--std=c++11'],
+                                include_dirs=include_dirs,
+                                extra_compile_args=extra_compile_args,
                                 libraries=['odbc', turbodbc_lib],
-                                extra_link_args=["-Wl,-rpath,$ORIGIN"],
-                                library_dirs=[_get_distutils_build_directory()])
+                                extra_link_args=extra_link_args,
+                                library_dirs=library_dirs)
 
     """
     An extension module which contains Python bindings which require numpy support
@@ -93,13 +112,11 @@ def get_extension_modules():
         import numpy
         turbodbc_numpy = Extension('turbodbc_numpy_support',
                                    sources=_get_source_files('turbodbc_numpy'),
-                                   include_dirs=['include/',
-                                                 _deferred_pybind11_include(),
-                                                 numpy.get_include()],
-                                   extra_compile_args=['--std=c++11'],
+                                   include_dirs=include_dirs + [numpy.get_include()],
+                                   extra_compile_args=extra_compile_args,
                                    libraries=['odbc', turbodbc_lib],
-                                   extra_link_args=["-Wl,-rpath,$ORIGIN"],
-                                   library_dirs=[_get_distutils_build_directory()])
+                                   extra_link_args=extra_link_args,
+                                   library_dirs=library_dirs)
         return [turbodbc_library, turbodbc_python, turbodbc_numpy]
     else:
         return [turbodbc_library, turbodbc_python]
