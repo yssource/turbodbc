@@ -1,3 +1,7 @@
+Version 1.0.1 (unreleased)
+==========================
+*   Add support for OSX
+
 Version 1.0.0
 =============
 *   Added support for Python 3. Python 2 is still supported as well.
