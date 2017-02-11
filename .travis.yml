@@ -2,11 +2,24 @@ language: python
 dist: trusty
 sudo: required
 
+os:
+  - osx
+  - linux
+
 python:
   - "2.7"
   - "3.4"
   - "3.5"
   - "3.6"
+
+matrix:
+  exclude:
+  - os: osx
+    dist: python: "3.4"
+  - os: osx
+    dist: python: "3.5"
+  - os: osx
+    dist: python: "3.6"
 
 services:
   - mysql
