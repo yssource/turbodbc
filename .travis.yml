@@ -1,13 +1,7 @@
 dist: trusty
 sudo: required
 
-os:
-  - osx
-  - linux
-
 matrix:
-  exclude:
-  - language: ruby
   include:
   - os: osx
     language: generic
