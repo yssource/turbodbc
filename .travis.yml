@@ -59,7 +59,6 @@ before_install: |
     createuser -s postgres
     psql -U postgres -c 'CREATE DATABASE test_db;'
     psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
-    find /usr/ -name psqlodbcw.so
   fi
 
 install:
