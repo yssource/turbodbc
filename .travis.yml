@@ -47,8 +47,8 @@ before_install: |
     pyenv root
     pyenv install $PYTHON
     pyenv versions
-    pyenv virtualenv venv
-    source venv/bin/activate
+    pyenv virtualenv turbodbc
+    pyenv activate turbodbc
     python --version
   fi
 
