@@ -38,6 +38,7 @@ before_install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     brew update
     brew outdated pyenv || brew upgrade pyenv
+    brew install unixodbc
     brew install pyenv-virtualenv
     eval "$(pyenv init -)"
     pyenv install ${TRAVIS_PYTHON_VERSION}
