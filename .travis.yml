@@ -6,9 +6,11 @@ matrix:
   - os: osx
     language: generic
     env: TRAVIS_PYTHON_VERSION="2.7.12"
+    env: TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json"
   - os: linux
     language: python
     python: "2.7"
+    env: TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
 #  - os: linux
 #    language: python
 #    python: "3.4"
@@ -40,12 +42,21 @@ before_install: |
     brew outdated pyenv || brew upgrade pyenv
     brew install unixodbc
     brew install pyenv-virtualenv
+    brew install psqlodbc
     eval "$(pyenv init -)"
     pyenv install ${TRAVIS_PYTHON_VERSION}
     pyenv virtualenv ${TRAVIS_PYTHON_VERSION} turbodbc
     pyenv activate turbodbc
     python --version
-    pip install pytest
+    pip install pytest mock
+
+    echo "Setting up preinstalled PostgreSQL database"
+    rm -rf /usr/local/var/postgres
+    initdb /usr/local/var/postgres
+    pg_ctl -D /usr/local/var/postgres start
+    createuser -s postgres
+    psql -U postgres -c 'CREATE DATABASE test_db;'
+    psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
   fi
 
 install:
@@ -61,7 +72,6 @@ script:
   - mkdir build && cd build
   - cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} ..
   - make -j4
-  - export TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
   - ctest --verbose
   - make install
   - cd dist
