@@ -5,7 +5,7 @@ matrix:
   include:
   - os: osx
     language: generic
-    env: PYTHON="2.7.11"
+    env: TRAVIS_PYTHON_VERSION="2.7.12"
   - os: linux
     language: python
     python: "2.7"
@@ -39,15 +39,9 @@ before_install: |
     brew update
     brew outdated pyenv || brew upgrade pyenv
     brew install pyenv-virtualenv
-    echo "BREW UPDATED"
-    pyenv --version
     eval "$(pyenv init -)"
-    echo "which pyenv"
-    which pyenv
-    pyenv root
-    pyenv install $PYTHON
-    pyenv versions
-    pyenv virtualenv turbodbc
+    pyenv install ${TRAVIS_PYTHON_VERSION}
+    pyenv virtualenv ${TRAVIS_PYTHON_VERSION} turbodbc
     pyenv activate turbodbc
     python --version
   fi
@@ -55,8 +49,10 @@ before_install: |
 install:
   - pip install numpy==1.8.0 six twine
 
-before_script:
-  - $TRAVIS_BUILD_DIR/travis/setup_test_dbs.sh
+before_script: |
+  if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+    $TRAVIS_BUILD_DIR/travis/setup_test_dbs.sh
+  fi
 
 script:
   - export ODBCSYSINI=${PWD}/travis/odbc
