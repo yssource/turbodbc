@@ -45,6 +45,7 @@ before_install: |
     pyenv virtualenv ${TRAVIS_PYTHON_VERSION} turbodbc
     pyenv activate turbodbc
     python --version
+    pip install pytest
   fi
 
 install:
