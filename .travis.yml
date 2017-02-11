@@ -7,10 +7,12 @@ matrix:
     language: generic
     env: TRAVIS_PYTHON_VERSION="2.7.12"
     env: TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json"
+    env: ODBC_DIR=odbc_osx
   - os: linux
     language: python
     python: "2.7"
     env: TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
+    env: ODBC_DIR=odbc
 #  - os: linux
 #    language: python
 #    python: "3.4"
@@ -57,6 +59,7 @@ before_install: |
     createuser -s postgres
     psql -U postgres -c 'CREATE DATABASE test_db;'
     psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
+    find /usr/ -name psqlodbcw.so
   fi
 
 install:
@@ -68,7 +71,7 @@ before_script: |
   fi
 
 script:
-  - export ODBCSYSINI=${PWD}/travis/odbc
+  - export ODBCSYSINI=${PWD}/travis/${ODBC_DIR}
   - mkdir build && cd build
   - cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} ..
   - make -j4
