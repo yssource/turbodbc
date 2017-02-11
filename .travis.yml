@@ -39,9 +39,12 @@ before_install: |
     brew update
     brew outdated pyenv || brew upgrade pyenv
     brew install pyenv-virtualenv
+    echo "BREW UPDATED"
     pyenv --version
-    pyenv init
+    eval "$(pyenv init -)"
+    pyenv root
     pyenv install $PYTHON
+    pyenv versions
     pyenv-virtualenv venv
     source venv/bin/activate
     python --version
