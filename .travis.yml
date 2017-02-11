@@ -42,10 +42,12 @@ before_install: |
     echo "BREW UPDATED"
     pyenv --version
     eval "$(pyenv init -)"
+    echo "which pyenv"
+    which pyenv
     pyenv root
     pyenv install $PYTHON
     pyenv versions
-    pyenv-virtualenv venv
+    pyenv virtualenv venv
     source venv/bin/activate
     python --version
   fi
