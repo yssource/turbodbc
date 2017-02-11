@@ -15,11 +15,11 @@ python:
 matrix:
   exclude:
   - os: osx
-    dist: python: "3.4"
+    python: "3.4"
   - os: osx
-    dist: python: "3.5"
+    python: "3.5"
   - os: osx
-    dist: python: "3.6"
+    python: "3.6"
 
 services:
   - mysql
