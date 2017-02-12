@@ -10,6 +10,47 @@ Connectivity (ODBC) interface. In addition to complying with the Python Database
 Specification 2.0, turbodbc offers built-in NumPy support. Don't wait minutes for your
 results, just blink.
 
+Features
+--------
+
+*   Bulk retrieval of result sets
+*   Built-in NumPy conversion
+*   Bulk transfer of query parameters
+*   Asynchronous I/O for result sets
+*   Automatic conversion of decimal type to integer, float, and string as
+    appropriate
+*   Supported data types for both result sets and parameters:
+    `int`, `float`, `str`, `bool`, `datetime.date`, `datetime.datetime`
+*   Also provides a high-level C++11 database driver under the hood
+*   Tested with Python 2.7, 3.4, 3.5, and 3.6
+*   Tested on Linux and OSX
+
+
+Installation
+------------
+
+To install turbodbc, please use the following command:
+
+    pip install turbodbc
+
+If you want to leverage turbodbc's NumPy support, please make sure to `pip install numpy`
+before installing turbodbc, since turbodbc searches for NumPy headers
+at installation time to determine whether NumPy support can be provided.
+
+Since turbodbc includes C-extensions, make sure the following prerequisites
+are given:
+
+Requirement                       | Linux (`apt-get install`)    | OSX (`brew install`)
+----------------------------------|------------------------------|----------------------
+C++-compiler with C++11 support   | G++-4.8 or higher            | clang with OSX 10.9+
+Boost library + headers*       | `libboost-all-dev`           | `boost`
+Unixodbc library + headers        | `unixodbc-dev`               | `unixodbc`
+Python headers                    | `python-dev`                 | use `pyenv` to install
+
+*) The minimum viable boost setup requires the libraries `variant`, `optional`,
+and `datetime`.
+
+
 
 Why should I use turbodbc instead of other ODBC modules?
 --------------------------------------------------------
@@ -52,20 +93,6 @@ representations of data. Good thing they are often the same, so instead of
 converting we can just copy data.
 
 
-Features
---------
-
-*   Bulk retrieval of result sets
-*   Built-in NumPy conversion
-*   Bulk transfer of query parameters
-*   Asynchronous I/O for result sets
-*   Automatic conversion of decimal type to integer, float, and string as
-    appropriate
-*   Supported data types for both result sets and parameters:
-    `int`, `float`, `str`, `bool`, `datetime.date`, `datetime.datetime`
-*   Also provides a high-level C++11 database driver under the hood
-
-
 Supported data types
 --------------------
 
@@ -81,28 +108,6 @@ date                              | `datetime.date`    | `datetime64[D]`  |
 strings, VARCHAR, Decimal(>18, 0) | `unicode`          | `object_`      | _slow, WIP_
 
 NumPy types are not yet supported for parameters.
-
-
-Installation
-------------
-
-To install turbodbc, please make sure you have the following things installed:
-
-*   A modern C++ compiler with C++11 support (works with gcc 4.8+)
-*   Boost development headers (typical package name: `libboost-all-dev`); more
-    specifically, the Boost libraries `variant`, `optional`, and `datetime` are
-    required.
-*   Unixodbc development headers (typical package name: `unixodbc-dev`)
-*   Python (2.7, 3.4, 3.5, 3.6) development headers
-    (typical package name: `python-dev`)
-
-To install turbodbc, please use the following command:
-
-    pip install turbodbc
-
-If you want to leverage turbodbc's NumPy support, please make sure to `pip install numpy`
-before installing turbodbc, since turbodbc searches for NumPy headers
-at installation time to determine whether NumPy support can be provided.
 
 
 Basic usage
@@ -237,5 +242,7 @@ Supported environments
 ----------------------
 
 *   Linux (successfully built on Ubuntu 12, Ubuntu 14, Debian 7, Debian 8)
-*   Python 2.7, 3.4, 3.5, 3.6 (potentially more, but these are the
-    tested versions)
+*   OSX (successfully built on Sierra a.k.a. 10.12 and El Capitan a.k.a. 10.11)
+*   Python 2.7, 3.4, 3.5, 3.6
+*   More environments probably work as well, but these are the versions that
+    are regularly tested on Travis or local development machines.
