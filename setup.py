@@ -15,8 +15,7 @@ def _get_turbodbc_libname():
     full_name = builder.get_ext_filename('libturbodbc')
     without_lib = full_name.split('lib', 1)[-1]
     without_so = without_lib.rsplit('.so', 1)[0]
-    without_dylib = without_so.rsplit('.dylib', 1)[0]
-    return without_dylib
+    return without_so
 
 
 def _get_distutils_build_directory():
@@ -80,7 +79,9 @@ if sys.platform == 'darwin':
     vars = sysconfig.get_config_vars()
     vars['LDSHARED'] = vars['LDSHARED'].replace('-bundle', '')
     python_module_link_args.append('-bundle')
-    base_library_link_args.append('-Wl,-dylib_install_name,@loader_path/libturbodbc.so')
+    builder = setuptools.command.build_ext.build_ext(Distribution())
+    full_name = builder.get_ext_filename('libturbodbc')
+    base_library_link_args.append('-Wl,-dylib_install_name,@loader_path/{}'.format(full_name))
     base_library_link_args.append('-dynamiclib')
 else:
     python_module_link_args.append("-Wl,-rpath,$ORIGIN")
