@@ -9,21 +9,36 @@ matrix:
     - TRAVIS_PYTHON_VERSION="2.7.12"
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json"
     - ODBC_DIR=odbc_osx
+  - os: osx
+    language: generic
+    env:
+    - TRAVIS_PYTHON_VERSION="3.6.0"
+    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json"
+    - ODBC_DIR=odbc_osx
   - os: linux
     language: python
     python: "2.7"
     env:
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
     - ODBC_DIR=odbc
-#  - os: linux
-#    language: python
-#    python: "3.4"
-#  - os: linux
-#    language: python
-#    python: "3.5"
-#  - os: linux
-#    language: python
-#    python: "3.6"
+  - os: linux
+    language: python
+    python: "3.4"
+    env:
+    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
+    - ODBC_DIR=odbc
+  - os: linux
+    language: python
+    python: "3.5"
+    env:
+    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
+    - ODBC_DIR=odbc
+  - os: linux
+    language: python
+    python: "3.6"
+    env:
+    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
+    - ODBC_DIR=odbc
 
 
 services:
