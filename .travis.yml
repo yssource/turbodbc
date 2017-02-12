@@ -9,12 +9,14 @@ matrix:
     - TRAVIS_PYTHON_VERSION="2.7.12"
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json"
     - ODBC_DIR=odbc_osx
-  - os: osx
-    language: generic
-    env:
-    - TRAVIS_PYTHON_VERSION="3.6.0"
-    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json"
-    - ODBC_DIR=odbc_osx
+#  Disable for now until a workaround for the detection of pyenv versions by pybind11
+#  is found
+#  - os: osx
+#    language: generic
+#    env:
+#    - TRAVIS_PYTHON_VERSION="3.6.0"
+#    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json"
+#    - ODBC_DIR=odbc_osx
   - os: linux
     language: python
     python: "2.7"
