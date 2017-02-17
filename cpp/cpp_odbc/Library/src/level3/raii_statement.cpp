@@ -1,21 +1,11 @@
-/**
- *  @file raii_statement.cpp
- *  @date 23.05.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21206 $
- *
- */
-
 #include "cpp_odbc/level3/raii_statement.h"
 
 #include "cpp_odbc/level3/raii_connection.h"
 #include "cpp_odbc/level2/api.h"
 
 #include "sql.h"
+
+#include <iostream>
 
 namespace cpp_odbc { namespace level3 {
 
@@ -28,7 +18,11 @@ raii_statement::raii_statement(std::shared_ptr<raii_connection const> connection
 
 raii_statement::~raii_statement()
 {
-	api_->free_handle(handle_);
+	try {
+		api_->free_handle(handle_);
+	} catch(std::exception const & error) {
+		std::cerr << "Error while freeing statement handle: " << error.what() << std::endl;
+	}
 }
 
 long raii_statement::do_get_integer_attribute(SQLINTEGER attribute) const

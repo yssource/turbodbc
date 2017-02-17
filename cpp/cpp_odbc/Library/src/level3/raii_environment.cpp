@@ -26,7 +26,7 @@ struct raii_environment::intern {
 		try {
 			api->free_handle(handle);
 		} catch(std::exception const & error) {
-			std::cerr << "Error during freeing environment handle: " << error.what() << std::endl;
+			std::cerr << "Error while freeing environment handle: " << error.what() << std::endl;
 		}
 	}
 };

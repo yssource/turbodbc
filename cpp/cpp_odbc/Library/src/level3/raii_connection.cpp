@@ -30,7 +30,7 @@ namespace {
 			try {
 				api->free_handle(handle);
 			} catch(std::exception const & error) {
-				std::cerr << "Error during freeing connection handle: " << error.what() << std::endl;
+				std::cerr << "Error while freeing connection handle: " << error.what() << std::endl;
 			}
 		}
 	};

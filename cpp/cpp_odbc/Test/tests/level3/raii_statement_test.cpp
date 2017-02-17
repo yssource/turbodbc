@@ -4,6 +4,7 @@
 
 #include "cpp_odbc/level3/raii_environment.h"
 #include "cpp_odbc/level3/raii_connection.h"
+#include "cpp_odbc/error.h"
 #include "cpp_odbc_test/level2_mock_api.h"
 
 #include <type_traits>
@@ -72,6 +73,24 @@ TEST(RaiiStatementTest, ResourceManagement)
 		// free handle on destruction
 		EXPECT_CALL(*api, do_free_handle(s_handle)).Times(1);
 	}
+}
+
+TEST(RaiiStatementTest, DestructorHandlesFreeHandleErrors)
+{
+	auto api = make_default_api();
+
+	statement_handle s_handle = {&value_b};
+	EXPECT_CALL(*api, do_allocate_statement_handle(default_c_handle))
+		.WillOnce(testing::Return(s_handle));
+
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
+
+	ON_CALL(*api, do_free_handle(s_handle))
+		.WillByDefault(testing::Throw(cpp_odbc::error("")));
+
+
+	raii_statement statement(connection);
 }
 
 TEST(RaiiStatementTest, KeepsConnectionAlive)
