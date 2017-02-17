@@ -249,12 +249,12 @@ def test_description(dsn, configuration):
 @for_one_database
 def test_execute_supports_chaining(dsn, configuration):
     with open_cursor(configuration) as cursor:
-        row = cursor.execute("SELECT 42").fetchall()
-        assert row == [[42]]
+        rows = cursor.execute("SELECT 42").fetchall()
+        assert rows == [[42]]
 
 
 @for_one_database
 def test_executemany_supports_chaining(dsn, configuration):
     with open_cursor(configuration) as cursor:
-        row = cursor.executemany("SELECT 42").fetchall()
-        assert row == [[42]]
+        rows = cursor.executemany("SELECT 42").fetchall()
+        assert rows == [[42]]

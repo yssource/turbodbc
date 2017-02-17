@@ -3,6 +3,7 @@ Version 1.0.2 (unreleased)
 *   Add support for chaining operations to `Cursor.execute()` and
     `Cursor.executemany()`. This allows one-liners such as
     `cursor.execute("SELECT 42").fetchallnumpy()`.
+*   Source distribution contains license, readme, and changelog
     
 
 Version 1.0.1
