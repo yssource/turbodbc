@@ -5,7 +5,7 @@ import six
 import turbodbc
 
 from query_fixture import query_fixture
-from helpers import open_cursor, for_each_database
+from helpers import open_cursor, for_each_database, for_one_database
 
 
 def _test_single_row_result_set(configuration, query, expected_row):
@@ -244,3 +244,17 @@ def test_description(dsn, configuration):
                         (fix_case('as_timestamp'), turbodbc.DATETIME, None, None, None, None, True),
                         (fix_case('as_int_not_null'), turbodbc.NUMBER, None, None, None, None, nullness_for_null_column)]
             assert expected == cursor.description
+
+
+@for_one_database
+def test_execute_supports_chaining(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        row = cursor.execute("SELECT 42").fetchall()
+        assert row == [[42]]
+
+
+@for_one_database
+def test_executemany_supports_chaining(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        row = cursor.executemany("SELECT 42").fetchall()
+        assert row == [[42]]

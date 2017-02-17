@@ -76,6 +76,7 @@ class Cursor(object):
             self.result_set = make_row_based_result_set(cpp_result_set)
         else:
             self.result_set = None
+        return self
 
     @translate_exceptions
     def executemany(self, sql, parameters=None):
@@ -96,6 +97,7 @@ class Cursor(object):
             self.result_set = make_row_based_result_set(cpp_result_set)
         else:
             self.result_set = None
+        return self
 
     @translate_exceptions
     def fetchone(self):
