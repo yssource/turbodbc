@@ -43,7 +43,7 @@ def test_no_autocommit(dsn, configuration):
     connection.cursor().execute('CREATE TABLE test_no_autocommit (a INTEGER)')
     connection.close()
 
-    connection = connect(dsn)
+    connection = connect(dsn, **get_credentials(configuration))
     with pytest.raises(DatabaseError):
         connection.cursor().execute('SELECT * FROM test_no_autocommit')
 

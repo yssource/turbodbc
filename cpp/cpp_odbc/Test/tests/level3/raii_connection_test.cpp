@@ -66,6 +66,7 @@ TEST(RaiiConnectionTest, RaiiConnectAndDisconnect)
 
 	{ // scope introduced for RAII check
 		raii_connection connection(environment, connection_string);
+		EXPECT_CALL(*api, do_end_transaction(c_handle, SQL_ROLLBACK)).Times(1); // automatic rollback
 		EXPECT_CALL(*api, do_disconnect(c_handle)).Times(1);
 		EXPECT_CALL(*api, do_free_handle(c_handle)).Times(1);
 	}
@@ -141,6 +142,8 @@ TEST(RaiiConnectionTest, Commit)
 	raii_connection connection(environment, "dummy");
 	EXPECT_CALL(*api, do_end_transaction(default_c_handle, SQL_COMMIT))
 		.Times(1);
+	// implicit rollback at end of connection
+	EXPECT_CALL(*api, do_end_transaction(default_c_handle, SQL_ROLLBACK));
 
 	connection.commit();
 }
@@ -151,7 +154,7 @@ TEST(RaiiConnectionTest, Rollback)
 	auto environment = std::make_shared<raii_environment const>(api);
 	raii_connection connection(environment, "dummy");
 	EXPECT_CALL(*api, do_end_transaction(default_c_handle, SQL_ROLLBACK))
-		.Times(1);
+		.Times(1 + 1); // explicit rollback + implicit rollback at end of connection
 
 	connection.rollback();
 }

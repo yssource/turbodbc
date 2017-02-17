@@ -116,6 +116,8 @@ SQLUINTEGER raii_connection::do_get_integer_info(SQLUSMALLINT info_type) const
 	return impl_->api->get_integer_connection_info(impl_->handle.handle, info_type);
 }
 
-raii_connection::~raii_connection() = default;
+raii_connection::~raii_connection() {
+	do_rollback();
+}
 
 } }
