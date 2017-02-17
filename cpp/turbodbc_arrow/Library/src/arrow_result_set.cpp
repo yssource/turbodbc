@@ -12,8 +12,6 @@
 
 #include <pyarrow/table_api.h>
 
-#include <boost/python/list.hpp>
-
 #include <sql.h>
 
 #include <vector>
@@ -48,7 +46,7 @@ namespace {
 			case turbodbc::type_code::date:
         return std::unique_ptr<DateBuilder>(new DateBuilder(default_memory_pool(), arrow::date()));
 			default:
-				return std::unique_ptr<StringBuilder>(new StringBuilder(default_memory_pool(), std::make_shared<arrow::StringType>()));
+				return std::unique_ptr<StringBuilder>(new StringBuilder(default_memory_pool()));
 		}
 	}
 

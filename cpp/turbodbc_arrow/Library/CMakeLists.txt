@@ -1,8 +1,8 @@
 file(GLOB_RECURSE LIBRARY_FILES "src/*.cpp")
 
-add_library(turbodbc_arrow_support ${LIBRARY_FILES})
+pybind11_add_module(turbodbc_arrow_support SHARED ${LIBRARY_FILES})
 
-set_target_properties(turbodbc_arrow_support PROPERTIES 
+set_target_properties(turbodbc_arrow_support PROPERTIES
     PREFIX ""
     INSTALL_RPATH "../../.."
 )
@@ -12,16 +12,20 @@ add_dependencies(turbodbc_arrow_support
 )
 
 target_link_libraries(turbodbc_arrow_support
-	${Boost_LIBRARIES}
-	${Odbc_LIBRARIES}
-	cpp_odbc
-	turbodbc
-  arrow
+    PUBLIC ${Boost_LIBRARIES}
+	PUBLIC ${Odbc_LIBRARIES}
+	PUBLIC cpp_odbc
+	PUBLIC turbodbc
+    PUBLIC arrow
 )
 
 add_custom_command(TARGET turbodbc_arrow_support POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
-                   ${CMAKE_CURRENT_BINARY_DIR}/turbodbc_arrow_support.so ${CMAKE_BINARY_DIR})
+                   $<TARGET_FILE:turbodbc_arrow_support> ${CMAKE_BINARY_DIR})
+
+if (APPLE)
+   set_target_properties(turbodbc_arrow_support PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+endif()
 
 install(
     TARGETS turbodbc_arrow_support

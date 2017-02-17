@@ -18,7 +18,7 @@ target_link_libraries(turbodbc_arrow_test
     turbodbc_arrow_support
     cpp_odbc
     ${Odbc_LIBRARIES}
-    ${PYTHON_LIBRARIES}
+    python
     gmock_main
     gtest
     gmock

@@ -1,8 +1,6 @@
 #include <turbodbc_arrow/arrow_result_set.h>
 
-#include <boost/python/module.hpp>
-#include <boost/python/class.hpp>
-#include <boost/python/def.hpp>
+#include <pybind11/pybind11.h>
 
 using turbodbc_arrow::arrow_result_set;
 
@@ -15,12 +13,12 @@ arrow_result_set make_arrow_result_set(std::shared_ptr<turbodbc::result_sets::re
 
 }
 
+PYBIND11_PLUGIN(turbodbc_numpy_support) {
+    pybind11::module module("turbodbc_arrow_support", "Native helpers for turbodbc's Apache Arrow support");
 
-BOOST_PYTHON_MODULE(turbodbc_arrow_support)
-{
-	boost::python::class_<arrow_result_set>("ArrowResultSet", boost::python::no_init)
-			.def("fetch_all", &arrow_result_set::fetch_all)
-		;
+    pybind11::class_<arrow_result_set>(module, "ArrowResultSet")
+        .def("fetch_all", &arrow_result_set::fetch_all);
 
-	boost::python::def("make_arrow_result_set", make_arrow_result_set);
+    module.def("make_arrow_result_set", make_arrow_result_set);
+    return module.ptr();
 }

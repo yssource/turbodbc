@@ -241,7 +241,7 @@ TEST(ArrowResultSetTest, MultipleBatchMultipleColumnResultSetConversion)
 	cpp_odbc::multi_value_buffer buffer_3(4, OUTPUT_SIZE);
 	cpp_odbc::multi_value_buffer buffer_3_2(4, OUTPUT_SIZE);
   {
-    arrow::StringBuilder builder(arrow::default_memory_pool(), std::make_shared<arrow::StringType>());
+    arrow::StringBuilder builder(arrow::default_memory_pool());
     for (int64_t i = 0; i < 2 * OUTPUT_SIZE; i++) {
       std::string str = std::to_string(i);
       ASSERT_OK(builder.Append(str));
@@ -358,7 +358,7 @@ TEST(ArrowResultSetTest, MultipleBatchMultipleColumnResultSetConversion)
 	cpp_odbc::multi_value_buffer buffer_8(4, OUTPUT_SIZE);
   cpp_odbc::multi_value_buffer buffer_8_2(4, OUTPUT_SIZE);
   {
-    arrow::StringBuilder builder(arrow::default_memory_pool(), std::make_shared<arrow::StringType>());
+    arrow::StringBuilder builder(arrow::default_memory_pool());
     for (int64_t i = 0; i < 2 * OUTPUT_SIZE; i++) {
       if (i % 5 == 0) {
         ASSERT_OK(builder.AppendNull());
