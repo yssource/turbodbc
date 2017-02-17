@@ -27,7 +27,11 @@ namespace {
 
 		~raii_handle()
 		{
-			api->free_handle(handle);
+			try {
+				api->free_handle(handle);
+			} catch(std::exception const & error) {
+				std::cerr << "Error during freeing connection handle: " << error.what() << std::endl;
+			}
 		}
 	};
 }
@@ -52,7 +56,11 @@ struct raii_connection::intern {
 
 	~intern()
 	{
-		thread_safe_disconnect();
+		try {
+			thread_safe_disconnect();
+		} catch(std::exception const & error) {
+			std::cerr << "Error during disconnect: " << error.what() << std::endl;
+		}
 	}
 
 private:
@@ -66,11 +74,7 @@ private:
 	void thread_safe_disconnect()
 	{
 		std::lock_guard<std::mutex> guard(create_destroy_mutex);
-		try {
-			api->disconnect(handle.handle);
-		} catch(std::exception const & error) {
-			std::cerr << "Error during disconnect: " << error.what() << std::endl;
-		}
+		api->disconnect(handle.handle);
 	}
 };
 

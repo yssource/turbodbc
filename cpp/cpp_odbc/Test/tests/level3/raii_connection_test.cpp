@@ -107,6 +107,21 @@ TEST(RaiiConnectionTest, DestructorHandlesDisconnectErrors)
 		WillByDefault(testing::Throw(cpp_odbc::error("")));
 }
 
+TEST(RaiiConnectionTest, DestructorHandlesHandleFreeErrors)
+{
+	auto api = make_default_api();
+	connection_handle c_handle = {&value_a};
+
+	EXPECT_CALL(*api, do_allocate_connection_handle(testing::_)).
+		WillOnce(testing::Return(c_handle));
+	auto environment = std::make_shared<raii_environment const>(api);
+
+	raii_connection connection(environment, "dummy");
+
+	ON_CALL(*api, do_free_handle(c_handle)).
+		WillByDefault(testing::Throw(cpp_odbc::error("")));
+}
+
 TEST(RaiiConnectionTest, GetAPI)
 {
 	auto expected_api = make_default_api();
