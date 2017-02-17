@@ -28,7 +28,15 @@
 			"view": "SELECT CAST(3.14 AS DOUBLE PRECISION) AS a",
 			"payload": "SELECT a FROM {table_name}"
 		},
-		
+
+		"SELECT TRUE": {
+			"payload": "SELECT TRUE"
+		},
+
+		"SELECT FALSE": {
+			"payload": "SELECT FALSE"
+		},
+
 		"SELECT MULTIPLE INTEGERS": {
 			"table": "a INTEGER",
 			"setup": ["INSERT INTO {table_name} VALUES (42), (43), (44)"],

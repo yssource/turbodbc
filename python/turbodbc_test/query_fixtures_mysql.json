@@ -25,7 +25,15 @@
 			"setup": ["INSERT INTO {table_name} (a) values (3.14)"],
 			"payload": "SELECT a FROM {table_name}"
 		},
-		
+
+		"SELECT TRUE": {
+			"payload": "SELECT TRUE"
+		},
+
+		"SELECT FALSE": {
+			"payload": "SELECT FALSE"
+		},
+
 		"SELECT MULTIPLE INTEGERS": {
 			"table": "a INTEGER",
 			"setup": ["INSERT INTO {table_name} VALUES (42), (43), (44)"],

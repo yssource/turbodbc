@@ -46,8 +46,15 @@ def test_select_single_row_integer_result(dsn, configuration):
 
 @for_each_database
 def test_select_single_row_bool_result(dsn, configuration):
-    _test_single_row_result_set(configuration, "SELECT True", [True])
-    _test_single_row_result_set(configuration, "SELECT False", [False])
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'SELECT TRUE') as query:
+            cursor.execute(query)
+            row = cursor.fetchone()
+            assert row == [True]
+        with query_fixture(cursor, configuration, 'SELECT FALSE') as query:
+            cursor.execute(query)
+            row = cursor.fetchone()
+            assert row == [False]
 
 
 @for_each_database
