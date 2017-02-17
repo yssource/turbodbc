@@ -13,7 +13,7 @@ arrow_result_set make_arrow_result_set(std::shared_ptr<turbodbc::result_sets::re
 
 }
 
-PYBIND11_PLUGIN(turbodbc_numpy_support) {
+PYBIND11_PLUGIN(turbodbc_arrow_support) {
     pybind11::module module("turbodbc_arrow_support", "Native helpers for turbodbc's Apache Arrow support");
 
     pybind11::class_<arrow_result_set>(module, "ArrowResultSet")

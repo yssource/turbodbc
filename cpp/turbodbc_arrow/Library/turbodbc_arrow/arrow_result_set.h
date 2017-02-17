@@ -3,7 +3,7 @@
 #include <turbodbc/result_sets/row_based_result_set.h>
 #include <turbodbc/field.h>
 #include <turbodbc/field_translator.h>
-#include <boost/python/object.hpp>
+#include <pybind11/pybind11.h>
 
 namespace arrow {
 
@@ -37,7 +37,7 @@ public:
 	 * @brief Retrieve a boost Python object which contains
 	 *        values and masks for all data as pyarrow.Table
 	 */
-	boost::python::object fetch_all();
+  pybind11::object fetch_all();
 
   /**
    * @brief Translate the schema information into an Arrow schema

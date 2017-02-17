@@ -249,12 +249,12 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
   return Status::OK();
 }
 
-boost::python::object arrow_result_set::fetch_all()
+pybind11::object arrow_result_set::fetch_all()
 {
   std::shared_ptr<arrow::Table> table;
   fetch_all_native(&table);
   import_pyarrow__table();
-	return boost::python::object(boost::python::handle<>(__pyx_api_f_7pyarrow_5table_table_from_ctable(table)));
+	return pybind11::object(pybind11::handle(__pyx_api_f_7pyarrow_5table_table_from_ctable(table)), true);
 }
 
 

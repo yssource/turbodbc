@@ -1,5 +1,6 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(SYSTEM $ENV{GOOGLETEST_INCLUDE_DIR})
+include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/pybind11/include")
 
 
 file(GLOB_RECURSE TEST_FILES "*.cpp")
