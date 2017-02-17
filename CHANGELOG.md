@@ -3,6 +3,10 @@ Version 1.0.2 (unreleased)
 *   Add support for chaining operations to `Cursor.execute()` and
     `Cursor.executemany()`. This allows one-liners such as
     `cursor.execute("SELECT 42").fetchallnumpy()`.
+*   Right before a database connection is closed, any open transaction
+    is explicitly rolled back. This improves compatibility with ODBC drivers
+    that do not perform automatic rollbacks such as Microsoft's official
+    ODBC driver.
 *   Source distribution contains license, readme, and changelog
     
 
