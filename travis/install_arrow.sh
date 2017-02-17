@@ -4,9 +4,11 @@ wget https://dist.apache.org/repos/dist/dev/arrow/apache-arrow-0.2.0-rc2/apache-
 tar xf apache-arrow-0.2.0.tar.gz
 pushd apache-arrow-0.2.0/
 
+export ARROW_HOME=$TRAVIS_BUILD_DIR/dist
+
 mkdir cpp/build
 pushd cpp/build
-cmake -DCMAKE_INSTALL_PREFIX=/ ..
+cmake -DCMAKE_INSTALL_PREFIX=$ARROW_HOME ..
 make -j3
 make install
 popd
