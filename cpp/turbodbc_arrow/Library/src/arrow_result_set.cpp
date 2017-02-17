@@ -50,9 +50,6 @@ namespace {
 		}
 	}
 
-  // Copied from turbodbc_numpy/src/datetime_column.cpp
-  boost::posix_time::ptime const timestamp_epoch({1970, 1, 1}, {0, 0, 0, 0});
-
 	int64_t timestamp_to_microseconds(char const * data_pointer)
 	{
 		auto & sql_ts = *reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(data_pointer);
@@ -67,7 +64,7 @@ namespace {
     struct tm epoch = {0};
     epoch.tm_year = 70;
     epoch.tm_mday = 1;
-    
+
     // Microseconds since the epoch
     return lrint(difftime(mktime(&datetime), mktime(&epoch))) * 1000000 + microseconds;
 	}
@@ -75,7 +72,7 @@ namespace {
 	int64_t date_to_days(char const * data_pointer)
 	{
 		auto & sql_date = *reinterpret_cast<SQL_DATE_STRUCT const *>(data_pointer);
-    
+
     struct tm date = {0};
     date.tm_year = sql_date.year - 1900;
     date.tm_mon = sql_date.month - 1;
@@ -83,7 +80,7 @@ namespace {
     struct tm epoch = {0};
     epoch.tm_year = 70;
     epoch.tm_mday = 1;
-    
+
     // Milliseconds since the epoch
     return lrint(difftime(mktime(&date), mktime(&epoch)) * 1000);
 	}
