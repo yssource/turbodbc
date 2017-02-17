@@ -27,6 +27,13 @@ def _get_config_files():
         raise KeyError('Please set the environment variable {} to specify the configuration files as a comma-separated list'.format(variable))
 
 
+def get_credentials(configuration):
+    if 'user' in configuration:
+        return {configuration['capabilities']['connection_user_option']: configuration['user'],
+                configuration['capabilities']['connection_password_option']: configuration['password']}
+    else:
+        return {}
+
 def _load_configuration(file_name):
     with open(file_name, 'r') as f:
         return json.load(f)
@@ -82,12 +89,14 @@ def open_connection(configuration, rows_to_buffer=None, parameter_sets_to_buffer
         connection = turbodbc.connect(dsn,
                                       rows_to_buffer=rows_to_buffer,
                                       parameter_sets_to_buffer=parameter_sets_to_buffer,
-                                      use_async_io=use_async_io)
+                                      use_async_io=use_async_io,
+                                      **get_credentials(configuration))
     else:
         connection = turbodbc.connect(dsn,
                                       read_buffer_size=turbodbc.Megabytes(1),
                                       parameter_sets_to_buffer=parameter_sets_to_buffer,
-                                      use_async_io=use_async_io)
+                                      use_async_io=use_async_io,
+                                      **get_credentials(configuration))
     yield connection
     connection.close()
 

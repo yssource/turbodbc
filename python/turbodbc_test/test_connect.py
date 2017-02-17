@@ -5,7 +5,7 @@ from turbodbc.connect import _make_connection_string
 from turbodbc.connection import Connection
 from turbodbc import Rows, Megabytes
 
-from helpers import for_one_database
+from helpers import for_one_database, get_credentials
 
 def _test_connection_string(expected, actual):
     assert len(expected) == len(actual)
@@ -29,13 +29,13 @@ def test_make_connection_string_without_dsn():
 
 @for_one_database
 def test_connect_returns_connection_when_successful(dsn, configuration):
-    connection = connect(dsn)
+    connection = connect(dsn, **get_credentials(configuration))
     assert isinstance(connection, Connection)
 
 
 @for_one_database
 def test_connect_returns_connection_with_explicit_dsn(dsn, configuration):
-    connection = connect(dsn=dsn)
+    connection = connect(dsn=dsn, **get_credentials(configuration))
     assert isinstance(connection, Connection)
 
 
@@ -57,7 +57,8 @@ def test_connect_performance_settings(dsn, configuration):
     connection = connect(dsn=dsn,
                          rows_to_buffer=317,
                          parameter_sets_to_buffer=123,
-                         use_async_io=True)
+                         use_async_io=True,
+                         **get_credentials(configuration))
 
     assert connection.impl.get_buffer_size().rows == 317
     assert connection.impl.parameter_sets_to_buffer == 123
@@ -66,17 +67,17 @@ def test_connect_performance_settings(dsn, configuration):
 
 @for_one_database
 def test_connect_with_rows(dsn, configuration):
-    connection = connect(dsn=dsn, read_buffer_size=Rows(317))
+    connection = connect(dsn=dsn, read_buffer_size=Rows(317), **get_credentials(configuration))
     assert connection.impl.get_buffer_size().rows == 317
 
 
 @for_one_database
 def test_connect_with_megabytes(dsn, configuration):
-    connection = connect(dsn=dsn, read_buffer_size=Megabytes(1))
+    connection = connect(dsn=dsn, read_buffer_size=Megabytes(1), **get_credentials(configuration))
     assert connection.impl.get_buffer_size().megabytes == 1
 
 
 @for_one_database
 def test_read_buffer_size_has_priority_to_rows_to_buffer(dsn, configuration):
-    connection = connect(dsn=dsn, read_buffer_size=Megabytes(1), rows_to_buffer=317)
+    connection = connect(dsn=dsn, read_buffer_size=Megabytes(1), rows_to_buffer=317, **get_credentials(configuration))
     assert connection.impl.get_buffer_size().megabytes == 1
