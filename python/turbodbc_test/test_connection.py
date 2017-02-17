@@ -1,15 +1,13 @@
 import pytest
 
-from unittest import TestCase
-
 from turbodbc import connect, InterfaceError, DatabaseError
 
-from helpers import for_one_database
+from helpers import for_one_database, get_credentials
 
 
 @for_one_database
 def test_cursor_on_closed_connection_raises(dsn, configuration):
-    connection = connect(dsn)
+    connection = connect(dsn, **get_credentials(configuration))
     connection.close()
 
     with pytest.raises(InterfaceError):
@@ -18,7 +16,7 @@ def test_cursor_on_closed_connection_raises(dsn, configuration):
 
 @for_one_database
 def test_closing_twice_is_ok(dsn, configuration):
-    connection = connect(dsn)
+    connection = connect(dsn, **get_credentials(configuration))
 
     connection.close()
     connection.close()
@@ -26,7 +24,7 @@ def test_closing_twice_is_ok(dsn, configuration):
 
 @for_one_database
 def test_closing_connection_closes_all_cursors(dsn, configuration):
-    connection = connect(dsn)
+    connection = connect(dsn, **get_credentials(configuration))
     cursor_1 = connection.cursor()
     cursor_2 = connection.cursor()
     connection.close()
@@ -40,7 +38,7 @@ def test_closing_connection_closes_all_cursors(dsn, configuration):
 
 @for_one_database
 def test_no_autocommit(dsn, configuration):
-    connection = connect(dsn)
+    connection = connect(dsn, **get_credentials(configuration))
 
     connection.cursor().execute('CREATE TABLE test_no_autocommit (a INTEGER)')
     connection.close()
@@ -52,7 +50,7 @@ def test_no_autocommit(dsn, configuration):
 
 @for_one_database
 def test_commit_on_closed_connection_raises(dsn, configuration):
-    connection = connect(dsn)
+    connection = connect(dsn, **get_credentials(configuration))
     connection.close()
 
     with pytest.raises(InterfaceError):
@@ -61,14 +59,14 @@ def test_commit_on_closed_connection_raises(dsn, configuration):
 
 @for_one_database
 def test_commit(dsn, configuration):
-    connection = connect(dsn)
+    connection = connect(dsn, **get_credentials(configuration))
 
     connection.cursor().execute('CREATE TABLE test_commit (a INTEGER)')
     connection.commit()
 
     connection.close()
 
-    connection = connect(dsn)
+    connection = connect(dsn, **get_credentials(configuration))
     cursor = connection.cursor()
     cursor.execute('SELECT * FROM test_commit')
     results = cursor.fetchall()
@@ -80,7 +78,7 @@ def test_commit(dsn, configuration):
 
 @for_one_database
 def test_rollback_on_closed_connection_raises(dsn, configuration):
-    connection = connect(dsn)
+    connection = connect(dsn, **get_credentials(configuration))
     connection.close()
 
     with pytest.raises(InterfaceError):
@@ -89,7 +87,7 @@ def test_rollback_on_closed_connection_raises(dsn, configuration):
 
 @for_one_database
 def test_rollback(dsn, configuration):
-    connection = connect(dsn)
+    connection = connect(dsn, **get_credentials(configuration))
 
     connection.cursor().execute('CREATE TABLE test_rollback (a INTEGER)')
     connection.rollback()
