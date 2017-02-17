@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include "cpp_odbc/level3/raii_connection.h"
+#include "cpp_odbc/error.h"
 #include "cpp_odbc_test/level2_mock_api.h"
 
 #include "sqlext.h"
@@ -60,6 +61,20 @@ TEST(RaiiEnvironmentTest, ResourceManagement)
 		EXPECT_CALL(*api, do_free_handle(internal_handle)).
 				Times(1);
 	}
+}
+
+TEST(RaiiEnvironmentTest, DestructorHandlesFreeHandleErrors)
+{
+	environment_handle internal_handle = {&value_a};
+
+	auto api = std::make_shared<testing::NiceMock<cpp_odbc_test::level2_mock_api> const>();
+
+	EXPECT_CALL(*api, do_allocate_environment_handle()).
+		WillOnce(testing::Return(internal_handle));
+
+	raii_environment instance(api);
+	ON_CALL(*api, do_free_handle(internal_handle)).
+		WillByDefault(testing::Throw(cpp_odbc::error("")));
 }
 
 TEST(RaiiEnvironmentTest, SetsODBCVersionOnConstruction)

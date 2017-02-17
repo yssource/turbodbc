@@ -1,15 +1,4 @@
 #pragma once
-/**
- *  @file level3.h
- *  @date 12.12.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
 
 #include "cpp_odbc/level3/raii_connection.h"
 #include "cpp_odbc/level3/raii_environment.h"

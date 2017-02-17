@@ -1,15 +1,3 @@
-/**
- *  @file raii_environment.cpp
- *  @date 13.03.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21206 $
- *
- */
-
 #include "cpp_odbc/level3/raii_environment.h"
 #include "cpp_odbc/level3/raii_connection.h"
 #include "cpp_odbc/level2/handles.h"
@@ -18,6 +6,7 @@
 #include "sqlext.h"
 
 #include <stdexcept>
+#include <iostream>
 
 namespace cpp_odbc { namespace level3 {
 
@@ -34,7 +23,11 @@ struct raii_environment::intern {
 
 	~intern()
 	{
-		api->free_handle(handle);
+		try {
+			api->free_handle(handle);
+		} catch(std::exception const & error) {
+			std::cerr << "Error during freeing environment handle: " << error.what() << std::endl;
+		}
 	}
 };
 
