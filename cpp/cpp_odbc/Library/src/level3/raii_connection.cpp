@@ -66,7 +66,11 @@ private:
 	void thread_safe_disconnect()
 	{
 		std::lock_guard<std::mutex> guard(create_destroy_mutex);
-		api->disconnect(handle.handle);
+		try {
+			api->disconnect(handle.handle);
+		} catch(std::exception const & error) {
+			std::cerr << "Error during disconnect: " << error.what() << std::endl;
+		}
 	}
 };
 
