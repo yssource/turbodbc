@@ -89,6 +89,7 @@ before_script: |
   if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     $TRAVIS_BUILD_DIR/travis/setup_test_dbs.sh
   fi
+  $TRAVIS_BUILD_DIR/travis/install_arrow.sh
 
 script:
   - export ODBCSYSINI=${PWD}/travis/${ODBC_DIR}
