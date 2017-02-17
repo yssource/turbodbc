@@ -7,6 +7,7 @@
 #include "cpp_odbc/level2/handles.h"
 
 #include <mutex>
+#include <iostream>
 
 namespace {
 	// this lock should be used whenever a connection is connected/disconnected
@@ -117,7 +118,11 @@ SQLUINTEGER raii_connection::do_get_integer_info(SQLUSMALLINT info_type) const
 }
 
 raii_connection::~raii_connection() {
-	do_rollback();
+	try {
+		do_rollback();
+	} catch(std::exception const & error) {
+		std::cerr << "Error during rollback: " << error.what() << std::endl;
+	}
 }
 
 } }

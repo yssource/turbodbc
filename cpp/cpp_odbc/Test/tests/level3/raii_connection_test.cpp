@@ -4,6 +4,7 @@
 
 #include "cpp_odbc/level3/raii_statement.h"
 #include "cpp_odbc/level3/raii_environment.h"
+#include "cpp_odbc/error.h"
 #include "cpp_odbc_test/level2_mock_api.h"
 
 #include <type_traits>
@@ -82,6 +83,17 @@ TEST(RaiiConnectionTest, KeepsEnvironmentAlive)
 	auto const use_count_after = environment.use_count();
 
 	EXPECT_EQ(1, use_count_after - use_count_before);
+}
+
+TEST(RaiiConnectionTest, DestructorHandlesRollbackErrors)
+{
+	auto api = make_default_api();
+	auto environment = std::make_shared<raii_environment const>(api);
+
+	raii_connection connection(environment, "dummy");
+
+	ON_CALL(*api, do_end_transaction(testing::_, SQL_ROLLBACK)).
+		WillByDefault(testing::Throw(cpp_odbc::error("")));
 }
 
 TEST(RaiiConnectionTest, GetAPI)
