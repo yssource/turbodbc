@@ -1,5 +1,9 @@
-Version 1.0.1 (unreleased)
+Version 1.0.2 (unreleased)
 ==========================
+
+
+Version 1.0.1
+=============
 *   Add support for OSX
 
 Version 1.0.0
