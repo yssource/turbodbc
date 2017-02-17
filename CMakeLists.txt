@@ -16,6 +16,6 @@ if(BUILD_TESTING)
 endif()
 
 install(
-	FILES setup.py setup.cfg MANIFEST.in Makefile
+	FILES setup.py setup.cfg MANIFEST.in Makefile LICENSE README.md CHANGELOG.md
 	DESTINATION .
 )
