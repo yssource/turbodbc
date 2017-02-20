@@ -228,7 +228,6 @@ To use the latest version of turbodbc, you need to follow these steps:
     build directory. This file is self-contained and can be installed by
     other users using `pip install`.
 
-
 Source build requirements
 -------------------------
 
@@ -246,3 +245,16 @@ Supported environments
 *   Python 2.7, 3.4, 3.5, 3.6
 *   More environments probably work as well, but these are the versions that
     are regularly tested on Travis or local development machines.
+
+
+I got questions and issues to report!
+-------------------------------------
+
+In this case, please use turbodbc's issue tracker on GitHub.
+
+
+Is turbodbc on Twitter?
+-----------------------
+
+Yes, it is! Just follow [@turbodbc](https://twitter.com/turbodbc)
+for the latest turbodbc talk and news about related technologies.
