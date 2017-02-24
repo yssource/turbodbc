@@ -22,8 +22,9 @@ namespace turbodbc_test {
 		MOCK_CONST_METHOD2( do_set_attribute, void(SQLINTEGER, long));
 		MOCK_CONST_METHOD0( do_commit, void());
 		MOCK_CONST_METHOD0( do_rollback, void());
-		MOCK_CONST_METHOD1( do_get_string_info, std::string(SQLUSMALLINT info_type));
-		MOCK_CONST_METHOD1( do_get_integer_info, SQLUINTEGER(SQLUSMALLINT info_type));
+		MOCK_CONST_METHOD1( do_get_string_info, std::string(SQLUSMALLINT));
+		MOCK_CONST_METHOD1( do_get_integer_info, SQLUINTEGER(SQLUSMALLINT));
+		MOCK_CONST_METHOD1( do_supports_function, bool(SQLUSMALLINT));
 	};
 
 

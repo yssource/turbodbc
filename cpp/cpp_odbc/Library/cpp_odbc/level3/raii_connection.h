@@ -51,6 +51,7 @@ private:
 	void do_rollback() const final;
 	std::string do_get_string_info(SQLUSMALLINT info_type) const final;
 	SQLUINTEGER do_get_integer_info(SQLUSMALLINT info_type) const final;
+	bool do_supports_function(SQLUSMALLINT function_id) const final;
 
 	struct intern;
 	std::unique_ptr<intern> impl_;

@@ -79,3 +79,14 @@ TEST(ConnectionTest, GetIntegerInfoForwards)
 
 	EXPECT_EQ(expected, connection.get_integer_info(info_type));
 }
+
+TEST(ConnectionTest, SupportsFunctionForwards)
+{
+	mock_connection connection;
+	SQLUSMALLINT const function_id = 5;
+
+	EXPECT_CALL(connection, do_supports_function(function_id))
+		.WillOnce(testing::Return(true));
+
+	EXPECT_TRUE(connection.supports_function(function_id));
+}

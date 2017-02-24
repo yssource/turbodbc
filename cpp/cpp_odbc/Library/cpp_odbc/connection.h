@@ -65,6 +65,13 @@ public:
 	 */
 	SQLUINTEGER get_integer_info(SQLUSMALLINT info_type) const;
 
+	/**
+	 * @brief Return whether the connection supports a certain ODBC function
+	 * @param function_id The identifier for the ODBC function
+	 * @return True if the connection supports the function, else false
+	 */
+	bool supports_function(SQLUSMALLINT function_id) const;
+
 	virtual ~connection();
 protected:
 	connection();
@@ -75,6 +82,7 @@ private:
 	virtual void do_rollback() const = 0;
 	virtual std::string do_get_string_info(SQLUSMALLINT info_type) const = 0;
 	virtual SQLUINTEGER do_get_integer_info(SQLUSMALLINT info_type) const = 0;
+	virtual bool do_supports_function(SQLUSMALLINT function_id) const = 0;
 };
 
 }

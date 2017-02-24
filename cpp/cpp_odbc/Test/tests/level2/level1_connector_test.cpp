@@ -1122,6 +1122,7 @@ TEST(Level1ConnectorTest, SupportsFunctionFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_get_functions(handle.handle, function_id, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
+	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW(connector.supports_function(handle, function_id), cpp_odbc::error);

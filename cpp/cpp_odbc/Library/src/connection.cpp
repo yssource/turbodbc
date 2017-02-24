@@ -35,4 +35,9 @@ SQLUINTEGER connection::get_integer_info(SQLUSMALLINT info_type) const
 	return do_get_integer_info(info_type);
 }
 
+bool connection::supports_function(SQLUSMALLINT function_id) const
+{
+	return do_supports_function(function_id);
+}
+
 }

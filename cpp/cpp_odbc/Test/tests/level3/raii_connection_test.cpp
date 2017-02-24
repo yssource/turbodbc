@@ -224,3 +224,16 @@ TEST(RaiiConnectionTest, GetIntegerInfo)
 
 	EXPECT_EQ(expected, connection.get_integer_info(info_type));
 }
+
+TEST(RaiiConnectionTest, SupportsFunction)
+{
+	SQLUSMALLINT const function_id = 5;
+
+	auto api = make_default_api();
+	auto environment = std::make_shared<raii_environment const>(api);
+	raii_connection connection(environment, "dummy");
+	EXPECT_CALL(*api, do_supports_function(default_c_handle, function_id))
+		.WillOnce(testing::Return(false));
+
+	EXPECT_FALSE(connection.supports_function(function_id));
+}

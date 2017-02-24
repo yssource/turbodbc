@@ -125,6 +125,11 @@ SQLUINTEGER raii_connection::do_get_integer_info(SQLUSMALLINT info_type) const
 	return impl_->api->get_integer_connection_info(impl_->handle.handle, info_type);
 }
 
+bool raii_connection::do_supports_function(SQLUSMALLINT function_id) const
+{
+	return impl_->api->supports_function(impl_->handle.handle, function_id);
+}
+
 raii_connection::~raii_connection() {
 	try {
 		do_rollback();
