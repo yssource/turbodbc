@@ -247,10 +247,46 @@ Supported environments
     are regularly tested on Travis or local development machines.
 
 
+Supported databases
+-------------------
+
+Turbodbc uses suites of unit and integration tests to ensure quality.
+Every time turbodbc's code is updated on GitHub,
+turbodbc is automatically built from scratch and tested with the following databases:
+
+*   PostgreSQL
+*   MySQL
+
+During development, turbodbc is tested with the following database:
+
+*   Exasol
+
+Releases will not be made if any (implemented) test fails for any of the databases
+listed above. In addition to these well-supported databases, the following databases
+are tested on an irregular basis:
+
+*   MSSQL with FreeTDS
+*   MSSQL with Microsoft's official ODBC driver
+
+These database/driver combinations do not yet pass all tests.
+
+There is a good chance that turbodbc will work with other, totally untested databases
+as well. There is, however, an equally good chance that you will encounter compatibility
+issues. If you encounter one, please take the time to report it so turbodbc can be improved
+to work with more real-world databases. Thanks!
+
+
 I got questions and issues to report!
 -------------------------------------
 
 In this case, please use turbodbc's issue tracker on GitHub.
+
+
+Is there a guided tour through turbodbc's entrails?
+---------------------------------------------------
+
+Yes, there is! Check out this blog post on
+[the making of turbodbc](http://tech.blue-yonder.com/making-of-turbodbc-part-1-wrestling-with-the-side-effects-of-a-c-api/).
 
 
 Is turbodbc on Twitter?
