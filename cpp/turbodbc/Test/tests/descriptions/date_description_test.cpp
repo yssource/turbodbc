@@ -10,6 +10,7 @@ TEST(DateDescriptionTest, BasicProperties)
 	EXPECT_EQ(6, description.element_size());
 	EXPECT_EQ(SQL_C_TYPE_DATE, description.column_c_type());
 	EXPECT_EQ(SQL_TYPE_DATE, description.column_sql_type());
+	EXPECT_EQ(0, description.digits());
 }
 
 TEST(DateDescriptionTest, GetTypeCode)

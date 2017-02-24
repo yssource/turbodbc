@@ -11,6 +11,7 @@ TEST(FloatingPointDescriptionTest, BasicProperties)
 	EXPECT_EQ(sizeof(double), description.element_size());
 	EXPECT_EQ(SQL_C_DOUBLE, description.column_c_type());
 	EXPECT_EQ(SQL_DOUBLE, description.column_sql_type());
+	EXPECT_EQ(0, description.digits());
 }
 
 TEST(FloatingPointDescriptionTest, GetTypeCode)

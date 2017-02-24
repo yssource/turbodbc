@@ -31,6 +31,11 @@ SQLSMALLINT integer_description::do_column_sql_type() const
 	return SQL_BIGINT;
 }
 
+SQLSMALLINT integer_description::do_digits() const
+{
+	return 0;
+}
+
 type_code integer_description::do_get_type_code() const
 {
 	return type_code::integer;

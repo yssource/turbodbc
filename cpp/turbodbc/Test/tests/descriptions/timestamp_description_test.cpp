@@ -11,6 +11,7 @@ TEST(TimestampDescriptionTest, BasicProperties)
 	EXPECT_EQ(16, description.element_size());
 	EXPECT_EQ(SQL_C_TYPE_TIMESTAMP, description.column_c_type());
 	EXPECT_EQ(SQL_TYPE_TIMESTAMP, description.column_sql_type());
+	EXPECT_EQ(6, description.digits());
 }
 
 TEST(TimestampDescriptionTest, GetTypeCode)
