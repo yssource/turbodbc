@@ -33,8 +33,8 @@ TEST(BoundParameterSetTest, ConstructorBindsParametersBasedOnDBSuggestion)
 	ON_CALL(statement, do_describe_parameter(2))
 		.WillByDefault(testing::Return(string_description_short));
 
-	EXPECT_CALL(statement, do_bind_input_parameter(1, SQL_C_SBIGINT, SQL_BIGINT, testing::_)).Times(1);
-	EXPECT_CALL(statement, do_bind_input_parameter(2, SQL_C_CHAR, SQL_VARCHAR, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(1, SQL_C_SBIGINT, SQL_BIGINT, testing::_, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(2, SQL_C_CHAR, SQL_VARCHAR, testing::_, testing::_)).Times(1);
 
 	bound_parameter_set params(statement, 42);
 	EXPECT_EQ(params.number_of_parameters(), 2);
@@ -56,10 +56,10 @@ TEST(BoundParameterSetTest, ConstructorOverridesStringParameterSuggestions)
 	ON_CALL(statement, do_describe_parameter(4))
 		.WillByDefault(testing::Return(string_description_too_long));
 
-	EXPECT_CALL(statement, do_bind_input_parameter(1, SQL_C_CHAR, SQL_VARCHAR, testing::_)).Times(1);
-	EXPECT_CALL(statement, do_bind_input_parameter(2, SQL_C_CHAR, SQL_VARCHAR, testing::_)).Times(1);
-	EXPECT_CALL(statement, do_bind_input_parameter(3, SQL_C_CHAR, SQL_VARCHAR, testing::_)).Times(1);
-	EXPECT_CALL(statement, do_bind_input_parameter(4, SQL_C_CHAR, SQL_VARCHAR, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(1, SQL_C_CHAR, SQL_VARCHAR, testing::_, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(2, SQL_C_CHAR, SQL_VARCHAR, testing::_, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(3, SQL_C_CHAR, SQL_VARCHAR, testing::_, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(4, SQL_C_CHAR, SQL_VARCHAR, testing::_, testing::_)).Times(1);
 
 	bound_parameter_set params(statement, 42);
 	EXPECT_EQ(params.get_parameters()[0]->get_buffer().capacity_per_element(), string_description_short.size + 1);
@@ -82,7 +82,7 @@ TEST(BoundParameterSetTest, Rebind)
 
 	std::size_t const column_index = 1;
 	auto const one_based_column_index = column_index + 1;
-	EXPECT_CALL(statement, do_bind_input_parameter(one_based_column_index, SQL_C_SBIGINT, SQL_BIGINT, testing::_))
+	EXPECT_CALL(statement, do_bind_input_parameter(one_based_column_index, SQL_C_SBIGINT, SQL_BIGINT, testing::_, testing::_))
 		.Times(1);
 
 	params.rebind(1, make_description(field{23l}));

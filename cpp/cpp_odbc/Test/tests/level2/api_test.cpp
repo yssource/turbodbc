@@ -229,12 +229,13 @@ TEST(Level2APITest, BindInputParameterForwards)
 	SQLUSMALLINT parameter_id = 17;
 	SQLSMALLINT c_data_type = 42;
 	SQLSMALLINT sql_data_type = 23;
+	SQLSMALLINT digits = 5;
 	cpp_odbc::multi_value_buffer column_buffer(2,3);
 
 	level2_mock_api api;
-	EXPECT_CALL(api, do_bind_input_parameter(handle, parameter_id, c_data_type, sql_data_type, testing::Ref(column_buffer))).Times(1);
+	EXPECT_CALL(api, do_bind_input_parameter(handle, parameter_id, c_data_type, sql_data_type, digits, testing::Ref(column_buffer))).Times(1);
 
-	api.bind_input_parameter(handle, parameter_id, c_data_type, sql_data_type, column_buffer);
+	api.bind_input_parameter(handle, parameter_id, c_data_type, sql_data_type, digits, column_buffer);
 }
 
 TEST(Level2APITest, GetStringColumnAttributeForwards)

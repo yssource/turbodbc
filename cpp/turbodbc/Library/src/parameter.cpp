@@ -8,7 +8,8 @@ parameter::parameter(cpp_odbc::statement const & statement, std::size_t one_base
 	description_(std::move(description)),
 	buffer_(description_->element_size(), buffered_rows)
 {
-	statement.bind_input_parameter(one_based_index, description_->column_c_type(), description_->column_sql_type(), buffer_);
+	SQLSMALLINT const digits = 0;
+	statement.bind_input_parameter(one_based_index, description_->column_c_type(), description_->column_sql_type(), digits, buffer_);
 }
 
 parameter::~parameter() = default;

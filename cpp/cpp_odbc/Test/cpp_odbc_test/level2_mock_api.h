@@ -1,15 +1,4 @@
 #pragma once
-/**
- *  @file level2_mock_api.h
- *  @date 13.03.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 15:26:51 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21210 $
- *
- */
 
 #include "cpp_odbc/level2/api.h"
 
@@ -37,7 +26,7 @@ namespace cpp_odbc_test {
 		MOCK_CONST_METHOD2(do_get_string_connection_info, std::string(cpp_odbc::level2::connection_handle const & handle, SQLUSMALLINT info_type));
 		MOCK_CONST_METHOD2(do_get_integer_connection_info, SQLUINTEGER(cpp_odbc::level2::connection_handle const & handle, SQLUSMALLINT info_type));
 		MOCK_CONST_METHOD4(do_bind_column, void(cpp_odbc::level2::statement_handle const &, SQLUSMALLINT, SQLSMALLINT, cpp_odbc::multi_value_buffer &));
-		MOCK_CONST_METHOD5(do_bind_input_parameter, void(cpp_odbc::level2::statement_handle const &, SQLUSMALLINT, SQLSMALLINT, SQLSMALLINT, cpp_odbc::multi_value_buffer &));
+		MOCK_CONST_METHOD6(do_bind_input_parameter, void(cpp_odbc::level2::statement_handle const &, SQLUSMALLINT, SQLSMALLINT, SQLSMALLINT, SQLSMALLINT, cpp_odbc::multi_value_buffer &));
 		MOCK_CONST_METHOD1(do_execute_prepared_statement, void(cpp_odbc::level2::statement_handle const &));
 		MOCK_CONST_METHOD2(do_execute_statement, void(cpp_odbc::level2::statement_handle const &, std::string const &));
 		MOCK_CONST_METHOD3(do_fetch_scroll, bool(cpp_odbc::level2::statement_handle const &, SQLSMALLINT, SQLLEN));

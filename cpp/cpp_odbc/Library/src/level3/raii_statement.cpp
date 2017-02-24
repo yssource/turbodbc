@@ -50,9 +50,9 @@ void raii_statement::do_prepare(std::string const & sql) const
 	api_->prepare_statement(handle_, sql);
 }
 
-void raii_statement::do_bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, cpp_odbc::multi_value_buffer & parameter_values) const
+void raii_statement::do_bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, SQLSMALLINT digits, cpp_odbc::multi_value_buffer & parameter_values) const
 {
-	api_->bind_input_parameter(handle_, parameter_id, value_type, parameter_type, parameter_values);
+	api_->bind_input_parameter(handle_, parameter_id, value_type, parameter_type, digits, parameter_values);
 }
 
 void raii_statement::do_unbind_all_parameters() const

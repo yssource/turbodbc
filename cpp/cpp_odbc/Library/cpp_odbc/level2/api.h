@@ -1,15 +1,4 @@
 #pragma once
-/**
- *  @file level2_api.h
- *  @date 03.03.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 15:54:55 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21211 $
- *
- */
 
 #include "sql.h"
 #include "cpp_odbc/level2/diagnostic_record.h"
@@ -175,7 +164,7 @@ public:
 	 * @param parameter_type The SQL data type identifier of the buffer. See unixODBC's SQLBindParameter() documentation
 	 * @param parameter_values The buffer which shall be bound as a parameter.
 	 */
-	void bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, multi_value_buffer & parameter_values) const;
+	void bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, SQLSMALLINT digits, multi_value_buffer & parameter_values) const;
 
 	/**
 	 * @brief Executes an SQL query which has previously been prepared
@@ -328,7 +317,7 @@ private:
 	virtual SQLUINTEGER do_get_integer_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const = 0;
 
 	virtual void do_bind_column(statement_handle const & handle, SQLUSMALLINT column_id, SQLSMALLINT column_type, multi_value_buffer & column_buffer) const = 0;
-	virtual void do_bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, multi_value_buffer & parameter_values) const = 0;
+	virtual void do_bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, SQLSMALLINT digits, multi_value_buffer & parameter_values) const = 0;
 	virtual void do_execute_prepared_statement(statement_handle const & handle) const = 0;
 	virtual void do_execute_statement(statement_handle const & handle, std::string const & sql) const = 0;
 	virtual bool do_fetch_scroll(statement_handle const & statement_handle, SQLSMALLINT fetch_orientation, SQLLEN fetch_offset) const = 0;

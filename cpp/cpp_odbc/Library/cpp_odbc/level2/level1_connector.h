@@ -1,15 +1,4 @@
 #pragma once
-/**
- *  @file level1_connector.h
- *  @date 07.03.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21206 $
- *
- */
 
 #include "cpp_odbc/level2/api.h"
 #include <memory>
@@ -55,7 +44,7 @@ private:
 	std::string do_get_string_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const final;
 	SQLUINTEGER do_get_integer_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const final;
 	void do_bind_column(statement_handle const & handle, SQLUSMALLINT column_id, SQLSMALLINT column_type, multi_value_buffer & column_buffer) const final;
-	void do_bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, multi_value_buffer & parameter_values) const final;
+	void do_bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, SQLSMALLINT digits, multi_value_buffer & parameter_values) const final;
 	void do_execute_prepared_statement(statement_handle const & handle) const final;
 	void do_execute_statement(statement_handle const & handle, std::string const & sql) const final;
 	bool do_fetch_scroll(statement_handle const & statement_handle, SQLSMALLINT fetch_orientation, SQLLEN fetch_offset) const final;

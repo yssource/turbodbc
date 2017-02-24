@@ -1,15 +1,4 @@
 #pragma once
-/**
- *  @file statement.h
- *  @date 16.05.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 15:54:55 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21211 $
- *
- */
 
 #include "cpp_odbc/multi_value_buffer.h"
 #include "cpp_odbc/column_description.h"
@@ -67,7 +56,7 @@ public:
 	 * @param parameter_type The SQL data type identifier of the buffer. See unixODBC's SQLBindParameter() documentation
 	 * @param parameter_values The buffer which shall be bound as a parameter
 	 */
-	void bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, cpp_odbc::multi_value_buffer & parameter_values) const;
+	void bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, SQLSMALLINT digits, cpp_odbc::multi_value_buffer & parameter_values) const;
 
 	/**
 	 * @brief Unbind all parameters currently bound to the statement
@@ -166,7 +155,7 @@ private:
 	virtual void do_set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const = 0;
 	virtual void do_execute(std::string const & sql) const = 0;
 	virtual void do_prepare(std::string const & sql) const = 0;
-	virtual void do_bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, cpp_odbc::multi_value_buffer & parameter_values) const = 0;
+	virtual void do_bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, SQLSMALLINT digits, cpp_odbc::multi_value_buffer & parameter_values) const = 0;
 	virtual void do_unbind_all_parameters() const = 0;
 	virtual void do_execute_prepared() const = 0;
 

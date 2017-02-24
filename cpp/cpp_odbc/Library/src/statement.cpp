@@ -31,9 +31,9 @@ void statement::prepare(std::string const & sql) const
 	do_prepare(sql);
 }
 
-void statement::bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, cpp_odbc::multi_value_buffer & parameter_values) const
+void statement::bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, SQLSMALLINT digits, cpp_odbc::multi_value_buffer & parameter_values) const
 {
-	do_bind_input_parameter(parameter_id, value_type, parameter_type, parameter_values);
+	do_bind_input_parameter(parameter_id, value_type, parameter_type, digits, parameter_values);
 }
 
 void statement::unbind_all_parameters() const
