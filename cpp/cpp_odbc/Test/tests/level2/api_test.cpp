@@ -427,3 +427,14 @@ TEST(Level2APITest, MoreResultsForwards)
 
 	EXPECT_FALSE(api.more_results(handle));
 }
+
+TEST(Level2APITest, SupportsFunctionForwards)
+{
+	level2::connection_handle const handle = {&value_a};
+	SQLUSMALLINT const function_id = 13;
+
+	level2_mock_api api;
+	EXPECT_CALL(api, do_supports_function(handle, function_id)).WillOnce(testing::Return(false));
+
+	EXPECT_FALSE(api.supports_function(handle, function_id));
+}

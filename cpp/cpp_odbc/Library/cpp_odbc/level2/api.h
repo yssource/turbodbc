@@ -291,6 +291,14 @@ public:
 	 */
 	bool more_results(statement_handle const & handle) const;
 
+	/**
+	 * @brief Ask the connection whether it supports a certain ODBC function
+	 * @param handle A handle representing the connection
+	 * @param function_id The identifier for the ODBC function
+	 * @return True if the connection supports the function, else false
+	 */
+	bool supports_function(connection_handle const & handle, SQLUSMALLINT function_id) const;
+
 protected:
 
 	api();
@@ -334,6 +342,7 @@ private:
 	virtual column_description do_describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const = 0;
 	virtual column_description do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const = 0;
 	virtual bool do_more_results(statement_handle const & handle) const = 0;
+	virtual bool do_supports_function(connection_handle const & handle, SQLUSMALLINT function_id) const = 0;
 };
 
 } }

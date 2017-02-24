@@ -1,15 +1,4 @@
 #pragma once
-/**
- *  @file level2.h
- *  @date 12.12.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate$
- *  $LastChangedBy$
- *  $LastChangedRevision$
- *
- */
 
 #include "cpp_odbc/level2/api.h"
 #include "cpp_odbc/level2/diagnostic_record.h"

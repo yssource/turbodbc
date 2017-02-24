@@ -187,5 +187,10 @@ bool api::more_results(statement_handle const & handle) const
 	return do_more_results(handle);
 }
 
+bool api::supports_function(connection_handle const & handle, SQLUSMALLINT function_id) const
+{
+	return do_supports_function(handle, function_id);
+}
+
 
 } }

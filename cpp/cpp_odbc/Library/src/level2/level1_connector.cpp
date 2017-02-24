@@ -419,4 +419,12 @@ bool level1_connector::do_more_results(statement_handle const & handle) const
 	return return_code != SQL_NO_DATA;
 }
 
+bool level1_connector::do_supports_function(connection_handle const & handle, SQLUSMALLINT function_id) const
+{
+	SQLUSMALLINT is_supported = 0;
+	auto const return_code = level1_api_->get_functions(handle.handle, function_id, &is_supported);
+	impl::throw_on_error(return_code, *this, handle);
+	return (is_supported == SQL_TRUE);
+}
+
 } }

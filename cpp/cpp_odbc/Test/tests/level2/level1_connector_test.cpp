@@ -1093,3 +1093,36 @@ TEST(Level1ConnectorTest, MoreResultsFails)
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.more_results(handle), cpp_odbc::error);
 }
+
+
+TEST(Level1ConnectorTest, SupportsFunctionCallsAPI)
+{
+	level2::connection_handle handle = {&value_a};
+	SQLUSMALLINT const function_id = 5;
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_get_functions(handle.handle, function_id, testing::_))
+		.WillOnce(testing::DoAll(
+			testing::SetArgPointee<2>(SQL_TRUE),
+			testing::Return(SQL_SUCCESS)))
+		.WillOnce(testing::DoAll(
+			testing::SetArgPointee<2>(SQL_FALSE),
+			testing::Return(SQL_SUCCESS)));
+
+	level1_connector const connector(api);
+	EXPECT_TRUE(connector.supports_function(handle, function_id));
+	EXPECT_FALSE(connector.supports_function(handle, function_id));
+}
+
+TEST(Level1ConnectorTest, SupportsFunctionFails)
+{
+	level2::connection_handle handle = {&value_a};
+	SQLUSMALLINT const function_id = 5;
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_get_functions(handle.handle, function_id, testing::_))
+		.WillOnce(testing::Return(SQL_ERROR));
+
+	level1_connector const connector(api);
+	EXPECT_THROW(connector.supports_function(handle, function_id), cpp_odbc::error);
+}
