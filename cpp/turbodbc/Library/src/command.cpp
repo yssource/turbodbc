@@ -11,9 +11,10 @@ namespace turbodbc {
 command::command(std::shared_ptr<cpp_odbc::statement const> statement,
                  turbodbc::buffer_size buffer_size,
                  std::size_t parameter_sets_to_buffer,
-                 bool use_double_buffering) :
+                 bool use_double_buffering,
+                 bool query_db_for_parameter_types) :
 	statement_(statement),
-	params_(*statement, parameter_sets_to_buffer),
+	params_(*statement, parameter_sets_to_buffer, query_db_for_parameter_types),
 	buffer_size_(buffer_size),
 	use_double_buffering_(use_double_buffering)
 {

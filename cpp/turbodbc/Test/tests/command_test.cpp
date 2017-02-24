@@ -18,6 +18,7 @@ namespace {
 
 	bool const no_double_buffering = false;
 	bool const use_double_buffering = true;
+	bool const use_default_param_type = false;
 
 }
 
@@ -25,7 +26,7 @@ TEST(CommandTest, GetRowCountBeforeExecuted)
 {
 	auto statement = std::make_shared<mock_statement>();
 
-	turbodbc::command command(statement, turbodbc::rows(1), 1, no_double_buffering);
+	turbodbc::command command(statement, turbodbc::rows(1), 1, no_double_buffering, use_default_param_type);
 	EXPECT_EQ(0, command.get_row_count());
 }
 
@@ -50,7 +51,7 @@ TEST(CommandTest, GetRowCountAfterQueryWithResultSet)
 	EXPECT_CALL( *statement, do_row_count())
 			.WillOnce(testing::Return(expected));
 
-	turbodbc::command command(statement, turbodbc::rows(1), 1, no_double_buffering);
+	turbodbc::command command(statement, turbodbc::rows(1), 1, no_double_buffering, use_default_param_type);
 	command.execute();
 	EXPECT_EQ(expected, command.get_row_count());
 }
@@ -64,7 +65,7 @@ namespace {
 		auto statement = std::make_shared<mock_statement>();
 		prepare_single_column_result_set(*statement);
 
-		turbodbc::command command(statement, turbodbc::rows(1), 1, double_buffering);
+		turbodbc::command command(statement, turbodbc::rows(1), 1, double_buffering, use_default_param_type);
 		command.execute();
 		EXPECT_TRUE(std::dynamic_pointer_cast<ExpectedResultSetType>(command.get_results()));
 	}
@@ -81,6 +82,6 @@ TEST(CommandTest, GetParameters)
 {
 	auto statement = std::make_shared<mock_statement>();
 
-	turbodbc::command command(statement, turbodbc::rows(1), 1, no_double_buffering);
+	turbodbc::command command(statement, turbodbc::rows(1), 1, no_double_buffering, use_default_param_type);
 	EXPECT_EQ(0, command.get_parameters().number_of_parameters());
 }

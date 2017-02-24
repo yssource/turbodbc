@@ -25,7 +25,7 @@ void connection::rollback() const
 
 cursor connection::make_cursor() const
 {
-	return {connection_, buffer_size_, parameter_sets_to_buffer, use_async_io};
+	return {connection_, buffer_size_, parameter_sets_to_buffer, use_async_io, supports_describe_parameter_};
 }
 
 turbodbc::buffer_size connection::get_buffer_size() const
@@ -40,7 +40,7 @@ void connection::set_buffer_size(turbodbc::buffer_size buffer_size)
 
 bool connection::supports_describe_parameter() const
 {
-	return false;
+	return supports_describe_parameter_;
 }
 
 }

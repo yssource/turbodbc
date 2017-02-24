@@ -17,7 +17,8 @@ namespace turbodbc {
 class bound_parameter_set {
 public:
 	bound_parameter_set(cpp_odbc::statement const & statement,
-	                    std::size_t buffered_sets);
+	                    std::size_t buffered_sets,
+	                    bool query_db_for_initial_types);
 
 	/**
 	 * @brief Retrieve the number of buffered sets, i.e, the size

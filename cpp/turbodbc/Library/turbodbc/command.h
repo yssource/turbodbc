@@ -16,7 +16,8 @@ public:
 	command(std::shared_ptr<cpp_odbc::statement const> statement,
 	        turbodbc::buffer_size buffer_size,
 	        std::size_t parameter_sets_to_buffer,
-	        bool use_double_buffering);
+	        bool use_double_buffering,
+	        bool query_db_for_parameter_types);
 
 	/**
 	 * @brief Execute the command and initialize result sets if available
