@@ -1,15 +1,5 @@
-/** *  @file level1_connector.cpp
- *  @date 07.03.2014
- *  @author mkoenig
- *  @brief 
- *
- *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
- *  $LastChangedBy: mkoenig $
- *  $LastChangedRevision: 21206 $
- *
- */
-
 #include "cpp_odbc/level2/level1_connector.h"
+
 #include "cpp_odbc/level1/api.h"
 #include "cpp_odbc/level2/string_buffer.h"
 #include "cpp_odbc/level2/fixed_length_string_buffer.h"
@@ -237,7 +227,7 @@ void level1_connector::do_bind_column(statement_handle const & handle, SQLUSMALL
 	impl::throw_on_error(return_code, *this, handle);
 }
 
-void level1_connector::do_bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, multi_value_buffer & parameter_values) const
+void level1_connector::do_bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, SQLSMALLINT digits, multi_value_buffer & parameter_values) const
 {
 	auto const return_code = level1_api_->bind_parameter(
 			handle.handle,
@@ -246,7 +236,7 @@ void level1_connector::do_bind_input_parameter(statement_handle const & handle, 
 			value_type,
 			parameter_type,
 			parameter_values.capacity_per_element(),
-			0,
+			digits,
 			parameter_values.data_pointer(),
 			parameter_values.capacity_per_element(),
 			parameter_values.indicator_pointer()

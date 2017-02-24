@@ -102,9 +102,9 @@ void api::bind_column(statement_handle const & handle, SQLUSMALLINT column_id, S
 	do_bind_column(handle, column_id, column_type, column_buffer);
 }
 
-void api::bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, multi_value_buffer & parameter_values) const
+void api::bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, SQLSMALLINT digits, multi_value_buffer & parameter_values) const
 {
-	do_bind_input_parameter(handle, parameter_id, value_type, parameter_type, parameter_values);
+	do_bind_input_parameter(handle, parameter_id, value_type, parameter_type, digits, parameter_values);
 }
 
 void api::execute_prepared_statement(statement_handle const & handle) const

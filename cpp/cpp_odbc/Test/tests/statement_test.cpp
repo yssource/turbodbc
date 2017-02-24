@@ -68,12 +68,13 @@ TEST(StatementTest, BindInputParameterForwards)
 	SQLUSMALLINT const parameter = 17;
 	SQLSMALLINT const value_type = 23;
 	SQLSMALLINT const parameter_type = 42;
+	SQLSMALLINT const digits = 5;
 	cpp_odbc::multi_value_buffer values(2,3);
 
 	mock_statement statement;
-	EXPECT_CALL( statement, do_bind_input_parameter(parameter, value_type, parameter_type, testing::Ref(values))).Times(1);
+	EXPECT_CALL( statement, do_bind_input_parameter(parameter, value_type, parameter_type, digits, testing::Ref(values))).Times(1);
 
-	statement.bind_input_parameter(parameter, value_type, parameter_type, values);
+	statement.bind_input_parameter(parameter, value_type, parameter_type, digits, values);
 }
 
 TEST(StatementTest, UnbindAllParametersForwards)

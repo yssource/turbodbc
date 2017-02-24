@@ -16,6 +16,7 @@ private:
 	std::size_t do_element_size() const final;
 	SQLSMALLINT do_column_c_type() const final;
 	SQLSMALLINT do_column_sql_type() const final;
+	SQLSMALLINT do_digits() const final;
 	type_code do_get_type_code() const final;
 };
 

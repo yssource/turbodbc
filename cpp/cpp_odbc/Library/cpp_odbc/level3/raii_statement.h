@@ -36,7 +36,7 @@ private:
 	void do_set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const final;
 	void do_execute(std::string const & sql) const final;
 	void do_prepare(std::string const & sql) const final;
-	void do_bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, cpp_odbc::multi_value_buffer & parameter_values) const final;
+	void do_bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, SQLSMALLINT digits, cpp_odbc::multi_value_buffer & parameter_values) const final;
 	void do_unbind_all_parameters() const final;
 	void do_execute_prepared() const final;
 

@@ -29,6 +29,11 @@ public:
 	SQLSMALLINT column_sql_type() const;
 
 	/**
+	 * @brief Returns the number of digits a parameter supports
+	 */
+	SQLSMALLINT digits() const;
+
+	/**
 	 * @brief Retrieve a code which indicates this field's type
 	 */
 	type_code get_type_code() const;
@@ -54,6 +59,7 @@ private:
 	virtual std::size_t do_element_size() const = 0;
 	virtual SQLSMALLINT do_column_c_type() const = 0;
 	virtual SQLSMALLINT do_column_sql_type() const = 0;
+	virtual SQLSMALLINT do_digits() const = 0;
 	virtual type_code do_get_type_code() const = 0;
 
 	std::string name_;

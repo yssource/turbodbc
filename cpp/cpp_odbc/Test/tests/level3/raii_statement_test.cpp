@@ -180,15 +180,16 @@ TEST(RaiiStatementTest, BindInputParameter)
 	SQLUSMALLINT const parameter_id = 17;
 	SQLSMALLINT const value_type = 23;
 	SQLSMALLINT const parameter_type = 42;
+	SQLSMALLINT const digits = 5;
 	cpp_odbc::multi_value_buffer parameter_values(3, 4);
 
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment const>(api);
 	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
-	EXPECT_CALL(*api, do_bind_input_parameter(default_s_handle, parameter_id, value_type, parameter_type, testing::Ref(parameter_values))).Times(1);
+	EXPECT_CALL(*api, do_bind_input_parameter(default_s_handle, parameter_id, value_type, parameter_type, digits, testing::Ref(parameter_values))).Times(1);
 
 	raii_statement statement(connection);
-	statement.bind_input_parameter(parameter_id, value_type, parameter_type, parameter_values);
+	statement.bind_input_parameter(parameter_id, value_type, parameter_type, digits, parameter_values);
 }
 
 TEST(RaiiStatementTest, UnbindAllParameters)

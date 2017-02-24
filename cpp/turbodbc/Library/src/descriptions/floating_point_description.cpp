@@ -31,6 +31,11 @@ SQLSMALLINT floating_point_description::do_column_sql_type() const
 	return SQL_DOUBLE;
 }
 
+SQLSMALLINT floating_point_description::do_digits() const
+{
+	return 0;
+}
+
 type_code floating_point_description::do_get_type_code() const
 {
 	return type_code::floating_point;

@@ -16,6 +16,7 @@ typedef turbodbc_test::mock_statement mock_statement;
 namespace {
 
 	cpp_odbc::column_description const int_description = {"dummy", SQL_BIGINT, 0, 0, true};
+	cpp_odbc::column_description const timestamp_description = {"dummy", SQL_TYPE_TIMESTAMP, 0, 0, true};
 	cpp_odbc::column_description const string_description_short = {"dummy", SQL_VARCHAR, 7, 0, true};
 	cpp_odbc::column_description const string_description_max_length = {"dummy", SQL_VARCHAR, 16, 0, true};
 	cpp_odbc::column_description const string_description_slightly_too_long = {"dummy", SQL_VARCHAR, 17, 0, true};
@@ -31,10 +32,10 @@ TEST(BoundParameterSetTest, ConstructorBindsParametersBasedOnDBSuggestion)
 	ON_CALL(statement, do_describe_parameter(1))
 		.WillByDefault(testing::Return(int_description));
 	ON_CALL(statement, do_describe_parameter(2))
-		.WillByDefault(testing::Return(string_description_short));
+		.WillByDefault(testing::Return(timestamp_description));
 
-	EXPECT_CALL(statement, do_bind_input_parameter(1, SQL_C_SBIGINT, SQL_BIGINT, testing::_)).Times(1);
-	EXPECT_CALL(statement, do_bind_input_parameter(2, SQL_C_CHAR, SQL_VARCHAR, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(1, SQL_C_SBIGINT, SQL_BIGINT, 0, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(2, SQL_C_TYPE_TIMESTAMP, SQL_TYPE_TIMESTAMP, 6, testing::_)).Times(1);
 
 	bound_parameter_set params(statement, 42);
 	EXPECT_EQ(params.number_of_parameters(), 2);
@@ -56,10 +57,10 @@ TEST(BoundParameterSetTest, ConstructorOverridesStringParameterSuggestions)
 	ON_CALL(statement, do_describe_parameter(4))
 		.WillByDefault(testing::Return(string_description_too_long));
 
-	EXPECT_CALL(statement, do_bind_input_parameter(1, SQL_C_CHAR, SQL_VARCHAR, testing::_)).Times(1);
-	EXPECT_CALL(statement, do_bind_input_parameter(2, SQL_C_CHAR, SQL_VARCHAR, testing::_)).Times(1);
-	EXPECT_CALL(statement, do_bind_input_parameter(3, SQL_C_CHAR, SQL_VARCHAR, testing::_)).Times(1);
-	EXPECT_CALL(statement, do_bind_input_parameter(4, SQL_C_CHAR, SQL_VARCHAR, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(1, SQL_C_CHAR, SQL_VARCHAR, testing::_, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(2, SQL_C_CHAR, SQL_VARCHAR, testing::_, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(3, SQL_C_CHAR, SQL_VARCHAR, testing::_, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(4, SQL_C_CHAR, SQL_VARCHAR, testing::_, testing::_)).Times(1);
 
 	bound_parameter_set params(statement, 42);
 	EXPECT_EQ(params.get_parameters()[0]->get_buffer().capacity_per_element(), string_description_short.size + 1);
@@ -76,17 +77,17 @@ TEST(BoundParameterSetTest, Rebind)
 	ON_CALL(statement, do_describe_parameter(1))
 		.WillByDefault(testing::Return(int_description));
 	ON_CALL(statement, do_describe_parameter(2))
-		.WillByDefault(testing::Return(string_description_short));
+		.WillByDefault(testing::Return(timestamp_description));
 
 	bound_parameter_set params(statement, 42);
 
 	std::size_t const column_index = 1;
 	auto const one_based_column_index = column_index + 1;
-	EXPECT_CALL(statement, do_bind_input_parameter(one_based_column_index, SQL_C_SBIGINT, SQL_BIGINT, testing::_))
+	EXPECT_CALL(statement, do_bind_input_parameter(one_based_column_index, SQL_C_TYPE_TIMESTAMP, SQL_TYPE_TIMESTAMP, 6, testing::_))
 		.Times(1);
 
-	params.rebind(1, make_description(field{23l}));
-	EXPECT_EQ(params.get_parameters()[1]->get_buffer().capacity_per_element(), sizeof(long));
+	params.rebind(1, make_description(type_code::timestamp, 0));
+	EXPECT_EQ(params.get_parameters()[1]->get_buffer().capacity_per_element(), sizeof(SQL_TIMESTAMP_STRUCT));
 	EXPECT_EQ(params.get_parameters()[1]->get_buffer().number_of_elements(), 42);
 }
 

@@ -514,14 +514,15 @@ TEST(Level1ConnectorTest, BindInputParameterCallsAPI)
 	SQLUSMALLINT const parameter_id = 42;
 	SQLSMALLINT const value_type = 17;
 	SQLSMALLINT const parameter_type = 51;
+	SQLSMALLINT const digits = 5;
 	cpp_odbc::multi_value_buffer buffer(23, 2);
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
-	EXPECT_CALL(*api, do_bind_parameter(handle.handle, parameter_id, SQL_PARAM_INPUT, value_type, parameter_type, buffer.capacity_per_element(), 0, buffer.data_pointer(), buffer.capacity_per_element(), buffer.indicator_pointer()))
+	EXPECT_CALL(*api, do_bind_parameter(handle.handle, parameter_id, SQL_PARAM_INPUT, value_type, parameter_type, buffer.capacity_per_element(), digits, buffer.data_pointer(), buffer.capacity_per_element(), buffer.indicator_pointer()))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
 	level1_connector const connector(api);
-	connector.bind_input_parameter(handle, parameter_id, value_type, parameter_type, buffer);
+	connector.bind_input_parameter(handle, parameter_id, value_type, parameter_type, digits, buffer);
 }
 TEST(Level1ConnectorTest, BindInputParameterFails)
 {
@@ -529,6 +530,7 @@ TEST(Level1ConnectorTest, BindInputParameterFails)
 	SQLUSMALLINT const parameter_id = 42;
 	SQLSMALLINT const value_type = 17;
 	SQLSMALLINT const parameter_type = 51;
+	SQLSMALLINT const digits = 5;
 	cpp_odbc::multi_value_buffer buffer(23, 2);
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
@@ -537,7 +539,7 @@ TEST(Level1ConnectorTest, BindInputParameterFails)
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
-	EXPECT_THROW( connector.bind_input_parameter(handle, parameter_id, value_type, parameter_type, buffer), cpp_odbc::error);
+	EXPECT_THROW( connector.bind_input_parameter(handle, parameter_id, value_type, parameter_type, digits, buffer), cpp_odbc::error);
 }
 
 TEST(Level1ConnectorTest, ExecutePreparedStatementCallsAPI)

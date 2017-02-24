@@ -31,6 +31,11 @@ SQLSMALLINT description::column_sql_type() const
 	return do_column_sql_type();
 }
 
+SQLSMALLINT description::digits() const
+{
+	return do_digits();
+}
+
 type_code description::get_type_code() const
 {
 	return do_get_type_code();

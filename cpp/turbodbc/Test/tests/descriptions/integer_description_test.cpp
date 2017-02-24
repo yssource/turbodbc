@@ -11,6 +11,7 @@ TEST(IntegerDescriptionTest, BasicProperties)
 	EXPECT_EQ(sizeof(long), description.element_size());
 	EXPECT_EQ(SQL_C_SBIGINT, description.column_c_type());
 	EXPECT_EQ(SQL_BIGINT, description.column_sql_type());
+	EXPECT_EQ(0, description.digits());
 }
 
 TEST(IntegerDescriptionTest, GetTypeCode)
