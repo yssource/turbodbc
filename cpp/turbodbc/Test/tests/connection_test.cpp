@@ -78,3 +78,13 @@ TEST(ConnectionTest, AsyncIODefault)
 	EXPECT_FALSE(test_connection.use_async_io);
 }
 
+TEST(ConnectionTest, SupportsDescribeParameter)
+{
+	auto connection = std::make_shared<mock_connection>();
+	EXPECT_CALL(*connection, do_supports_function(SQL_API_SQLDESCRIBEPARAM))
+		.WillOnce(testing::Return(false));
+
+	turbodbc::connection test_connection(connection);
+	EXPECT_FALSE(test_connection.supports_describe_parameter());
+}
+
