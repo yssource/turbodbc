@@ -1,3 +1,11 @@
+Version 1.0.3
+=============
+*   Improve compatibility with ODBC drivers (e.g. FreeTDS) that do not
+    support ODBC's `SQLDescribeParam()` function by using a default
+    parameter type.
+*   Improve compatibility with some ODBC drivers (e.g. Microsoft's official
+    MSSQL ODBC driver) for setting timestamps with fractional seconds.
+
 Version 1.0.2
 =============
 *   Add support for chaining operations to `Cursor.execute()` and
