@@ -418,3 +418,18 @@ TEST(Level1APITest, MoreResultsForwards)
 	auto const actual = api.more_results(handle);
 	EXPECT_EQ(expected, actual);
 }
+
+TEST(Level1APITest, GetFunctionsForwards)
+{
+	SQLRETURN const expected = 23;
+	SQLUSMALLINT const function_id = 17;
+	SQLUSMALLINT destination = 0;
+	SQLHDBC handle = &value_a;
+
+	level1_mock_api api;
+	EXPECT_CALL(api, do_get_functions(handle, function_id, &destination))
+		.WillOnce(testing::Return(expected));
+
+	auto const actual = api.get_functions(handle, function_id, &destination);
+	EXPECT_EQ(expected, actual);
+}

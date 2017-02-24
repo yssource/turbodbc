@@ -217,5 +217,15 @@ SQLRETURN unixodbc_backend_debug::do_more_results(SQLHSTMT statement_handle) con
 	return return_code;
 }
 
+SQLRETURN unixodbc_backend_debug::do_get_functions(SQLHDBC connection_handle, SQLUSMALLINT function_id, SQLUSMALLINT * is_supported) const
+{
+	std::cout << " *DEBUG* get_functions";
+	auto const return_code = SQLGetFunctions(connection_handle, function_id, is_supported);
+	std::cout << " (return code " << return_code << ")" << std::endl;
+	return return_code;
+}
+
+
+
 
 } }

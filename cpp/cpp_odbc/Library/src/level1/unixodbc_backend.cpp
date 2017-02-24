@@ -141,4 +141,9 @@ SQLRETURN unixodbc_backend::do_more_results(SQLHSTMT statement_handle) const
 	return SQLMoreResults(statement_handle);
 }
 
+SQLRETURN unixodbc_backend::do_get_functions(SQLHDBC connection_handle, SQLUSMALLINT function_id, SQLUSMALLINT * is_supported) const
+{
+	return SQLGetFunctions(connection_handle, function_id, is_supported);
+}
+
 } }

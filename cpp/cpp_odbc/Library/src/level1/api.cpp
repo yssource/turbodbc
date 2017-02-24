@@ -142,4 +142,11 @@ SQLRETURN api::more_results(SQLHSTMT statement_handle) const
 	return do_more_results(statement_handle);
 }
 
+SQLRETURN api::get_functions(SQLHDBC connection_handle, SQLUSMALLINT function_id, SQLUSMALLINT * is_supported) const
+{
+	return do_get_functions(connection_handle, function_id, is_supported);
+}
+
+
+
 } }
