@@ -1,6 +1,7 @@
 #include "turbodbc/parameter_sets/bound_parameter_set.h"
 
 #include "turbodbc/make_description.h"
+#include <cpp_odbc/error.h>
 
 #include <gtest/gtest.h>
 #include <tests/mock_classes.h>
@@ -28,21 +29,6 @@ namespace {
 }
 
 
-TEST(BoundParameterSetTest, ConstructorBindsBooleanParametersByDefault)
-{
-	mock_statement statement;
-	ON_CALL(statement, do_number_of_parameters()).WillByDefault(testing::Return(1));
-	EXPECT_CALL(statement, do_describe_parameter(1)).Times(0);
-
-	EXPECT_CALL(statement, do_bind_input_parameter(1, SQL_C_CHAR, SQL_VARCHAR, testing::_, testing::_)).Times(1);
-
-	bound_parameter_set params(statement, 42, do_not_query_db_for_types);
-	EXPECT_EQ(params.number_of_parameters(), 1);
-	EXPECT_EQ(params.get_parameters()[0]->get_buffer().number_of_elements(), 42);
-	EXPECT_EQ(params.buffered_sets(), 42);
-}
-
-
 TEST(BoundParameterSetTest, ConstructorBindsParametersBasedOnDBSuggestion)
 {
 	mock_statement statement;
@@ -59,6 +45,31 @@ TEST(BoundParameterSetTest, ConstructorBindsParametersBasedOnDBSuggestion)
 	EXPECT_EQ(params.number_of_parameters(), 2);
 	EXPECT_EQ(params.get_parameters()[0]->get_buffer().number_of_elements(), 42);
 	EXPECT_EQ(params.buffered_sets(), 42);
+}
+
+
+TEST(BoundParameterSetTest, ConstructorFallsBackToStringIfDBSuggestionFails)
+{
+	mock_statement statement;
+	ON_CALL(statement, do_number_of_parameters()).WillByDefault(testing::Return(1));
+	ON_CALL(statement, do_describe_parameter(1))
+		.WillByDefault(testing::Throw(cpp_odbc::error("")));
+
+	EXPECT_CALL(statement, do_bind_input_parameter(1, SQL_C_CHAR, SQL_VARCHAR, testing::_, testing::_)).Times(1);
+
+	bound_parameter_set params(statement, 42, query_db_for_types);
+}
+
+
+TEST(BoundParameterSetTest, ConstructorBindsStringParametersByDefault)
+{
+	mock_statement statement;
+	ON_CALL(statement, do_number_of_parameters()).WillByDefault(testing::Return(1));
+	EXPECT_CALL(statement, do_describe_parameter(1)).Times(0);
+
+	EXPECT_CALL(statement, do_bind_input_parameter(1, SQL_C_CHAR, SQL_VARCHAR, testing::_, testing::_)).Times(1);
+
+	bound_parameter_set params(statement, 42, do_not_query_db_for_types);
 }
 
 

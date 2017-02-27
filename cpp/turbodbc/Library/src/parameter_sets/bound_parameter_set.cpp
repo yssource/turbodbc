@@ -2,6 +2,8 @@
 
 #include <turbodbc/make_description.h>
 
+#include <cpp_odbc/error.h>
+
 #include <stdexcept>
 #include <sqlext.h>
 
@@ -46,7 +48,11 @@ bound_parameter_set::bound_parameter_set(cpp_odbc::statement const & statement,
 	std::size_t const n_parameters = statement_.number_of_parameters();
 	parameter_factory make_parameter(query_db_for_initial_types ? make_suggested_parameter : make_default_parameter);
 	for (std::size_t one_based_index = 1; one_based_index <= n_parameters; ++one_based_index) {
-		parameters_.push_back(make_parameter(statement_, one_based_index, buffered_sets_));
+		try {
+			parameters_.push_back(make_parameter(statement_, one_based_index, buffered_sets_));
+		} catch (cpp_odbc::error const &) {
+			parameters_.push_back(make_default_parameter(statement_, one_based_index, buffered_sets_));
+		}
 	}
 	statement_.set_attribute(SQL_ATTR_PARAMS_PROCESSED_PTR, &confirmed_last_batch_);
 }
