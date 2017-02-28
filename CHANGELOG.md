@@ -3,6 +3,9 @@ Version 1.0.3
 *   Improve compatibility with ODBC drivers (e.g. FreeTDS) that do not
     support ODBC's `SQLDescribeParam()` function by using a default
     parameter type.
+*   Use a default parameter type when the ODBC driver cannot determine
+    a parameter's type, for example when using column expressions for
+    `INSERT` statements.
 *   Improve compatibility with some ODBC drivers (e.g. Microsoft's official
     MSSQL ODBC driver) for setting timestamps with fractional seconds.
 
