@@ -85,6 +85,10 @@ if sys.platform == 'darwin':
     base_library_link_args.append('-dynamiclib')
 else:
     python_module_link_args.append("-Wl,-rpath,$ORIGIN")
+    if 'UNIXODBC_INCLUDE_DIR' in os.environ:
+        include_dirs.append(os.getenv('UNIXODBC_INCLUDE_DIR'))
+    if 'UNIXODBC_LIBRARY_DIR' in os.environ:
+        library_dirs.append(os.getenv('UNIXODBC_LIBRARY_DIR'))
 
 
 def get_extension_modules():
