@@ -1,3 +1,8 @@
+Version 1.0.4
+=============
+*   Add possibility to set unixodbc include and library directories in
+    setup.py. Required for conda builds.
+
 Version 1.0.3
 =============
 *   Improve compatibility with ODBC drivers (e.g. FreeTDS) that do not
