@@ -141,6 +141,8 @@ std::unique_ptr<description const> make_description(type_code type, std::size_t 
 			return std::unique_ptr<description const>(new timestamp_description);
 		case type_code::string:
 			return std::unique_ptr<description const>(new string_description(size_after_growth_strategy(size)));
+		case type_code::unicode:
+			return std::unique_ptr<description const>(new unicode_description(size_after_growth_strategy(size)));
 		default:
 			return std::unique_ptr<description const>(new integer_description);
 	}
