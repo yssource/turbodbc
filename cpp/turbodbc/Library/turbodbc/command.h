@@ -16,6 +16,7 @@ public:
 	command(std::shared_ptr<cpp_odbc::statement const> statement,
 	        turbodbc::buffer_size buffer_size,
 	        std::size_t parameter_sets_to_buffer,
+	        bool prefer_unicode,
 	        bool use_double_buffering,
 	        bool query_db_for_parameter_types);
 
@@ -46,6 +47,7 @@ private:
 	std::shared_ptr<cpp_odbc::statement const> statement_;
 	bound_parameter_set params_;
 	turbodbc::buffer_size buffer_size_;
+	bool prefer_unicode_;
 	bool use_double_buffering_;
 	std::shared_ptr<result_sets::result_set> results_;
 };

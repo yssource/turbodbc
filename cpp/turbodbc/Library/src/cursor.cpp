@@ -41,6 +41,7 @@ void cursor::prepare(std::string const & sql)
 	command_ = std::make_shared<command>(statement,
 	                                     buffer_size_,
 	                                     parameter_sets_to_buffer_,
+	                                     false,
 	                                     use_async_io_,
 	                                     query_db_for_parameter_types_);
 }
