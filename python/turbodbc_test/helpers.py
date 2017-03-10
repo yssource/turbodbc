@@ -85,16 +85,19 @@ for_one_database = pytest.mark.parametrize("dsn,configuration",
 @contextmanager
 def open_connection(configuration, rows_to_buffer=None, parameter_sets_to_buffer=100, use_async_io=False):
     dsn = configuration['data_source_name']
+    prefer_unicode = configuration.get('prefer_unicode', False)
     if rows_to_buffer:
         connection = turbodbc.connect(dsn,
                                       rows_to_buffer=rows_to_buffer,
                                       parameter_sets_to_buffer=parameter_sets_to_buffer,
+                                      prefer_unicode=prefer_unicode,
                                       use_async_io=use_async_io,
                                       **get_credentials(configuration))
     else:
         connection = turbodbc.connect(dsn,
                                       read_buffer_size=turbodbc.Megabytes(1),
                                       parameter_sets_to_buffer=parameter_sets_to_buffer,
+                                      prefer_unicode=prefer_unicode,
                                       use_async_io=use_async_io,
                                       **get_credentials(configuration))
     yield connection

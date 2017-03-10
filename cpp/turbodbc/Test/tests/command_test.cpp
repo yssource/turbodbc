@@ -20,7 +20,6 @@ namespace {
 	bool const use_double_buffering = true;
 	bool const use_default_param_type = false;
 	bool const prefer_string = false;
-	bool const prefer_unicode = true;
 
 }
 
