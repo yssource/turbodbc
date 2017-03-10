@@ -82,16 +82,21 @@ namespace {
 }
 
 
-std::unique_ptr<description const> make_description(cpp_odbc::column_description const & source)
+std::unique_ptr<description const> make_description(cpp_odbc::column_description const & source, bool prefer_unicode)
 {
 	switch (source.data_type) {
 		case SQL_CHAR:
 		case SQL_VARCHAR:
 		case SQL_LONGVARCHAR:
+			if (prefer_unicode) {
+				return std::unique_ptr<description>(new unicode_description(source.name, source.allows_null_values, source.size));
+			} else {
+				return std::unique_ptr<description>(new string_description(source.name, source.allows_null_values, source.size));
+			}
 		case SQL_WVARCHAR:
 		case SQL_WLONGVARCHAR:
 		case SQL_WCHAR:
-			return std::unique_ptr<description>(new string_description(source.name, source.allows_null_values, source.size));
+			return std::unique_ptr<description>(new unicode_description(source.name, source.allows_null_values, source.size));
 		case SQL_INTEGER:
 		case SQL_SMALLINT:
 		case SQL_BIGINT:

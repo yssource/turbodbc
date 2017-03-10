@@ -14,15 +14,18 @@ namespace turbodbc {
 namespace {
 	std::size_t const max_initial_string_length = 16;
 
+	// temporary constant for use with make_description.
+	bool const prefer_strings = false;
+
 	std::shared_ptr<parameter> make_suggested_parameter(cpp_odbc::statement const & statement, std::size_t one_based_index, std::size_t buffered_sets)
 	{
-		auto description = make_description(statement.describe_parameter(one_based_index));
+		auto description = make_description(statement.describe_parameter(one_based_index), prefer_strings);
 		if ((description->get_type_code() == type_code::string) and
 		    (description->element_size() > (max_initial_string_length + 1)))
 		{
 			auto modified_description = statement.describe_parameter(one_based_index);
 			modified_description.size = max_initial_string_length;
-			description = make_description(modified_description);
+			description = make_description(modified_description, prefer_strings);
 		}
 		return std::make_shared<parameter>(statement, one_based_index, buffered_sets, std::move(description));
 	}
