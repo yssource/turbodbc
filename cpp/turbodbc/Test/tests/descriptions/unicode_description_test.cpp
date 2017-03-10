@@ -9,7 +9,7 @@ TEST(UnicodeDescriptionTest, BasicProperties)
 	std::size_t const size = 42;
 	turbodbc::unicode_description const description(size);
 
-	EXPECT_EQ(size + 2, description.element_size());
+	EXPECT_EQ(86, description.element_size());
 	EXPECT_EQ(SQL_C_WCHAR, description.column_c_type());
 	EXPECT_EQ(SQL_WVARCHAR, description.column_sql_type());
 	EXPECT_EQ(0, description.digits());

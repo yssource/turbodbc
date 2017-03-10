@@ -22,7 +22,7 @@ unicode_description::~unicode_description() = default;
 
 std::size_t unicode_description::do_element_size() const
 {
-	return maximum_length_ + 2;
+	return sizeof(char16_t) * (maximum_length_ + 1);
 }
 
 SQLSMALLINT unicode_description::do_column_c_type() const
