@@ -5,6 +5,7 @@ namespace turbodbc {
 
 connection::connection(std::shared_ptr<cpp_odbc::connection const> low_level_connection) :
 	parameter_sets_to_buffer(1000),
+	prefer_unicode(false),
 	use_async_io(false),
 	buffer_size_(megabytes(20)),
 	supports_describe_parameter_(low_level_connection->supports_function(SQL_API_SQLDESCRIBEPARAM)),
@@ -25,7 +26,7 @@ void connection::rollback() const
 
 cursor connection::make_cursor() const
 {
-	return {connection_, buffer_size_, parameter_sets_to_buffer, use_async_io, supports_describe_parameter_};
+	return {connection_, buffer_size_, parameter_sets_to_buffer, prefer_unicode, use_async_io, supports_describe_parameter_};
 }
 
 turbodbc::buffer_size connection::get_buffer_size() const

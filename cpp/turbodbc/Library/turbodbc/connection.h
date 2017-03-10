@@ -55,6 +55,9 @@ public:
 	 */
 	bool supports_describe_parameter() const;
 
+	///< Indicate whether unicode types shall be preferred over single-byte character strings
+	bool prefer_unicode;
+
 	///< Indicate whether asynchronous i/o should be used
 	bool use_async_io;
 

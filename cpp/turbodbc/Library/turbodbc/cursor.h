@@ -19,6 +19,7 @@ public:
 	cursor(std::shared_ptr<cpp_odbc::connection const> connection,
 		   turbodbc::buffer_size buffer_size,
 		   std::size_t parameter_sets_to_buffer,
+		   bool prefer_unicode,
 		   bool use_async_io,
 		   bool query_db_for_parameter_types);
 
@@ -40,6 +41,7 @@ private:
 	std::shared_ptr<cpp_odbc::connection const> connection_;
 	turbodbc::buffer_size buffer_size_;
 	std::size_t parameter_sets_to_buffer_;
+	bool prefer_unicode_;
 	bool use_async_io_;
 	bool query_db_for_parameter_types_;
 	std::shared_ptr<turbodbc::command> command_;
