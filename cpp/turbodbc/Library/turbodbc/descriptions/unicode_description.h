@@ -5,13 +5,13 @@
 namespace turbodbc {
 
 /**
- * @brief Represents a description to bind a buffer holding string values
+ * @brief Represents a description to bind a buffer holding unicode values
  */
-class string_description : public description {
+class unicode_description : public description {
 public:
-	string_description(std::size_t maximum_length);
-	string_description(std::string name, bool supports_null, std::size_t maximum_length);
-	~string_description();
+	unicode_description(std::size_t maximum_length);
+	unicode_description(std::string name, bool supports_null, std::size_t maximum_length);
+	~unicode_description();
 private:
 	std::size_t do_element_size() const final;
 	SQLSMALLINT do_column_c_type() const final;
