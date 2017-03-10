@@ -65,6 +65,7 @@ void for_connection(pybind11::module & module)
 			.def("get_buffer_size", &turbodbc::connection::get_buffer_size)
 			.def("set_buffer_size", &turbodbc::connection::set_buffer_size)
 			.def_readwrite("parameter_sets_to_buffer", &turbodbc::connection::parameter_sets_to_buffer)
+			.def_readwrite("prefer_unicode", &turbodbc::connection::prefer_unicode)
 			.def_readwrite("use_async_io", &turbodbc::connection::use_async_io)
 			;
 }
