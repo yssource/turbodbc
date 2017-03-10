@@ -35,7 +35,7 @@ void command::execute()
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
 		if (use_double_buffering_) {
-			results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, buffer_size_);
+			results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, buffer_size_, false);
 		} else {
 			results_ = std::make_shared<result_sets::bound_result_set>(statement_, buffer_size_, false);
 		}
