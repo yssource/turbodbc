@@ -11,15 +11,14 @@ namespace turbodbc { namespace result_sets {
 
 namespace {
 
-    // temporary constant for use with make_description.
-    bool const prefer_strings = false;
-
-    std::size_t determine_buffered_rows(cpp_odbc::statement const & statement, turbodbc::buffer_size const & buffer_size)
+    std::size_t determine_buffered_rows(cpp_odbc::statement const & statement,
+                                        turbodbc::buffer_size const & buffer_size,
+                                        bool prefer_unicode)
     {
         std::size_t const n_columns = statement.number_of_columns();
         std::vector<std::unique_ptr<description const>> descriptions;
         for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
-            descriptions.push_back(make_description(statement.describe_column(one_based_index), prefer_strings));
+            descriptions.push_back(make_description(statement.describe_column(one_based_index), prefer_unicode));
         }
 
         return boost::apply_visitor(turbodbc::determine_rows_to_buffer(descriptions), buffer_size);
@@ -27,15 +26,17 @@ namespace {
 
 }
 
-bound_result_set::bound_result_set(std::shared_ptr<cpp_odbc::statement const> statement, turbodbc::buffer_size buffer_size) :
+bound_result_set::bound_result_set(std::shared_ptr<cpp_odbc::statement const> statement,
+                                   turbodbc::buffer_size buffer_size,
+                                   bool prefer_unicode) :
     statement_(statement),
     rows_fetched_(0)
 {
     std::size_t const n_columns = statement_->number_of_columns();
-    std::size_t rows_to_buffer = determine_buffered_rows(*statement_, buffer_size);
+    std::size_t rows_to_buffer = determine_buffered_rows(*statement_, buffer_size, prefer_unicode);
 
     for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
-        auto column_description = make_description(statement_->describe_column(one_based_index), prefer_strings);
+        auto column_description = make_description(statement_->describe_column(one_based_index), prefer_unicode);
         columns_.emplace_back(*statement, one_based_index, rows_to_buffer, std::move(column_description));
     }
 

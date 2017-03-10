@@ -37,7 +37,7 @@ void command::execute()
 		if (use_double_buffering_) {
 			results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, buffer_size_);
 		} else {
-			results_ = std::make_shared<result_sets::bound_result_set>(statement_, buffer_size_);
+			results_ = std::make_shared<result_sets::bound_result_set>(statement_, buffer_size_, false);
 		}
 	}
 }
