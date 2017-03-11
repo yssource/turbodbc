@@ -853,7 +853,7 @@ TEST(Level1ConnectorTest, PrepareStatementCallsAPI)
 	std::string const sql = "XXX";
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
-	EXPECT_CALL(*api, do_prepare_statement(handle.handle, testing::Truly(matches_string(sql)), sql.size()))
+	EXPECT_CALL(*api, do_prepare_statement(handle.handle, testing::Matcher<unsigned char *>(testing::Truly(matches_string(sql))), sql.size()))
 		.WillOnce(testing::Return(SQL_SUCCESS));
 
 	level1_connector const connector(api);
@@ -866,7 +866,7 @@ TEST(Level1ConnectorTest, PrepareStatementFails)
 	std::string const sql = "XXX";
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
-	EXPECT_CALL(*api, do_prepare_statement(testing::_, testing::_, testing::_))
+	EXPECT_CALL(*api, do_prepare_statement(testing::_, testing::Matcher<unsigned char *>(testing::_), testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
 

@@ -177,6 +177,14 @@ SQLRETURN unixodbc_backend_debug::do_prepare_statement(SQLHSTMT statement_handle
 	return return_code;
 }
 
+SQLRETURN unixodbc_backend_debug::do_prepare_statement(SQLHSTMT statement_handle, SQLWCHAR * statement_text, SQLINTEGER text_length) const
+{
+	std::cout << " *DEBUG* prepare_statement (wide)";
+	auto const return_code = SQLPrepareW(statement_handle, statement_text, text_length);
+	std::cout << " (return code " << return_code << ")" << std::endl;
+	return return_code;
+}
+
 SQLRETURN unixodbc_backend_debug::do_set_statement_attribute(SQLHSTMT statement_handle, SQLINTEGER attribute, SQLPOINTER value_ptr, SQLINTEGER string_length) const
 {
 	std::cout << " *DEBUG* set_statement_attribute";

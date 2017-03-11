@@ -116,6 +116,11 @@ SQLRETURN unixodbc_backend::do_prepare_statement(SQLHSTMT statement_handle, SQLC
 	return SQLPrepare(statement_handle, statement_text, text_length);
 }
 
+SQLRETURN unixodbc_backend::do_prepare_statement(SQLHSTMT statement_handle, SQLWCHAR * statement_text, SQLINTEGER text_length) const
+{
+	return SQLPrepareW(statement_handle, statement_text, text_length);
+}
+
 SQLRETURN unixodbc_backend::do_set_statement_attribute(SQLHSTMT statement_handle, SQLINTEGER attribute, SQLPOINTER value_ptr, SQLINTEGER string_length) const
 {
 	return SQLSetStmtAttr(statement_handle, attribute, value_ptr, string_length);
