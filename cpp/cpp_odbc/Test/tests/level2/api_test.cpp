@@ -359,6 +359,17 @@ TEST(Level2APITest, PrepareStatementForwards)
 	api.prepare_statement(handle, query);
 }
 
+TEST(Level2APITest, PrepareWideStatementForwards)
+{
+	level2::statement_handle const handle = {&value_a};
+	std::u16string const query(u"SELECT * FROM table");
+
+	level2_mock_api api;
+	EXPECT_CALL(api, do_prepare_statement(handle, query)).Times(1);
+
+	api.prepare_statement(handle, query);
+}
+
 TEST(Level2APITest, SetLongStatementAttributeForwards)
 {
 	level2::statement_handle const handle = {&value_a};

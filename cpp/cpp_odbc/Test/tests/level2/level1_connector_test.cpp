@@ -584,6 +584,21 @@ namespace {
 		std::string matchee;
 	};
 
+	// useful functor for comparing unsigned char * with strings
+	struct matches_u16string {
+		matches_u16string(std::u16string matchee) :
+			matchee(std::move(matchee))
+		{
+		}
+
+		bool operator()(SQLWCHAR * pointer) const
+		{
+			return (memcmp(pointer, matchee.c_str(), matchee.size() * 2) == 0);
+		}
+
+		std::u16string matchee;
+	};
+
 }
 
 TEST(Level1ConnectorTest, ExecuteStatementCallsAPI)
@@ -868,6 +883,33 @@ TEST(Level1ConnectorTest, PrepareStatementFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_prepare_statement(testing::_, testing::Matcher<unsigned char *>(testing::_), testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
+	expect_error(*api, expected_error);
+
+	level1_connector const connector(api);
+	EXPECT_THROW( connector.prepare_statement(handle, sql), cpp_odbc::error );
+}
+
+TEST(Level1ConnectorTest, PrepareWideStatementCallsAPI)
+{
+	level2::statement_handle handle = {&value_a};
+	std::u16string const sql(u"XXX");
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_prepare_statement(handle.handle, testing::Matcher<SQLWCHAR *>(testing::Truly(matches_u16string(sql))), sql.size()))
+	.WillOnce(testing::Return(SQL_SUCCESS));
+
+	level1_connector const connector(api);
+	connector.prepare_statement(handle, sql);
+}
+
+TEST(Level1ConnectorTest, PrepareWideStatementFails)
+{
+	level2::statement_handle handle = {&value_a};
+	std::u16string const sql(u"XXX");
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_prepare_statement(testing::_, testing::Matcher<SQLWCHAR *>(testing::_), testing::_))
+	.WillOnce(testing::Return(SQL_ERROR));
 	expect_error(*api, expected_error);
 
 	level1_connector const connector(api);
