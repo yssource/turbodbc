@@ -175,6 +175,19 @@ TEST(RaiiStatementTest, Prepare)
 	statement.prepare(sql);
 }
 
+TEST(RaiiStatementTest, PrepareWide)
+{
+	std::u16string const sql(u"SELECT dummy FROM test");
+
+	auto api = make_default_api();
+	auto environment = std::make_shared<raii_environment const>(api);
+	auto connection = std::make_shared<raii_connection const>(environment, "dummy");
+	EXPECT_CALL(*api, do_prepare_statement(default_s_handle, sql)).Times(1);
+
+	raii_statement statement(connection);
+	statement.prepare(sql);
+}
+
 TEST(RaiiStatementTest, BindInputParameter)
 {
 	SQLUSMALLINT const parameter_id = 17;

@@ -63,6 +63,16 @@ TEST(StatementTest, PrepareForwards)
 	statement.prepare(query);
 }
 
+TEST(StatementTest, PrepareWideForwards)
+{
+	std::u16string const query(u"SELECT * FROM dummy");
+
+	mock_statement statement;
+	EXPECT_CALL(statement, do_prepare(query)).Times(1);
+
+	statement.prepare(query);
+}
+
 TEST(StatementTest, BindInputParameterForwards)
 {
 	SQLUSMALLINT const parameter = 17;
