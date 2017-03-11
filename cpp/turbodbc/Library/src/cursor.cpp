@@ -12,7 +12,18 @@
 
 #include <cstring>
 #include <sstream>
+#include <codecvt>
+#include <locale>
 
+
+namespace {
+
+    std::u16string as_utf16(std::string utf8_encoded) {
+        static std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+        return converter.from_bytes(utf8_encoded);
+    }
+
+}
 
 namespace turbodbc {
 
@@ -39,7 +50,11 @@ void cursor::prepare(std::string const & sql)
     results_.reset();
     command_.reset();
     auto statement = connection_->make_statement();
-    statement->prepare(sql);
+    if (prefer_unicode_) {
+        statement->prepare(as_utf16(sql));
+    } else {
+        statement->prepare(sql);
+    }
     command_ = std::make_shared<command>(statement,
                                          buffer_size_,
                                          parameter_sets_to_buffer_,
