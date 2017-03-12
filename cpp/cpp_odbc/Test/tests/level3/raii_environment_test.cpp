@@ -110,7 +110,7 @@ TEST(RaiiEnvironmentTest, MakeConnection)
 	std::string const connection_string("dummy connection string");
 	auto api = make_default_api();
 
-	auto environment = std::make_shared<raii_environment const>(api);
+	auto environment = std::make_shared<raii_environment>(api);
 	EXPECT_CALL(*api, do_allocate_connection_handle(default_e_handle))
 		.WillOnce(testing::Return(default_c_handle));
 	EXPECT_CALL(*api, do_establish_connection(testing::_, connection_string))
