@@ -51,7 +51,11 @@
 		"INSERT STRING": {
 			"table": "a VARCHAR(20)"
 		},
-	
+
+		"INSERT UNICODE": {
+			"table": "a VARCHAR(20) CHARACTER SET utf8"
+		},
+
 		"INSERT LONG STRING": {
 			"table": "a VARCHAR(1000)"
 		},
