@@ -15,7 +15,7 @@ command::command(std::shared_ptr<cpp_odbc::statement const> statement,
                  bool use_double_buffering,
                  bool query_db_for_parameter_types) :
     statement_(statement),
-    params_(*statement, parameter_sets_to_buffer, query_db_for_parameter_types),
+    params_(*statement, parameter_sets_to_buffer, prefer_unicode, query_db_for_parameter_types),
     buffer_size_(buffer_size),
     prefer_unicode_(prefer_unicode),
     use_double_buffering_(use_double_buffering)

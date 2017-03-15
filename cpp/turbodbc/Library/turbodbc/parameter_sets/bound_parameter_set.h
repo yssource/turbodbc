@@ -18,6 +18,7 @@ class bound_parameter_set {
 public:
 	bound_parameter_set(cpp_odbc::statement const & statement,
 	                    std::size_t buffered_sets,
+	                    bool prefer_unicode,
 	                    bool query_db_for_initial_types);
 
 	/**
@@ -61,6 +62,7 @@ public:
 private:
 	cpp_odbc::statement const & statement_;
 	std::size_t buffered_sets_;
+	bool prefer_unicode_;
 	std::size_t transferred_sets_;
 	SQLULEN confirmed_last_batch_;
 	std::vector<std::shared_ptr<parameter>> parameters_;
