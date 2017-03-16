@@ -10,6 +10,12 @@
 #include <sql.h>
 #include <cstring>
 
+#ifdef __GNUC__
+#define EXTENSION __extension__
+#else
+#define EXTENSION
+#endif
+
 namespace turbodbc_numpy {
 
 namespace {
@@ -67,8 +73,8 @@ void binary_column::resize(std::size_t new_size)
 	npy_intp size = new_size;
 	PyArray_Dims new_dimensions = {&size, 1};
 	int const no_reference_check = 0;
-	__extension__ PyArray_Resize(get_array_ptr(data_), &new_dimensions, no_reference_check, NPY_ANYORDER);
-	__extension__ PyArray_Resize(get_array_ptr(mask_), &new_dimensions, no_reference_check, NPY_ANYORDER);
+	EXTENSION PyArray_Resize(get_array_ptr(data_), &new_dimensions, no_reference_check, NPY_ANYORDER);
+	EXTENSION PyArray_Resize(get_array_ptr(mask_), &new_dimensions, no_reference_check, NPY_ANYORDER);
 	size_ = new_size;
 }
 
