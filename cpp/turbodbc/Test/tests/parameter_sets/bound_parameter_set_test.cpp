@@ -139,6 +139,32 @@ TEST(BoundParameterSetTest, ConstructorOverridesStringParameterLengthSuggestions
 }
 
 
+TEST(BoundParameterSetTest, ConstructorOverridesUnicodeParameterLengthSuggestions)
+{
+	mock_statement statement;
+	ON_CALL(statement, do_number_of_parameters()).WillByDefault(testing::Return(4));
+	ON_CALL(statement, do_describe_parameter(1))
+		.WillByDefault(testing::Return(string_description_short));
+	ON_CALL(statement, do_describe_parameter(2))
+		.WillByDefault(testing::Return(string_description_max_length));
+	ON_CALL(statement, do_describe_parameter(3))
+		.WillByDefault(testing::Return(string_description_slightly_too_long));
+	ON_CALL(statement, do_describe_parameter(4))
+		.WillByDefault(testing::Return(string_description_too_long));
+
+	EXPECT_CALL(statement, do_bind_input_parameter(1, SQL_C_WCHAR, SQL_WVARCHAR, testing::_, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(2, SQL_C_WCHAR, SQL_WVARCHAR, testing::_, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(3, SQL_C_WCHAR, SQL_WVARCHAR, testing::_, testing::_)).Times(1);
+	EXPECT_CALL(statement, do_bind_input_parameter(4, SQL_C_WCHAR, SQL_WVARCHAR, testing::_, testing::_)).Times(1);
+
+	bound_parameter_set params(statement, 42, prefer_unicode, query_db_for_types);
+	EXPECT_EQ(params.get_parameters()[0]->get_buffer().capacity_per_element(), 2 * (string_description_short.size + 1));
+	EXPECT_EQ(params.get_parameters()[1]->get_buffer().capacity_per_element(), 2 * (string_description_max_length.size + 1));
+	EXPECT_EQ(params.get_parameters()[2]->get_buffer().capacity_per_element(), 2 * (string_description_max_length.size + 1));
+	EXPECT_EQ(params.get_parameters()[3]->get_buffer().capacity_per_element(), 2 * (string_description_max_length.size + 1));
+}
+
+
 TEST(BoundParameterSetTest, Rebind)
 {
 	mock_statement statement;

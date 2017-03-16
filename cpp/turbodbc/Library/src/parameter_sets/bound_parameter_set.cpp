@@ -17,8 +17,8 @@ namespace {
 	std::shared_ptr<parameter> make_suggested_parameter(cpp_odbc::statement const & statement, std::size_t one_based_index, std::size_t buffered_sets, bool prefer_unicode)
 	{
 		auto description = make_description(statement.describe_parameter(one_based_index), prefer_unicode);
-		if ((description->get_type_code() == type_code::string) and
-		    (description->element_size() > (max_initial_string_length + 1)))
+		if (((description->get_type_code() == type_code::string) or (description->get_type_code() == type_code::unicode))
+		    and (description->element_size() > (max_initial_string_length + 1)))
 		{
 			auto modified_description = statement.describe_parameter(one_based_index);
 			modified_description.size = max_initial_string_length;
