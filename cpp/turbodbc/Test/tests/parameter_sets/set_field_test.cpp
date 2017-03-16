@@ -123,7 +123,7 @@ TEST(SetFieldTest, SetFieldInteger)
 	auto element = buffer[0];
 
 	set_field(turbodbc::field{42l}, element);
-	EXPECT_EQ(42, *reinterpret_cast<long *>(element.data_pointer));
+	EXPECT_EQ(42, *reinterpret_cast<int64_t *>(element.data_pointer));
 	EXPECT_EQ(8, element.indicator);
 }
 

@@ -136,7 +136,7 @@ diagnostic_record level1_connector::do_get_diagnostic_record(environment_handle 
     return impl::get_diagnostic_record(*level1_api_, handle.type(), handle.handle);
 }
 
-void level1_connector::do_set_environment_attribute(environment_handle const & handle, SQLINTEGER attribute, long value) const
+void level1_connector::do_set_environment_attribute(environment_handle const & handle, SQLINTEGER attribute, intptr_t value) const
 {
     // ODBC's interface transfers integer values disguised as a pointer.
     auto const value_ptr = reinterpret_cast<SQLPOINTER>(value);
@@ -145,7 +145,7 @@ void level1_connector::do_set_environment_attribute(environment_handle const & h
     impl::throw_on_error(return_code, *this, handle);
 }
 
-void level1_connector::do_set_connection_attribute(connection_handle const & handle, SQLINTEGER attribute, long value) const
+void level1_connector::do_set_connection_attribute(connection_handle const & handle, SQLINTEGER attribute, intptr_t value) const
 {
     // ODBC's interface transfers integer values disguised as a pointer.
     auto const value_ptr = reinterpret_cast<SQLPOINTER>(value);
@@ -276,7 +276,7 @@ void level1_connector::do_free_statement(statement_handle const & handle, SQLUSM
     impl::throw_on_error(return_code, *this, handle);
 }
 
-long level1_connector::do_get_integer_column_attribute(statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const
+intptr_t level1_connector::do_get_integer_column_attribute(statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const
 {
     SQLLEN attribute_value = 0;
     auto const return_code = level1_api_->column_attribute(
@@ -294,7 +294,7 @@ long level1_connector::do_get_integer_column_attribute(statement_handle const & 
     return attribute_value;
 }
 
-long level1_connector::do_get_integer_statement_attribute(statement_handle const & handle, SQLINTEGER attribute) const
+intptr_t level1_connector::do_get_integer_statement_attribute(statement_handle const & handle, SQLINTEGER attribute) const
 {
     SQLLEN attribute_value = 0;
     auto const return_code = level1_api_->get_statement_attribute(
@@ -362,7 +362,7 @@ void level1_connector::do_prepare_statement(statement_handle const & handle, std
     impl::throw_on_error(return_code, *this, handle);
 }
 
-void level1_connector::do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, long value) const
+void level1_connector::do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, intptr_t value) const
 {
     auto value_as_pointer = reinterpret_cast<void*>(value); // damn C API
     auto const return_code = level1_api_->set_statement_attribute(handle.handle, attribute, value_as_pointer, SQL_IS_INTEGER);

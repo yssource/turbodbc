@@ -22,8 +22,8 @@ namespace {
 
     void set_integer(pybind11::handle const & value, cpp_odbc::writable_buffer_element & destination)
     {
-        *reinterpret_cast<long *>(destination.data_pointer) = value.cast<long>();
-        destination.indicator = sizeof(long);
+        *reinterpret_cast<int64_t *>(destination.data_pointer) = value.cast<int64_t>();
+        destination.indicator = sizeof(int64_t);
     }
 
     void set_floating_point(pybind11::handle const & value, cpp_odbc::writable_buffer_element & destination)
@@ -83,7 +83,7 @@ namespace {
 python_parameter_info determine_parameter_type(pybind11::handle const & value, type_code initial_type)
 {
     {
-        auto caster = pybind11::detail::make_caster<long>();
+        auto caster = pybind11::detail::make_caster<int64_t>();
         if (caster.load(value, true)) {
             return {set_integer, type_code::integer, size_not_important};
         }

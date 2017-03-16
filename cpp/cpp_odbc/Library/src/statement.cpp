@@ -6,12 +6,12 @@ namespace cpp_odbc {
 statement::statement() = default;
 statement::~statement() = default;
 
-long statement::get_integer_attribute(SQLINTEGER attribute) const
+intptr_t statement::get_integer_attribute(SQLINTEGER attribute) const
 {
 	return do_get_integer_attribute(attribute);
 }
 
-void statement::set_attribute(SQLINTEGER attribute, long value) const
+void statement::set_attribute(SQLINTEGER attribute, intptr_t value) const
 {
 	do_set_attribute(attribute, value);
 }
@@ -81,7 +81,7 @@ void statement::close_cursor() const
 	do_close_cursor();
 }
 
-long statement::get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const
+intptr_t statement::get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const
 {
 	return do_get_integer_column_attribute(column_id, field_identifier);
 }

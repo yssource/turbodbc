@@ -67,7 +67,7 @@ std::shared_ptr<result_sets::result_set> cursor::get_result_set() const
     return command_->get_results();
 }
 
-long cursor::get_row_count()
+int64_t cursor::get_row_count()
 {
     return command_->get_row_count();
 }

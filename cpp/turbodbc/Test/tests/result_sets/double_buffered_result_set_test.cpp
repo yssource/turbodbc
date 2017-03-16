@@ -131,8 +131,8 @@ namespace {
 				*rows_fetched_pointer_ = batch_sizes_[batch_index_];
 				for (std::size_t i = 0; i != batch_sizes_[batch_index_]; ++i) {
 					auto element = (*buffer_)[i];
-					*reinterpret_cast<long *>(element.data_pointer) = (batch_index_ + 1);
-					element.indicator = sizeof(long);
+					*reinterpret_cast<int64_t *>(element.data_pointer) = (batch_index_ + 1);
+					element.indicator = sizeof(intptr_t);
 				}
 				++batch_index_;
 			} else {
@@ -171,17 +171,17 @@ TEST(DoubleBufferedResultSetTest, GetBuffers)
 	// first batch
 	ASSERT_EQ(4, rs.fetch_next_batch());
 	ASSERT_EQ(1, rs.get_buffers().size());
-	EXPECT_EQ(1, *reinterpret_cast<long const *>(rs.get_buffers()[0].get()[3].data_pointer));
+	EXPECT_EQ(1, *reinterpret_cast<int64_t const *>(rs.get_buffers()[0].get()[3].data_pointer));
 
 	// second batch
 	ASSERT_EQ(4, rs.fetch_next_batch());
 	ASSERT_EQ(1, rs.get_buffers().size());
-	EXPECT_EQ(2, *reinterpret_cast<long const *>(rs.get_buffers()[0].get()[3].data_pointer));
+	EXPECT_EQ(2, *reinterpret_cast<intptr_t const *>(rs.get_buffers()[0].get()[3].data_pointer));
 
 	// third batch (partially filled)
 	ASSERT_EQ(2, rs.fetch_next_batch());
 	ASSERT_EQ(1, rs.get_buffers().size());
-	EXPECT_EQ(3, *reinterpret_cast<long const *>(rs.get_buffers()[0].get()[1].data_pointer));
+	EXPECT_EQ(3, *reinterpret_cast<intptr_t const *>(rs.get_buffers()[0].get()[1].data_pointer));
 
 	// fourth, non-existing batch
 	ASSERT_EQ(0, rs.fetch_next_batch());

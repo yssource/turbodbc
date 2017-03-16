@@ -162,7 +162,7 @@ TEST(RaiiConnectionTest, MakeStatement)
 TEST(RaiiConnectionTest, SetAttribute)
 {
 	SQLINTEGER const attribute = 42;
-	long const value = 1234;
+	intptr_t const value = 1234;
 
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment>(api);

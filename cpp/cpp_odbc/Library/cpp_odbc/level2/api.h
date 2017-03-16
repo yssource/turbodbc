@@ -99,7 +99,7 @@ public:
      *        the documentation of unixODBC's SQLSetEnvAttr() function
      * @param value The new integer value of the attribute.
      */
-    void set_environment_attribute(environment_handle const & handle, SQLINTEGER attribute, long value) const;
+    void set_environment_attribute(environment_handle const & handle, SQLINTEGER attribute, intptr_t value) const;
 
     /**
      * @brief Set an attribute of the connection to a specific integer value
@@ -108,7 +108,7 @@ public:
      *        the documentation of unixODBC's SQLSetConnectAttr() function
      * @param value The new integer value of the attribute.
      */
-    void set_connection_attribute(connection_handle const & handle, SQLINTEGER attribute, long value) const;
+    void set_connection_attribute(connection_handle const & handle, SQLINTEGER attribute, intptr_t value) const;
 
     /**
      * @brief Establish a connection to a database via the given handle
@@ -200,20 +200,20 @@ public:
     void free_statement(statement_handle const & handle, SQLUSMALLINT option) const;
 
     /**
-     * @brief Retrieve a (long) integer attribute of a column in the result set
+     * @brief Retrieve a (intptr_t) integer attribute of a column in the result set
      * @param handle The statement which holds the result set
      * @param column_id The column identifier
      * @param field_identifier Identifies the attribute which shall be retrieved. See unixODBC's SQLColAttribute() documentation
      * @return The value of the attribute for the given column
      */
-    long get_integer_column_attribute(statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const;
+    intptr_t get_integer_column_attribute(statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const;
 
     /**
      * @brief Retrieve an integer attribute of a statement
      * @param handle The statement for which a handle shall be received
      * @param attribute The attribute which shall be received. See unixODBC's SQLGetStmtSttr() documentation
      */
-    long get_integer_statement_attribute(statement_handle const & handle, SQLINTEGER attribute) const;
+    intptr_t get_integer_statement_attribute(statement_handle const & handle, SQLINTEGER attribute) const;
 
     /**
      * @brief Retrieve a string attribute of a column in the result set
@@ -258,7 +258,7 @@ public:
      * @param attribute Set this attribute. See unixODBC's SQLSetStmtAttr() documentation
      * @param value The value which shall be set for this attribute
      */
-    void set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, long value) const;
+    void set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, intptr_t value) const;
 
     /**
      * @brief Set an attribute of the statement to a pointer to a SQLULEN value
@@ -323,8 +323,8 @@ private:
     virtual diagnostic_record do_get_diagnostic_record(connection_handle const & handle) const = 0;
     virtual diagnostic_record do_get_diagnostic_record(environment_handle const & handle) const = 0;
 
-    virtual void do_set_environment_attribute(environment_handle const & handle, SQLINTEGER attribute, long value) const = 0;
-    virtual void do_set_connection_attribute(connection_handle const & handle, SQLINTEGER attribute, long value) const = 0;
+    virtual void do_set_environment_attribute(environment_handle const & handle, SQLINTEGER attribute, intptr_t value) const = 0;
+    virtual void do_set_connection_attribute(connection_handle const & handle, SQLINTEGER attribute, intptr_t value) const = 0;
     virtual void do_establish_connection(connection_handle & handle, std::string const & connection_string) const = 0;
     virtual void do_disconnect(connection_handle & handle) const = 0;
     virtual void do_end_transaction(connection_handle const & handle, SQLSMALLINT completion_type) const = 0;
@@ -337,14 +337,14 @@ private:
     virtual void do_execute_statement(statement_handle const & handle, std::string const & sql) const = 0;
     virtual bool do_fetch_scroll(statement_handle const & statement_handle, SQLSMALLINT fetch_orientation, SQLLEN fetch_offset) const = 0;
     virtual void do_free_statement(statement_handle const & handle, SQLUSMALLINT option) const = 0;
-    virtual long do_get_integer_column_attribute(statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;
-    virtual long do_get_integer_statement_attribute(statement_handle const & handle, SQLINTEGER attribute) const = 0;
+    virtual intptr_t do_get_integer_column_attribute(statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;
+    virtual intptr_t do_get_integer_statement_attribute(statement_handle const & handle, SQLINTEGER attribute) const = 0;
     virtual std::string do_get_string_column_attribute(statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;
     virtual short int do_number_of_result_columns(statement_handle const & handle) const = 0;
     virtual short int do_number_of_parameters(statement_handle const & handle) const = 0;
     virtual void do_prepare_statement(statement_handle const & handle, std::string const & sql) const = 0;
     virtual void do_prepare_statement(statement_handle const & handle, std::u16string const & sql) const = 0;
-    virtual void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, long value) const = 0;
+    virtual void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, intptr_t value) const = 0;
     virtual void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, SQLULEN * pointer) const = 0;
     virtual SQLLEN do_row_count(statement_handle const & handle) const = 0;
     virtual column_description do_describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const = 0;

@@ -58,12 +58,12 @@ char const * multi_value_buffer::data_pointer() const
 	return data_.data();
 }
 
-long * multi_value_buffer::indicator_pointer()
+int64_t * multi_value_buffer::indicator_pointer()
 {
 	return indicators_.data();
 }
 
-long const * multi_value_buffer::indicator_pointer() const
+int64_t const * multi_value_buffer::indicator_pointer() const
 {
 	return indicators_.data();
 }

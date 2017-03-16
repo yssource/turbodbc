@@ -23,18 +23,18 @@ namespace {
     object make_timestamp(SQL_TIMESTAMP_STRUCT const & ts)
     {
         // map SQL nanosecond precision to microsecond precision
-        long const adjusted_fraction = ts.fraction / 1000;
+        int64_t const adjusted_fraction = ts.fraction / 1000;
         return reinterpret_steal<object>(PyDateTime_FromDateAndTime(ts.year, ts.month, ts.day,
                                                                     ts.hour, ts.minute, ts.second, adjusted_fraction));
     }
 
-    object make_object(turbodbc::type_code code, char const * data_pointer, long size)
+    object make_object(turbodbc::type_code code, char const * data_pointer, int64_t size)
     {
         switch (code) {
             case type_code::boolean:
                 return cast(*reinterpret_cast<bool const *>(data_pointer));
             case type_code::integer:
-                return cast(*reinterpret_cast<long const *>(data_pointer));
+                return cast(*reinterpret_cast<int64_t const *>(data_pointer));
             case type_code::floating_point:
                 return cast(*reinterpret_cast<double const *>(data_pointer));
             case type_code::string:

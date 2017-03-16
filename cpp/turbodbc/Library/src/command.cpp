@@ -55,7 +55,7 @@ bound_parameter_set & command::get_parameters()
     return params_;
 }
 
-long command::get_row_count()
+int64_t command::get_row_count()
 {
     bool const has_result_set = (statement_->number_of_columns() != 0);
     if (has_result_set) {
