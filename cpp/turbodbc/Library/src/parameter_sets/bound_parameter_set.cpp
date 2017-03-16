@@ -56,6 +56,7 @@ bound_parameter_set::bound_parameter_set(cpp_odbc::statement const & statement,
 		} catch (cpp_odbc::error const &) {
 			parameters_.push_back(make_default_parameter(statement_, one_based_index, buffered_sets_, prefer_unicode_));
 		}
+		initial_parameter_types_.push_back(parameters_.back()->get_type_code());
 	}
 	statement_.set_attribute(SQL_ATTR_PARAMS_PROCESSED_PTR, &confirmed_last_batch_);
 }
@@ -104,6 +105,11 @@ void bound_parameter_set::rebind(std::size_t parameter_index,
 	                                                           parameter_index + 1,
 	                                                           buffered_sets_,
 	                                                           std::move(parameter_description));
+}
+
+std::vector<type_code> const & bound_parameter_set::get_initial_parameter_types() const
+{
+	return initial_parameter_types_;
 }
 
 

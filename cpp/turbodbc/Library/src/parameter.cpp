@@ -13,6 +13,11 @@ parameter::parameter(cpp_odbc::statement const & statement, std::size_t one_base
 
 parameter::~parameter() = default;
 
+type_code parameter::get_type_code() const
+{
+	return description_->get_type_code();
+}
+
 cpp_odbc::multi_value_buffer & parameter::get_buffer()
 {
 	return buffer_;

@@ -14,6 +14,18 @@ namespace {
 }
 
 
+TEST(ParameterTest, GetTypeCode)
+{
+	std::unique_ptr<turbodbc::string_description> description(new turbodbc::string_description(10));
+
+	turbodbc_test::mock_statement statement;
+
+	turbodbc::parameter parameter(statement, parameter_index, 100, std::move(description));
+
+	EXPECT_EQ(turbodbc::type_code::string, parameter.get_type_code());
+}
+
+
 TEST(ParameterTest, GetBuffer)
 {
 	std::unique_ptr<turbodbc::string_description> description(new turbodbc::string_description(10));

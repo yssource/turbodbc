@@ -195,6 +195,23 @@ namespace {
 	}
 }
 
+
+TEST(BoundParameterSetTest, GetInitialParameterTypes)
+{
+	mock_statement statement;
+	ON_CALL(statement, do_number_of_parameters()).WillByDefault(testing::Return(2));
+	ON_CALL(statement, do_describe_parameter(1))
+		.WillByDefault(testing::Return(int_description));
+	ON_CALL(statement, do_describe_parameter(2))
+		.WillByDefault(testing::Return(timestamp_description));
+
+	bound_parameter_set params(statement, 42, prefer_string, query_db_for_types);
+
+	std::vector<type_code> const expected = {type_code::integer, type_code::timestamp};
+	EXPECT_EQ(params.get_initial_parameter_types(), expected);
+}
+
+
 TEST(BoundParameterSetTest, ExecuteBatchNoSets)
 {
 	mock_statement statement;
