@@ -104,6 +104,8 @@ else:
 
 
 def get_extension_modules():
+    extension_modules = []
+
     """
     Extension module which is actually a plain C++ library without Python bindings
     """
@@ -115,19 +117,26 @@ def get_extension_modules():
                                  extra_link_args=base_library_link_args,
                                  libraries=[odbclib],
                                  library_dirs=library_dirs)
-
-    turbodbc_lib = _get_turbodbc_libname()
+    if sys.platform == "win32":
+        turbodbc_libs = []
+    else:
+        turbodbc_libs = [_get_turbodbc_libname()]
+        extension_modules.append(turbodbc_library)
 
     """
     An extension module which contains the main Python bindings for turbodbc
     """
+    turbodbc_python_sources = _get_source_files('turbodbc_python')
+    if sys.platform == "win32":
+        turbodbc_python_sources = turbodbc_sources + turbodbc_python_sources
     turbodbc_python = Extension('turbodbc_intern',
-                                sources=_get_source_files('turbodbc_python'),
+                                sources=turbodbc_python_sources,
                                 include_dirs=include_dirs,
                                 extra_compile_args=extra_compile_args,
-                                libraries=[odbclib, turbodbc_lib],
+                                libraries=[odbclib] + turbodbc_libs,
                                 extra_link_args=python_module_link_args,
                                 library_dirs=library_dirs)
+    extension_modules.append(turbodbc_python)
 
     """
     An extension module which contains Python bindings which require numpy support
@@ -135,16 +144,19 @@ def get_extension_modules():
     """
     if _has_numpy_headers():
         import numpy
+        turbodbc_numpy_sources = _get_source_files('turbodbc_numpy')
+        if sys.platform == "win32":
+            turbodbc_numpy_sources = turbodbc_sources + turbodbc_numpy_sources
         turbodbc_numpy = Extension('turbodbc_numpy_support',
-                                   sources=_get_source_files('turbodbc_numpy'),
+                                   sources=turbodbc_numpy_sources,
                                    include_dirs=include_dirs + [numpy.get_include()],
                                    extra_compile_args=extra_compile_args,
-                                   libraries=[odbclib, turbodbc_lib],
+                                   libraries=[odbclib] + turbodbc_libs,
                                    extra_link_args=python_module_link_args,
                                    library_dirs=library_dirs)
-        return [turbodbc_library, turbodbc_python, turbodbc_numpy]
-    else:
-        return [turbodbc_library, turbodbc_python]
+        extension_modules.append(turbodbc_numpy)
+
+    return extension_modules
 
 
 setup(name = 'turbodbc',
