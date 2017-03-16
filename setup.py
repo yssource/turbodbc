@@ -62,7 +62,7 @@ class _deferred_pybind11_include(object):
         return pybind11.get_include()
 
 
-extra_compile_args = ['--std=c++11']
+extra_compile_args = []
 include_dirs = ['include/', _deferred_pybind11_include()]
 
 library_dirs = [_get_distutils_build_directory()]
@@ -70,6 +70,7 @@ python_module_link_args = []
 base_library_link_args = []
 
 if sys.platform == 'darwin':
+    extra_compile_args.append('--std=c++11')
     extra_compile_args.append('--stdlib=libc++')
     extra_compile_args.append('-mmacosx-version-min=10.9')
     include_dirs.append(os.getenv('UNIXODBC_INCLUDE_DIR', '/usr/local/include/'))
@@ -83,12 +84,23 @@ if sys.platform == 'darwin':
     full_name = builder.get_ext_filename('libturbodbc')
     base_library_link_args.append('-Wl,-dylib_install_name,@loader_path/{}'.format(full_name))
     base_library_link_args.append('-dynamiclib')
+    odbclib = 'odbc'
+elif sys.platform == 'win32':
+    extra_compile_args.append('-DNOMINMAX')
+    if 'BOOST_ROOT' in os.environ:
+        include_dirs.append(os.getenv('BOOST_ROOT'))
+        library_dirs.append(os.path.join(os.getenv('BOOST_ROOT'), "stage", "lib"))
+    else:
+        print("warning: BOOST_ROOT enviroment variable not set")
+    odbclib = 'odbc32'
 else:
+    extra_compile_args.append('--std=c++11')
     python_module_link_args.append("-Wl,-rpath,$ORIGIN")
     if 'UNIXODBC_INCLUDE_DIR' in os.environ:
         include_dirs.append(os.getenv('UNIXODBC_INCLUDE_DIR'))
     if 'UNIXODBC_LIBRARY_DIR' in os.environ:
         library_dirs.append(os.getenv('UNIXODBC_LIBRARY_DIR'))
+    odbclib = 'odbc'
 
 
 def get_extension_modules():
@@ -101,7 +113,7 @@ def get_extension_modules():
                                  include_dirs=include_dirs,
                                  extra_compile_args=extra_compile_args,
                                  extra_link_args=base_library_link_args,
-                                 libraries=['odbc'],
+                                 libraries=[odbclib],
                                  library_dirs=library_dirs)
 
     turbodbc_lib = _get_turbodbc_libname()
@@ -113,7 +125,7 @@ def get_extension_modules():
                                 sources=_get_source_files('turbodbc_python'),
                                 include_dirs=include_dirs,
                                 extra_compile_args=extra_compile_args,
-                                libraries=['odbc', turbodbc_lib],
+                                libraries=[odbclib, turbodbc_lib],
                                 extra_link_args=python_module_link_args,
                                 library_dirs=library_dirs)
 
@@ -127,7 +139,7 @@ def get_extension_modules():
                                    sources=_get_source_files('turbodbc_numpy'),
                                    include_dirs=include_dirs + [numpy.get_include()],
                                    extra_compile_args=extra_compile_args,
-                                   libraries=['odbc', turbodbc_lib],
+                                   libraries=[odbclib, turbodbc_lib],
                                    extra_link_args=python_module_link_args,
                                    library_dirs=library_dirs)
         return [turbodbc_library, turbodbc_python, turbodbc_numpy]
