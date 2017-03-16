@@ -1,5 +1,8 @@
 #pragma once
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include "sql.h"
 #include "cpp_odbc/level2/diagnostic_record.h"
 #include "cpp_odbc/level2/handles.h"

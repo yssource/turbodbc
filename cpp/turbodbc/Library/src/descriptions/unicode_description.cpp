@@ -2,6 +2,9 @@
 
 #include <boost/variant/get.hpp>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include <sqlext.h>
 #include <cstring>
 

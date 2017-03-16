@@ -8,6 +8,9 @@
 
 #include "cpp_odbc/error.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include "sqlext.h"
 
 #include <sstream>
