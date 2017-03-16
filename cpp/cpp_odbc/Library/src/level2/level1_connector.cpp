@@ -358,7 +358,7 @@ void level1_connector::do_prepare_statement(statement_handle const & handle, std
 void level1_connector::do_prepare_statement(statement_handle const & handle, std::u16string const & sql) const
 {
     cpp_odbc::level2::input_u16string_buffer buffered(sql);
-    auto const return_code = level1_api_->prepare_statement(handle.handle, buffered.data_pointer(), buffered.size());
+    auto const return_code = level1_api_->prepare_statement(handle.handle, reinterpret_cast<SQLWCHAR *>(buffered.data_pointer()), buffered.size());
     impl::throw_on_error(return_code, *this, handle);
 }
 

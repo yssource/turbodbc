@@ -102,7 +102,7 @@ TEST(Level1APITest, EstablishConnectionForwards)
 {
 	SQLRETURN const expected = 27;
 	SQLHDBC connection_handle = &value_a;
-	SQLHWND window_handle = &value_b;
+	SQLHWND window_handle = reinterpret_cast<SQLHWND>(&value_b);
 	std::array<unsigned char, 6> input_string;
 	std::array<unsigned char, 7> output_string;
 	SQLSMALLINT output_string_length = 123;
