@@ -2,6 +2,7 @@
 
 #include <pybind11/pybind11.h>
 
+#include <ciso646>
 
 #include <boost/variant.hpp>
 

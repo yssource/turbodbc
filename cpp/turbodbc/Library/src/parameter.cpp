@@ -1,6 +1,7 @@
 #include <turbodbc/parameter.h>
 
 #include <cstring>
+#include <ciso646>
 
 
 namespace turbodbc {

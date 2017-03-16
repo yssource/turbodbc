@@ -8,6 +8,7 @@
 #include "cpp_odbc_test/level2_mock_api.h"
 
 #include <type_traits>
+#include <ciso646>
 
 
 using cpp_odbc::level3::raii_connection;

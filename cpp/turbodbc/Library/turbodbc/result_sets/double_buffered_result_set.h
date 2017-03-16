@@ -13,6 +13,7 @@
 #include <condition_variable>
 #include <queue>
 #include <future>
+#include <ciso646>
 
 
 namespace turbodbc { namespace result_sets {

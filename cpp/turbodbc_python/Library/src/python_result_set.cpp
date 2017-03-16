@@ -6,6 +6,7 @@
 #include <Python.h>
 #include <datetime.h> // Python header
 
+#include <ciso646>
 
 namespace turbodbc { namespace result_sets {
 
