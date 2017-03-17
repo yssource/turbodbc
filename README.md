@@ -43,12 +43,12 @@ are given:
 Requirement                       | Linux (`apt-get install`)    | OSX (`brew install`)
 ----------------------------------|------------------------------|----------------------
 C++-compiler with C++11 support   | G++-4.8 or higher            | clang with OSX 10.9+
-Boost library + headers*       | `libboost-all-dev`           | `boost`
+Boost library + headers*          | `libboost-all-dev`           | `boost`
 Unixodbc library + headers        | `unixodbc-dev`               | `unixodbc`
 Python headers                    | `python-dev`                 | use `pyenv` to install
 
 *) The minimum viable boost setup requires the libraries `variant`, `optional`,
-and `datetime`.
+`datetime`, and `locale`.
 
 
 
@@ -166,16 +166,24 @@ Please note a few things:
 *   NumPy support is limited to result sets, experimental, and will probably change
     with the next iterations.
 
-Performance options
--------------------
+Performance and compatibility options
+-------------------------------------
 
-Turbodbc offers some options to tune the performance for your database:
+Turbodbc offers a way to adjust its behavior to tune performance and to
+achieve compatibility with your database. The basic usage is this:
+
+    >>> from turbodbc import connect, make_options
+    >>> options = make_options()
+    >>> connect(dsn="my_dsn", turbodbc_options=options)
+
+This will connect with your database using the default options. To use non-default
+options, supply keyword arguments to `make_options()`:
 
     >>> from turbodbc import Megabytes
-    >>> connect(dsn="my dsn",
-                read_buffer_size=Megabytes(100),
-                parameter_sets_to_buffer=5000,
-                use_async_io=True)
+    >>> options = make_options(read_buffer_size=Megabytes(100),
+                               parameter_sets_to_buffer=1000,
+                               use_async_io=True,
+                               prefer_unicode=True)
 
 `read_buffer_size` affects how many result set rows are retrieved per batch
 of results. Set the attribute to `turbodbc.Megabytes(42)` to have turbodbc determine
@@ -189,16 +197,20 @@ which are transferred per batch of parameters (e.g., as sent with `executemany()
 Please note that it is not (yet) possible to use the `Megabytes` and `Rows` classes
 here.
 
-Finally, set `use_async_io` to `True` if you would like to benefit from
-asynchronous I/O operations (limited to result sets for the time being).
-Asynchronous I/O means that while the main thread converts result set rows
-retrieved from the database to Python objects, another thread fetches a
-new batch of results from the database in the background. This may yield
+If you set `use_async_io` to `True`, turbodbc will use asynchronous I/O operations
+(limited to result sets for the time being). Asynchronous I/O means that while the
+main thread converts result set rows retrieved from the database to Python
+objects, another thread fetches a new batch of results from the database in the background. This may yield
 significant speedups when retrieving and converting are similarly fast
 operations.
 
     Asynchronous I/O is experimental and has to fully prove itself yet.
-    Don't be afraid to give it a try, though.
+    Do not be afraid to give it a try, though.
+
+Finally, set `prefer_unicode` to `True` if your database does not fully support
+the UTF-8 encoding turbodbc prefers. With this option you can tell turbodbc
+to use two-byte character strings with UCS-2/UTF-16 encoding. Use this option
+if you try to connection to Microsoft SQL server (MSSQL).
 
 
 Development version
