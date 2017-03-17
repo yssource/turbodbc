@@ -338,6 +338,20 @@ TEST(Level1APITest, PrepareStatementForwards)
 	EXPECT_EQ(expected, actual);
 }
 
+TEST(Level1APITest, PrepareWideStatementForwards)
+{
+	SQLRETURN const expected = 23;
+	SQLHDBC handle = &value_a;
+	std::array<SQLWCHAR, 5> statement;
+
+	level1_mock_api api;
+	EXPECT_CALL(api, do_prepare_statement(handle, statement.data(), statement.size()))
+		.WillOnce(testing::Return(expected));
+
+	auto const actual = api.prepare_statement(handle, statement.data(), statement.size());
+	EXPECT_EQ(expected, actual);
+}
+
 TEST(Level1APITest, SetStatementAttributeForwards)
 {
 	SQLRETURN const expected = 23;

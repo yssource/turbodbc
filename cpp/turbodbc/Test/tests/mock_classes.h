@@ -37,6 +37,7 @@ namespace turbodbc_test {
 		MOCK_CONST_METHOD2( do_set_attribute, void(SQLINTEGER, SQLULEN *));
 		MOCK_CONST_METHOD1( do_execute, void(std::string const &));
 		MOCK_CONST_METHOD1( do_prepare, void(std::string const &));
+		MOCK_CONST_METHOD1( do_prepare, void(std::u16string const &));
 		MOCK_CONST_METHOD5( do_bind_input_parameter, void(SQLUSMALLINT, SQLSMALLINT, SQLSMALLINT, SQLSMALLINT, cpp_odbc::multi_value_buffer &));
 		MOCK_CONST_METHOD0( do_unbind_all_parameters, void());
 		MOCK_CONST_METHOD0( do_execute_prepared, void());
