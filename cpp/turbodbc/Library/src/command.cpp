@@ -9,16 +9,13 @@
 namespace turbodbc {
 
 command::command(std::shared_ptr<cpp_odbc::statement const> statement,
-                 turbodbc::buffer_size buffer_size,
-                 std::size_t parameter_sets_to_buffer,
-                 bool prefer_unicode,
-                 bool use_double_buffering,
-                 bool query_db_for_parameter_types) :
+                 turbodbc::configuration configuration) :
     statement_(statement),
-    params_(*statement, parameter_sets_to_buffer, prefer_unicode, query_db_for_parameter_types),
-    buffer_size_(buffer_size),
-    prefer_unicode_(prefer_unicode),
-    use_double_buffering_(use_double_buffering)
+    params_(*statement,
+            configuration.options.parameter_sets_to_buffer,
+            configuration.options.prefer_unicode,
+            configuration.capabilities.supports_describe_parameter),
+    configuration_(std::move(configuration))
 {
 }
 
@@ -36,10 +33,14 @@ void command::execute()
 
     std::size_t const columns = statement_->number_of_columns();
     if (columns != 0) {
-        if (use_double_buffering_) {
-            results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, buffer_size_, prefer_unicode_);
+        if (configuration_.options.use_async_io) {
+            results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_,
+                                                                                 configuration_.options.read_buffer_size,
+                                                                                 configuration_.options.prefer_unicode);
         } else {
-            results_ = std::make_shared<result_sets::bound_result_set>(statement_, buffer_size_, prefer_unicode_);
+            results_ = std::make_shared<result_sets::bound_result_set>(statement_,
+                                                                       configuration_.options.read_buffer_size,
+                                                                       configuration_.options.prefer_unicode);
         }
     }
 }

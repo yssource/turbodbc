@@ -43,6 +43,7 @@ def connect(dsn=None, turbodbc_options=None, read_buffer_size=None, parameter_se
         warnings.warn("Calling turbodbc.connect() with parameter use_async_io is deprecated. "
                       "Please use make_options() instead.", DeprecationWarning)
 
-    connection = Connection(intern_connect(_make_connection_string(dsn, **kwargs)))
+    connection = Connection(intern_connect(_make_connection_string(dsn, **kwargs),
+                                           turbodbc_options))
 
     return connection
