@@ -37,7 +37,7 @@ namespace {
 		}
 
 		bool operator()(std::string const & value) const {
-			return parameter_.is_suitable_for(type_code::string, value.size() + 1);
+			return parameter_.is_suitable_for(type_code::string, value.size());
 		}
 
 	private:
