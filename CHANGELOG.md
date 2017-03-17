@@ -2,6 +2,8 @@ Version 1.1.0 (unreleased)
 ==========================
 *   Add support for databases that require Unicode data to be transported
     in UCS-2/UCS-16 format rather than UTF-8, e.g., MSSQL.
+*   Remove deprecated option `rows_to_buffer` from `turbodbc.connect()`
+    (see version 0.4.1 for details).
 
 Version 1.0.4
 =============
