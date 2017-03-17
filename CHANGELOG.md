@@ -1,3 +1,8 @@
+Version 1.1.0 (unreleased)
+==========================
+*   Add support for databases that require Unicode data to be transported
+    in UCS-2/UCS-16 format rather than UTF-8, e.g., MSSQL.
+
 Version 1.0.4
 =============
 *   Add possibility to set unixodbc include and library directories in
