@@ -11,6 +11,8 @@ Version 1.1.0 (unreleased)
     from options passed to the ODBC connection string.
 *   Removed deprecated option `rows_to_buffer` from `turbodbc.connect()`
     (see version 0.4.1 for details).
+*   The order of arguments for `turbodbc.connect()` has changed; this may affect
+    you if you have not used keyword arguments.
 
 Version 1.0.4
 =============
