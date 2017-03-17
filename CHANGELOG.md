@@ -14,6 +14,11 @@ Version 1.1.0 (unreleased)
 *   The order of arguments for `turbodbc.connect()` has changed; this may affect
     you if you have not used keyword arguments.
 
+Version 1.0.5
+=============
+*   Internal: Remove some `const` pointer to resolve some compile issues with
+    xcode 6.4 (thanks @xhochy)
+
 Version 1.0.4
 =============
 *   Added possibility to set unixodbc include and library directories in
