@@ -3,7 +3,6 @@ import pytest
 from turbodbc import connect, DatabaseError
 from turbodbc.connect import _make_connection_string
 from turbodbc.connection import Connection
-from turbodbc import Rows, Megabytes
 
 from helpers import for_one_database, get_credentials
 
@@ -50,35 +49,3 @@ def test_connect_raises_on_invalid_additional_option(dsn, configuration):
     additional_option = {configuration['capabilities']['connection_user_option']: 'invalid user'}
     with pytest.raises(DatabaseError):
         connect(dsn=dsn, **additional_option)
-
-
-@for_one_database
-def test_connect_performance_settings(dsn, configuration):
-    connection = connect(dsn=dsn,
-                         parameter_sets_to_buffer=123,
-                         use_async_io=True,
-                         **get_credentials(configuration))
-
-    assert connection.impl.parameter_sets_to_buffer == 123
-    assert connection.impl.use_async_io == True
-
-
-@for_one_database
-def test_connect_with_rows(dsn, configuration):
-    connection = connect(dsn=dsn, read_buffer_size=Rows(317), **get_credentials(configuration))
-    assert connection.impl.get_buffer_size().rows == 317
-
-
-@for_one_database
-def test_connect_with_megabytes(dsn, configuration):
-    connection = connect(dsn=dsn, read_buffer_size=Megabytes(1), **get_credentials(configuration))
-    assert connection.impl.get_buffer_size().megabytes == 1
-
-
-@for_one_database
-def test_connect_with_prefer_unicode(dsn, configuration):
-    connection = connect(dsn=dsn, prefer_unicode=True, **get_credentials(configuration))
-    assert connection.impl.prefer_unicode == True
-
-    connection = connect(dsn=dsn, prefer_unicode=False, **get_credentials(configuration))
-    assert connection.impl.prefer_unicode == False
