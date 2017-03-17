@@ -1,3 +1,8 @@
+Version 1.0.5
+=============
+*   Internal: Remove some `const` pointer to resolve some compile issues with
+    xcode 6.4 (thanks @xhochy)
+
 Version 1.0.4
 =============
 *   Add possibility to set unixodbc include and library directories in
