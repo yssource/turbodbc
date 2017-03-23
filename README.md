@@ -65,7 +65,7 @@ popular Python ODBC module) with various databases (Exasol, PostgreSQL, MySQL)
 and corresponding ODBC drivers. I found turbodbc to be consistently faster.
 
 For retrieving result sets, I found speedups between 1.5 and 7 retrieving plain
-Python objects. For inserting data, I found speedups of up to 100. 
+Python objects. For inserting data, I found speedups of up to 100.
 
 Is this completely scientific? Not at all. I have not told you about which
 hardware I used, which operating systems, drivers, database versions, network
@@ -259,14 +259,14 @@ To use the latest version of turbodbc, do the following.
         make install
         cd dist
         python setup.py sdist
-    
+
     This will create a `turbodbc-x.y.z.tar.gz` file locally which can be used
     by others to install turbodbc with `pip install turbodbc-x.y.z.tar.gz`.
 
 Source build requirements
 -------------------------
 
-For the development build, you also require the following additional 
+For the development build, you also require the following additional
 dependencies:
 
 *   CMake
@@ -309,6 +309,15 @@ There is a good chance that turbodbc will work with other, totally untested data
 as well. There is, however, an equally good chance that you will encounter compatibility
 issues. If you encounter one, please take the time to report it so turbodbc can be improved
 to work with more real-world databases. Thanks!
+
+
+SQLAlchemy support
+------------------
+
+Using Turbodbc in combination with SQLAlchemy is possible for a limited number of databases:
+
+* Exasol: [sqlalchemy_exasol](https://github.com/blue-yonder/sqlalchemy_exasol)
+* MSSQL: [sqlalchemy-turbodbc](https://github.com/dirkjonker/sqlalchemy-turbodbc) (experimental)
 
 
 I got questions and issues to report!
