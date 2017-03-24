@@ -23,7 +23,7 @@ Features
     `int`, `float`, `str`, `bool`, `datetime.date`, `datetime.datetime`
 *   Also provides a high-level C++11 database driver under the hood
 *   Tested with Python 2.7, 3.4, 3.5, and 3.6
-*   Tested on Linux and OSX
+*   Tested on Linux and OSX. Windows support is _experimental_ and not very convenient yet.
 
 
 Installation
