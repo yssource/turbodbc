@@ -29,7 +29,7 @@ endif()
 
 install(
     TARGETS turbodbc_python
-    LIBRARY DESTINATION lib
+    DESTINATION lib
 )
 
 install(

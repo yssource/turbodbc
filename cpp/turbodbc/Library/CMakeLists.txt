@@ -22,7 +22,7 @@ add_custom_command(TARGET turbodbc POST_BUILD
 
 install(
     TARGETS turbodbc
-    LIBRARY DESTINATION lib
+    DESTINATION lib
 )
 
 install(
