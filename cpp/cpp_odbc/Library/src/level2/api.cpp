@@ -50,12 +50,12 @@ diagnostic_record api::get_diagnostic_record(environment_handle const & handle) 
     return do_get_diagnostic_record(handle);
 }
 
-void api::set_environment_attribute(environment_handle const & handle, SQLINTEGER attribute, long value) const
+void api::set_environment_attribute(environment_handle const & handle, SQLINTEGER attribute, intptr_t value) const
 {
     do_set_environment_attribute(handle, attribute, value);
 }
 
-void api::set_connection_attribute(connection_handle const & handle, SQLINTEGER attribute, long value) const
+void api::set_connection_attribute(connection_handle const & handle, SQLINTEGER attribute, intptr_t value) const
 {
     do_set_connection_attribute(handle, attribute, value);
 }
@@ -115,12 +115,12 @@ void api::free_statement(statement_handle const & handle, SQLUSMALLINT option) c
 do_free_statement(handle, option);
 }
 
-long api::get_integer_column_attribute(cpp_odbc::level2::statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const
+intptr_t api::get_integer_column_attribute(cpp_odbc::level2::statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const
 {
     return do_get_integer_column_attribute(handle, column_id, field_identifier);
 }
 
-long api::get_integer_statement_attribute(statement_handle const & handle, SQLINTEGER attribute) const
+intptr_t api::get_integer_statement_attribute(statement_handle const & handle, SQLINTEGER attribute) const
 {
     return do_get_integer_statement_attribute(handle, attribute);
 }
@@ -150,7 +150,7 @@ void api::prepare_statement(statement_handle const & handle, std::u16string cons
     do_prepare_statement(handle, sql);
 }
 
-void api::set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, long value) const
+void api::set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, intptr_t value) const
 {
     do_set_statement_attribute(handle, attribute, value);
 }

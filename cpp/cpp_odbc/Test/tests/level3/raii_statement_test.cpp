@@ -8,6 +8,7 @@
 #include "cpp_odbc_test/level2_mock_api.h"
 
 #include <type_traits>
+#include <ciso646>
 
 
 using cpp_odbc::level3::raii_connection;
@@ -109,7 +110,7 @@ TEST(RaiiStatementTest, KeepsConnectionAlive)
 TEST(RaiiStatementTest, GetIntegerAttribute)
 {
 	SQLINTEGER const attribute = 42;
-	long const expected = 12345;
+	intptr_t const expected = 12345;
 
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment>(api);
@@ -124,7 +125,7 @@ TEST(RaiiStatementTest, GetIntegerAttribute)
 TEST(RaiiStatementTest, SetIntegerAttribute)
 {
 	SQLINTEGER const attribute = 42;
-	long const value = 12345;
+	intptr_t const value = 12345;
 
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment>(api);
@@ -307,7 +308,7 @@ TEST(RaiiStatementTest, GetIntegerColumnAttribute)
 {
 	SQLUSMALLINT const column_id = 17;
 	SQLUSMALLINT const field_identifier = 42;
-	long const expected = 23;
+	intptr_t const expected = 23;
 
 	auto api = make_default_api();
 	auto environment = std::make_shared<raii_environment>(api);

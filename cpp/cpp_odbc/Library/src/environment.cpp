@@ -10,7 +10,7 @@ std::shared_ptr<connection> environment::make_connection(std::string const & con
 	return do_make_connection(connection_string);
 }
 
-void environment::set_attribute(SQLINTEGER attribute, long value) const
+void environment::set_attribute(SQLINTEGER attribute, intptr_t value) const
 {
 	do_set_attribute(attribute, value);
 }

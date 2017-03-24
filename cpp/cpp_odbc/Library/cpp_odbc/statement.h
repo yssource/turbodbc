@@ -21,14 +21,14 @@ public:
      * @brief Retrieve the value of statement attribute as an integer
      * @param attribute A constant representing the requested attribute
      */
-    long get_integer_attribute(SQLINTEGER attribute) const;
+    intptr_t get_integer_attribute(SQLINTEGER attribute) const;
 
     /**
      * @brief Set the value of statement attribute
      * @param attribute A constant representing the requested attribute
      * @param value The new value for this attribute
      */
-    void set_attribute(SQLINTEGER attribute, long value) const;
+    void set_attribute(SQLINTEGER attribute, intptr_t value) const;
 
     /**
      * @brief Set the pointer of the given statement attribute
@@ -111,7 +111,7 @@ public:
      * @param column_id The column identifier
      * @param field_identifier A constant representing the requested attribute
      */
-    long get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const;
+    intptr_t get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const;
 
     /**
      * @brief Retrieve the value of a column attribute as a string
@@ -151,8 +151,8 @@ public:
 protected:
     statement();
 private:
-    virtual long do_get_integer_attribute(SQLINTEGER attribute) const = 0;
-    virtual void do_set_attribute(SQLINTEGER attribute, long value) const = 0;
+    virtual intptr_t do_get_integer_attribute(SQLINTEGER attribute) const = 0;
+    virtual void do_set_attribute(SQLINTEGER attribute, intptr_t value) const = 0;
     virtual void do_set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const = 0;
     virtual void do_execute(std::string const & sql) const = 0;
     virtual void do_prepare(std::string const & sql) const = 0;
@@ -168,7 +168,7 @@ private:
     virtual bool do_fetch_next() const = 0;
     virtual void do_close_cursor() const = 0;
 
-    virtual long do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;
+    virtual intptr_t do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;
     virtual std::string do_get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;
     virtual SQLLEN do_row_count() const = 0;
     virtual column_description do_describe_column(SQLUSMALLINT column_id) const = 0;

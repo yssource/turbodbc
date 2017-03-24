@@ -31,8 +31,8 @@ public:
 
 	virtual ~raii_statement();
 private:
-	long do_get_integer_attribute(SQLINTEGER attribute) const final;
-	void do_set_attribute(SQLINTEGER attribute, long value) const final;
+	intptr_t do_get_integer_attribute(SQLINTEGER attribute) const final;
+	void do_set_attribute(SQLINTEGER attribute, intptr_t value) const final;
 	void do_set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const final;
 	void do_execute(std::string const & sql) const final;
 	void do_prepare(std::string const & sql) const final;
@@ -48,7 +48,7 @@ private:
 	bool do_fetch_next() const final;
 	void do_close_cursor() const final;
 
-	long do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
+	intptr_t do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
 	std::string do_get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
 	SQLLEN do_row_count() const final;
 	column_description do_describe_column(SQLUSMALLINT column_id) const final;

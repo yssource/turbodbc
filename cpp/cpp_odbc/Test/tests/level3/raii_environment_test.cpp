@@ -124,7 +124,7 @@ TEST(RaiiEnvironmentTest, MakeConnection)
 TEST(RaiiEnvironmentTest, SetAttribute)
 {
 	SQLINTEGER const attribute = 42;
-	long const value = 1234;
+	intptr_t const value = 1234;
 
 	auto api = make_default_api();
 	raii_environment environment(api);

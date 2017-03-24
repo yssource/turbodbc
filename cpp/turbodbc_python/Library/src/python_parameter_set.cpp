@@ -8,6 +8,7 @@
 #include <sqlext.h>
 
 #include <sstream>
+#include <ciso646>
 
 namespace turbodbc {
 

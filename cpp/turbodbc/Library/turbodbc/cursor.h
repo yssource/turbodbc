@@ -26,7 +26,7 @@ public:
 
     void add_parameter_set(std::vector <nullable_field> const &parameter_set);
 
-    long get_row_count();
+    int64_t get_row_count();
 
     std::shared_ptr <result_sets::result_set> get_result_set() const;
 

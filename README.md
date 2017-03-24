@@ -40,16 +40,20 @@ at installation time to determine whether NumPy support can be provided.
 Since turbodbc includes C-extensions, make sure the following prerequisites
 are given:
 
-Requirement                       | Linux (`apt-get install`)    | OSX (`brew install`)
-----------------------------------|------------------------------|----------------------
-C++-compiler with C++11 support   | G++-4.8 or higher            | clang with OSX 10.9+
-Boost library + headers*          | `libboost-all-dev`           | `boost`
-Unixodbc library + headers        | `unixodbc-dev`               | `unixodbc`
-Python headers                    | `python-dev`                 | use `pyenv` to install
+Requirement                 | Linux (`apt-get install`) | OSX (`brew install`)   | Windows (experimental) |
+----------------------------|---------------------------|------------------------|------------------------|
+C++11 compiler              | G++-4.8 or higher         | clang with OSX 10.9+   | Visual C++ 2015        |
+Boost library + headers (1) | `libboost-all-dev`        | `boost`                | Boost sources (2)      |
+ODBC library + headers      | `unixodbc-dev`            | `unixodbc`             | Windows Kits           |
+Python headers              | `python-dev`              | use `pyenv` to install | Python 3.5+ (3)        |
 
-*) The minimum viable boost setup requires the libraries `variant`, `optional`,
+(1) The minimum viable Boost setup requires the libraries `variant`, `optional`,
 `datetime`, and `locale`.
 
+(2) After unpacking Boost run Simplified Build From Source (`bootstrap` and `.\b2`).
+Also make sure the enviroment variable `BOOST_ROOT` is pointing to the installation.
+
+(3) Python 2.7 and 3.4 uses older compilers on Windows, and can not be used.
 
 
 Why should I use turbodbc instead of other ODBC modules?

@@ -272,7 +272,7 @@ namespace {
 		        process_parameters(true)
 		{}
 
-		void do_set_attribute(SQLINTEGER attribute, long value) const final
+		void do_set_attribute(SQLINTEGER attribute, intptr_t value) const final
 		{
 			if (attribute == SQL_ATTR_PARAMSET_SIZE) {
 				input = value;

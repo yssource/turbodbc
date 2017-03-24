@@ -36,7 +36,7 @@ public:
      */
     bound_parameter_set &get_parameters();
 
-    long get_row_count();
+    int64_t get_row_count();
 
     ~command();
 

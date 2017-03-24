@@ -1,5 +1,8 @@
 #pragma once
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include "sql.h"
 
 namespace cpp_odbc { namespace level1 {

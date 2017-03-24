@@ -280,7 +280,7 @@ TEST(Level1ConnectorTest, SetEnvironmentAttributeCallsAPI)
 {
 	level2::environment_handle const handle = {&value_a};
 	SQLINTEGER const attribute = SQL_ATTR_ODBC_VERSION;
-	long const value = 42;
+	intptr_t const value = 42;
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_environment_attribute(handle.handle, attribute, reinterpret_cast<SQLPOINTER>(value), 0))
@@ -307,7 +307,7 @@ TEST(Level1ConnectorTest, SetConnectionAttributeCallsAPI)
 {
 	level2::connection_handle const handle = {&value_a};
 	SQLINTEGER const attribute = SQL_ATTR_AUTOCOMMIT;
-	long const value = 42;
+	intptr_t const value = 42;
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_connection_attribute(handle.handle, attribute, reinterpret_cast<SQLPOINTER>(value), 0))
@@ -703,7 +703,7 @@ TEST(Level1ConnectorTest, GetIntegerColumnAttributeCallsAPI)
 	level2::statement_handle handle = {&value_a};
 	SQLUSMALLINT const column_id = 17;
 	SQLUSMALLINT const field_identifier = 23;
-	long const expected = 12345;
+	intptr_t const expected = 12345;
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_column_attribute(handle.handle, column_id, field_identifier, nullptr, 0, nullptr, testing::_))
@@ -735,10 +735,10 @@ TEST(Level1ConnectorTest, GetIntegerStatementAttributeCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLINTEGER const attribute = 23;
-	long const expected = 12345;
+	intptr_t const expected = 12345;
 
 	auto copy_long_to_void_pointer = [&expected](testing::Unused, testing::Unused, void * destination, testing::Unused, testing::Unused) {
-		*reinterpret_cast<long *>(destination) = expected;
+		*reinterpret_cast<intptr_t *>(destination) = expected;
 	};
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
@@ -920,10 +920,10 @@ TEST(Level1ConnectorTest, SetLongStatementAttributeCallsAPI)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLINTEGER const attribute = 42;
-	long const value = 23;
+	intptr_t const value = 23;
 
 	auto matches_pointer_as_value = [&value](void * pointer) {
-		return reinterpret_cast<long>(pointer) == value;
+		return reinterpret_cast<intptr_t>(pointer) == value;
 	};
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
@@ -938,7 +938,7 @@ TEST(Level1ConnectorTest, SetLongStatementAttributeFails)
 {
 	level2::statement_handle handle = {&value_a};
 	SQLINTEGER const attribute = 42;
-	long const value = 23;
+	intptr_t const value = 23;
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_statement_attribute(testing::_, testing::_, testing::_, testing::_))

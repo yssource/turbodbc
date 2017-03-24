@@ -55,7 +55,7 @@ namespace {
 
 TEST(CommandTest, GetRowCountAfterQueryWithResultSet)
 {
-    long const expected = 17;
+    int64_t const expected = 17;
     auto statement = std::make_shared<mock_statement>();
 
     prepare_single_column_result_set(*statement);
