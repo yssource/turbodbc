@@ -16,6 +16,7 @@ Version 1.1.0 (unreleased)
     (see version 0.4.1 for details).
 *   The order of arguments for `turbodbc.connect()` has changed; this may affect
     you if you have not used keyword arguments.
+*   Updated `pybind11` requirement to at least `2.1.0`.
 *   Internal: Some types have changed to accomodate for Linux/OSX/Windows compatibility.
     In particular, a few `long` types were converted to `intptr_t` and `int64_t`
     where appropriate. In particular, this affects the `field` type that may be used
