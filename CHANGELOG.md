@@ -2,6 +2,9 @@ Version 1.1.0 (unreleased)
 ==========================
 *   Added support for databases that require Unicode data to be transported
     in UCS-2/UCS-16 format rather than UTF-8, e.g., MSSQL.
+*   Added _experimental_ support for Windows source distribution builds.
+    Windows builds are not fully (or automatically) tested yet, and still require
+    significant effort on the user side to compile (thanks @TWAC for this initial version)
 *   Added `make_options()` function that take all performance and compatibility
     settings as keyword arguments.
 *   Deprecated all performance options (`read_buffer_size`, `use_async_io`, and
@@ -13,6 +16,10 @@ Version 1.1.0 (unreleased)
     (see version 0.4.1 for details).
 *   The order of arguments for `turbodbc.connect()` has changed; this may affect
     you if you have not used keyword arguments.
+*   Internal: Some types have changed to accomodate for Linux/OSX/Windows compatibility.
+    In particular, a few `long` types were converted to `intptr_t` and `int64_t`
+    where appropriate. In particular, this affects the `field` type that may be used
+    by C++ end users (so they exist).
 
 Version 1.0.5
 =============
