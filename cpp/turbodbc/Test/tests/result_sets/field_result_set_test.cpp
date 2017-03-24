@@ -52,7 +52,7 @@ TEST(FieldResultSetTest, FetchRow)
 	EXPECT_CALL(base, do_fetch_next_batch()).WillOnce(testing::Return(1));
 	auto const row = rs.fetch_row();
 	ASSERT_EQ(2, row.size());
-	EXPECT_EQ(expected_int, boost::get<intptr_t>(*row[0]));
+	EXPECT_EQ(expected_int, boost::get<int64_t>(*row[0]));
 	EXPECT_EQ(expected_float, boost::get<double>(*row[1]));
 }
 

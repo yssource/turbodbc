@@ -15,5 +15,5 @@ TEST(Int64TranslatorTest, MakeField)
 	int64_translator const translator;
 
 	*reinterpret_cast<int64_t *>(element.data_pointer) = 42;
-	EXPECT_EQ(turbodbc::field{42l}, *(translator.make_field(as_const[0])));
+	EXPECT_EQ(turbodbc::field{int64_t(42)}, *(translator.make_field(as_const[0])));
 }
