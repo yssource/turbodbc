@@ -307,8 +307,6 @@ are tested on an irregular basis:
 *   MSSQL with FreeTDS
 *   MSSQL with Microsoft's official ODBC driver
 
-These database/driver combinations do not yet pass all tests.
-
 There is a good chance that turbodbc will work with other, totally untested databases
 as well. There is, however, an equally good chance that you will encounter compatibility
 issues. If you encounter one, please take the time to report it so turbodbc can be improved
