@@ -1,6 +1,7 @@
 # This script provides include and link directories for unixODBC
 if( WIN32 )
     set(Odbc_LIBRARIES odbc32)
+    message(STATUS "Set ODBC library to: ${Odbc_LIBRARIES} (set, no detection attempted)")
 else()
     message(STATUS "Detecting unixODBC library")
 
