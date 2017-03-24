@@ -7,7 +7,7 @@ find_path(
         $ENV{VIRTUAL_ENV}/lib/*/site-packages/numpy/core/include
         ENV PYTHON_INCLUDE_DIR
         /usr/local/lib/python2.7/dist-packages/numpy/core/include
-        $ENV{PYTHON}/lib/site-packages\numpy\core\include
+        $ENV{PYTHON}/lib/site-packages/numpy/core/include
     DOC "Path to the numpy headers"
 )
 
