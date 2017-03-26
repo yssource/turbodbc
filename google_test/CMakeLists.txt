@@ -5,6 +5,7 @@ if (UNIX)
         COMMAND touch googletest_built
     )
 else()
+    message("DEBUG GOOGLETEST")
     add_custom_command(
         OUTPUT googletest_built
         COMMAND cmd ${CMAKE_CURRENT_SOURCE_DIR}/build_google_test.bat

@@ -25,7 +25,7 @@ if (UNIX)
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -pedantic")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pedantic")
 else()
-    set(CMAKE_CXX_FLAGS "/W4")
+    set(CMAKE_CXX_FLAGS "/W4 /EHsc")
 endif()
 
 if (APPLE)
