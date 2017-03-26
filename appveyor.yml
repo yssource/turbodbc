@@ -2,7 +2,8 @@ version: '{branch} - #{build}'
 
 image: Visual Studio 2015
 
-platform: x64
+platform:
+  - x64
 
 environment:
   PYTHON: C:\Python36-x64
@@ -15,6 +16,8 @@ install:
     SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
 
     pip install numpy
+
+    echo %PYTHON%
 
 build_script:
 - cmd: >-
