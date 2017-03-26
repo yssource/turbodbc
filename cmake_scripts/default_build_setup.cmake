@@ -19,8 +19,12 @@ add_definitions("-std=c++11")
 # build shared instead of static libraries
 set(BUILD_SHARED_LIBS TRUE)
 
-# flags for all compilation modes
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+if (UNIX)
+    # flags apply for both Linux and OSX!
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+elseif()
+    set(CMAKE_CXX_FLAGS "/W4")
+endif()
 
 if (APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
