@@ -24,7 +24,7 @@ if (UNIX)
     set(CMAKE_CXX_FLAGS "-Wall -Wextra")
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -pedantic")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pedantic")
-elseif()
+else()
     set(CMAKE_CXX_FLAGS "/W4")
 endif()
 

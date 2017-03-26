@@ -4,12 +4,11 @@ if (UNIX)
         COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/build_google_test.sh
         COMMAND touch googletest_built
     )
-elseif()
-    message("DEBUGGING MESSAGE FOR GOOGLETEST")
+else()
     add_custom_command(
         OUTPUT googletest_built
         COMMAND cmd ${CMAKE_CURRENT_SOURCE_DIR}/build_google_test.bat
-#        COMMAND type nul > googletest_built
+        COMMAND type nul > googletest_built
     )
 endif()
 add_custom_target(googletest_build ALL DEPENDS googletest_built)
