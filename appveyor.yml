@@ -30,3 +30,5 @@ build_script:
     cmake ..\turbodbc -DPYBIND11_PYTHON_VERSION=3.6 -A x64
 
     cmake --build .
+
+    dir
