@@ -22,6 +22,8 @@ set(BUILD_SHARED_LIBS TRUE)
 if (UNIX)
     # flags apply for both Linux and OSX!
     set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -pedantic")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pedantic")
 elseif()
     set(CMAKE_CXX_FLAGS "/W4")
 endif()
@@ -29,17 +31,6 @@ endif()
 if (APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 endif()
-
-# flags for Debug compilation mode
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -pedantic") # add pedantic here as it breaks Coco
-
-# flags for Release compilation mode
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pedantic") # add pedantic here as it breaks Coco
-
-# default setup for boost (find_packag(Boost) is still required)
-# set(BOOST_LIBRARYDIR $ENV{BOOST_LIB_DIR})
-# set(BOOST_INCLUDEDIR "${BOOST_LIBRARYDIR}/../include")
-# set(Boost_NO_SYSTEM_PATHS ON)
 
 # By default do not set RPATH in installed files. We copy them to multiple
 # locations and they might later be packaged in a python wheel.

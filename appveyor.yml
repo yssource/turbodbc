@@ -1,0 +1,23 @@
+version: '{branch} - #{build}'
+
+image: Visual Studio 2015
+
+platform: x64
+
+environment:
+  PYTHON: C:\Python36-x64
+  BOOST_ROOT: C:\Libraries\boost_1_63_0
+
+install:
+- cmd: >-
+    git submodule update --init --recursive
+    SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
+    pip install numpy
+
+build_script:
+- cmd: >-
+    cd ..
+    mkdir turbodbc_build
+    cd turbodbc_build
+    cmake ..\turbodbc -DPYBIND11_PYTHON_VERSION=3.6
+    cmake --build .
