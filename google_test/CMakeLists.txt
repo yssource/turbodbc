@@ -7,7 +7,7 @@ if (UNIX)
 elseif()
     add_custom_command(
         OUTPUT googletest_built
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build_google_test
+        COMMAND cmd ${CMAKE_CURRENT_SOURCE_DIR}/build_google_test.bat
         COMMAND type nul > googletest_built
     )
 endif()
