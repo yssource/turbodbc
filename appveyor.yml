@@ -8,6 +8,7 @@ platform:
 environment:
   PYTHON: C:\Python36-x64
   BOOST_ROOT: C:\Libraries\boost_1_63_0
+  CMAKE_ARCH: x64
 
 install:
 - cmd: >-
