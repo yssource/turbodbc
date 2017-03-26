@@ -27,6 +27,6 @@ build_script:
 
     cd turbodbc_build
 
-    cmake ..\turbodbc -DPYBIND11_PYTHON_VERSION=3.6 -A x86
+    cmake ..\turbodbc -DPYBIND11_PYTHON_VERSION=3.6 -A x64
 
     cmake --build .
