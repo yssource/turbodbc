@@ -8,7 +8,6 @@ platform:
 environment:
   PYTHON: C:\Python36-x64
   BOOST_ROOT: C:\Libraries\boost_1_63_0
-  CMAKE_ARCH: x64
 
 install:
 - cmd: >-
@@ -28,6 +27,6 @@ build_script:
 
     cd turbodbc_build
 
-    cmake ..\turbodbc -DPYBIND11_PYTHON_VERSION=3.6
+    cmake ..\turbodbc -DPYBIND11_PYTHON_VERSION=3.6 -A x86
 
     cmake --build .
