@@ -21,9 +21,9 @@ public:
 
 	/**
 	 * @brief Retrieve a Python object which contains
-	 *        values and masks for all data
+	 *        values and masks for a fixed batch size
 	 */
-	pybind11::object fetch_all();
+	pybind11::object fetch_next_batch();
 
 private:
 	turbodbc::result_sets::result_set & base_result_;
