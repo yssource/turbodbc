@@ -123,37 +123,34 @@ class Cursor(object):
         return [row for row in islice(self, size)]
 
     def fetchallnumpy(self):
-        if _has_numpy_support():
-            from numpy.ma import concatenate
-        else:
-            raise Error("turbodbc was compiled without numpy support. Please install "
-                        "numpy and reinstall turbodbc")
+        from numpy.ma import concatenate
         batches = list(self._numpy_batch_generator())
         column_names = [description[0] for description in self.description]
-        if len(batches) == 0:
-            return None
-        elif len(batches) == 1:
-            return OrderedDict(zip(column_names, batches[0]))
         return OrderedDict(zip(column_names, [concatenate(column) for column in zip(*batches)]))
 
-    def fetchbatchnumpy(self):
-        next_batch = next(self._numpy_batch_generator(), None)
-        if next_batch:
-            column_names = [description[0] for description in self.description]
-            return OrderedDict(zip(column_names, next_batch))
-        return next_batch
+    def fetchnumpybatches(self):
+        batchgen = self._numpy_batch_generator()
+        column_names = [description[0] for description in self.description]
+        for next_batch in batchgen:
+            yield OrderedDict(zip(column_names, next_batch))
 
     def _numpy_batch_generator(self):
         self._assert_valid_result_set()
         if _has_numpy_support():
             from turbodbc_numpy_support import make_numpy_result_set
-            numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
-            while True:
-                result_batch = numpy_result_set.fetch_next_batch()
-                yield _make_masked_arrays(result_batch)
         else:
             raise Error("turbodbc was compiled without numpy support. Please install "
                         "numpy and reinstall turbodbc")
+        numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
+        firstrun = True
+        while True:
+            result_batch = numpy_result_set.fetch_next_batch()
+            batch_to_yield = _make_masked_arrays(result_batch)
+            next_batch = len(list(filter(len, batch_to_yield)))
+            if not next_batch and not firstrun:
+                raise StopIteration # Let us return a typed result set at least once
+            firstrun = False
+            yield batch_to_yield
 
     def close(self):
         self.result_set = None
