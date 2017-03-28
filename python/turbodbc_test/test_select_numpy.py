@@ -60,8 +60,8 @@ def test_numpy_empty_column_batch_fetch(dsn, configuration):
             for idx, batch in enumerate(batches):
                 assert isinstance(batch, OrderedDict)
                 assert len(batch) == 1 # ncols
-                assert isinstance(results[_fix_case(configuration, 'a')], MaskedArray)
-                assert_equal(len(results[_fix_case(configuration, 'a')]), 0)
+                assert isinstance(batch[_fix_case(configuration, 'a')], MaskedArray)
+                assert_equal(len(batch[_fix_case(configuration, 'a')]), 0)
             assert_equal(idx, 0)
 
 @for_each_database
