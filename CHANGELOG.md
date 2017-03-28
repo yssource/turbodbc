@@ -21,6 +21,8 @@ Version 1.1.0 (unreleased)
     In particular, a few `long` types were converted to `intptr_t` and `int64_t`
     where appropriate. In particular, this affects the `field` type that may be used
     by C++ end users (so they exist).
+*   Added new cursor.fetchnumpybatches method which returns a generator to
+    iterate over result sets in batch sizes as defined by buffer size or rowcount
 
 Version 1.0.5
 =============
@@ -100,7 +102,7 @@ Version 0.4.1
     (linking is already done by the Python interpreter). This was always
     the case for the libraries in the packages uploaded to PyPI, so no
     change was necessary here.
-*   Internal: Some modifications to the structure of the underlying 
+*   Internal: Some modifications to the structure of the underlying
     C++ code.
 
 Version 0.4.0
@@ -122,7 +124,7 @@ Version 0.3.0
     batch in the background. This may yield substantial performance improvements
     in the right circumstances (results are retrieved in roughly the same speed
     as they are converted to Python objects).
-    
+
     Ansynchronous I/O support is experimental. Enable it with
     `turbodbc.connect('My data source name', use_async_io=True)`
 
@@ -149,7 +151,7 @@ Version 0.2.3
 
 *   Fix issue that only lists were allowed for specifying parameters for queries
 *   Improve parameter memory consumption when the database reports very large
-    string parameter sizes 
+    string parameter sizes
 *   C++ backend: Provides more low-level ways to access the result set
 
 Version 0.2.2
