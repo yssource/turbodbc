@@ -25,7 +25,9 @@ if (UNIX)
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -pedantic")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pedantic")
 else()
-    set(CMAKE_CXX_FLAGS "/W4 /EHsc")
+    set(CMAKE_CXX_FLAGS "/W3 /EHsc -DNOMINMAX")
+    set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+    set(CMAKE_CXX_FLAGS_RELEASE "/MT")
 endif()
 
 if (APPLE)
@@ -43,7 +45,13 @@ include(CTest)
 # to determine its source files.
 add_custom_target(refresh_cmake_configuration
 	ALL # execute on default make
-	touch ${CMAKE_PARENT_LIST_FILE} # make cmake detect configuration is changed on NEXT build
+	cmake -E touch ${CMAKE_PARENT_LIST_FILE} # make cmake detect configuration is changed on NEXT build
 	COMMENT "Forcing refreshing of the CMake configuration. This allows to use globbing safely."
 )
 
+if(WIN32)
+    link_directories("$ENV{PYTHON}/libs")
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS "TRUE")
+    set(Boost_USE_STATIC_RUNTIME "ON")
+    set(Boost_USE_STATIC_LIBS "ON")
+endif()

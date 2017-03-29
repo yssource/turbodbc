@@ -21,8 +21,13 @@ target_link_libraries(turbodbc_test
     gmock_main
     gtest
     gmock
+)
+
+IF(UNIX)
+target_link_libraries(turbodbc_test
     pthread
 )
+ENDIF()
 
 add_test(NAME turbodbc_unit_test
          COMMAND turbodbc_test --gtest_output=xml:${CMAKE_BINARY_DIR}/turbodbc_test.xml)

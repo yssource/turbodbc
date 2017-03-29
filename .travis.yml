@@ -54,6 +54,7 @@ addons:
       - unixodbc
       - unixodbc-dev
       - libboost-date-time-dev
+      - libboost-locale-dev
       - libboost-system-dev
       - libmyodbc
       - odbc-postgresql=1:09.02.0100-2ubuntu1

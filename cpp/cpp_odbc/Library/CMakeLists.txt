@@ -10,15 +10,6 @@ add_dependencies(cpp_odbc
     refresh_cmake_configuration
 )
 
-if (WIN32)
-    GENERATE_EXPORT_HEADER( cpp_odbc
-        BASE_NAME cpp_odbc
-        EXPORT_MACRO_NAME cpp_odbc_EXPORT
-        EXPORT_FILE_NAME cpp_odbc_Export.h
-        STATIC_DEFINE cpp_odbc_BUILT_AS_STATIC
-        )
-endif()
-
 target_link_libraries(cpp_odbc
     ${Odbc_LIBRARIES}
 )
