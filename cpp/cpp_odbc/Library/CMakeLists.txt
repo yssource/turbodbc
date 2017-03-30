@@ -14,6 +14,11 @@ target_link_libraries(cpp_odbc
     ${Odbc_LIBRARIES}
 )
 
+IF(WIN32)
+add_custom_command(TARGET cpp_odbc POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy
+                   $<TARGET_FILE:cpp_odbc> ${CMAKE_BINARY_DIR})
+ENDIF()
 
 install(
     TARGETS cpp_odbc
