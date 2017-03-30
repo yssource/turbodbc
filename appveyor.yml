@@ -13,6 +13,10 @@ environment:
   PGUSER: postgres
   PGPASSWORD: Password12!
 
+services:
+  - mysql
+  - postgresql96
+
 install:
 - cmd: >-
     git submodule update --init --recursive
