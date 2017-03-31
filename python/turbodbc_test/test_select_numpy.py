@@ -129,9 +129,11 @@ def test_numpy_batch_fetch(dsn, configuration):
                                [[1], [2], [3], [4], [5]])
             cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
             batches = cursor.fetchnumpybatches()
-            expected_list = [MaskedArray([1, 2], mask=False), MaskedArray([3, 4], mask=False), MaskedArray([5], mask=False)]
+            expected_batches = [MaskedArray([1, 2], mask=False),
+                                MaskedArray([3, 4], mask=False),
+                                MaskedArray([5],    mask=False)]
             for idx, batch in enumerate(batches):
-                expected = expected_list[idx]
+                expected = expected_batches[idx]
                 assert_equal(batch[_fix_case(configuration, 'a')], expected)
             assert_equal(idx, 2)
 

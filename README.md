@@ -160,7 +160,7 @@ Here is how to retrieve a full result set in the form of NumPy arrays:
                                     mask = [False False],
                                     fill_value = 1e+20))])
 
-You can also fetch numpy result sets in batches, based on the `read_buffer_size` attribute on the connection, using an iterable:
+You can also fetch NumPy result sets in batches, based on the `read_buffer_size` attribute on the connection, using an iterable:
 
     >>> cursor.execute("SELECT A, B FROM my_table")
     >>> batches = cursor.fetchnumpybatches()

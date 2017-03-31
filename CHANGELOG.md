@@ -21,7 +21,7 @@ Version 1.1.0 (unreleased)
     In particular, a few `long` types were converted to `intptr_t` and `int64_t`
     where appropriate. In particular, this affects the `field` type that may be used
     by C++ end users (so they exist).
-*   Added new cursor.fetchnumpybatches method which returns a generator to
+*   Added new `cursor.fetchnumpybatches()` method which returns a generator to
     iterate over result sets in batch sizes as defined by buffer size or rowcount
 
 Version 1.0.5

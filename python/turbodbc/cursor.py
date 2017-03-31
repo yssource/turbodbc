@@ -13,18 +13,18 @@ def _has_numpy_support():
         import turbodbc_numpy_support
         return True
     except ImportError:
-         return False
+        return False
 
 def _make_masked_arrays(result_batch):
     from numpy.ma import MaskedArray
     from numpy import object_
-    numpy_masked_array = []
+    masked_arrays = []
     for data, mask in result_batch:
         if isinstance(data, list):
-            numpy_masked_array.append(MaskedArray(data=data, mask=mask, dtype=object_))
+            masked_arrays.append(MaskedArray(data=data, mask=mask, dtype=object_))
         else:
-            numpy_masked_array.append(MaskedArray(data=data, mask=mask))
-    return numpy_masked_array
+            masked_arrays.append(MaskedArray(data=data, mask=mask))
+    return masked_arrays
 
 class Cursor(object):
     def __init__(self, impl):
@@ -142,15 +142,14 @@ class Cursor(object):
             raise Error("turbodbc was compiled without numpy support. Please install "
                         "numpy and reinstall turbodbc")
         numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
-        firstrun = True
+        first_run = True
         while True:
-            result_batch = numpy_result_set.fetch_next_batch()
-            batch_to_yield = _make_masked_arrays(result_batch)
-            next_batch = len(list(filter(len, batch_to_yield)))
-            if not next_batch and not firstrun:
+            result_batch = _make_masked_arrays(numpy_result_set.fetch_next_batch())
+            is_empty_batch = (len(result_batch[0]) == 0)
+            if is_empty_batch and not first_run:
                 raise StopIteration # Let us return a typed result set at least once
-            firstrun = False
-            yield batch_to_yield
+            first_run = False
+            yield result_batch
 
     def close(self):
         self.result_set = None
