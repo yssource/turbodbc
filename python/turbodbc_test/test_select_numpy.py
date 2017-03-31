@@ -48,9 +48,21 @@ def test_numpy_empty_column(dsn, configuration):
             cursor.execute("SELECT a FROM {}".format(table_name))
             results = cursor.fetchallnumpy()
             assert isinstance(results, OrderedDict)
-            assert len(results) == 1
+            assert len(results) == 1 # ncols
             assert isinstance(results[_fix_case(configuration, 'a')], MaskedArray)
 
+@for_each_database
+def test_numpy_empty_column_batch_fetch(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.execute("SELECT a FROM {}".format(table_name))
+            batches = cursor.fetchnumpybatches()
+            for idx, batch in enumerate(batches):
+                assert isinstance(batch, OrderedDict)
+                assert len(batch) == 1 # ncols
+                assert isinstance(batch[_fix_case(configuration, 'a')], MaskedArray)
+                assert_equal(len(batch[_fix_case(configuration, 'a')]), 0)
+            assert_equal(idx, 0)
 
 @for_each_database
 def test_numpy_int_column(dsn, configuration):
@@ -109,6 +121,21 @@ def test_numpy_binary_column_larger_than_batch_size(dsn, configuration):
             expected = MaskedArray([1, 2, 3, 4, 5], mask=False)
             assert_equal(results[_fix_case(configuration, 'a')], expected)
 
+@for_each_database
+def test_numpy_batch_fetch(dsn, configuration):
+    with open_cursor(configuration, rows_to_buffer=2) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.executemany("INSERT INTO {} VALUES (?)".format(table_name),
+                               [[1], [2], [3], [4], [5]])
+            cursor.execute("SELECT a FROM {} ORDER BY a".format(table_name))
+            batches = cursor.fetchnumpybatches()
+            expected_batches = [MaskedArray([1, 2], mask=False),
+                                MaskedArray([3, 4], mask=False),
+                                MaskedArray([5],    mask=False)]
+            for idx, batch in enumerate(batches):
+                expected = expected_batches[idx]
+                assert_equal(batch[_fix_case(configuration, 'a')], expected)
+            assert_equal(idx, 2)
 
 @for_each_database
 def test_numpy_timestamp_column(dsn, configuration):

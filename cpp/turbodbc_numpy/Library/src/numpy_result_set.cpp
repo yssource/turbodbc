@@ -48,8 +48,7 @@ numpy_result_set::numpy_result_set(turbodbc::result_sets::result_set & base) :
 {
 }
 
-
-pybind11::object numpy_result_set::fetch_all()
+pybind11::object numpy_result_set::fetch_next_batch()
 {
 	std::size_t rows_in_batch = base_result_.fetch_next_batch();
 	auto const column_info = base_result_.get_column_info();
@@ -60,14 +59,11 @@ pybind11::object numpy_result_set::fetch_all()
 		columns.push_back(make_masked_column(column_info[i].type));
 	}
 
-	do {
-		auto const buffers = base_result_.get_buffers();
+	auto const buffers = base_result_.get_buffers();
 
-		for (std::size_t i = 0; i != n_columns; ++i) {
-			columns[i]->append(buffers[i].get(), rows_in_batch);
-		}
-		rows_in_batch = base_result_.fetch_next_batch();
-	} while (rows_in_batch != 0);
+	for (std::size_t i = 0; i != n_columns; ++i) {
+		columns[i]->append(buffers[i].get(), rows_in_batch);
+	}
 
 	return as_python_list(columns);
 }
