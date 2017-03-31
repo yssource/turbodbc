@@ -31,3 +31,11 @@ ENDIF()
 
 add_test(NAME turbodbc_unit_test
          COMMAND turbodbc_test --gtest_output=xml:${CMAKE_BINARY_DIR}/turbodbc_test.xml)
+
+IF(WIN32)
+set_tests_properties(
+    turbodbc_unit_test
+    PROPERTIES
+    ENVIRONMENT "PATH=${CMAKE_BINARY_DIR};$ENV{PATH}"
+)
+ENDIF()
