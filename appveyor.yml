@@ -30,6 +30,7 @@ install:
 before_build:
 #http://help.appveyor.com/discussions/problems/4569-the-target-_convertpdbfiles-listed-in-a-beforetargets-attribute-at-c-does-not-exist-in-the-project-and-will-be-ignored
 - del "C:\Program Files (x86)\MSBuild\14.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
+- dir $BOOST_ROOT
 
 build_script:
 - cmd: >-
@@ -39,7 +40,7 @@ build_script:
 
     cd turbodbc_build
 
-    cmake ..\turbodbc -DPYBIND11_PYTHON_VERSION=3.6 -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -A x64
+    cmake ..\turbodbc -DPYBIND11_PYTHON_VERSION=3.6 -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=dist -A x64
 
     cmake --build . --config Release
 
@@ -58,3 +59,17 @@ test_script:
     mysql -u root -e "CREATE DATABASE test_db;"
 
     ctest --verbose -C Release
+
+after_test:
+  - cmd: >-
+    cmake --build . --config Release --target install
+
+    pip install wheel pybind11==2.1.0
+
+    cd dist
+
+    python setup.py bdist_wheel
+
+artifacts:
+- path: turbodbc_build\dist\dist\*.whl
+  name: Binary wheel
