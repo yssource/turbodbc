@@ -90,6 +90,7 @@ elif sys.platform == 'win32':
     if 'BOOST_ROOT' in os.environ:
         include_dirs.append(os.getenv('BOOST_ROOT'))
         library_dirs.append(os.path.join(os.getenv('BOOST_ROOT'), "stage", "lib"))
+        library_dirs.append(os.path.join(os.getenv('BOOST_ROOT'), "lib64-msvc-14.0"))
     else:
         print("warning: BOOST_ROOT enviroment variable not set")
     odbclib = 'odbc32'
