@@ -66,5 +66,5 @@ after_test:
   - python setup.py bdist_wheel
 
 artifacts:
-- path: **\turbodbc*.whl
+- path: '**\turbodbc*.whl'
   name: Binary wheel
