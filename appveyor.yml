@@ -61,14 +61,10 @@ test_script:
     ctest --verbose -C Release
 
 after_test:
-  - cmd: >-
-    cmake --build . --config Release --target install
-
-    pip install wheel pybind11==2.1.0
-
-    cd dist
-
-    python setup.py bdist_wheel
+  - cmake --build . --config Release --target install
+  - pip install wheel pybind11==2.1.0
+  - cd dist
+  - python setup.py bdist_wheel
 
 artifacts:
 - path: turbodbc_build\dist\dist\*.whl
