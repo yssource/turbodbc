@@ -64,9 +64,7 @@ after_test:
   - pip install wheel pybind11==2.1.0
   - cd dist
   - python setup.py bdist_wheel
-  - cd dist
-  - dir
 
 artifacts:
-- path: '**\turbodbc*.whl'
+- path: '..\turbodbc_build\dist\dist\turbodbc*.whl'
   name: Binary wheel
