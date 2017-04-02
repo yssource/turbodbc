@@ -64,7 +64,8 @@ after_test:
   - pip install wheel pybind11==2.1.0
   - cd dist
   - python setup.py bdist_wheel
-  - cp dist\turbodbc*.whl ..\..\turbodbc
+  - cd dist
+  - cp turbodbc*.whl ..\..\..\turbodbc
 
 artifacts:
 - path: 'turbodbc*.whl'
