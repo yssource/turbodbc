@@ -24,7 +24,7 @@ Features
     `int`, `float`, `str`, `bool`, `datetime.date`, `datetime.datetime`
 *   Also provides a high-level C++11 database driver under the hood
 *   Tested with Python 2.7, 3.4, 3.5, and 3.6
-*   Tested on Linux and OSX. Windows support is _experimental_ and not very convenient yet.
+*   Tested on 64 bit versions of Linux, OSX, and Windows (Python 3.5+).
 
 
 Installation
@@ -34,27 +34,23 @@ To install turbodbc, please use the following command:
 
     pip install turbodbc
 
-If you want to leverage turbodbc's NumPy support, please make sure to `pip install numpy`
-before installing turbodbc, since turbodbc searches for NumPy headers
+On Windows, this will download and install a precompiled Python package. On Linux
+and OSX, this will trigger a source build. If you want to leverage turbodbc's
+NumPy support, please make sure to `pip install numpy`
+before installing turbodbc. Turbodbc searches for NumPy headers
 at installation time to determine whether NumPy support can be provided.
 
-Since turbodbc includes C-extensions, make sure the following prerequisites
-are given:
+Compiling turbodbc yourself requires the following prerequisites:
 
-Requirement                 | Linux (`apt-get install`) | OSX (`brew install`)   | Windows (experimental) |
+Requirement                 | Linux (`apt-get install`) | OSX (`brew install`)   | Windows                |
 ----------------------------|---------------------------|------------------------|------------------------|
 C++11 compiler              | G++-4.8 or higher         | clang with OSX 10.9+   | Visual C++ 2015        |
-Boost library + headers (1) | `libboost-all-dev`        | `boost`                | Boost sources (2)      |
+Boost library + headers (1) | `libboost-all-dev`        | `boost`                | Boost sources          |
 ODBC library + headers      | `unixodbc-dev`            | `unixodbc`             | Windows Kits           |
-Python headers              | `python-dev`              | use `pyenv` to install | Python 3.5+ (3)        |
+Python headers              | `python-dev`              | use `pyenv` to install | Python 3.5+            |
 
 (1) The minimum viable Boost setup requires the libraries `variant`, `optional`,
 `datetime`, and `locale`.
-
-(2) After unpacking Boost run Simplified Build From Source (`bootstrap` and `.\b2`).
-Also make sure the enviroment variable `BOOST_ROOT` is pointing to the installation.
-
-(3) Python 2.7 and 3.4 uses older compilers on Windows, and can not be used.
 
 
 Why should I use turbodbc instead of other ODBC modules?
@@ -268,7 +264,7 @@ To use the latest version of turbodbc, do the following.
     as a comma-separated list of the json files you've just copied and run
     the test suite, as follows:
 
-        export TURBODBC_TEST_CONFIGURATION_FILES="<MySql json file>,<Postgres json file>,<MS SQL json file>"
+        export TURBODBC_TEST_CONFIGURATION_FILES="<Postgres json file>,<MySql json file>, <MS SQL json file>"
         ctest --output-on-failure
 
 1.  Finally, to create a Python source distribution for `pip` installation, run
@@ -293,8 +289,10 @@ dependencies:
 Supported environments
 ----------------------
 
+*   64 bit operating systems (32 bit not supported)
 *   Linux (successfully built on Ubuntu 12, Ubuntu 14, Debian 7, Debian 8)
 *   OSX (successfully built on Sierra a.k.a. 10.12 and El Capitan a.k.a. 10.11)
+*   Windows (successfully built on Windows 10)
 *   Python 2.7, 3.4, 3.5, 3.6
 *   More environments probably work as well, but these are the versions that
     are regularly tested on Travis or local development machines.
@@ -307,19 +305,20 @@ Turbodbc uses suites of unit and integration tests to ensure quality.
 Every time turbodbc's code is updated on GitHub,
 turbodbc is automatically built from scratch and tested with the following databases:
 
-*   PostgreSQL
-*   MySQL
+*   PostgreSQL (Linux, OSX, Windows)
+*   MySQL (Linux, OSX, Windows)
+*   MSSQL (Windows, with official MS driver)
 
 During development, turbodbc is tested with the following database:
 
-*   Exasol
+*   Exasol (Linux, OSX)
 
 Releases will not be made if any (implemented) test fails for any of the databases
-listed above. In addition to these well-supported databases, the following databases
-are tested on an irregular basis:
+listed above. The following databases/driver combinations are tested on an irregular
+basis:
 
-*   MSSQL with FreeTDS
-*   MSSQL with Microsoft's official ODBC driver
+*   MSSQL with FreeTDS (Linux, OSX)
+*   MSSQL with Microsoft's official ODBC driver (Linux)
 
 There is a good chance that turbodbc will work with other, totally untested databases
 as well. There is, however, an equally good chance that you will encounter compatibility
@@ -333,7 +332,7 @@ SQLAlchemy support
 Using Turbodbc in combination with SQLAlchemy is possible for a limited number of databases:
 
 * Exasol: [sqlalchemy_exasol](https://github.com/blue-yonder/sqlalchemy_exasol)
-* MSSQL: [sqlalchemy-turbodbc](https://github.com/dirkjonker/sqlalchemy-turbodbc) (experimental)
+* MSSQL: [sqlalchemy-turbodbc](https://github.com/dirkjonker/sqlalchemy-turbodbc)
 
 
 I got questions and issues to report!

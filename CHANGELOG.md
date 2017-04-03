@@ -1,5 +1,14 @@
-Version 1.1.0 (unreleased)
-==========================
+Version 1.1.1
+=============
+*   Windows is now _officially_ supported (64 bit, Python 3.5 and 3.6). From now on,
+    code is automatically compiled and tested on Linux, OSX, and Windows
+    (thanks @TWAC for support). Windows binary wheels are uploaded to pypi.
+*   Added supported for fetching results in batches of NumPy objects with
+    `cursor.fetchnumpybatches()` (thanks @yaxxie)
+*   MSSQL is now part of the Windows test suite (thanks @TWAC)
+
+Version 1.1.0
+=============
 *   Added support for databases that require Unicode data to be transported
     in UCS-2/UCS-16 format rather than UTF-8, e.g., MSSQL.
 *   Added _experimental_ support for Windows source distribution builds.
@@ -26,7 +35,7 @@ Version 1.1.0 (unreleased)
 
 Version 1.0.5
 =============
-*   Internal: Remove some `const` pointer to resolve some compile issues with
+*   Internal: Remove some `const` pointers to resolve some compile issues with
     xcode 6.4 (thanks @xhochy)
 
 Version 1.0.4
