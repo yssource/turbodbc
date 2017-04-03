@@ -40,7 +40,7 @@ PYBIND11_PLUGIN(turbodbc_numpy_support) {
     pybind11::module module("turbodbc_numpy_support", "Native helpers for turbodbc's NumPy support");
 
     pybind11::class_<numpy_result_set>(module, "NumpyResultSet")
-        .def("fetch_all", &numpy_result_set::fetch_all);
+        .def("fetch_next_batch", &numpy_result_set::fetch_next_batch);
 
     module.def("make_numpy_result_set", make_numpy_result_set);
     return module.ptr();
