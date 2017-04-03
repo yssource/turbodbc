@@ -149,10 +149,23 @@ Here is how to execute an `INSERT` query with many parameters:
 NumPy support
 -------------
 
-Here is how to retrieve a result set in the form of NumPy arrays:
+Here is how to retrieve a full result set in the form of NumPy arrays:
 
     >>> cursor.execute("SELECT A, B FROM my_table")
     >>> cursor.fetchallnumpy()
+    OrderedDict([('A', masked_array(data = [42 --],
+                                    mask = [False True],
+                                    fill_value = 999999)),
+                 ('B', masked_array(data = [3.14 2.71],
+                                    mask = [False False],
+                                    fill_value = 1e+20))])
+
+You can also fetch NumPy result sets in batches, based on the `read_buffer_size` attribute on the connection, using an iterable:
+
+    >>> cursor.execute("SELECT A, B FROM my_table")
+    >>> batches = cursor.fetchnumpybatches()
+    >>> for batch in batches:
+    ...     print(batch)
     OrderedDict([('A', masked_array(data = [42 --],
                                     mask = [False True],
                                     fill_value = 999999)),
