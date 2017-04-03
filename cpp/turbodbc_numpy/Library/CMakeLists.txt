@@ -29,7 +29,7 @@ endif()
 
 install(
     TARGETS turbodbc_numpy_support
-    LIBRARY DESTINATION lib
+    DESTINATION lib
 )
 
 install(

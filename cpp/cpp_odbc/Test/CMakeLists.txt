@@ -17,9 +17,22 @@ target_link_libraries(cpp_odbc_test
     gmock_main
     gtest
     gmock
-    pthread
     ${Odbc_LIBRARIES}
 )
 
+IF(UNIX)
+target_link_libraries(cpp_odbc_test
+    pthread
+)
+ENDIF()
+
 add_test(NAME cpp_odbc_unit_test
          COMMAND cpp_odbc_test --gtest_output=xml:${CMAKE_BINARY_DIR}/cpp_odbc_test.xml)
+
+IF(WIN32)
+set_tests_properties(
+    cpp_odbc_unit_test
+    PROPERTIES
+    ENVIRONMENT "PATH=${CMAKE_BINARY_DIR};$ENV{PATH}"
+)
+ENDIF()

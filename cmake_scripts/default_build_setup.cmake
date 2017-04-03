@@ -19,23 +19,20 @@ add_definitions("-std=c++11")
 # build shared instead of static libraries
 set(BUILD_SHARED_LIBS TRUE)
 
-# flags for all compilation modes
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+if (UNIX)
+    # flags apply for both Linux and OSX!
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -pedantic")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pedantic")
+else()
+    set(CMAKE_CXX_FLAGS "/W3 /EHsc -DNOMINMAX")
+    set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+    set(CMAKE_CXX_FLAGS_RELEASE "/MT")
+endif()
 
 if (APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 endif()
-
-# flags for Debug compilation mode
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -pedantic") # add pedantic here as it breaks Coco
-
-# flags for Release compilation mode
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pedantic") # add pedantic here as it breaks Coco
-
-# default setup for boost (find_packag(Boost) is still required)
-# set(BOOST_LIBRARYDIR $ENV{BOOST_LIB_DIR})
-# set(BOOST_INCLUDEDIR "${BOOST_LIBRARYDIR}/../include")
-# set(Boost_NO_SYSTEM_PATHS ON)
 
 # By default do not set RPATH in installed files. We copy them to multiple
 # locations and they might later be packaged in a python wheel.
@@ -48,7 +45,13 @@ include(CTest)
 # to determine its source files.
 add_custom_target(refresh_cmake_configuration
 	ALL # execute on default make
-	touch ${CMAKE_PARENT_LIST_FILE} # make cmake detect configuration is changed on NEXT build
+	cmake -E touch ${CMAKE_PARENT_LIST_FILE} # make cmake detect configuration is changed on NEXT build
 	COMMENT "Forcing refreshing of the CMake configuration. This allows to use globbing safely."
 )
 
+if(WIN32)
+    link_directories("$ENV{PYTHON}/libs")
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS "TRUE")
+    set(Boost_USE_STATIC_RUNTIME "ON")
+    set(Boost_USE_STATIC_LIBS "ON")
+endif()
