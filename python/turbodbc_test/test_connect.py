@@ -1,6 +1,6 @@
 import pytest
 
-from turbodbc import connect, DatabaseError
+from turbodbc import connect, DatabaseError, ParameterError
 from turbodbc.connect import _make_connection_string
 from turbodbc.connection import Connection
 
@@ -49,3 +49,10 @@ def test_connect_raises_on_invalid_additional_option(dsn, configuration):
     additional_option = {configuration['capabilities']['connection_user_option']: 'invalid user'}
     with pytest.raises(DatabaseError):
         connect(dsn=dsn, **additional_option)
+
+
+def test_connect_raises_on_ambiguous_parameters():
+    with pytest.raises(ParameterError):
+        connect("foo", connection_string="DRIVER=bar;SERVER=baz;")
+    with pytest.raises(ParameterError):
+        connect(connection_string="DRIVER=foo;SERVER=bar;", baz="qux")
