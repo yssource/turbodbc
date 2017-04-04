@@ -124,6 +124,7 @@ To establish a connection, use any of the following commands:
     >>> connection = connect(dsn='My data source name as given by odbc.ini')
     >>> connection = connect(dsn='my dsn', user='my user has precedence')
     >>> connection = connect(dsn='my dsn', username='field names may depend on the driver')
+    >>> connection = connect(connection_string='Driver={PostgreSQL};Server=IP address;Port=5432;Database=myDataBase;Uid=myUsername;Pwd=myPassword;')
 
 To execute a query, you need a `cursor` object:
 

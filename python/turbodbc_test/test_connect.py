@@ -56,3 +56,13 @@ def test_connect_raises_on_ambiguous_parameters():
         connect("foo", connection_string="DRIVER=bar;SERVER=baz;")
     with pytest.raises(ParameterError):
         connect(connection_string="DRIVER=foo;SERVER=bar;", baz="qux")
+
+
+@for_one_database
+def test_connect_with_connection_string(dsn, configuration):
+    connection_string = "DSN=%s;" % dsn
+    for para, val in get_credentials(configuration).items():
+        connection_string = connection_string + "%s=%s;" % (para, val)
+    connection = connect(connection_string=connection_string)
+    connection.cursor().execute("SELECT 'foo'")
+    connection.close()
