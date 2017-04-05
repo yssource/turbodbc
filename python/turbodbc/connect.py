@@ -5,7 +5,7 @@ import six
 
 from turbodbc_intern import connect as intern_connect
 
-from .exceptions import translate_exceptions
+from .exceptions import translate_exceptions, ParameterError
 from .connection import Connection
 from .options import make_options
 
@@ -16,12 +16,14 @@ def _make_connection_string(dsn, **kwargs):
 
 
 @translate_exceptions
-def connect(dsn=None, turbodbc_options=None, read_buffer_size=None, parameter_sets_to_buffer=None, use_async_io=False, **kwargs):
+def connect(dsn=None, turbodbc_options=None, read_buffer_size=None, parameter_sets_to_buffer=None, use_async_io=False, connection_string=None, **kwargs):
     """
     Create a connection with the database identified by the dsn
     :param dsn: Data source name as given in the odbc.ini file
     :param turbodbc_options: Options that control how turbodbc interacts with the database.
      Create such a struct with `turbodbc.make_options()` or leave this blank to take the defaults.
+    :param connection_string: Preformatted ODBC connection string.
+     Specifying this and dsn or kwargs at the same time raises ParameterError.
     :param \**kwargs: You may specify additional options as you please. These options will go into
      the connection string that identifies the database. Valid options depend on the specific database you
      would like to connect with (e.g. `user` and `password` or `uid` and `pwd`)
@@ -43,7 +45,13 @@ def connect(dsn=None, turbodbc_options=None, read_buffer_size=None, parameter_se
         warnings.warn("Calling turbodbc.connect() with parameter use_async_io is deprecated. "
                       "Please use make_options() instead.", DeprecationWarning)
 
-    connection = Connection(intern_connect(_make_connection_string(dsn, **kwargs),
+    if connection_string is not None and (dsn is not None or len(kwargs) > 0):
+        raise ParameterError("Both connection_string and dsn or kwargs specified")
+
+    if connection_string is None:
+        connection_string = _make_connection_string(dsn, **kwargs)
+
+    connection = Connection(intern_connect(connection_string,
                                            turbodbc_options))
 
     return connection

@@ -24,6 +24,10 @@ class DatabaseError(Error):
     pass 
 
 
+class ParameterError(Error):
+    pass
+
+
 def translate_exceptions(f):
     @wraps(f)
     def wrapper(*args, **kwds):
