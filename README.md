@@ -27,30 +27,46 @@ Features
 *   Tested on 64 bit versions of Linux, OSX, and Windows (Python 3.5+).
 
 
-Installation
-------------
+Installation (Linux and OSX)
+----------------------------
 
-To install turbodbc, please use the following command:
+To install turbodbc on Linux and OSX, please use the following command:
 
     pip install turbodbc
 
-On Windows, this will download and install a precompiled Python package. On Linux
-and OSX, this will trigger a source build. If you want to leverage turbodbc's
-NumPy support, please make sure to `pip install numpy`
-before installing turbodbc. Turbodbc searches for NumPy headers
-at installation time to determine whether NumPy support can be provided.
+This will trigger a source build that requires compiling C++ code. Please make sure
+the following prerequisites are met:
 
-Compiling turbodbc yourself requires the following prerequisites:
+Requirement                 | Linux (`apt-get install`) | OSX (`brew install`)   |
+----------------------------|---------------------------|------------------------|
+C++11 compiler              | G++-4.8 or higher         | clang with OSX 10.9+   |
+Boost library + headers (1) | `libboost-all-dev`        | `boost`                |
+ODBC library + headers      | `unixodbc-dev`            | `unixodbc`             |
+Python headers              | `python-dev`              | use `pyenv` to install |
 
-Requirement                 | Linux (`apt-get install`) | OSX (`brew install`)   | Windows                |
-----------------------------|---------------------------|------------------------|------------------------|
-C++11 compiler              | G++-4.8 or higher         | clang with OSX 10.9+   | Visual C++ 2015        |
-Boost library + headers (1) | `libboost-all-dev`        | `boost`                | Boost sources          |
-ODBC library + headers      | `unixodbc-dev`            | `unixodbc`             | Windows Kits           |
-Python headers              | `python-dev`              | use `pyenv` to install | Python 3.5+            |
+Please `pip install numpy` before installing turbodbc, because turbodbc will search
+for the `numpy` Python package at installation/compile time. If NumPy is not installed,
+turbodbc will not compile the optional NumPy support features.
 
 (1) The minimum viable Boost setup requires the libraries `variant`, `optional`,
 `datetime`, and `locale`.
+
+
+Installation (Windows)
+----------------------
+
+To install turbodbc on Windows, please use the following command:
+
+    pip install turbodbc
+
+This will download and install a binary wheel, no compilation required. You still need
+to meet the following prerequisites, though:
+
+Requirement | Windows                                                                                                       |
+------------|---------------------------------------------------------------------------------------------------------------|
+OS Bitness  | 64-bit                                                                                                        |
+Python      | 3.5 or 3.6, 64-bit                                                                                            |
+Runtime     | [MSVS 2015 Update 3 Redistributable, 64 bit](https://www.microsoft.com/en-us/download/details.aspx?id=53840) |
 
 
 Why should I use turbodbc instead of other ODBC modules?
