@@ -6,6 +6,8 @@ Version 1.1.1
 *   Added supported for fetching results in batches of NumPy objects with
     `cursor.fetchnumpybatches()` (thanks @yaxxie)
 *   MSSQL is now part of the Windows test suite (thanks @TWAC)
+*   `connect()` now allows to specify a `connection_string` instead of
+    individual arguments that are then compiles into a connection string (thanks @TWAC).
 
 Version 1.1.0
 =============
