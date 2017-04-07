@@ -1,7 +1,10 @@
 Version 1.1.2 (unreleased)
 ==========================
-*   Fixed bug with `cursor.rowcount()` not being reset to `-1` when calls to
+*   Fixed bug with `cursor.rowcount` not being reset to `-1` when calls to
     `execute()` or `executemany()` raised exceptions.
+*   Fixes bug with `cursor.rowcount` not showing the correct value when
+    manipulating queries were used without placeholders, i.e., with
+    parameters baked into the query.s
 
 Version 1.1.1
 =============
