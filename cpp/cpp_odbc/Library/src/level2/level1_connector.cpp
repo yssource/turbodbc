@@ -10,6 +10,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <iso646.h>
 #endif
 #include "sqlext.h"
 
