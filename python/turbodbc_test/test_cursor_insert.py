@@ -183,3 +183,11 @@ def test_string_with_differing_lengths(dsn, configuration):
             cursor.execute("SELECT a FROM {}".format(table_name))
             inserted = [list(row) for row in cursor.fetchall()]
             assert expected == inserted
+
+
+@for_each_database
+def test_rowcount_works_without_parameter_sets(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.execute("INSERT INTO {} VALUES (42), (17)".format(table_name))
+            assert cursor.rowcount == 2

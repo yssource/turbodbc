@@ -61,7 +61,11 @@ int64_t command::get_row_count()
     if (has_result_set) {
         return statement_->row_count();
     } else {
-        return params_.transferred_sets();
+        if (params_.number_of_parameters() != 0) {
+            return params_.transferred_sets();
+        } else {
+            return statement_->row_count();
+        }
     }
 }
 

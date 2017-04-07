@@ -68,6 +68,40 @@ TEST(CommandTest, GetRowCountAfterQueryWithResultSet)
 }
 
 
+TEST(CommandTest, GetRowCountAfterInsertWithoutParameters)
+{
+    int64_t const expected = 17;
+    auto statement = std::make_shared<mock_statement>();
+
+    ON_CALL(*statement, do_number_of_parameters())
+        .WillByDefault(testing::Return(0));
+
+    EXPECT_CALL( *statement, do_row_count())
+        .WillOnce(testing::Return(expected));
+
+    turbodbc::command command(statement, make_config());
+    command.execute();
+    EXPECT_EQ(expected, command.get_row_count());
+}
+
+
+TEST(CommandTest, GetRowCountAfterInsertWithParameters)
+{
+    auto statement = std::make_shared<mock_statement>();
+
+    ON_CALL(*statement, do_number_of_parameters())
+        .WillByDefault(testing::Return(1));
+    ON_CALL(*statement, do_describe_parameter(1))
+        .WillByDefault(testing::Return(cpp_odbc::column_description{"dummy", SQL_BIGINT, 0, 0, true}));
+
+    EXPECT_CALL( *statement, do_row_count()).Times(0);
+
+    turbodbc::command command(statement, make_config());
+    command.execute(); // execute without setting any parameters before equals 0 transferred rows
+    EXPECT_EQ(0, command.get_row_count());
+}
+
+
 namespace {
 
     template <typename ExpectedResultSetType>
