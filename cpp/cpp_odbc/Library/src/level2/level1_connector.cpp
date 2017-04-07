@@ -65,7 +65,7 @@ cpp_odbc::level2::diagnostic_record get_diagnostic_record(
 {
     cpp_odbc::level2::fixed_length_string_buffer<5> status_code;
     SQLINTEGER native_error = 0;
-    cpp_odbc::level2::string_buffer message(1024);
+    cpp_odbc::level2::string_buffer message(SQL_MAX_MESSAGE_LENGTH);
     SQLSMALLINT const record_id = 1;
 
     auto const return_code = api.get_diagnostic_record(type, handle, record_id, status_code.data_pointer(), &native_error, message.data_pointer(), message.capacity(), message.size_pointer());

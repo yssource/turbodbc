@@ -208,7 +208,7 @@ namespace {
 		std::string const expected_message = "This is a test error message";
 
 		auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
-		EXPECT_CALL(*api, do_get_diagnostic_record(expected_type, handle.handle, 1, testing::_, testing::_, testing::_, 1024, testing::_))
+		EXPECT_CALL(*api, do_get_diagnostic_record(expected_type, handle.handle, 1, testing::_, testing::_, testing::_, SQL_MAX_MESSAGE_LENGTH, testing::_))
 			.WillOnce(testing::DoAll(
 						testing::SetArrayArgument<3>(expected_status_code.begin(), expected_status_code.end()),
 						testing::SetArgPointee<4>(expected_native_error),
