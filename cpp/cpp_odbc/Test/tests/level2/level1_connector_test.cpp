@@ -21,8 +21,9 @@ namespace {
 	int value_b = 23;
 
 	level2::diagnostic_record const expected_error = {"ABCDE", 23, "This is a test error message"};
+	level2::diagnostic_record const expected_info = {"XYZ12", 42, "This is a test info message"};
 
-	void expect_error(cpp_odbc_test::level1_mock_api const & mock, level2::diagnostic_record const & expected)
+	void expect_diagnostic_record(cpp_odbc_test::level1_mock_api const & mock, level2::diagnostic_record const & expected)
 	{
 		EXPECT_CALL(mock, do_get_diagnostic_record(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 			.WillOnce(testing::DoAll(
@@ -95,6 +96,63 @@ TEST(Level1ConnectorTest, AllocateEnvironmentHandleCallsAPI)
 	EXPECT_EQ(expected_output_handle, actual_output_handle);
 }
 
+TEST(Level1ConnectorTest, AllocateStatementHandleSucceedsWithInfo)
+{
+	level2::connection_handle input_handle = {&value_a};
+	level2::statement_handle const expected_output_handle = {&value_b};
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_allocate_handle(SQL_HANDLE_STMT, input_handle.handle, testing::_))
+		.WillOnce(testing::DoAll(
+			testing::SetArgPointee<2>(expected_output_handle.handle),
+			testing::Return(SQL_SUCCESS_WITH_INFO)
+		));
+	expect_diagnostic_record(*api, expected_info);
+
+	level1_connector const connector(api);
+
+	auto const actual_output_handle = connector.allocate_statement_handle(input_handle);
+	EXPECT_EQ(expected_output_handle, actual_output_handle);
+}
+
+TEST(Level1ConnectorTest, AllocateConnectionHandleSucceedsWithInfo)
+{
+	level2::environment_handle input_handle = {&value_a};
+	level2::connection_handle const expected_output_handle = {&value_b};
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_allocate_handle(SQL_HANDLE_DBC, input_handle.handle, testing::_) )
+		.WillOnce(testing::DoAll(
+			testing::SetArgPointee<2>(expected_output_handle.handle),
+			testing::Return(SQL_SUCCESS_WITH_INFO)
+		));
+	expect_diagnostic_record(*api, expected_info);
+
+	level1_connector const connector(api);
+
+	auto const actual_output_handle = connector.allocate_connection_handle(input_handle);
+	EXPECT_EQ(expected_output_handle, actual_output_handle);
+}
+
+TEST(Level1ConnectorTest, AllocateEnvironmentHandleSucceedsWithInfo)
+{
+	level2::environment_handle const expected_output_handle = {&value_a};
+
+	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
+	EXPECT_CALL(*api, do_allocate_handle(SQL_HANDLE_ENV, nullptr, testing::_) )
+		.WillOnce(testing::DoAll(
+			testing::SetArgPointee<2>(expected_output_handle.handle),
+			testing::Return(SQL_SUCCESS_WITH_INFO)
+		));
+	// do not expect a diagnostic record to be queried because environment handles
+	// are not derived from higher-order handles
+
+	level1_connector const connector(api);
+
+	auto const actual_output_handle = connector.allocate_environment_handle();
+	EXPECT_EQ(expected_output_handle, actual_output_handle);
+}
+
 TEST(Level1ConnectorTest, AllocateStatementHandleFails)
 {
 	level2::connection_handle input_handle = {&value_a};
@@ -102,7 +160,7 @@ TEST(Level1ConnectorTest, AllocateStatementHandleFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_allocate_handle(testing::_, testing::_, testing::_) )
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 
@@ -116,7 +174,7 @@ TEST(Level1ConnectorTest, AllocateConnectionHandleFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_allocate_handle(testing::_, testing::_, testing::_) )
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 
@@ -174,7 +232,7 @@ namespace {
 		auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 		EXPECT_CALL(*api, do_free_handle(testing::_, testing::_) )
 			.WillOnce(testing::Return(SQL_ERROR));
-		expect_error(*api, expected_error);
+		expect_diagnostic_record(*api, expected_error);
 
 		level1_connector const connector(api);
 
@@ -297,7 +355,7 @@ TEST(Level1ConnectorTest, SetEnvironmentAttributeFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_environment_attribute(testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.set_environment_attribute(handle, 0, 0), cpp_odbc::error );
@@ -324,7 +382,7 @@ TEST(Level1ConnectorTest, SetConnectionAttributeFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_connection_attribute(testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.set_connection_attribute(handle, 0, 0), cpp_odbc::error );
@@ -350,7 +408,7 @@ TEST(Level1ConnectorTest, EstablishConnectionFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_establish_connection(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.establish_connection(handle, "dummy connection string"), cpp_odbc::error);
@@ -375,7 +433,7 @@ TEST(Level1ConnectorTest, DisconnectFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_disconnect(testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.disconnect(handle), cpp_odbc::error);
@@ -402,7 +460,7 @@ TEST(Level1ConnectorTest, EndTransactionFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_end_transaction(testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.end_transaction(handle, completion_type), cpp_odbc::error);
@@ -438,7 +496,7 @@ TEST(Level1ConnectorTest, GetStringConnectionInfoFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_get_connection_info(testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW(connector.get_string_connection_info(handle, info_type), cpp_odbc::error);
@@ -473,7 +531,7 @@ TEST(Level1ConnectorTest, GetIntegerConnectionInfoFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_get_connection_info(testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW(connector.get_integer_connection_info(handle, info_type), cpp_odbc::error);
@@ -503,7 +561,7 @@ TEST(Level1ConnectorTest, BindColumnFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_bind_column(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW(connector.bind_column(handle, column_id, column_type, column_buffer), cpp_odbc::error);
@@ -536,7 +594,7 @@ TEST(Level1ConnectorTest, BindInputParameterFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_bind_parameter(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.bind_input_parameter(handle, parameter_id, value_type, parameter_type, digits, buffer), cpp_odbc::error);
@@ -561,7 +619,7 @@ TEST(Level1ConnectorTest, ExecutePreparedStatementFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_execute_prepared_statement(testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.execute_prepared_statement(handle), cpp_odbc::error);
@@ -622,7 +680,7 @@ TEST(Level1ConnectorTest, ExecuteStatementFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_execute_statement(testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.execute_statement(handle, sql), cpp_odbc::error );
@@ -651,7 +709,7 @@ TEST(Level1ConnectorTest, FetchScrollFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_fetch_scroll(testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.fetch_scroll(handle, orientation, offset), cpp_odbc::error );
@@ -692,7 +750,7 @@ TEST(Level1ConnectorTest, FreeStatementFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_free_statement(testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.free_statement(handle, option), cpp_odbc::error );
@@ -725,7 +783,7 @@ TEST(Level1ConnectorTest, GetIntegerColumnAttributeFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_column_attribute(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.get_integer_column_attribute(handle, column_id, field_identifier), cpp_odbc::error );
@@ -760,7 +818,7 @@ TEST(Level1ConnectorTest, GetIntegerStatementAttributeFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_get_statement_attribute(testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.get_integer_statement_attribute(handle, attribute), cpp_odbc::error );
@@ -798,7 +856,7 @@ TEST(Level1ConnectorTest, GetStringColumnAttributeFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_column_attribute(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.get_string_column_attribute(handle, column_id, field_identifier), cpp_odbc::error );
@@ -827,7 +885,7 @@ TEST(Level1ConnectorTest, NumberOfResultColumnsFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_number_of_result_columns(testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.number_of_result_columns(handle), cpp_odbc::error );
@@ -856,7 +914,7 @@ TEST(Level1ConnectorTest, NumberOfParametersFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_number_of_parameters(testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.number_of_parameters(handle), cpp_odbc::error );
@@ -883,7 +941,7 @@ TEST(Level1ConnectorTest, PrepareStatementFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_prepare_statement(testing::_, testing::Matcher<unsigned char *>(testing::_), testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.prepare_statement(handle, sql), cpp_odbc::error );
@@ -910,7 +968,7 @@ TEST(Level1ConnectorTest, PrepareWideStatementFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_prepare_statement(testing::_, testing::Matcher<SQLWCHAR *>(testing::_), testing::_))
 	.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.prepare_statement(handle, sql), cpp_odbc::error );
@@ -943,7 +1001,7 @@ TEST(Level1ConnectorTest, SetLongStatementAttributeFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_statement_attribute(testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.set_statement_attribute(handle, attribute, value), cpp_odbc::error );
@@ -972,7 +1030,7 @@ TEST(Level1ConnectorTest, SetPointerStatementAttributeFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_set_statement_attribute(testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.set_statement_attribute(handle, attribute, &value), cpp_odbc::error );
@@ -1001,7 +1059,7 @@ TEST(Level1ConnectorTest, RowCountFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_row_count(testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.row_count(handle), cpp_odbc::error );
@@ -1053,7 +1111,7 @@ TEST(Level1ConnectorTest, DescribeColumnFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_describe_column(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.describe_column(handle, column_id), cpp_odbc::error );
@@ -1101,7 +1159,7 @@ TEST(Level1ConnectorTest, DescribeParameterFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_describe_parameter(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.describe_parameter(handle, parameter_id), cpp_odbc::error );
@@ -1130,7 +1188,7 @@ TEST(Level1ConnectorTest, MoreResultsFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_more_results(testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW( connector.more_results(handle), cpp_odbc::error);
@@ -1164,7 +1222,7 @@ TEST(Level1ConnectorTest, SupportsFunctionFails)
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
 	EXPECT_CALL(*api, do_get_functions(handle.handle, function_id, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
-	expect_error(*api, expected_error);
+	expect_diagnostic_record(*api, expected_error);
 
 	level1_connector const connector(api);
 	EXPECT_THROW(connector.supports_function(handle, function_id), cpp_odbc::error);

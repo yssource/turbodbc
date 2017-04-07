@@ -2,9 +2,12 @@ Version 1.1.2 (unreleased)
 ==========================
 *   Fixed bug with `cursor.rowcount` not being reset to `-1` when calls to
     `execute()` or `executemany()` raised exceptions.
-*   Fixes bug with `cursor.rowcount` not showing the correct value when
+*   Fixed bug with `cursor.rowcount` not showing the correct value when
     manipulating queries were used without placeholders, i.e., with
-    parameters baked into the query.s
+    parameters baked into the query.
+*   Internal: The return code `SQL_SUCCESS_WITH_INFO` is now treated as
+    a success instead of an error when allocating environment, connection,
+    and statement handles. This may improve compatibility with some databases.
 
 Version 1.1.1
 =============

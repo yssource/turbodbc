@@ -14,6 +14,7 @@
 #include "sqlext.h"
 
 #include <sstream>
+#include <iostream>
 
 namespace impl {
 
@@ -28,6 +29,12 @@ Output_Handle allocate_handle(
     auto const return_code = level1.allocate_handle(output_handle.type(), input_handle.handle, &output_handle.handle);
 
     if (return_code == SQL_SUCCESS) {
+        return output_handle;
+    } else if (return_code == SQL_SUCCESS_WITH_INFO) {
+        auto const record = level2.get_diagnostic_record(input_handle);
+        std::cout << "ODBC info: " << record.message
+                  << " (status code: " << record.odbc_status_code
+                  << ", native error code: " << record.native_error_code << std::endl;
         return output_handle;
     } else {
         throw cpp_odbc::error(level2.get_diagnostic_record(input_handle));
@@ -102,7 +109,7 @@ environment_handle level1_connector::do_allocate_environment_handle() const
     environment_handle output_handle = {nullptr};
     auto const return_code = level1_api_->allocate_handle(output_handle.type(), SQL_NULL_HANDLE, &output_handle.handle);
 
-    if (return_code == SQL_SUCCESS) {
+    if ((return_code == SQL_SUCCESS) or (return_code == SQL_SUCCESS_WITH_INFO)){
         return output_handle;
     } else {
         throw cpp_odbc::error("Could not allocate environment handle");
