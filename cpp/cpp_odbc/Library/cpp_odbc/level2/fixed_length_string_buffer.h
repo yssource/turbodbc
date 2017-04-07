@@ -56,7 +56,7 @@ public:
 	}
 
 private:
-	std::array<unsigned char, Capacity> data_;
+	std::array<unsigned char, Capacity + 1> data_;
 };
 
 
