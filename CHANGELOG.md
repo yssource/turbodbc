@@ -1,3 +1,8 @@
+Version 1.1.2 (unreleased)
+==========================
+*   Fixed bug with `cursor.rowcount()` not being reset to `-1` when calls to
+    `execute()` or `executemany()` raised exceptions.
+
 Version 1.1.1
 =============
 *   Windows is now _officially_ supported (64 bit, Python 3.5 and 3.6). From now on,
