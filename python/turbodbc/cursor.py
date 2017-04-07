@@ -83,6 +83,7 @@ class Cursor(object):
     @translate_exceptions
     def executemany(self, sql, parameters=None):
         """Execute an SQL query"""
+        self.rowcount = -1
         self._assert_valid()
         self.impl.prepare(sql)
 

@@ -3,7 +3,7 @@ import six
 
 from turbodbc import connect, InterfaceError, Error
 
-from helpers import for_one_database, for_each_database, get_credentials, open_cursor
+from helpers import for_one_database, get_credentials, open_cursor
 from query_fixture import query_fixture
 
 
@@ -84,7 +84,7 @@ def test_setoutputsize_does_not_raise(dsn, configuration):
     cursor.setoutputsize(1000) # without column
 
 
-@for_each_database
+@for_one_database
 def test_rowcount_is_reset_after_execute_raises(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
@@ -92,4 +92,15 @@ def test_rowcount_is_reset_after_execute_raises(dsn, configuration):
             assert cursor.rowcount == 1
             with pytest.raises(Error):
                 cursor.execute("this is not even a valid SQL statement")
+            assert cursor.rowcount == -1
+
+
+@for_one_database
+def test_rowcount_is_reset_after_executemany_raises(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), [42])
+            assert cursor.rowcount == 1
+            with pytest.raises(Error):
+                cursor.executemany("this is not even a valid SQL statement")
             assert cursor.rowcount == -1
