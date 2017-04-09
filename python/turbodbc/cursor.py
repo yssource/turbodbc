@@ -27,6 +27,10 @@ def _make_masked_arrays(result_batch):
     return masked_arrays
 
 class Cursor(object):
+    """
+    This class allows you to send SQL commands and queries to a database and retrieve
+    associated result sets.
+    """
     def __init__(self, impl):
         self.impl = impl
         self.result_set = None
@@ -55,6 +59,13 @@ class Cursor(object):
 
     @property
     def description(self):
+        """
+        Retrieve a description of the columns in the current result set
+        :return: A tuple of seven elements. Only some elements are meaningful:\n
+                 *   Element #0 is the name of the column
+                 *   Element #1 is the type code of the column
+                 *   Element #6 is true if the column may contain ``NULL`` values
+        """
         if self.result_set:
             info = self.result_set.get_column_info()
             return [(c.name, c.type_code(), None, None, None, None, c.supports_null_values) for c in info]
@@ -63,7 +74,15 @@ class Cursor(object):
 
     @translate_exceptions
     def execute(self, sql, parameters=None):
-        """Execute an SQL query"""
+        """
+        Execute an SQL command or query
+        :param sql: A (unicode) string the contains the SQL command or query. If you would like to\
+               use parameters, please use a question mark ``?`` at the location where the\
+               parameter shall be inserted.
+        :param parameters: An iterable of parameter values. The number of values must match\
+               the number of parameters in the SQL string.
+        :return: Returns the ``Cursor`` object to allow chaining of operations.
+        """
         self.rowcount = -1
         self._assert_valid()
         self.impl.prepare(sql)
@@ -82,7 +101,17 @@ class Cursor(object):
 
     @translate_exceptions
     def executemany(self, sql, parameters=None):
-        """Execute an SQL query"""
+        """
+        Execute an SQL command or query with multiple parameter sets.
+        :param sql: A (unicode) string the contains the SQL command or query. If you would like to\
+               use parameters, please use a question mark ``?`` at the location where the\
+               parameter shall be inserted.
+        :param parameters: An iterable of iterable of parameter values. The outer iterable represents\
+               separate parameter sets. The inner iterable contains parameter values for a given\
+               parameter set. The number of values of each set must match the number of parameters\
+               in the SQL string.
+        :return: Returns the ``Cursor`` object to allow chaining of operations.
+        """
         self.rowcount = -1
         self._assert_valid()
         self.impl.prepare(sql)
@@ -104,6 +133,11 @@ class Cursor(object):
 
     @translate_exceptions
     def fetchone(self):
+        """
+        Returns a single row of a result set. Requires an active result set on the database\
+        generated with ``execute()`` or ``executemany()``.
+        :return: Returns ``None`` when no more rows are available in the result set
+        """
         self._assert_valid_result_set()
         result = self.result_set.fetch_row()
         if len(result) == 0:
@@ -113,10 +147,22 @@ class Cursor(object):
 
     @translate_exceptions
     def fetchall(self):
+        """
+        Fetches a list of all rows in the active result set generated with ``execute()`` or\
+        ``executemany()``.
+        :return: Returns a list of rows
+        """
         return [row for row in self]
 
     @translate_exceptions
     def fetchmany(self, size=None):
+        """
+        Fetches a batch of rows in the active result set generated with ``execute()`` or\
+        ``executemany()``.
+        :param size: Controls how many rows are returned. The default ``None`` means that\
+               the value of Cursor.arraysize is used.
+        :return: Returns a list of rows
+        """
         if size is None:
             size = self.arraysize
         if (size <= 0):
@@ -125,12 +171,27 @@ class Cursor(object):
         return [row for row in islice(self, size)]
 
     def fetchallnumpy(self):
+        """
+        Fetches all rows in the active result set generated with ``execute()`` or\
+        ``executemany()``. 
+        :return: An ``OrderedDict`` of *columns*, where the keys of the dictionary\
+                 are the column names. The columns are of NumPy's ``MaskedArray``\
+                 type, where the optimal data type for each result set column is\
+                 chosen automatically.
+        """
         from numpy.ma import concatenate
         batches = list(self._numpy_batch_generator())
         column_names = [description[0] for description in self.description]
         return OrderedDict(zip(column_names, [concatenate(column) for column in zip(*batches)]))
 
     def fetchnumpybatches(self):
+        """
+        Returns an iterator over all rows in the active result set generated with ``execute()`` or\
+        ``executemany()``. 
+        :return: An iterator you can use to iterate over batches of rows of the result set. Each\
+                 batch consists of an ``OrderedDict`` of NumPy ``MaskedArray`` instances. See\
+                 ``fetchallnumpy()`` for details.
+        """
         batchgen = self._numpy_batch_generator()
         column_names = [description[0] for description in self.description]
         for next_batch in batchgen:
@@ -154,19 +215,22 @@ class Cursor(object):
             yield result_batch
 
     def close(self):
+        """
+        Closes the cursor. 
+        """
         self.result_set = None
         self.impl = None
 
     def setinputsizes(self, sizes):
         """
-        setinputsizes() has no effect. turbodbc automatically picks appropriate
+        Has no effect since turbodbc automatically picks appropriate
         return types and sizes. Method exists since PEP-249 requires it.
         """
         pass
 
     def setoutputsize(self, size, column=None):
         """
-        setoutputsize() has no effect. turbodbc automatically picks appropriate
+        Has no effect since turbodbc automatically picks appropriate
         input types and sizes. Method exists since PEP-249 requires it.
         """
         pass

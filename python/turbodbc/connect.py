@@ -18,15 +18,16 @@ def _make_connection_string(dsn, **kwargs):
 @translate_exceptions
 def connect(dsn=None, turbodbc_options=None, read_buffer_size=None, parameter_sets_to_buffer=None, use_async_io=False, connection_string=None, **kwargs):
     """
-    Create a connection with the database identified by the dsn
+    Create a connection with the database identified by the ``dsn`` or the ``connection_string``.
+
     :param dsn: Data source name as given in the odbc.ini file
-    :param turbodbc_options: Options that control how turbodbc interacts with the database.
-     Create such a struct with `turbodbc.make_options()` or leave this blank to take the defaults.
-    :param connection_string: Preformatted ODBC connection string.
-     Specifying this and dsn or kwargs at the same time raises ParameterError.
-    :param \**kwargs: You may specify additional options as you please. These options will go into
-     the connection string that identifies the database. Valid options depend on the specific database you
-     would like to connect with (e.g. `user` and `password` or `uid` and `pwd`)
+    :param turbodbc_options: Options that control how turbodbc interacts with the database.\
+           Create such a struct with `turbodbc.make_options()` or leave this blank to take the defaults.
+    :param connection_string: Preformatted ODBC connection string.\
+           Specifying this and dsn or kwargs at the same time raises ParameterError.
+    :param \**kwargs: You may specify additional options as you please. These options will go into\
+           the connection string that identifies the database. Valid options depend on the specific database you\
+           would like to connect with (e.g. `user` and `password` or `uid` and `pwd`)
     :return: A connection to your database
     """
     if turbodbc_options is None:

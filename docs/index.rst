@@ -34,3 +34,11 @@ and `MSSQL <http://microsoft.com/sql>`_, but probably also works with your datab
     pages/odbc_configuration
     pages/faq
     pages/contributing
+    pages/api_reference
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
