@@ -17,6 +17,7 @@ class Connection(object):
     def cursor(self):
         """
         Create a new ``Cursor`` instance associated with this ``Connection``
+        
         :return: A new ``Cursor`` instance
         """
         self._assert_valid()
