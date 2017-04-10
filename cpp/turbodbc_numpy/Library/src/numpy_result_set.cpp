@@ -50,8 +50,12 @@ numpy_result_set::numpy_result_set(turbodbc::result_sets::result_set & base) :
 
 pybind11::object numpy_result_set::fetch_next_batch()
 {
-	std::size_t rows_in_batch = base_result_.fetch_next_batch();
-	auto const column_info = base_result_.get_column_info();
+	std::size_t rows_in_batch = 0;
+    {
+        pybind11::gil_scoped_release release;
+        rows_in_batch = base_result_.fetch_next_batch();
+    }
+    auto const column_info = base_result_.get_column_info();
 	auto const n_columns = column_info.size();
 
 	std::vector<std::unique_ptr<masked_column>> columns;
