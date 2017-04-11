@@ -7,9 +7,14 @@ Can I use turbodbc together with SQLAlchemy?
 
 Using Turbodbc in combination with SQLAlchemy is possible for a (currently) limited number of databases:
 
-*   Exasol: `sqlalchemy_exasol <https://github.com/blue-yonder/sqlalchemy_exasol>`_
-*   MSSQL: `sqlalchemy-turbodbc <https://github.com/dirkjonker/sqlalchemy-turbodbc>`_
+*   `EXASOL <http://www.exasol.com>`_: `sqlalchemy_exasol <https://github.com/blue-yonder/sqlalchemy_exasol>`_
+*   `MSSQL <http://microsoft.com/sql>`_: `sqlalchemy-turbodbc <https://github.com/dirkjonker/sqlalchemy-turbodbc>`_
 
+All of the above packages are available on PyPI. There are also more experimental implementations
+available:
+
+*   `Vertica <https://www.vertica.com>`_: Inofficial
+    `fork of sqlalchemy-vertica <https://github.com/startappdev/sqlalchemy-vertica>`_
 
 Where would I report issues concerning turbodbc?
 ------------------------------------------------
