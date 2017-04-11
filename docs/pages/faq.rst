@@ -34,8 +34,13 @@ I suggest to ask questions either using turbodbc's issue tracker on
 Is there a guided tour through turbodbc's entrails?
 ---------------------------------------------------
 
-Yes, there is! Check out this blog post on
-`the making of turbodbc <http://tech.blue-yonder.com/making-of-turbodbc-part-1-wrestling-with-the-side-effects-of-a-c-api/>`_.
+Yes, there is! Check out these blog posts on the making of turbodbc:
+
+*   Part one: `Wrestling with the side effects of a C API <http://tech.blue-yonder.com/making-of-turbodbc-part-1-wrestling-with-the-side-effects-of-a-c-api/>`_.
+    This explains the C++ layer that is used to handle all calls to the ODBC API.
+*   Part two: `C++ to Python <https://tech.blue-yonder.com/making-of-turbodbc-part-2-c-to-python/>`_
+    This explains how concepts of the ODBC API are transformed into an API compliant
+    with Python's database API, including making use of `pybind11 <https://github.com/pybind/pybind11>`_.
 
 
 I love Twitter! Is turbodbc on Twitter?
