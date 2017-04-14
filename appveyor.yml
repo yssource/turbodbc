@@ -14,12 +14,14 @@ environment:
 
   matrix:
     # first group
-    - PYTHON: C:\Python36-x64
-      PYTHON_VERSION: 3.6
+    #- PYTHON: C:\Python36-x64
+    #  PYTHON_VERSION: 3.6
 
     # second group
-    - PYTHON: C:\Python35-x64
-      PYTHON_VERSION: 3.5
+    #- PYTHON: C:\Python35-x64
+    #  PYTHON_VERSION: 3.5
+    - PYTHON: C:\Python27-x64
+      PYTHON_VERSION: 2.7
 
 services:
   - mysql
