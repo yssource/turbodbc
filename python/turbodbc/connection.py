@@ -17,7 +17,7 @@ class Connection(object):
     def cursor(self):
         """
         Create a new ``Cursor`` instance associated with this ``Connection``
-        
+
         :return: A new ``Cursor`` instance
         """
         self._assert_valid()
@@ -36,7 +36,7 @@ class Connection(object):
     @translate_exceptions
     def rollback(self):
         """
-        Roll back all changes in the current transaction 
+        Roll back all changes in the current transaction
         """
         self._assert_valid()
         self.impl.rollback()
@@ -44,7 +44,7 @@ class Connection(object):
     def close(self):
         """
         Close the connection and all associated cursors. This will implicitly
-        roll back any uncommited operations.
+        roll back any uncommitted operations.
         """
         for c in self.cursors:
             c.close()
