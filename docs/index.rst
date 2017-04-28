@@ -32,6 +32,8 @@ and `MSSQL <http://microsoft.com/sql>`_, but probably also works with your datab
     pages/getting_started
     pages/advanced_usage
     pages/odbc_configuration
+    pages/databases
+    pages/troubleshooting
     pages/faq
     pages/contributing
     pages/api_reference
