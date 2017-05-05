@@ -80,7 +80,7 @@ after_test:
   - cmake --build . --config Release --target install
   - pip install wheel pybind11==2.1.0
   - cd dist
-  - python setup.py bdist_wheel
+  - python setup.py bdist_wheel --compiler=fail
   - cd dist
   - cp turbodbc*.whl ..\..\..\turbodbc
 
