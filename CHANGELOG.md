@@ -5,6 +5,8 @@ Version 1.1.2 (unreleased)
 *   Fixed bug with `cursor.rowcount` not showing the correct value when
     manipulating queries were used without placeholders, i.e., with
     parameters baked into the query.
+*   Global interpreter lock (GIL) is released during some operations to
+    facilitate basic multi-threading (thanks @chmp)
 *   Internal: The return code `SQL_SUCCESS_WITH_INFO` is now treated as
     a success instead of an error when allocating environment, connection,
     and statement handles. This may improve compatibility with some databases.
