@@ -60,7 +60,7 @@ do the following:
 
     ::
 
-        pip install numpy pytest mock
+        pip install numpy pytest pytest-cov mock
 
 #.  Make sure you have a recent version of ``cmake`` installed. For some operating
     systems, binary wheels are available in addition to the package your operating

@@ -71,7 +71,7 @@ before_install: |
     pyenv virtualenv ${TRAVIS_PYTHON_VERSION} turbodbc
     pyenv activate turbodbc
     python --version
-    pip install pytest mock
+    pip install pytest pytest-cov mock
 
     echo "Setting up preinstalled PostgreSQL database"
     rm -rf /usr/local/var/postgres

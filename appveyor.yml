@@ -32,7 +32,7 @@ install:
 
     SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
 
-    pip install numpy pytest mock
+    pip install numpy pytest pytest-cov mock
 
     echo %PYTHON%
 
