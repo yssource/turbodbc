@@ -25,3 +25,5 @@ performance to expect.
     :maxdepth: 1
 
     databases/exasol
+    databases/postgresql
+    databases/mysql

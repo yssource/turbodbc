@@ -98,10 +98,7 @@ Recommended turbodbc configuration
 The default turbodbc connection options work fine for PostgreSQL. As stated
 above, performance is not great due to the ODBC driver.
 
-See the :ref:`advanced options <advanced_usage_options>` for details.
-
 ::
 
-    >>> from turbodbc import connect, make_options, Megabytes
-    >>> options = make_options(read_buffer_size=Megabytes(100))
-    >>> connect(dsn="PostgreSQL", turbodbc_options=options)
+    >>> from turbodbc import connect
+    >>> connect(dsn="PostgreSQL")
