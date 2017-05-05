@@ -71,7 +71,7 @@ before_install: |
     pyenv virtualenv ${TRAVIS_PYTHON_VERSION} turbodbc
     pyenv activate turbodbc
     python --version
-    pip install pytest pytest-cov mock
+    pip install pytest mock
 
     echo "Setting up preinstalled PostgreSQL database"
     rm -rf /usr/local/var/postgres
@@ -83,7 +83,7 @@ before_install: |
   fi
 
 install:
-  - pip install numpy==1.8.0 six twine
+  - pip install numpy==1.8.0 six twine pytest-cov
 
 before_script: |
   if [ "$TRAVIS_OS_NAME" == "linux" ]; then
