@@ -83,7 +83,7 @@ before_install: |
   fi
 
 install:
-  - pip install numpy==1.8.0 six twine pytest-cov
+  - pip install numpy==1.8.0 six twine pytest-cov coveralls
 
 before_script: |
   if [ "$TRAVIS_OS_NAME" == "linux" ]; then
@@ -96,6 +96,9 @@ script:
   - cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} ..
   - make -j4
   - ctest --verbose
+  - cd ../python/turbodbc_test
+  - coveralls
+  - cd ../../build
   - make install
   - cd dist
   - python setup.py sdist
