@@ -1,5 +1,5 @@
 {
-	"data_source_name": "MSSQL",
+	"data_source_name": "MSSQLFreeTDS",
 	"user": "SA",
 	"password": "StrongPassword1",
 	"prefer_unicode": true,

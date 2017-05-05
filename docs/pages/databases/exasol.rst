@@ -3,6 +3,8 @@ Exasol
 
 `Exasol <http://www.exasol.com>`_ is one of turbodbc's main development
 databases, and also provided the initial motivation for creating turbodbc.
+Here are the recommended settings for connecting to an Exasol database via ODBC
+using the turbodbc module for Python.
 
 
 Recommended odbcinst.ini (Linux)
