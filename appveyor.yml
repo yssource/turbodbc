@@ -30,10 +30,6 @@ services:
 
 install:
 - cmd: >-
-    dir %PYTHON%\Lib\distutils
-
-    fail
-
     git submodule update --init --recursive
 
     SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
