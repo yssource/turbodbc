@@ -71,6 +71,8 @@ operations.
     Do not be afraid to give it a try, though.
 
 
+.. _advanced_usage_options_prefer_unicode:
+
 Prefer unicode
 ~~~~~~~~~~~~~~
 

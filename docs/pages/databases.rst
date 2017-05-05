@@ -27,3 +27,4 @@ performance to expect.
     databases/exasol
     databases/postgresql
     databases/mysql
+    databases/mssql
