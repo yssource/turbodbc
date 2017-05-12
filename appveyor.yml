@@ -42,46 +42,46 @@ before_build:
 
 build_script:
 - cmd: >-
-    cd ..
-
-    mkdir turbodbc_build
-
-    cd turbodbc_build
-
-    cmake ..\turbodbc -DPYBIND11_PYTHON_VERSION=%PYTHON_VERSION% -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=dist -A x64
-
-    cmake --build . --config Release
+#    cd ..
+#
+#    mkdir turbodbc_build
+#
+#    cd turbodbc_build
+#
+#    cmake ..\turbodbc -DPYBIND11_PYTHON_VERSION=%PYTHON_VERSION% -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=dist -A x64
+#
+#    cmake --build . --config Release
 
 test_script:
 - cmd: >-
-    reg import ..\turbodbc\appveyor\odbc-mysql.reg
-
-    reg import ..\turbodbc\appveyor\odbc-postgresql.reg
-
-    reg import ..\turbodbc\appveyor\odbc-mssql.reg
-
-    reg import ..\turbodbc\appveyor\odbc-data-sources.reg
-
-    SET PATH=C:\Program Files\PostgreSQL\9.6\bin;C:\Program Files\MySQL\MySQL Server 5.7\bin;%PATH%
-
-    psql -c "CREATE DATABASE test_db;"
-
-    mysql -u root -e "CREATE DATABASE test_db;"
-
-    sqlcmd -S localhost\SQL2016 -U SA -P "Password12!" -Q "ALTER LOGIN SA WITH PASSWORD = 'StrongPassword1'"
-
-    sqlcmd -S localhost\SQL2016 -U SA -P "StrongPassword1" -Q "CREATE DATABASE test_db"
-
-    ctest --verbose -C Release
+#    reg import ..\turbodbc\appveyor\odbc-mysql.reg
+#
+#    reg import ..\turbodbc\appveyor\odbc-postgresql.reg
+#
+#    reg import ..\turbodbc\appveyor\odbc-mssql.reg
+#
+#    reg import ..\turbodbc\appveyor\odbc-data-sources.reg
+#
+#    SET PATH=C:\Program Files\PostgreSQL\9.6\bin;C:\Program Files\MySQL\MySQL Server 5.7\bin;%PATH%
+#
+#    psql -c "CREATE DATABASE test_db;"
+#
+#    mysql -u root -e "CREATE DATABASE test_db;"
+#
+#    sqlcmd -S localhost\SQL2016 -U SA -P "Password12!" -Q "ALTER LOGIN SA WITH PASSWORD = 'StrongPassword1'"
+#
+#    sqlcmd -S localhost\SQL2016 -U SA -P "StrongPassword1" -Q "CREATE DATABASE test_db"
+#
+#    ctest --verbose -C Release
 
 after_test:
-  - cmake --build . --config Release --target install
-  - pip install wheel pybind11==2.1.0
-  - cd dist
-  - python setup.py bdist_wheel
-  - cd dist
-  - cp turbodbc*.whl ..\..\..\turbodbc
+#  - cmake --build . --config Release --target install
+#  - pip install wheel pybind11==2.1.0
+#  - cd dist
+#  - python setup.py bdist_wheel
+#  - cd dist
+#  - cp turbodbc*.whl ..\..\..\turbodbc
 
 artifacts:
-- path: 'turbodbc*.whl'
-  name: Binary wheel
+#- path: 'turbodbc*.whl'
+#  name: Binary wheel
