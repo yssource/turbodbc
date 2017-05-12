@@ -100,7 +100,6 @@ script:
   - mkdir gcov
   - cd gcov
   - gcov -l -p `find ../build -name "*.gcda"` > /dev/null
-  - ls -l
   - cd ..
   - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/
 
