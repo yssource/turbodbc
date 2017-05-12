@@ -99,7 +99,7 @@ script:
   - cd ..
   - mkdir gcov
   - cd gcov
-  - gcov `find . -name "../build/level1_connector.*.gcda"`
+  - gcov `find ../build -name "level1_connector.*.gcda"`
   - cd ..
   - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/
 
