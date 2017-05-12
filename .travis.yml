@@ -44,9 +44,9 @@ matrix:
 #    - ODBC_DIR=odbc
 
 
-#services:
-#  - mysql
-#  - postgresql
+services:
+  - mysql
+  - postgresql
 
 addons:
   apt:
@@ -56,8 +56,8 @@ addons:
       - libboost-date-time-dev
       - libboost-locale-dev
       - libboost-system-dev
-#      - libmyodbc
-#      - odbc-postgresql=1:09.02.0100-2ubuntu1
+      - libmyodbc
+      - odbc-postgresql=1:09.02.0100-2ubuntu1
 
 before_install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
@@ -65,7 +65,7 @@ before_install: |
     brew outdated pyenv || brew upgrade pyenv
     brew install unixodbc
     brew install pyenv-virtualenv
-    #    brew install psqlodbc
+    brew install psqlodbc
     eval "$(pyenv init -)"
     pyenv install ${TRAVIS_PYTHON_VERSION}
     pyenv virtualenv ${TRAVIS_PYTHON_VERSION} turbodbc
@@ -73,17 +73,17 @@ before_install: |
     python --version
     pip install pytest mock
 
-    #    echo "Setting up preinstalled PostgreSQL database"
-    #    rm -rf /usr/local/var/postgres
-    #    initdb /usr/local/var/postgres
-    #    pg_ctl -D /usr/local/var/postgres -w start
-    #    createuser -s postgres
-    #    psql -U postgres -c 'CREATE DATABASE test_db;'
-    #    psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
+    echo "Setting up preinstalled PostgreSQL database"
+    rm -rf /usr/local/var/postgres
+    initdb /usr/local/var/postgres
+    pg_ctl -D /usr/local/var/postgres -w start
+    createuser -s postgres
+    psql -U postgres -c 'CREATE DATABASE test_db;'
+    psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
   fi
 
-#install:
-#  - pip install numpy==1.8.0 six twine pytest-cov coveralls
+install:
+  - pip install numpy==1.8.0 six twine pytest-cov coveralls
 
 before_script: |
   if [ "$TRAVIS_OS_NAME" == "linux" ]; then

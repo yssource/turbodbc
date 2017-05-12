@@ -8,7 +8,7 @@ include(default_build_setup)
 add_subdirectory(pybind11)
 add_subdirectory(google_test)
 add_subdirectory(cpp)
-#add_subdirectory(python)
+add_subdirectory(python)
 add_subdirectory(docs)
 
 if(BUILD_TESTING)
