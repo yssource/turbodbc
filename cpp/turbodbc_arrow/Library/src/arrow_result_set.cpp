@@ -2,13 +2,7 @@
 
 // Somewhere a macro defines BOOL as a constant. This is in conflict with array/type.h
 #undef BOOL
-#include <arrow/array.h>
-#include <arrow/builder.h>
-#include <arrow/column.h>
-#include <arrow/schema.h>
-#include <arrow/table.h>
-#include <arrow/type.h>
-#include <arrow/memory_pool.h>
+#include <arrow/api.h>
 
 #include <pyarrow/table_api.h>
 
@@ -19,7 +13,7 @@
 using arrow::default_memory_pool;
 using arrow::ArrayBuilder;
 using arrow::BooleanBuilder;
-using arrow::DateBuilder;
+using arrow::Date32Builder;
 using arrow::DoubleBuilder;
 using arrow::Int64Builder;
 using arrow::Status;
@@ -44,7 +38,7 @@ namespace {
 			case turbodbc::type_code::timestamp:
 				return std::unique_ptr<TimestampBuilder>(new TimestampBuilder(default_memory_pool(), arrow::timestamp(TimeUnit::MICRO)));
 			case turbodbc::type_code::date:
-        return std::unique_ptr<DateBuilder>(new DateBuilder(default_memory_pool(), arrow::date()));
+        return std::unique_ptr<Date32Builder>(new Date32Builder(default_memory_pool()));
 			default:
 				return std::unique_ptr<StringBuilder>(new StringBuilder(default_memory_pool()));
 		}
@@ -81,8 +75,8 @@ namespace {
     epoch.tm_year = 70;
     epoch.tm_mday = 1;
 
-    // Milliseconds since the epoch
-    return lrint(difftime(mktime(&date), mktime(&epoch)) * 1000);
+    // days since the epoch
+    return lrint(difftime(mktime(&date), mktime(&epoch)) / 86400);
 	}
 }
 
@@ -112,7 +106,7 @@ std::shared_ptr<arrow::Schema> arrow_result_set::schema()
         type = arrow::timestamp(TimeUnit::MICRO);
         break;
 			case turbodbc::type_code::date:
-        type = arrow::date();
+        type = arrow::date32();
         break;
 			default:
         type = std::make_shared<arrow::StringType>();
@@ -154,7 +148,7 @@ Status append_to_timestamp_builder(size_t rows_in_batch, const std::unique_ptr<A
 }
 
 Status append_to_date_builder(size_t rows_in_batch, const std::unique_ptr<ArrayBuilder>& builder, const cpp_odbc::multi_value_buffer& input_buffer, uint8_t*) {
-  auto typed_builder = static_cast<DateBuilder*>(builder.get());
+  auto typed_builder = static_cast<Date32Builder*>(builder.get());
   for (std::size_t j = 0; j < rows_in_batch; ++j) {
     auto element = input_buffer[j];
   	if (element.indicator == SQL_NULL_DATA) {
@@ -242,7 +236,7 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
           arrow_schema->field(i), array));
   }
 
-  *out = std::make_shared<arrow::Table>("", arrow_schema, arrow_columns);
+  *out = std::make_shared<arrow::Table>(arrow_schema, arrow_columns);
   return Status::OK();
 }
 

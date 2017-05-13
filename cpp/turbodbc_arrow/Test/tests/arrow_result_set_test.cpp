@@ -1,10 +1,7 @@
 #include <turbodbc_arrow/arrow_result_set.h>
 
 #undef BOOL
-#include <arrow/array.h>
-#include <arrow/builder.h>
-#include <arrow/memory_pool.h>
-#include <arrow/schema.h>
+#include <arrow/api.h>
 #include <arrow/test-util.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -30,9 +27,9 @@ TEST(ArrowResultSetTest, SimpleSchemaConversion)
   auto schema = ars.schema();
   ASSERT_EQ(schema->num_fields(), 1);
   auto field = schema->field(0);
-  ASSERT_EQ(field->name, "int_column");
-  ASSERT_EQ(field->type, arrow::int64());
-  ASSERT_EQ(field->nullable, true);
+  ASSERT_EQ(field->name(), "int_column");
+  ASSERT_EQ(field->type(), arrow::int64());
+  ASSERT_EQ(field->nullable(), true);
 }
 
 TEST(ArrowResultSetTest, AllTypesSchemaConversion)
@@ -57,13 +54,13 @@ TEST(ArrowResultSetTest, AllTypesSchemaConversion)
     std::make_shared<arrow::Field>("float_column", arrow::float64()),
     std::make_shared<arrow::Field>("boolean_column", arrow::boolean()),
     std::make_shared<arrow::Field>("timestamp_column", arrow::timestamp(arrow::TimeUnit::MICRO)),
-    std::make_shared<arrow::Field>("date_column", arrow::date()),
+    std::make_shared<arrow::Field>("date_column", arrow::date32()),
     std::make_shared<arrow::Field>("string_column", std::make_shared<arrow::StringType>()),
     std::make_shared<arrow::Field>("int_column", arrow::int64()),
     std::make_shared<arrow::Field>("nonnull_float_column", arrow::float64(), false),
     std::make_shared<arrow::Field>("nonnull_boolean_column", arrow::boolean(), false),
     std::make_shared<arrow::Field>("nonnull_timestamp_column", arrow::timestamp(arrow::TimeUnit::MICRO), false),
-    std::make_shared<arrow::Field>("nonnull_date_column", arrow::date(), false),
+    std::make_shared<arrow::Field>("nonnull_date_column", arrow::date32(), false),
     std::make_shared<arrow::Field>("nonnull_string_column", std::make_shared<arrow::StringType>(), false),
     std::make_shared<arrow::Field>("nonnull_int_column", arrow::int64(), false)
   };
@@ -93,7 +90,7 @@ TEST(ArrowResultSetTest, SingleBatchSingleColumnResultSetConversion)
   std::vector<std::shared_ptr<arrow::Field>> fields({std::make_shared<arrow::Field>("int_column", arrow::int64(), true)});
   std::shared_ptr<arrow::Schema> schema = std::make_shared<arrow::Schema>(fields);
   std::vector<std::shared_ptr<arrow::Column>> columns ({std::make_shared<arrow::Column>(fields[0], array)});
-  std::shared_ptr<arrow::Table> expected_table = std::make_shared<arrow::Table>("", schema, columns);
+  std::shared_ptr<arrow::Table> expected_table = std::make_shared<arrow::Table>(schema, columns);
 
   // Mock schema
 	std::vector<turbodbc::column_info> expected = {{
@@ -111,7 +108,7 @@ TEST(ArrowResultSetTest, SingleBatchSingleColumnResultSetConversion)
   turbodbc_arrow::arrow_result_set ars(rs);
   std::shared_ptr<arrow::Table> table;
   ASSERT_OK(ars.fetch_all_native(&table));
-  ASSERT_TRUE(expected_table->Equals(table));
+  ASSERT_TRUE(expected_table->Equals(*table));
 }
 
 TEST(ArrowResultSetTest, MultipleBatchSingleColumnResultSetConversion)
@@ -130,7 +127,7 @@ TEST(ArrowResultSetTest, MultipleBatchSingleColumnResultSetConversion)
   std::vector<std::shared_ptr<arrow::Field>> fields({std::make_shared<arrow::Field>("int_column", arrow::int64(), true)});
   std::shared_ptr<arrow::Schema> schema = std::make_shared<arrow::Schema>(fields);
   std::vector<std::shared_ptr<arrow::Column>> columns ({std::make_shared<arrow::Column>(fields[0], array)});
-  std::shared_ptr<arrow::Table> expected_table = std::make_shared<arrow::Table>("", schema, columns);
+  std::shared_ptr<arrow::Table> expected_table = std::make_shared<arrow::Table>(schema, columns);
 
   // Mock schema
 	std::vector<turbodbc::column_info> expected = {{
@@ -151,7 +148,7 @@ TEST(ArrowResultSetTest, MultipleBatchSingleColumnResultSetConversion)
   turbodbc_arrow::arrow_result_set ars(rs);
   std::shared_ptr<arrow::Table> table;
   ASSERT_OK(ars.fetch_all_native(&table));
-  ASSERT_TRUE(expected_table->Equals(table));
+  ASSERT_TRUE(expected_table->Equals(*table));
 }
 
 TEST(ArrowResultSetTest, MultipleBatchMultipleColumnResultSetConversion)
@@ -406,7 +403,7 @@ TEST(ArrowResultSetTest, MultipleBatchMultipleColumnResultSetConversion)
     memcpy(buffer_9.data_pointer(), typed_array->data()->data(), sizeof(int64_t) * OUTPUT_SIZE);
     memcpy(buffer_9_2.data_pointer(), typed_array->data()->data() + sizeof(int64_t) * OUTPUT_SIZE, sizeof(int64_t) * OUTPUT_SIZE);
   }
-  std::shared_ptr<arrow::Table> expected_table = std::make_shared<arrow::Table>("", schema, columns);
+  std::shared_ptr<arrow::Table> expected_table = std::make_shared<arrow::Table>(schema, columns);
 
 	std::vector<turbodbc::column_info> expected = {
       {"float_column", turbodbc::type_code::floating_point, true},
@@ -434,6 +431,6 @@ TEST(ArrowResultSetTest, MultipleBatchMultipleColumnResultSetConversion)
   turbodbc_arrow::arrow_result_set ars(rs);
   std::shared_ptr<arrow::Table> table;
   ASSERT_OK(ars.fetch_all_native(&table));
-  ASSERT_TRUE(expected_table->Equals(table));
+  ASSERT_TRUE(expected_table->Equals(*table));
 }
 
