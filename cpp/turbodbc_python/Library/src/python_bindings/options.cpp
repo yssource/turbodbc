@@ -66,6 +66,7 @@ void for_options(pybind11::module & module)
         .def_readwrite("parameter_sets_to_buffer", &turbodbc::options::parameter_sets_to_buffer)
         .def_readwrite("use_async_io", &turbodbc::options::use_async_io)
         .def_readwrite("prefer_unicode", &turbodbc::options::prefer_unicode)
+        .def_readwrite("autocommit", &turbodbc::options::autocommit)
     ;
 
 }
