@@ -3,7 +3,8 @@ from turbodbc_intern import Options
 def make_options(read_buffer_size=None,
                  parameter_sets_to_buffer=None,
                  prefer_unicode=None,
-                 use_async_io=None):
+                 use_async_io=None,
+                 autocommit=None):
     """
     Create options that control how turbodbc interacts with a database. These
     options affect performance for the most part, but some options may require adjustment
@@ -23,6 +24,10 @@ def make_options(read_buffer_size=None,
      strings encoded with UTF-8, leading to UTF-8 characters being misinterpreted, misrepresented, or
      downright rejected. Set this option to `True` if you want to transfer character data using the
      UCS-2/UCS-16 encoding that use (multiple) two-byte instead of (multiple) one-byte characters.
+    :param autocommit: Affects behavior. If set to `True`, all queries and commands executed
+     with `cursor.execute()` or `cursor.executemany()` will be succeeded by an implicit `commit`
+     operation, persisting any changes made to the database. If not set or set to `False`,
+     users has to take care of calling `cursor.commit()` themselves.
     :return: An option struct that is suitable to pass to the `turbodbc_options` parameter of
      `turbodbc.connect()`
     """
@@ -39,5 +44,8 @@ def make_options(read_buffer_size=None,
 
     if not use_async_io is None:
         options.use_async_io = use_async_io
+
+    if not autocommit is None:
+        options.autocommit = autocommit
 
     return options

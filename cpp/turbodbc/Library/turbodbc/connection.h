@@ -34,6 +34,17 @@ public:
     void rollback() const;
 
     /**
+     * @brief Enable or disable autocommit mode
+     * @param enabled Set to true to enable autocommit
+     */
+    void set_autocommit(bool enabled);
+
+    /**
+     * @brief Returns whether autocommit is currently enabled
+     */
+    bool autocommit_enabled() const;
+
+    /**
      * @brief Create a new cursor object associated with this connection
      */
     turbodbc::cursor make_cursor() const;

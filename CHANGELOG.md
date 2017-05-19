@@ -1,5 +1,11 @@
 Version 1.1.2 (unreleased)
 ==========================
+*   Added `autocommit` as a keyword argument to `make_options()`. As the
+    name suggests, this allows you to enable automatic `COMMIT` operations
+    after each operation. It also improves compatibility with databases
+    that do not support transactions.
+*   Added `autocommit` property to `Connection` class that allows switching
+    autocommit mode after the connection was created.
 *   Fixed bug with `cursor.rowcount` not being reset to `-1` when calls to
     `execute()` or `executemany()` raised exceptions.
 *   Fixed bug with `cursor.rowcount` not showing the correct value when

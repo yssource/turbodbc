@@ -16,8 +16,53 @@ TEST(ConnectionTest, ConstructorDisablesAutoCommit)
     auto connection = std::make_shared<mock_connection>();
     EXPECT_CALL(*connection, do_set_attribute(SQL_ATTR_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF)).Times(1);
 
-    turbodbc::connection test_connection(connection, turbodbc::options());
+    turbodbc::options options;
+    options.autocommit = false;
+    turbodbc::connection test_connection(connection, options);
 }
+
+
+TEST(ConnectionTest, ConstructorEnablesAutoCommit)
+{
+    auto connection = std::make_shared<mock_connection>();
+    EXPECT_CALL(*connection, do_set_attribute(SQL_ATTR_AUTOCOMMIT, SQL_AUTOCOMMIT_ON)).Times(1);
+
+    turbodbc::options options;
+    options.autocommit = true;
+    turbodbc::connection test_connection(connection, options);
+}
+
+
+TEST(ConnectionTest, SetAutocommit)
+{
+    auto connection = std::make_shared<mock_connection>();
+    {
+        testing::InSequence dummy;
+
+        EXPECT_CALL(*connection, do_set_attribute(SQL_ATTR_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF))
+            .Times(1).RetiresOnSaturation();
+        EXPECT_CALL(*connection, do_set_attribute(SQL_ATTR_AUTOCOMMIT, SQL_AUTOCOMMIT_ON))
+            .Times(1).RetiresOnSaturation();
+        EXPECT_CALL(*connection, do_set_attribute(SQL_ATTR_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF))
+            .Times(1).RetiresOnSaturation();
+    }
+    turbodbc::connection test_connection(connection, turbodbc::options());
+    test_connection.set_autocommit(true);
+    test_connection.set_autocommit(false);
+}
+
+TEST(ConnectionTest, GetAutocommit)
+{
+    auto connection = std::make_shared<mock_connection>();
+
+    turbodbc::connection test_connection(connection, turbodbc::options());
+    EXPECT_FALSE(test_connection.autocommit_enabled());
+    test_connection.set_autocommit(true);
+    EXPECT_TRUE(test_connection.autocommit_enabled());
+    test_connection.set_autocommit(false);
+    EXPECT_FALSE(test_connection.autocommit_enabled());
+}
+
 
 TEST(ConnectionTest, Commit)
 {

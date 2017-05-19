@@ -11,6 +11,7 @@ struct options {
     std::size_t parameter_sets_to_buffer;
     bool use_async_io;
     bool prefer_unicode;
+    bool autocommit;
 };
 
 struct capabilities {

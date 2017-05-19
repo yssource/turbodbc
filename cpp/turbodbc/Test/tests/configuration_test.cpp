@@ -15,6 +15,7 @@ TEST(ConfigurationTest, OptionsDefaults)
     EXPECT_EQ(options.parameter_sets_to_buffer, 1000);
     EXPECT_FALSE(options.use_async_io);
     EXPECT_FALSE(options.prefer_unicode);
+    EXPECT_FALSE(options.autocommit);
 }
 
 
