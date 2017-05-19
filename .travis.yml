@@ -99,7 +99,7 @@ script:
   - cd ..
   - mkdir gcov
   - cd gcov
-  - gcov -l -p `find ../build -name "*.gcda"` > /dev/null
+#  - gcov -l -p `find ../build -name "*.gcda"` > /dev/null
   - cd ..
   - cat `find . -name ".coverage"`
   - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/ -X gcov
