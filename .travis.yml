@@ -103,7 +103,7 @@ script:
   - cd ..
   - cat `find . -name ".coverage"`
   - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/ -s $PWD -X gcov
-  - cat /Users/travis/build/blue-yonder/turbodbc/python/turbodbc_test/coverage.xml
+  - cat /home/travis/build/blue-yonder/turbodbc/python/turbodbc_test/coverage.xml
 
 #  - cd ../python/turbodbc_test
 #  - coveralls
