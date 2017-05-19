@@ -99,12 +99,14 @@ script:
   - cd ..
   - mkdir gcov
   - cd gcov
-#  - gcov -l -p `find ../build -name "*.gcda"` > /dev/null
+  - gcov -l -p `find ../build -name "*.gcda"` > /dev/null
   - cd ..
-  - cat `find . -name ".coverage"`
-  - cd /home/travis/build/blue-yonder/turbodbc/python/turbodbc_test/
+  - cd python/turbodbc_test/
+  - echo "Uploading Python coverage"
   - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/ -s $PWD -X gcov
-  - cat /home/travis/build/blue-yonder/turbodbc/python/turbodbc_test/coverage.xml
+  - cd ../..
+  - echo "Uploading C++ coverage"
+  - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/ -X coveragepy -X gcov
 
 #  - cd ../python/turbodbc_test
 #  - coveralls

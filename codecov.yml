@@ -8,4 +8,4 @@ ignore:
   - "cpp/turbodbc/Library/src/parameter_sets/field_parameter_set.cpp"
 
 fixes:
-  - "/home/travis/build/blue-yonder/turbodbc/build/turbodbc/::python/turbodbc/"
+#  - "/home/travis/build/blue-yonder/turbodbc/build/turbodbc/::python/turbodbc/"
