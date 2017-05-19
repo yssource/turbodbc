@@ -50,3 +50,15 @@ class Connection(object):
             c.close()
         self.cursors = []
         self.impl = None
+
+    @property
+    def autocommit(self):
+        """
+        This attribute controls whether changes are automatically committed after each
+        execution or not.
+        """
+        return self.impl.autocommit_enabled()
+
+    @autocommit.setter
+    def autocommit(self, value):
+        self.impl.set_autocommit(value)

@@ -25,6 +25,21 @@ void connection::rollback() const
     connection_->rollback();
 }
 
+void connection::set_autocommit(bool enabled)
+{
+    if (enabled) {
+        connection_->set_attribute(SQL_ATTR_AUTOCOMMIT, SQL_AUTOCOMMIT_ON);
+    } else {
+        connection_->set_attribute(SQL_ATTR_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF);
+    }
+    configuration.options.autocommit = enabled;
+}
+
+bool connection::autocommit_enabled() const
+{
+    return configuration.options.autocommit;
+}
+
 cursor connection::make_cursor() const
 {
     return {connection_, configuration};
