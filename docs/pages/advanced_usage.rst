@@ -95,6 +95,24 @@ their changes.
     option to be set to ``True`` in order to establish a connection at all.
 
 
+Controlling autocommit behavior at runtime
+------------------------------------------
+
+You can enable and disable autocommit mode after you have established a connection,
+and you can also check whether autocommit is currently enabled:
+
+::
+
+    >>> from turbodbc import connect
+    >>> connection = connect(dsn="my DSN")
+    >>> connection.autocommit = True
+
+    [... more things happening ...]
+
+    >>> if not connection.autocommit:
+    ...     connection.commit()
+
+
 NumPy support
 -------------
 
