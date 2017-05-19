@@ -102,7 +102,7 @@ script:
 #  - gcov -l -p `find ../build -name "*.gcda"` > /dev/null
   - cd ..
   - cat `find . -name ".coverage"`
-  - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/ -X gcov
+  - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/ -s $PWD -X gcov
 
 #  - cd ../python/turbodbc_test
 #  - coveralls
