@@ -96,9 +96,19 @@ script:
   - cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} ..
   - make -j4
   - ctest --verbose
-  - cd ../python/turbodbc_test
-  - coveralls
-  - cd ../../build
+  - cd ..
+  - mkdir gcov
+  - cd gcov
+  - gcov -l -p `find ../build -name "*.gcda"` > /dev/null
+  - cd ..
+  - cd python/turbodbc_test/
+  - echo "Uploading Python coverage"
+  - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/ -s $PWD -X gcov
+  - cd ../..
+  - echo "Uploading C++ coverage"
+  - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/ -X coveragepy -X gcov
+
+  - cd build
   - make install
   - cd dist
   - python setup.py sdist
