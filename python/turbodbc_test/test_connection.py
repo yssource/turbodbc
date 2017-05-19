@@ -1,6 +1,6 @@
 import pytest
 
-from turbodbc import connect, InterfaceError, DatabaseError
+from turbodbc import connect, InterfaceError, DatabaseError, make_options
 
 from helpers import for_one_database, get_credentials
 from query_fixture import unique_table_name
@@ -97,3 +97,22 @@ def test_rollback(dsn, configuration):
 
     with pytest.raises(DatabaseError):
         connection.cursor().execute('SELECT * FROM {}'.format(table_name))
+
+
+@for_one_database
+def test_autocommit_enabled(dsn, configuration):
+    table_name = unique_table_name()
+    options = make_options(autocommit=True)
+    connection = connect(dsn, turbodbc_options=options, **get_credentials(configuration))
+
+    connection.cursor().execute('CREATE TABLE {} (a INTEGER)'.format(table_name))
+    connection.close()
+
+    connection = connect(dsn, **get_credentials(configuration))
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM {}'.format(table_name))
+    results = cursor.fetchall()
+    assert results == []
+
+    cursor.execute('DROP TABLE {}'.format(table_name))
+    connection.commit()
