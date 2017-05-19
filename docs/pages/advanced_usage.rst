@@ -5,8 +5,8 @@ Advanced usage
 
 .. _advanced_usage_options:
 
-Performance and compatibility options
--------------------------------------
+Performance, compatibility, and behavior options
+------------------------------------------------
 
 Turbodbc offers a way to adjust its behavior to tune performance and to
 achieve compatibility with your database. The basic usage is this:
@@ -27,6 +27,7 @@ options, supply keyword arguments to ``make_options()``:
     ...                        parameter_sets_to_buffer=1000,
     ...                        use_async_io=True,
     ...                        prefer_unicode=True)
+    ...                        autocommit=True)
 
 
 .. _advanced_usage_options_read_buffer:
@@ -76,11 +77,22 @@ operations.
 Prefer unicode
 ~~~~~~~~~~~~~~
 
-Finally, set ``prefer_unicode`` to ``True`` if your database does not fully support
+Set ``prefer_unicode`` to ``True`` if your database does not fully support
 the UTF-8 encoding turbodbc prefers. With this option you can tell turbodbc
 to use two-byte character strings with UCS-2/UTF-16 encoding. Use this option
 if you try to connection to Microsoft SQL server (MSSQL).
 
+Autocommit
+~~~~~~~~~~
+
+Set ``autocommit`` to ``True`` if you want the database to ``COMMIT`` your
+changes automatically after each query or command. By default, ``autocommit``
+is disabled and users are required to call ``cursor.commit()`` to persist
+their changes.
+
+.. note::
+    Some databases that do not support transactions may even require this
+    option to be set to ``True`` in order to establish a connection at all.
 
 
 NumPy support
