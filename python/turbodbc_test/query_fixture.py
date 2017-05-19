@@ -3,6 +3,9 @@ from contextlib import contextmanager
 import random
 
 
+def unique_table_name():
+    return 'test_{}'.format(random.randint(0, 1000000000))
+
 @contextmanager
 def query_fixture(cursor, configuration, fixture_key):
     """
@@ -50,7 +53,7 @@ def query_fixture(cursor, configuration, fixture_key):
     "{table_name}" to be replaced with a random table (or view) name.
     """
     fixture = configuration['queries'][fixture_key]
-    table_name = table_name = 'test_{}'.format(random.randint(0, 1000000000))
+    table_name = unique_table_name()
     
     def _execute_queries(queries, replacements):
         if not isinstance(queries, list):

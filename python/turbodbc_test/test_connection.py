@@ -3,6 +3,7 @@ import pytest
 from turbodbc import connect, InterfaceError, DatabaseError
 
 from helpers import for_one_database, get_credentials
+from query_fixture import unique_table_name
 
 
 @for_one_database
@@ -59,20 +60,21 @@ def test_commit_on_closed_connection_raises(dsn, configuration):
 
 @for_one_database
 def test_commit(dsn, configuration):
+    table_name = unique_table_name()
     connection = connect(dsn, **get_credentials(configuration))
 
-    connection.cursor().execute('CREATE TABLE test_commit (a INTEGER)')
+    connection.cursor().execute('CREATE TABLE {} (a INTEGER)'.format(table_name))
     connection.commit()
 
     connection.close()
 
     connection = connect(dsn, **get_credentials(configuration))
     cursor = connection.cursor()
-    cursor.execute('SELECT * FROM test_commit')
+    cursor.execute('SELECT * FROM {}'.format(table_name))
     results = cursor.fetchall()
     assert results == []
     
-    cursor.execute('DROP TABLE test_commit')
+    cursor.execute('DROP TABLE {}'.format(table_name))
     connection.commit()
 
 
@@ -87,10 +89,11 @@ def test_rollback_on_closed_connection_raises(dsn, configuration):
 
 @for_one_database
 def test_rollback(dsn, configuration):
+    table_name = unique_table_name()
     connection = connect(dsn, **get_credentials(configuration))
 
-    connection.cursor().execute('CREATE TABLE test_rollback (a INTEGER)')
+    connection.cursor().execute('CREATE TABLE {} (a INTEGER)'.format(table_name))
     connection.rollback()
 
     with pytest.raises(DatabaseError):
-        connection.cursor().execute('SELECT * FROM test_rollback')
+        connection.cursor().execute('SELECT * FROM {}'.format(table_name))
