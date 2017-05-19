@@ -6,6 +6,3 @@ ignore:
   - "cpp/cpp_odbc/Library/src/level1/unixodbc_backend_debug.cpp"
 # C++-only things that are currently not considered as part of the interface
   - "cpp/turbodbc/Library/src/parameter_sets/field_parameter_set.cpp"
-
-fixes:
-#  - "/home/travis/build/blue-yonder/turbodbc/build/turbodbc/::python/turbodbc/"

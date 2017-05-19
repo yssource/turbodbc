@@ -3,13 +3,13 @@ sudo: required
 
 matrix:
   include:
-#  - os: osx
-#    osx_image: xcode6.4
-#    language: generic
-#    env:
-#    - TRAVIS_PYTHON_VERSION="2.7.12"
-#    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json"
-#    - ODBC_DIR=odbc_osx
+  - os: osx
+    osx_image: xcode6.4
+    language: generic
+    env:
+    - TRAVIS_PYTHON_VERSION="2.7.12"
+    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json"
+    - ODBC_DIR=odbc_osx
 #  Disable for now until a workaround for the detection of pyenv versions by pybind11
 #  is found
 #  - os: osx
@@ -108,9 +108,7 @@ script:
   - echo "Uploading C++ coverage"
   - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/ -X coveragepy -X gcov
 
-#  - cd ../python/turbodbc_test
-#  - coveralls
-#  - cd ../../build
+#  - cd build
 #  - make install
 #  - cd dist
 #  - python setup.py sdist
