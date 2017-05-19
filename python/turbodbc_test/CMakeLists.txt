@@ -3,7 +3,8 @@ find_package(PythonInterp REQUIRED)
 add_test(
     NAME turbodbc_integration_test
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMAND py.test --cov=turbodbc -s --junitxml=${CMAKE_BINARY_DIR}/turbodbc_python_test.xml --cov-report= --cov-report=term-missing
+    #COMMAND py.test --cov=turbodbc -s --junitxml=${CMAKE_BINARY_DIR}/turbodbc_python_test.xml --cov-report= --cov-report=term-missing
+    COMMAND py.test -s --junitxml=${CMAKE_BINARY_DIR}/turbodbc_python_test.xml
 )
 set_tests_properties(
     turbodbc_integration_test
