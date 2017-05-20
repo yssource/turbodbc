@@ -1,5 +1,5 @@
-Version 1.1.2 (unreleased)
-==========================
+Version 1.1.2
+=============
 *   Added `autocommit` as a keyword argument to `make_options()`. As the
     name suggests, this allows you to enable automatic `COMMIT` operations
     after each operation. It also improves compatibility with databases
