@@ -35,6 +35,9 @@ Version 1.1.0
 *   Added _experimental_ support for Windows source distribution builds.
     Windows builds are not fully (or automatically) tested yet, and still require
     significant effort on the user side to compile (thanks @TWAC for this initial version)
+*   Added new `cursor.fetchnumpybatches()` method which returns a generator to
+    iterate over result sets in batch sizes as defined by buffer size or rowcount
+    (thanks @yaxxie)
 *   Added `make_options()` function that take all performance and compatibility
     settings as keyword arguments.
 *   Deprecated all performance options (`read_buffer_size`, `use_async_io`, and
@@ -46,13 +49,17 @@ Version 1.1.0
     (see version 0.4.1 for details).
 *   The order of arguments for `turbodbc.connect()` has changed; this may affect
     you if you have not used keyword arguments.
+*   The behavior of `cursor.fetchallnumpy()` has changed a little. The
+    `mask` attribute of a generated `numpy.MaskedArray` instance is
+    shortened to `False` from the previous `[False, ..., False]` if the
+    mask is `False` for all entries. This can cause problems when you
+    access individual indices of the mask.
 *   Updated `pybind11` requirement to at least `2.1.0`.
 *   Internal: Some types have changed to accomodate for Linux/OSX/Windows compatibility.
     In particular, a few `long` types were converted to `intptr_t` and `int64_t`
     where appropriate. In particular, this affects the `field` type that may be used
     by C++ end users (so they exist).
-*   Added new `cursor.fetchnumpybatches()` method which returns a generator to
-    iterate over result sets in batch sizes as defined by buffer size or rowcount
+
 
 Version 1.0.5
 =============
