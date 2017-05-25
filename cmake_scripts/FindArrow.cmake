@@ -14,9 +14,6 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
-# Original from Apache Parquet C++
-#  https://github.com/apache/parquet-cpp/blob/5c1d9e94b8409d1a2b31491e68f92b4207e48646/cmake_modules/FindArrow.cmake
 
 # - Find ARROW (arrow/api.h, libarrow.a, libarrow.so)
 # This module defines
@@ -26,44 +23,81 @@
 #  ARROW_SHARED_LIB, path to libarrow's shared library
 #  ARROW_FOUND, whether arrow has been found
 
-set(ARROW_SEARCH_HEADER_PATHS
-  $ENV{ARROW_HOME}/include
-)
+include(FindPkgConfig)
 
-set(ARROW_SEARCH_LIB_PATH
-  $ENV{ARROW_HOME}/lib
-)
+if ("$ENV{ARROW_HOME}" STREQUAL "")
+  pkg_check_modules(ARROW arrow)
+  if (ARROW_FOUND)
+    pkg_get_variable(ARROW_ABI_VERSION arrow abi_version)
+    message(STATUS "Arrow ABI version: ${ARROW_ABI_VERSION}")
+    pkg_get_variable(ARROW_SO_VERSION arrow so_version)
+    message(STATUS "Arrow SO version: ${ARROW_SO_VERSION}")
+    set(ARROW_INCLUDE_DIR ${ARROW_INCLUDE_DIRS})
+    set(ARROW_LIBS ${ARROW_LIBRARY_DIRS})
+    set(ARROW_SEARCH_LIB_PATH ${ARROW_LIBRARY_DIRS})
+  elseif(DEFINED ENV{VIRTUAL_ENV})
+    find_path(ARROW_INCLUDE_DIR arrow/api.h HINTS
+      $ENV{VIRTUAL_ENV}/lib/*/site-packages/pyarrow/include)
+    get_filename_component(ARROW_SEARCH_LIB_PATH ${ARROW_INCLUDE_DIR} DIRECTORY)
+  endif()
+else()
+  set(ARROW_HOME "$ENV{ARROW_HOME}")
 
-find_path(ARROW_INCLUDE_DIR arrow/array.h PATHS
-  ${ARROW_SEARCH_HEADER_PATHS}
-  # make sure we don't accidentally pick up a different version
-  NO_DEFAULT_PATH
-)
+  set(ARROW_SEARCH_HEADER_PATHS
+    ${ARROW_HOME}/include
+    )
+
+  set(ARROW_SEARCH_LIB_PATH
+    ${ARROW_HOME}/lib
+    )
+
+  find_path(ARROW_INCLUDE_DIR arrow/array.h PATHS
+    ${ARROW_SEARCH_HEADER_PATHS}
+    # make sure we don't accidentally pick up a different version
+    NO_DEFAULT_PATH
+    )
+endif()
 
 find_library(ARROW_LIB_PATH NAMES arrow
   PATHS
   ${ARROW_SEARCH_LIB_PATH}
   NO_DEFAULT_PATH)
+get_filename_component(ARROW_LIBS ${ARROW_LIB_PATH} DIRECTORY)
 
-find_library(ARROW_IO_LIB_PATH NAMES arrow_io
+find_library(ARROW_JEMALLOC_LIB_PATH NAMES arrow_jemalloc
   PATHS
   ${ARROW_SEARCH_LIB_PATH}
   NO_DEFAULT_PATH)
 
-if (ARROW_INCLUDE_DIR AND ARROW_LIB_PATH)
+find_library(ARROW_PYTHON_LIB_PATH NAMES arrow_python
+  PATHS
+  ${ARROW_SEARCH_LIB_PATH}
+  NO_DEFAULT_PATH)
+
+if (ARROW_INCLUDE_DIR AND ARROW_LIBS)
   set(ARROW_FOUND TRUE)
-  set(ARROW_LIB_NAME libarrow)
-  set(ARROW_IO_LIB_NAME libarrow_io)
 
-  set(ARROW_LIBS ${ARROW_SEARCH_LIB_PATH})
-  set(ARROW_STATIC_LIB ${ARROW_LIBS}/${ARROW_LIB_NAME}.a)
-  set(ARROW_SHARED_LIB ${ARROW_LIBS}/${ARROW_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+  if (MSVC)
+    set(ARROW_STATIC_LIB ${ARROW_LIB_PATH})
+    set(ARROW_PYTHON_STATIC_LIB ${ARROW_PYTHON_LIB_PATH})
+    set(ARROW_SHARED_LIB ${ARROW_STATIC_LIB})
+    set(ARROW_PYTHON_SHARED_LIB ${ARROW_PYTHON_STATIC_LIB})
+  else()
+    set(ARROW_STATIC_LIB ${ARROW_PYTHON_LIB_PATH}/libarrow.a)
+    set(ARROW_PYTHON_STATIC_LIB ${ARROW_PYTHON_LIB_PATH}/libarrow_python.a)
+    set(ARROW_JEMALLOC_STATIC_LIB ${ARROW_PYTHON_LIB_PATH}/libarrow_jemalloc.a)
 
-  set(ARROW_IO_STATIC_LIB ${ARROW_LIBS}/${ARROW_IO_LIB_NAME}.a)
-  set(ARROW_IO_SHARED_LIB ${ARROW_LIBS}/${ARROW_IO_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+    set(ARROW_SHARED_LIB ${ARROW_LIBS}/libarrow${CMAKE_SHARED_LIBRARY_SUFFIX})
+    set(ARROW_JEMALLOC_SHARED_LIB ${ARROW_LIBS}/libarrow_jemalloc${CMAKE_SHARED_LIBRARY_SUFFIX})
+    set(ARROW_PYTHON_SHARED_LIB ${ARROW_LIBS}/libarrow_python${CMAKE_SHARED_LIBRARY_SUFFIX})
+  endif()
+endif()
+
+if (ARROW_FOUND)
   if (NOT Arrow_FIND_QUIETLY)
     message(STATUS "Found the Arrow core library: ${ARROW_LIB_PATH}")
-    message(STATUS "Found the Arrow IO library: ${ARROW_IO_LIB_PATH}")
+    message(STATUS "Found the Arrow Python library: ${ARROW_PYTHON_LIB_PATH}")
+    message(STATUS "Found the Arrow jemalloc library: ${ARROW_JEMALLOC_LIB_PATH}")
   endif ()
 else ()
   if (NOT Arrow_FIND_QUIETLY)
@@ -80,21 +114,11 @@ else ()
 endif ()
 
 mark_as_advanced(
-  ARROW_FOUND
   ARROW_INCLUDE_DIR
-  ARROW_LIBS
   ARROW_STATIC_LIB
   ARROW_SHARED_LIB
-  ARROW_IO_STATIC_LIB
-  ARROW_IO_SHARED_LIB
-)
-
-find_path(
-    PyArrow_INCLUDE_DIR
-    pyarrow/table_api.h
-    HINTS
-        $ENV{VIRTUAL_ENV}/lib/*/site-packages/
-        ENV PYTHON_INCLUDE_DIR
-        /usr/local/lib/python2.7/dist-packages/
-    DOC "Path to the PyArrow headers"
+  ARROW_PYTHON_STATIC_LIB
+  ARROW_PYTHON_SHARED_LIB
+  ARROW_JEMALLOC_STATIC_LIB
+  ARROW_JEMALLOC_SHARED_LIB
 )
