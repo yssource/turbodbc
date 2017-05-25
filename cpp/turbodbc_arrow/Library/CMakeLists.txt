@@ -17,6 +17,7 @@ target_link_libraries(turbodbc_arrow_support
 	PUBLIC cpp_odbc
 	PUBLIC turbodbc
     PUBLIC arrow
+    PUBLIC arrow_python
 )
 
 add_custom_command(TARGET turbodbc_arrow_support POST_BUILD

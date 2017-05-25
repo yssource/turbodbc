@@ -3,8 +3,7 @@
 // Somewhere a macro defines BOOL as a constant. This is in conflict with array/type.h
 #undef BOOL
 #include <arrow/api.h>
-
-#include <pyarrow/table_api.h>
+#include <arrow/python/pyarrow.h>
 
 #include <sql.h>
 
@@ -244,8 +243,9 @@ pybind11::object arrow_result_set::fetch_all()
 {
   std::shared_ptr<arrow::Table> table;
   fetch_all_native(&table);
-  import_pyarrow__table();
-	return pybind11::object(pybind11::handle(__pyx_api_f_7pyarrow_5table_table_from_ctable(table)), true);
+  
+  arrow::py::import_pyarrow();
+	return pybind11::object(pybind11::handle(arrow::py::wrap_table(table)), true);
 }
 
 

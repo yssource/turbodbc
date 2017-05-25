@@ -12,9 +12,10 @@ include_directories(SYSTEM ${Numpy_INCLUDE_DIR})
 
 find_package(Arrow REQUIRED)
 include_directories(SYSTEM ${ARROW_INCLUDE_DIR})
-include_directories(SYSTEM ${PyArrow_INCLUDE_DIR})
 add_library(arrow SHARED IMPORTED)
 set_target_properties(arrow PROPERTIES IMPORTED_LOCATION ${ARROW_SHARED_LIB})
+add_library(arrow_python SHARED IMPORTED)
+set_target_properties(arrow_python PROPERTIES IMPORTED_LOCATION ${ARROW_PYTHON_SHARED_LIB})
 
 include_directories(Library)
 include_directories(../cpp_odbc/Library)
