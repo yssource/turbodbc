@@ -83,18 +83,17 @@ before_install: |
   fi
 
 install:
-  - pip install numpy==1.8.0 six twine pytest-cov coveralls
+  - pip install numpy==1.8.0 pyarrow==0.4.0 six twine pytest-cov coveralls
 
 before_script: |
   if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     $TRAVIS_BUILD_DIR/travis/setup_test_dbs.sh
   fi
-  $TRAVIS_BUILD_DIR/travis/install_arrow.sh
 
 script:
   - export ODBCSYSINI=${PWD}/travis/${ODBC_DIR}
   - mkdir build && cd build
-  - ARROW_HOME=$TRAVIS_BUILD_DIR/dist cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} ..
+  - cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} ..
   - make -j4
   - ctest --verbose
   - cd ..
