@@ -2,6 +2,7 @@ from mock import patch
 
 from turbodbc.cursor import _has_arrow_support
 
+import six
 import pytest
 
 # Skip all parquet tests if we can't import pyarrow.parquet
