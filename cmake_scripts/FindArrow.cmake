@@ -25,6 +25,8 @@
 
 include(FindPkgConfig)
 
+unset(ARROW_FOUND)
+
 if ("$ENV{ARROW_HOME}" STREQUAL "")
   pkg_check_modules(ARROW arrow)
   if (ARROW_FOUND)
