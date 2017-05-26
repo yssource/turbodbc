@@ -2,6 +2,8 @@ from mock import patch
 
 from turbodbc.cursor import _has_arrow_support
 
+import pytest
+
 # Skip all parquet tests if we can't import pyarrow.parquet
 pa = pytest.importorskip('pyarrow')
 
