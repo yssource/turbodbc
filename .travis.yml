@@ -96,7 +96,12 @@ script:
   - cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} ..
   - make -j4
   - pip install numpy==1.10.4
-  - ctest --verbose
+  - |
+      if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+        ctest -E turbodbc_arrow_unit_test --verbose
+      else
+        ctest --verbose
+      fi
   - cd ..
   - mkdir gcov
   - cd gcov
