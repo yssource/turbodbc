@@ -4,6 +4,7 @@ import setuptools.command.build_ext
 import sys
 import sysconfig
 import os
+import os.path
 import distutils.sysconfig
 
 import itertools
@@ -45,6 +46,14 @@ def _remove_strict_prototype_option_from_distutils_config():
             config[key] = config[key].replace(strict_prototypes, '')
 
 _remove_strict_prototype_option_from_distutils_config()
+
+
+def _has_arrow_headers():
+    try:
+        import pyarrow
+        return True
+    except:
+        return False
 
 
 def _has_numpy_headers():
@@ -156,6 +165,31 @@ def get_extension_modules():
                                    extra_link_args=python_module_link_args,
                                    library_dirs=library_dirs)
         extension_modules.append(turbodbc_numpy)
+
+    """
+    An extension module which contains Python bindings which require Apache Arrow
+    support to work. Not included in the standard Python bindings so this can
+    stay optional.
+    """
+    if _has_arrow_headers():
+        import pyarrow
+        pyarrow_location = os.path.dirname(pyarrow.__file__)
+        # For now, assume that we build against bundled pyarrow releases.
+        pyarrow_include_dir = os.path.join(pyarrow_location, 'include')
+        turbodbc_arrow_sources = _get_source_files('turbodbc_arrow')
+        pyarrow_module_link_args = list(python_module_link_args)
+        if sys.platform == "win32":
+            turbodbc_arrow_sources = turbodbc_sources + turbodbc_arrow_sources
+        elif sys.platform != "darwin":
+            pyarrow_module_link_args.append("-Wl,-rpath,$ORIGIN/pyarrow")
+        turbodbc_arrow = Extension('turbodbc_arrow_support',
+                                   sources=turbodbc_arrow_sources,
+                                   include_dirs=include_dirs + [pyarrow_include_dir],
+                                   extra_compile_args=extra_compile_args,
+                                   libraries=[odbclib, 'arrow', 'arrow_python'] + turbodbc_libs,
+                                   extra_link_args=pyarrow_module_link_args,
+                                   library_dirs=library_dirs + [pyarrow_location])
+        extension_modules.append(turbodbc_arrow)
 
     return extension_modules
 
