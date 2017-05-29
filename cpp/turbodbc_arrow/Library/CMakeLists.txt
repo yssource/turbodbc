@@ -13,9 +13,9 @@ add_dependencies(turbodbc_arrow_support
 
 target_link_libraries(turbodbc_arrow_support
     PUBLIC ${Boost_LIBRARIES}
-	PUBLIC ${Odbc_LIBRARIES}
-	PUBLIC cpp_odbc
-	PUBLIC turbodbc
+    PUBLIC ${Odbc_LIBRARIES}
+    PUBLIC cpp_odbc
+    PUBLIC turbodbc
     PUBLIC arrow
     PUBLIC arrow_python
 )

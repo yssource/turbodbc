@@ -6,7 +6,7 @@ import six
 import pytest
 
 # Skip all parquet tests if we can't import pyarrow.parquet
-pa = pytest.importorskip('pyarrow')
+pytest.importorskip('pyarrow')
 
 # Ignore these with pytest ... -m 'not parquet'
 pyarrow = pytest.mark.pyarrow
