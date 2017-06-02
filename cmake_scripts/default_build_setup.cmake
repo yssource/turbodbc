@@ -26,7 +26,7 @@ option(BUILD_COVERAGE
 if (UNIX)
     # flags apply for both Linux and OSX!
     set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -pedantic -fprofile-arcs -ftest-coverage")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -pedantic")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pedantic")
 
     if (BUILD_COVERAGE)
