@@ -134,6 +134,13 @@ public:
     column_description describe_column(SQLUSMALLINT column_id) const;
 
     /**
+     * @brief Retrieve the description of a column with explicit support for wide column names
+     * @param column_id The column identifier
+     * @return A description of the column
+     */
+    column_description describe_column_wide(SQLUSMALLINT column_id) const;
+
+    /**
      * @brief Retrieve the description of a parameter
      * @param parameter_id The parameter identifier
      * @return A description of the parameter
@@ -172,6 +179,7 @@ private:
     virtual std::string do_get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const = 0;
     virtual SQLLEN do_row_count() const = 0;
     virtual column_description do_describe_column(SQLUSMALLINT column_id) const = 0;
+    virtual column_description do_describe_column_wide(SQLUSMALLINT column_id) const = 0;
     virtual column_description do_describe_parameter(SQLUSMALLINT parameter_id) const = 0;
     virtual bool do_more_results() const = 0;
 };

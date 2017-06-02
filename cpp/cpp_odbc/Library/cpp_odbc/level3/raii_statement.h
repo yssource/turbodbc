@@ -52,6 +52,7 @@ private:
 	std::string do_get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
 	SQLLEN do_row_count() const final;
 	column_description do_describe_column(SQLUSMALLINT column_id) const final;
+	column_description do_describe_column_wide(SQLUSMALLINT column_id) const final;
 	column_description do_describe_parameter(SQLUSMALLINT parameter_id) const final;
 	bool do_more_results() const final;
 
