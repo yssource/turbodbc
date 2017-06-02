@@ -1079,7 +1079,7 @@ namespace {
 		};
 
 		auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
-		EXPECT_CALL(*api, do_describe_column(handle.handle, column_id, testing::_, 256, testing::_, testing::_, testing::_, testing::_, testing::_))
+		EXPECT_CALL(*api, do_describe_column(handle.handle, column_id, testing::A<SQLCHAR *>(), 256, testing::_, testing::_, testing::_, testing::_, testing::_))
 			.WillOnce(testing::DoAll(
 						testing::Invoke(copy_string_to_void_pointer),
 						testing::SetArgPointee<4>(expected.name.size()),
@@ -1109,7 +1109,7 @@ TEST(Level1ConnectorTest, DescribeColumnFails)
 	SQLUSMALLINT const column_id = 17;
 
 	auto api = std::make_shared<cpp_odbc_test::level1_mock_api const>();
-	EXPECT_CALL(*api, do_describe_column(testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
+	EXPECT_CALL(*api, do_describe_column(testing::_, testing::_, testing::A<SQLCHAR *>(), testing::_, testing::_, testing::_, testing::_, testing::_, testing::_))
 		.WillOnce(testing::Return(SQL_ERROR));
 	expect_diagnostic_record(*api, expected_error);
 
