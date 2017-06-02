@@ -1,3 +1,5 @@
+find_package(Boost REQUIRED COMPONENTS locale)
+
 find_package(odbc REQUIRED)
 include_directories(SYSTEM ${Odbc_INCLUDE_DIR})
 
