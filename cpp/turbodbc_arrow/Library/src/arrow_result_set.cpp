@@ -7,6 +7,8 @@
 
 #include <sql.h>
 
+#include <turbodbc/time_helpers.h>
+
 #include <vector>
 
 using arrow::default_memory_pool;
@@ -43,40 +45,6 @@ std::unique_ptr<ArrayBuilder> make_array_builder(turbodbc::type_code type)
     }
 }
 
-int64_t timestamp_to_microseconds(char const * data_pointer)
-{
-    auto & sql_ts = *reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(data_pointer);
-    long const microseconds = sql_ts.fraction / 1000;
-    struct tm datetime = {0};
-    datetime.tm_year = sql_ts.year - 1900;
-    datetime.tm_mon = sql_ts.month - 1;
-    datetime.tm_mday = sql_ts.day;
-    datetime.tm_hour = sql_ts.hour;
-    datetime.tm_min = sql_ts.minute;
-    datetime.tm_sec = sql_ts.second;
-    struct tm epoch = {0};
-    epoch.tm_year = 70;
-    epoch.tm_mday = 1;
-
-    // Microseconds since the epoch
-    return lrint(difftime(mktime(&datetime), mktime(&epoch))) * 1000000 + microseconds;
-}
-
-int64_t date_to_days(char const * data_pointer)
-{
-    auto & sql_date = *reinterpret_cast<SQL_DATE_STRUCT const *>(data_pointer);
-
-    struct tm date = {0};
-    date.tm_year = sql_date.year - 1900;
-    date.tm_mon = sql_date.month - 1;
-    date.tm_mday = sql_date.day;
-    struct tm epoch = {0};
-    epoch.tm_year = 70;
-    epoch.tm_mday = 1;
-
-    // days since the epoch
-    return lrint(difftime(mktime(&date), mktime(&epoch)) / 86400);
-}
 }
 
 arrow_result_set::arrow_result_set(turbodbc::result_sets::result_set & base) :
@@ -138,7 +106,7 @@ Status append_to_timestamp_builder(size_t rows_in_batch, std::unique_ptr<ArrayBu
         if (element.indicator == SQL_NULL_DATA) {
             ARROW_RETURN_NOT_OK(typed_builder->AppendNull());
         } else {
-            ARROW_RETURN_NOT_OK(typed_builder->Append(timestamp_to_microseconds(element.data_pointer)));
+            ARROW_RETURN_NOT_OK(typed_builder->Append(turbodbc::timestamp_to_microseconds(element.data_pointer)));
         }
     }
     return Status::OK();
@@ -151,7 +119,7 @@ Status append_to_date_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuilder
         if (element.indicator == SQL_NULL_DATA) {
             ARROW_RETURN_NOT_OK(typed_builder->AppendNull());
         } else {
-            ARROW_RETURN_NOT_OK(typed_builder->Append(date_to_days(element.data_pointer)));
+            ARROW_RETURN_NOT_OK(typed_builder->Append(turbodbc::date_to_days(element.data_pointer)));
         }
     }
     return Status::OK();
