@@ -19,15 +19,23 @@ add_definitions("-std=c++11")
 # build shared instead of static libraries
 set(BUILD_SHARED_LIBS TRUE)
 
+option(BUILD_COVERAGE
+       "Determines whether C++ files will be built with support for coverage measurement"
+       OFF)
+
 if (UNIX)
     # flags apply for both Linux and OSX!
     set(CMAKE_CXX_FLAGS "-Wall -Wextra")
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -pedantic -fprofile-arcs -ftest-coverage")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pedantic")
-    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "--coverage")
-    set(CMAKE_MODULE_LINKER_FLAGS_DEBUG "--coverage")
-    set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "--coverage")
-    set(CMAKE_STATIC_LINKER_FLAGS_DEBUG "--coverage")
+
+    if (BUILD_COVERAGE)
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
+        set(CMAKE_EXE_LINKER_FLAGS_DEBUG "--coverage")
+        set(CMAKE_MODULE_LINKER_FLAGS_DEBUG "--coverage")
+        set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "--coverage")
+        set(CMAKE_STATIC_LINKER_FLAGS_DEBUG "--coverage")
+    endif()
 else()
     set(CMAKE_CXX_FLAGS "/W3 /EHsc -DNOMINMAX")
     set(CMAKE_CXX_FLAGS_DEBUG "/MTd")

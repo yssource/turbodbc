@@ -93,7 +93,7 @@ before_script: |
 script:
   - export ODBCSYSINI=${PWD}/travis/${ODBC_DIR}
   - mkdir build && cd build
-  - cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} ..
+  - cmake -DBUILD_COVERAGE=ON -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} ..
   - make -j4
   - pip install numpy==1.10.4
   - |
