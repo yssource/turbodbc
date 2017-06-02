@@ -180,7 +180,9 @@ def get_extension_modules():
         pyarrow_module_link_args = list(python_module_link_args)
         if sys.platform == "win32":
             turbodbc_arrow_sources = turbodbc_sources + turbodbc_arrow_sources
-        elif sys.platform != "darwin":
+        elif sys.platform == "darwin":
+            pyarrow_module_link_args.append('-Wl,-rpath,@loader_path/pyarrow'.format(full_name))
+        else:
             pyarrow_module_link_args.append("-Wl,-rpath,$ORIGIN/pyarrow")
         turbodbc_arrow = Extension('turbodbc_arrow_support',
                                    sources=turbodbc_arrow_sources,
