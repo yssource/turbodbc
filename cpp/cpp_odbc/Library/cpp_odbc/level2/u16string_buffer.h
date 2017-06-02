@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <sqltypes.h>
 
 namespace cpp_odbc { namespace level2 {
 
@@ -26,7 +27,7 @@ public:
      * @brief Retrieve a pointer to the internal buffer suitable for passing to unixodbc API functions.
      *        This buffer contains the actual string data. Do not exceed the allocated capacity!
      */
-    unsigned short * data_pointer();
+    SQLWCHAR * data_pointer();
 
     /**
      * @brief Retrieve a pointer to a size buffer suitable for passing to unixodbc API functions.
@@ -42,7 +43,7 @@ public:
     operator std::u16string() const;
 
 private:
-    std::vector<unsigned short> data_;
+    std::vector<SQLWCHAR> data_;
     signed short int used_size_;
 };
 

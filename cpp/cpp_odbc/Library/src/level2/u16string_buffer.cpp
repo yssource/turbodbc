@@ -13,7 +13,7 @@ signed short int u16string_buffer::capacity() const
     return data_.capacity();
 }
 
-unsigned short * u16string_buffer::data_pointer()
+SQLWCHAR * u16string_buffer::data_pointer()
 {
     return data_.data();
 }
