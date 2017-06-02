@@ -223,6 +223,119 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionFloat)
     CheckRoundtrip();
 }
 
+TEST_F(ArrowResultSetTest, MultiBatchConversionBoolean)
+{
+    std::shared_ptr<arrow::Array> array;
+    cpp_odbc::multi_value_buffer buffer_1(sizeof(bool), OUTPUT_SIZE);
+    cpp_odbc::multi_value_buffer buffer_1_2(sizeof(bool), OUTPUT_SIZE);
+    {
+        arrow::BooleanBuilder builder(pool, arrow::boolean());
+        for (int64_t i = 0; i < 2 * OUTPUT_SIZE; i++) {
+            if (i % 5 == 0) {
+                ASSERT_OK(builder.AppendNull());
+                if (i < OUTPUT_SIZE) {
+                    buffer_1.indicator_pointer()[i] = SQL_NULL_DATA;
+                } else {
+                    buffer_1_2.indicator_pointer()[i - OUTPUT_SIZE] = SQL_NULL_DATA;
+                }
+            } else {
+                ASSERT_OK(builder.Append(i % 3 == 0));
+                if (i < OUTPUT_SIZE) {
+                    *(buffer_1[i].data_pointer) = (i % 3 == 0);
+                } else {
+                    *(buffer_1_2[i - OUTPUT_SIZE].data_pointer) = (i % 3 == 0);
+                }
+            }
+        }
+        ASSERT_OK(builder.Finish(&array));
+    }
+    expected_arrays.push_back(array);
+    expected_fields.push_back(arrow::field("bool_column", arrow::boolean(), true));
+
+    std::shared_ptr<arrow::Array> nonnull_array;
+    cpp_odbc::multi_value_buffer buffer_2(sizeof(bool), OUTPUT_SIZE);
+    cpp_odbc::multi_value_buffer buffer_2_2(sizeof(bool), OUTPUT_SIZE);
+    {
+        arrow::BooleanBuilder builder(pool, arrow::boolean());
+        for (int64_t i = 0; i < 2 * OUTPUT_SIZE; i++) {
+            ASSERT_OK(builder.Append(i % 3 == 0));
+            if (i < OUTPUT_SIZE) {
+                *(buffer_2[i].data_pointer) = (i % 3 == 0);
+            } else {
+                *(buffer_2_2[i - OUTPUT_SIZE].data_pointer) = (i % 3 == 0);
+            }
+        }
+        ASSERT_OK(builder.Finish(&nonnull_array));
+    }
+    expected_arrays.push_back(nonnull_array);
+    expected_fields.push_back(arrow::field("nonnull_bool_column", arrow::boolean(), false));
+    
+    MockSchema({{"bool_column", turbodbc::type_code::boolean, true},
+            {"nonnull_bool_column", turbodbc::type_code::boolean, false}});
+    MockOutput({{buffer_1, buffer_2}, {buffer_1_2, buffer_2_2}});
+    CheckRoundtrip();
+}
+
+TEST_F(ArrowResultSetTest, MultiBatchConversionString)
+{
+    std::shared_ptr<arrow::Array> array;
+    // Longest string: "200" -> 4 bytes
+    cpp_odbc::multi_value_buffer buffer_1(4, OUTPUT_SIZE);
+    cpp_odbc::multi_value_buffer buffer_1_2(4, OUTPUT_SIZE);
+    {
+        arrow::StringBuilder builder(pool);
+        for (int64_t i = 0; i < 2 * OUTPUT_SIZE; i++) {
+            if (i % 5 == 0) {
+                ASSERT_OK(builder.AppendNull());
+                if (i < OUTPUT_SIZE) {
+                    buffer_1.indicator_pointer()[i] = SQL_NULL_DATA;
+                } else {
+                    buffer_1_2.indicator_pointer()[i - OUTPUT_SIZE] = SQL_NULL_DATA;
+                }
+            } else {
+                std::string str = std::to_string(i);
+                ASSERT_OK(builder.Append(str));
+                if (i < OUTPUT_SIZE) {
+                    memcpy(buffer_1[i].data_pointer, str.c_str(), str.size() + 1);
+                    buffer_1[i].indicator = str.size();
+                } else {
+                    memcpy(buffer_1_2[i - OUTPUT_SIZE].data_pointer, str.c_str(), str.size() + 1);
+                    buffer_1_2[i - OUTPUT_SIZE].indicator = str.size();
+                }
+            }
+        }
+        ASSERT_OK(builder.Finish(&array));
+    }
+    expected_arrays.push_back(array);
+    expected_fields.push_back(arrow::field("str_column", arrow::utf8(), true));
+
+    std::shared_ptr<arrow::Array> nonnull_array;
+    cpp_odbc::multi_value_buffer buffer_2(4, OUTPUT_SIZE);
+    cpp_odbc::multi_value_buffer buffer_2_2(4, OUTPUT_SIZE);
+    {
+        arrow::StringBuilder builder(pool);
+        for (int64_t i = 0; i < 2 * OUTPUT_SIZE; i++) {
+            std::string str = std::to_string(i);
+            ASSERT_OK(builder.Append(str));
+            if (i < OUTPUT_SIZE) {
+                memcpy(buffer_2[i].data_pointer, str.c_str(), str.size() + 1);
+                buffer_2[i].indicator = str.size();
+            } else {
+                memcpy(buffer_2_2[i - OUTPUT_SIZE].data_pointer, str.c_str(), str.size() + 1);
+                buffer_2_2[i - OUTPUT_SIZE].indicator = str.size();
+            }
+        }
+        ASSERT_OK(builder.Finish(&nonnull_array));
+    }
+    expected_arrays.push_back(nonnull_array);
+    expected_fields.push_back(arrow::field("nonnull_str_column", arrow::utf8(), false));
+    
+    MockSchema({{"str_column", turbodbc::type_code::string, true},
+            {"nonnull_str_column", turbodbc::type_code::string, false}});
+    MockOutput({{buffer_1, buffer_2}, {buffer_1_2, buffer_2_2}});
+    CheckRoundtrip();
+}
+
 TEST_F(ArrowResultSetTest, MultipleBatchMultipleColumnResultSetConversion)
 {
     std::vector<std::shared_ptr<arrow::Field>> fields = {
