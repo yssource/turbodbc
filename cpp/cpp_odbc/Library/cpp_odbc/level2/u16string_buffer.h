@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <sql.h>
+#include "sql.h"
 
 namespace cpp_odbc { namespace level2 {
 
