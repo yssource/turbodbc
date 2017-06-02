@@ -1,3 +1,23 @@
+From version 2.0.0, turbodbc adapts semantic versioning.
+
+Version 2.0.0 (unreleased)
+==========================
+*   Initial support for the arrow data format with the `Cursor.fetchallarrow()`
+    method. Still in alpha stage, mileage may vary. Big thanks to @xhochy
+*   `prefer_unicode` option now also affects column name rendering
+    when gathering results from the database. This effectively enables
+    support for Unicode column names for some databases.
+
+
+Versions not conforming to semantic versioning
+==============================================
+
+The following versions do not conform to semantic versioning. The
+meaning of the major.minor.revision versions is:
+* Major: psychological ;-)
+* Minor: If incremented, this indicates a breaking change
+* Revision: If incremented, indicates non-breaking change (either feature or bug fix)
+
 Version 1.1.2
 =============
 *   Added `autocommit` as a keyword argument to `make_options()`. As the
