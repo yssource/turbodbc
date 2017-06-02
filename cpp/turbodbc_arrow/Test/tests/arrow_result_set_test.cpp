@@ -29,21 +29,61 @@ class ArrowResultSetTest : public ::testing::Test {
             expected_arrays.clear();
             expected_fields.clear();
         }
-    
+
         void MockSchema(std::vector<turbodbc::column_info> schema) {
             EXPECT_CALL(rs, do_get_column_info()).WillRepeatedly(testing::Return(schema));
         }
-    
+
         // This only works on PrimitiveArrays of a FixedWidthType
-        std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>>
-        BuffersFromPrimitive(std::shared_ptr<arrow::Array> const& array, size_t size, size_t offset) {
+        std::reference_wrapper<cpp_odbc::multi_value_buffer const>
+        BufferFromPrimitive(std::shared_ptr<arrow::Array> const& array, size_t size, size_t offset) {
             size_t bytes_per_value = std::dynamic_pointer_cast<arrow::FixedWidthType>(array->type())->bit_width() / 8;
             auto typed_array = std::dynamic_pointer_cast<arrow::PrimitiveArray>(array);
             buffers.emplace_back(cpp_odbc::multi_value_buffer(bytes_per_value, size));
             memcpy(buffers.back().data_pointer(), typed_array->data()->data() + (bytes_per_value * offset), bytes_per_value * size);
-            return {buffers.back()};
+            for (size_t i = 0; i < size; i++) {
+                if (array->IsNull(i + offset)) {
+                    buffers.back().indicator_pointer()[i] = SQL_NULL_DATA;
+                }
+            }
+            return buffers.back();
         }
-    
+
+        void MockOutput(std::vector<std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>>> buffers_vec) {
+            {
+                testing::InSequence sequence;
+                for (auto&& buffers: buffers_vec) {
+                    EXPECT_CALL(rs, do_get_buffers()).WillOnce(testing::Return(buffers)).RetiresOnSaturation();
+                }
+            }
+            {
+                testing::InSequence sequence;
+                for (auto&& buffers: buffers_vec) {
+                    EXPECT_CALL(rs, do_fetch_next_batch()).WillOnce(testing::Return(buffers[0].get().number_of_elements())).RetiresOnSaturation();
+                }
+                EXPECT_CALL(rs, do_fetch_next_batch()).WillOnce(testing::Return(0)).RetiresOnSaturation();
+            }
+        }
+
+        template <typename ArrayType>
+        std::shared_ptr<arrow::Array> MakePrimitive(int64_t length, int64_t null_count = 0) {
+            auto data = std::make_shared<arrow::PoolBuffer>(pool);
+            const int64_t data_nbytes = length * sizeof(typename ArrayType::value_type);
+            EXPECT_OK(data->Resize(data_nbytes));
+
+            // Fill with random data
+            arrow::test::random_bytes(data_nbytes, 0 /*random_seed*/, data->mutable_data());
+
+            auto null_bitmap = std::make_shared<arrow::PoolBuffer>(pool);
+            const int64_t null_nbytes = arrow::BitUtil::BytesForBits(length);
+            EXPECT_OK(null_bitmap->Resize(null_nbytes));
+            memset(null_bitmap->mutable_data(), 255, null_nbytes);
+            for (int64_t i = 0; i < null_count; i++) {
+                arrow::BitUtil::ClearBit(null_bitmap->mutable_data(), i * (length / null_count));
+            }
+            return std::make_shared<ArrayType>(length, data, null_bitmap, null_count);
+        }
+
         void CheckRoundtrip() {
             auto schema = std::make_shared<arrow::Schema>(expected_fields);
             std::shared_ptr<arrow::Table> expected_table;
@@ -153,24 +193,33 @@ TEST_F(ArrowResultSetTest, SingleBatchSingleColumnResultSetConversion)
 
 TEST_F(ArrowResultSetTest, MultiBatchConversionInteger)
 {
-    arrow::Int64Builder builder(pool);
-    for (int64_t i = 0; i < 2 * OUTPUT_SIZE; i++) {
-        ASSERT_OK(builder.Append(i));
-    }
-    std::shared_ptr<arrow::Array> array;
-    ASSERT_OK(builder.Finish(&array));
+    std::shared_ptr<arrow::Array> array = MakePrimitive<arrow::Int64Array>(2 * OUTPUT_SIZE, OUTPUT_SIZE / 3);
     expected_arrays.push_back(array);
     expected_fields.push_back(arrow::field("int_column", arrow::int64(), true));
+    std::shared_ptr<arrow::Array> nonnull_array = MakePrimitive<arrow::Int64Array>(2 * OUTPUT_SIZE);
+    expected_arrays.push_back(nonnull_array);
+    expected_fields.push_back(arrow::field("nonnull_int_column", arrow::int64(), false));
     
-    MockSchema({{"int_column", turbodbc::type_code::integer, true}});
-    EXPECT_CALL(rs, do_get_buffers())
-        .WillOnce(testing::Return(BuffersFromPrimitive(array, OUTPUT_SIZE, 0)))
-        .WillOnce(testing::Return(BuffersFromPrimitive(array, OUTPUT_SIZE, OUTPUT_SIZE)));
-    EXPECT_CALL(rs, do_fetch_next_batch())
-        .WillOnce(testing::Return(OUTPUT_SIZE))
-        .WillOnce(testing::Return(OUTPUT_SIZE))
-        .WillOnce(testing::Return(0));
+    MockSchema({{"int_column", turbodbc::type_code::integer, true},
+            {"nonnull_int_column", turbodbc::type_code::integer, false}});
+    MockOutput({{BufferFromPrimitive(array, OUTPUT_SIZE, 0), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, 0)},
+            {BufferFromPrimitive(array, OUTPUT_SIZE, OUTPUT_SIZE), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, OUTPUT_SIZE)}});
+    CheckRoundtrip();
+}
 
+TEST_F(ArrowResultSetTest, MultiBatchConversionFloat)
+{
+    std::shared_ptr<arrow::Array> array = MakePrimitive<arrow::DoubleArray>(2 * OUTPUT_SIZE, OUTPUT_SIZE / 3);
+    expected_arrays.push_back(array);
+    expected_fields.push_back(arrow::field("float_column", arrow::float64(), true));
+    std::shared_ptr<arrow::Array> nonnull_array = MakePrimitive<arrow::DoubleArray>(2 * OUTPUT_SIZE);
+    expected_arrays.push_back(nonnull_array);
+    expected_fields.push_back(arrow::field("nonnull_float_column", arrow::float64(), false));
+    
+    MockSchema({{"float_column", turbodbc::type_code::floating_point, true},
+            {"nonnull_float_column", turbodbc::type_code::floating_point, false}});
+    MockOutput({{BufferFromPrimitive(array, OUTPUT_SIZE, 0), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, 0)},
+            {BufferFromPrimitive(array, OUTPUT_SIZE, OUTPUT_SIZE), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, OUTPUT_SIZE)}});
     CheckRoundtrip();
 }
 
