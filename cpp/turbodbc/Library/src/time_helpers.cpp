@@ -1,5 +1,9 @@
 #include <turbodbc/time_helpers.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#include <cstring>
 #include <sql.h>
 
 #include <boost/date_time/gregorian/gregorian_types.hpp>
