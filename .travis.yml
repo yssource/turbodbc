@@ -83,7 +83,7 @@ before_install: |
   fi
 
 install:
-  - pip install numpy==1.8.0 six twine pytest-cov coveralls
+  - pip install numpy==1.10.4 pyarrow==0.4.0 six twine pytest-cov coveralls
 
 before_script: |
   if [ "$TRAVIS_OS_NAME" == "linux" ]; then
@@ -95,7 +95,13 @@ script:
   - mkdir build && cd build
   - cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYBIND11_PYTHON_VERSION=${TRAVIS_PYTHON_VERSION} ..
   - make -j4
-  - ctest --verbose
+  - pip install numpy==1.10.4
+  - |
+      if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+        ctest -E turbodbc_arrow_unit_test --verbose
+      else
+        ctest --verbose
+      fi
   - cd ..
   - mkdir gcov
   - cd gcov

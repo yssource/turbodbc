@@ -15,6 +15,15 @@ def _has_numpy_support():
     except ImportError:
         return False
 
+
+def _has_arrow_support():
+    try:
+        import turbodbc_arrow_support
+        return True
+    except ImportError:
+        return False
+
+
 def _make_masked_arrays(result_batch):
     from numpy.ma import MaskedArray
     from numpy import object_
@@ -25,6 +34,7 @@ def _make_masked_arrays(result_batch):
         else:
             masked_arrays.append(MaskedArray(data=data, mask=mask))
     return masked_arrays
+
 
 class Cursor(object):
     """
@@ -221,6 +231,15 @@ class Cursor(object):
                 raise StopIteration # Let us return a typed result set at least once
             first_run = False
             yield result_batch
+
+    def fetchallarrow(self):
+        self._assert_valid_result_set()
+        if _has_arrow_support():
+            from turbodbc_arrow_support import make_arrow_result_set
+            return make_arrow_result_set(self.impl.get_result_set()).fetch_all()
+        else:
+            raise Error("turbodbc was compiled without Apache Arrow support. Please install "
+                        "pyarrow and reinstall turbodbc")
 
     def close(self):
         """
