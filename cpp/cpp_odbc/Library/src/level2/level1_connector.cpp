@@ -5,6 +5,7 @@
 #include "cpp_odbc/level2/fixed_length_string_buffer.h"
 #include "cpp_odbc/level2/input_string_buffer.h"
 #include "cpp_odbc/level2/input_u16string_buffer.h"
+#include "cpp_odbc/level2/u16string_buffer.h"
 
 #include "cpp_odbc/error.h"
 
@@ -12,6 +13,8 @@
 #include <windows.h>
 #endif
 #include "sqlext.h"
+
+#include <boost/locale.hpp>
 
 #include <sstream>
 #include <iostream>
@@ -411,6 +414,24 @@ column_description level1_connector::do_describe_column(statement_handle const &
     impl::throw_on_error(return_code, *this, handle);
 
     return {static_cast<std::string>(name), data_type, size, decimal_digits, allows_nullable};
+}
+
+column_description level1_connector::do_describe_column_wide(statement_handle const & handle, SQLUSMALLINT column_id) const
+{
+    cpp_odbc::level2::u16string_buffer name(256);
+    SQLSMALLINT data_type = 0;
+    SQLULEN size = 0;
+    SQLSMALLINT decimal_digits = 0;
+    SQLSMALLINT nullable = 0;
+
+    auto const return_code = level1_api_->describe_column(handle.handle, column_id, name.data_pointer(), name.capacity(), name.size_pointer(), &data_type, &size, &decimal_digits, &nullable);
+
+    bool const allows_nullable = (nullable == SQL_NO_NULLS) ? false : true;
+
+    impl::throw_on_error(return_code, *this, handle);
+
+    auto const utf8_name = boost::locale::conv::utf_to_utf<char>(static_cast<std::u16string>(name));
+    return {utf8_name, data_type, size, decimal_digits, allows_nullable};
 }
 
 column_description level1_connector::do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const

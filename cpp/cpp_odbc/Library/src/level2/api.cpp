@@ -170,6 +170,11 @@ column_description api::describe_column(statement_handle const & handle, SQLUSMA
     return do_describe_column(handle, column_id);
 }
 
+column_description api::describe_column_wide(statement_handle const & handle, SQLUSMALLINT column_id) const
+{
+    return do_describe_column_wide(handle, column_id);
+}
+
 column_description api::describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const
 {
     return do_describe_parameter(handle, parameter_id);
