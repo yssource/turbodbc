@@ -60,6 +60,7 @@ private:
 	void do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, SQLULEN * pointer) const final;
 	SQLLEN do_row_count(statement_handle const & handle) const final;
 	column_description do_describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const final;
+	column_description do_describe_column_wide(statement_handle const & handle, SQLUSMALLINT column_id) const final;
 	column_description do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const final;
 	bool do_more_results(statement_handle const & handle) const final;
 	bool do_supports_function(connection_handle const & handle, SQLUSMALLINT function_id) const final;

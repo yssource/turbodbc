@@ -63,6 +63,24 @@ def test_important_stuff(dsn, configuration):
 for_each_database = pytest.mark.parametrize("dsn,configuration",
                                             _get_configurations())
 
+"""
+Use this decorator to execute a test function once for each database configuration
+except for those databases configurations listed in the parameter.
+
+Please note the test function *must* take the parameters `dsn` and `configuration`,
+and in that order.
+
+Example:
+
+@for_each_database_except(["MySQL"])
+def test_important_stuff(dsn, configuration):
+    assert 1 == 2
+"""
+def for_each_database_except(exceptions):
+    configurations = _get_configurations()
+    return pytest.mark.parametrize("dsn,configuration",
+                                   [c for c in configurations if c[0] not in exceptions])
+
 
 
 """

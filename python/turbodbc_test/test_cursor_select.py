@@ -5,7 +5,7 @@ import six
 import turbodbc
 
 from query_fixture import query_fixture
-from helpers import open_cursor, for_each_database, for_one_database
+from helpers import open_cursor, for_each_database, for_one_database, for_each_database_except
 
 
 def _test_single_row_result_set(configuration, query, expected_row):
@@ -253,6 +253,14 @@ def test_description(dsn, configuration):
                         (fix_case('as_timestamp'), turbodbc.DATETIME, None, None, None, None, True),
                         (fix_case('as_int_not_null'), turbodbc.NUMBER, None, None, None, None, nullness_for_null_column)]
             assert expected == cursor.description
+
+
+@for_each_database_except(["MySQL"])
+def test_unicode_column_names(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'UNICODE COLUMN NAME') as table_name:
+            cursor.execute("SELECT * FROM {}".format(table_name))
+            assert cursor.description[0][0] == u"I \u2665 Unicode"
 
 
 @for_one_database

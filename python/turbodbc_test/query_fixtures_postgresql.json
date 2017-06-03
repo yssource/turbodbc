@@ -97,6 +97,10 @@
 	
 		"DESCRIPTION": {
 			"table": "as_int INTEGER, as_double DOUBLE PRECISION, as_varchar VARCHAR(100), as_date DATE, as_timestamp TIMESTAMP, as_int_not_null INTEGER NOT NULL"
+		},
+
+		"UNICODE COLUMN NAME": {
+			"table": "\"I \u2665 Unicode\" INTEGER"
 		}
 	}
 }

@@ -18,7 +18,9 @@ namespace {
         std::size_t const n_columns = statement.number_of_columns();
         std::vector<std::unique_ptr<description const>> descriptions;
         for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
-            descriptions.push_back(make_description(statement.describe_column(one_based_index), prefer_unicode));
+            auto const from_db = prefer_unicode ? statement.describe_column_wide(one_based_index)
+                                                : statement.describe_column(one_based_index);
+            descriptions.push_back(make_description(from_db, prefer_unicode));
         }
 
         return boost::apply_visitor(turbodbc::determine_rows_to_buffer(descriptions), buffer_size);
@@ -36,7 +38,9 @@ bound_result_set::bound_result_set(std::shared_ptr<cpp_odbc::statement const> st
     std::size_t rows_to_buffer = determine_buffered_rows(*statement_, buffer_size, prefer_unicode);
 
     for (std::size_t one_based_index = 1; one_based_index <= n_columns; ++one_based_index) {
-        auto column_description = make_description(statement_->describe_column(one_based_index), prefer_unicode);
+        auto const from_db = prefer_unicode ? statement->describe_column_wide(one_based_index)
+                                            : statement->describe_column(one_based_index);
+        auto column_description = make_description(from_db, prefer_unicode);
         columns_.emplace_back(*statement, one_based_index, rows_to_buffer, std::move(column_description));
     }
 
