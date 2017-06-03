@@ -1126,7 +1126,7 @@ namespace {
         SQLUSMALLINT const column_id = 17;
 
         std::u16string const unicode_name(u"I \u2665 Unicode");
-        cpp_odbc::column_description const expected = {"I \u2665 Unicode", 123, 456, 666, expected_nullable};
+        cpp_odbc::column_description const expected = {u8"I \u2665 Unicode", 123, 456, 666, expected_nullable};
 
         auto copy_unicode_to_void_pointer = [&unicode_name](testing::Unused, testing::Unused, void * destination, testing::Unused, testing::Unused, testing::Unused, testing::Unused, testing::Unused, testing::Unused) {
             memcpy(destination, unicode_name.data(), unicode_name.size() * 2);
