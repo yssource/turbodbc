@@ -20,10 +20,11 @@ Earlier versions (not conforming to semantic versioning)
 --------------------------------------------------------
 
 The following versions do not conform to semantic versioning. The
-meaning of the major.minor.revision versions is:
-* Major: psychological ;-)
-* Minor: If incremented, this indicates a breaking change
-* Revision: If incremented, indicates non-breaking change (either feature or bug fix)
+meaning of the ``major.minor.revision`` versions is:
+
+*   Major: psychological ;-)
+*   Minor: If incremented, this indicates a breaking change
+*   Revision: If incremented, indicates non-breaking change (either feature or bug fix)
 
 Version 1.1.2
 -------------
