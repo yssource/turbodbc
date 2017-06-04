@@ -33,6 +33,7 @@ and `MSSQL <http://microsoft.com/sql>`_, but probably also works with your datab
     pages/advanced_usage
     pages/odbc_configuration
     pages/databases
+    pages/changelog
     pages/troubleshooting
     pages/faq
     pages/contributing

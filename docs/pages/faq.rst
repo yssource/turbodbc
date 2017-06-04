@@ -58,7 +58,7 @@ There are a few options:
 *   Watch the turbodbc project on `GitHub`_. This way, you will get mails for new issues,
     updates issues, and the like.
 *   Periodically read turbodbc's
-    `change log <https://github.com/blue-yonder/turbodbc/blob/master/CHANGELOG.md>`_
+    `change log <https://github.com/blue-yonder/turbodbc/blob/master/CHANGELOG.rst>`_
 *   Follow `@turbodbc <https://twitter.com/turbodbc>`_ on Twitter. There will be tweets
     for new releases.
 
