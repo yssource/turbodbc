@@ -5,6 +5,7 @@ From version 2.0.0, turbodbc adapts semantic versioning.
 
 Version 2.0.0 (unreleased)
 --------------------------
+
 *   Initial support for the arrow data format with the ``Cursor.fetchallarrow()``
     method. Still in alpha stage, mileage may vary (Windows not yet supported,
     UTF-16 unicode not yet supported). Big thanks to @xhochy!
@@ -12,7 +13,8 @@ Version 2.0.0 (unreleased)
     when gathering results from the database. This effectively enables
     support for Unicode column names for some databases.
 *   Add module version number ``turbodbc.__version__``
-
+*   Remove deprecated performance options for ``connect()``. Use
+    ``connect(..., turbodbc_options=make_options(...))`` instead.
 
 Earlier versions (not conforming to semantic versioning)
 --------------------------------------------------------

@@ -16,7 +16,7 @@ def _make_connection_string(dsn, **kwargs):
 
 
 @translate_exceptions
-def connect(dsn=None, turbodbc_options=None, read_buffer_size=None, parameter_sets_to_buffer=None, use_async_io=False, connection_string=None, **kwargs):
+def connect(dsn=None, turbodbc_options=None, connection_string=None, **kwargs):
     """
     Create a connection with the database identified by the ``dsn`` or the ``connection_string``.
 
@@ -32,20 +32,7 @@ def connect(dsn=None, turbodbc_options=None, read_buffer_size=None, parameter_se
     :return: A connection to your database
     """
     if turbodbc_options is None:
-        turbodbc_options = make_options(read_buffer_size=read_buffer_size,
-                                        parameter_sets_to_buffer=parameter_sets_to_buffer,
-                                        use_async_io=use_async_io,
-                                        prefer_unicode=False)
-
-    if read_buffer_size:
-        warnings.warn("Calling turbodbc.connect() with parameter read_buffer_size is deprecated. "
-                      "Please use make_options() instead.", DeprecationWarning)
-    if parameter_sets_to_buffer:
-        warnings.warn("Calling turbodbc.connect() with parameter parameter_sets_to_buffer is deprecated. "
-                      "Please use make_options() instead.", DeprecationWarning)
-    if use_async_io:
-        warnings.warn("Calling turbodbc.connect() with parameter use_async_io is deprecated. "
-                      "Please use make_options() instead.", DeprecationWarning)
+        turbodbc_options = make_options()
 
     if connection_string is not None and (dsn is not None or len(kwargs) > 0):
         raise ParameterError("Both connection_string and dsn or kwargs specified")
