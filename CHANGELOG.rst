@@ -11,6 +11,7 @@ Version 2.0.0 (unreleased)
 *   ``prefer_unicode`` option now also affects column name rendering
     when gathering results from the database. This effectively enables
     support for Unicode column names for some databases.
+*   Add module version number ``turbodbc.__version__``
 
 
 Earlier versions (not conforming to semantic versioning)
