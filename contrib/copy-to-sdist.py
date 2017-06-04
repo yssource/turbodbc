@@ -40,7 +40,7 @@ def main():
     for afile in ["setup.cfg",
                   "setup.py",
                   "README.md",
-                  "CHANGELOG.md",
+                  "CHANGELOG.rst",
                   "MANIFEST.in",
                   "LICENSE",
                   ]:
