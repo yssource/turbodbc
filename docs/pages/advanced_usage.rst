@@ -113,6 +113,8 @@ and you can also check whether autocommit is currently enabled:
     ...     connection.commit()
 
 
+.. _advanced_usage_numpy:
+
 NumPy support
 -------------
 
@@ -192,3 +194,55 @@ are converted to NumPy columns:
 +-------------------------------------------+-----------------------+
 | ``VARCHAR``, strings, ``DECIMAL(>18, 0)`` | ``object_``           |
 +-------------------------------------------+-----------------------+
+
+
+.. _advanced_usage_arrow:
+
+Apache Arrow support
+--------------------
+
+.. note::
+    Turbodbc's Apache Arrow support requires the ``pyarrow`` package to be installed.
+    For all source builds, Apache Arrow needs to be installed before installing turbodbc.
+    Please check the :ref:`installation instructions <getting_started_installation>`
+    for more details.
+
+`Apache Arrow <https://arrow.apache.org>`_ is a high-performance data layer that
+is built for cross-system columnar in-memory analytics using a
+`data model <https://arrow.apache.org/docs/python/data.html>`_ designed to make the
+most of the CPU cache and vector operations.
+
+.. note::
+    Apache Arrow support in turbodbc is still experimental and may not be as efficient
+    as possible yet. Also, Apache Arrow support is not yet available for Windows and
+    has some issues with Unicode fields. Stay tuned for upcoming improvements.
+
+Obtaining Apache Arrow result sets
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here is how to use turbodbc to retrieve the full result set in the form of an
+Apache Arrow table:
+
+::
+
+    >>> cursor.execute("SELECT A, B FROM my_table")
+    >>> table = cursor.fetchallarrow()
+    >>> table
+    pyarrow.Table
+    A: int64
+    B: string
+    >>> table[0].to_pylist()
+    [42]
+    >>> table[1].to_pylist()
+    [u'hello']
+
+Looking at the data like this is not particularly useful. However, there is some
+really useful stuff you can do with an Apache Arrow table, for example,
+`convert it to a Pandas dataframe <https://arrow.apache.org/docs/python/pandas.html>`_
+like this:
+
+::
+
+    >>> table.to_pandas()
+        A      B
+    0  42  hello

@@ -35,7 +35,9 @@ the following prerequisites are met:
 
 Please ``pip install numpy`` before installing turbodbc, because turbodbc will search
 for the ``numpy`` Python package at installation/compile time. If NumPy is not installed,
-turbodbc will not compile the optional NumPy support features.
+turbodbc will not compile the :ref:`optional NumPy support <advanced_usage_numpy>` features.
+Similarly, please ``pip install pyarrow`` before installing turbodbc if you would like
+to use the :ref:`optional Apache Arrow support <advanced_usage_arrow>`.
 
 (1) The minimum viable Boost setup requires the libraries ``variant``, ``optional``,
 ``datetime``, and ``locale``.
@@ -69,7 +71,8 @@ If you require NumPy support, please
 
     pip install numpy
 
-Sometime after installing turbodbc.
+Sometime after installing turbodbc. Apache Arrow support is not yet available
+on Windows.
 
 .. _MSVS 2015 Update 3 Redistributable, 64 bit: https://www.microsoft.com/en-us/download/details.aspx?id=53840
 

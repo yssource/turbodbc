@@ -12,7 +12,8 @@ that use databases for which no efficient native Python drivers are available.
 
 For maximum compatibility, turbodbc complies with the
 `Python Database API Specification 2.0 (PEP 249) <https://www.python.org/dev/peps/pep-0249/>`_.
-For maximum performance, turbodbc offers built-in `NumPy <http://www.numpy.org>`_ support
+For maximum performance, turbodbc offers built-in `NumPy <http://www.numpy.org>`_ and
+`Apache Arrow <https://arrow.apache.org>`_ support
 and internally relies on batched data transfer instead of single-record communication as
 other popular ODBC modules do.
 
