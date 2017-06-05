@@ -3,6 +3,9 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
+Version 2.x.y (unreleased)
+--------------------------
+
 Version 2.0.0
 -------------
 
