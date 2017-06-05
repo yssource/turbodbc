@@ -3,8 +3,8 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
-Version 2.0.0 (unreleased)
---------------------------
+Version 2.0.0
+-------------
 
 *   Initial support for the arrow data format with the ``Cursor.fetchallarrow()``
     method. Still in alpha stage, mileage may vary (Windows not yet supported,
