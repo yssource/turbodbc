@@ -62,6 +62,13 @@ do the following:
 
         pip install numpy pytest pytest-cov mock
 
+#.  If you also want to work on the Apache Arrow features, make sure to install
+    ``pyarrow`` as well:
+
+    ::
+
+        pip install pyarrow
+
 #.  Make sure you have a recent version of ``cmake`` installed. For some operating
     systems, binary wheels are available in addition to the package your operating
     system offers:
