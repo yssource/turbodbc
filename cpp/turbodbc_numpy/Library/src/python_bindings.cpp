@@ -1,7 +1,9 @@
 #include <turbodbc_numpy/numpy_result_set.h>
+#include <turbodbc_numpy/set_numpy_parameters.h>
 #include <turbodbc/cursor.h>
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 // compare http://docs.scipy.org/doc/numpy/reference/c-api.array.html#importing-the-api
@@ -9,7 +11,9 @@
 #define PY_ARRAY_UNIQUE_SYMBOL turbodbc_numpy_API
 #include <numpy/ndarrayobject.h>
 
+
 using turbodbc_numpy::numpy_result_set;
+
 
 namespace {
 
@@ -18,8 +22,9 @@ numpy_result_set make_numpy_result_set(std::shared_ptr<turbodbc::result_sets::re
     return numpy_result_set(*result_set_pointer);
 }
 
-void set_numpy_parameters(turbodbc::cursor & cursor, pybind11::iterable const & columns)
+void set_numpy_parameters(turbodbc::cursor & cursor, std::vector<pybind11::array> const & columns)
 {
+    turbodbc_numpy::set_numpy_parameters(cursor.get_command()->get_parameters(), columns);
 }
 
 }

@@ -31,6 +31,15 @@ def test_columns_must_have_equal_size(dsn, configuration):
                 cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
 
 
+@for_one_database
+def test_column_with_incompatible_dtype(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            columns = [MaskedArray([1, 2, 3], mask=False, dtype='int16')]
+            with pytest.raises(turbodbc.InterfaceError):
+                cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+
+
 @for_each_database
 def test_integer_column(dsn, configuration):
     with open_cursor(configuration) as cursor:

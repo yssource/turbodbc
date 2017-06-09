@@ -3,6 +3,7 @@ from __future__ import absolute_import
 from functools import wraps
 
 from turbodbc_intern import Error as InternError
+from turbodbc_intern import InterfaceError as InternInterfaceError
 
 
 # Python 2/3 compatibility
@@ -49,4 +50,6 @@ def translate_exceptions(f):
             return f(*args, **kwds)
         except InternError as e:
             raise DatabaseError(str(e))
+        except InternInterfaceError as e:
+            raise InterfaceError(str(e))
     return wrapper
