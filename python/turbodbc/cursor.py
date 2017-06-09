@@ -7,8 +7,8 @@ from turbodbc_intern import make_row_based_result_set, make_parameter_set
 
 from .exceptions import translate_exceptions, InterfaceError, Error
 
-def _has_numpy_support():
 
+def _has_numpy_support():
     try:
         import turbodbc_numpy_support
         return True
@@ -114,7 +114,8 @@ class Cursor(object):
     @translate_exceptions
     def executemany(self, sql, parameters=None):
         """
-        Execute an SQL command or query with multiple parameter sets.
+        Execute an SQL command or query with multiple parameter sets passed in a row-wise fashion.
+        This function is part of PEP-249.
 
         :param sql: A (unicode) string that contains the SQL command or query. If you would like to
                use parameters, please use a question mark ``?`` at the location where the
@@ -143,6 +144,35 @@ class Cursor(object):
         else:
             self.result_set = None
         return self
+
+    @translate_exceptions
+    def executemanycolumns(self, sql, columns):
+        """
+        Execute an SQL command or query with multiple parameter sets that are passed in
+        a column-wise fashion as opposed to the row-wise parameters in ``executemany()``.
+        This function is a turbodbc-specific extension to PEP-249.
+        
+        :param sql: A (unicode) string that contains the SQL command or query. If you would like to
+               use parameters, please use a question mark ``?`` at the location where the
+               parameter shall be inserted.
+        :param columns: An iterable of NumPy MaskedArrays. The Arrays represent the columnar
+               parameter data,
+        :return: The ``Cursor`` object to allow chaining of operations.
+        """
+        self.rowcount = -1
+        self._assert_valid()
+
+        from numpy.ma import MaskedArray
+        for column in columns:
+            if type(column) != MaskedArray:
+                raise InterfaceError("Only NumPy MaskedArrays are supported as columns, got type {}".format(type(column)))
+
+        lengths = [len(column) for column in columns]
+        all_same_length = all(l == lengths[0] for l in lengths)
+        if not all_same_length:
+            raise InterfaceError("All columns must have the same length, got lengths {}".format(lengths))
+
+        self.impl.prepare(sql)
 
     @translate_exceptions
     def fetchone(self):
