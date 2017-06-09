@@ -159,6 +159,7 @@ class Cursor(object):
                parameter data,
         :return: The ``Cursor`` object to allow chaining of operations.
         """
+        # TODO Add check for numpy support
         self.rowcount = -1
         self._assert_valid()
 
@@ -173,6 +174,13 @@ class Cursor(object):
             raise InterfaceError("All columns must have the same length, got lengths {}".format(lengths))
 
         self.impl.prepare(sql)
+
+        from turbodbc_numpy_support import set_numpy_parameters
+        set_numpy_parameters(self.impl, columns)
+
+        self.impl.execute()
+
+        # TODO fix chaining
 
     @translate_exceptions
     def fetchone(self):

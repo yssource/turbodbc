@@ -1,4 +1,5 @@
 #include <turbodbc_numpy/numpy_result_set.h>
+#include <turbodbc/cursor.h>
 
 #include <pybind11/pybind11.h>
 
@@ -14,7 +15,11 @@ namespace {
 
 numpy_result_set make_numpy_result_set(std::shared_ptr<turbodbc::result_sets::result_set> result_set_pointer)
 {
-	return numpy_result_set(*result_set_pointer);
+    return numpy_result_set(*result_set_pointer);
+}
+
+void set_numpy_parameters(turbodbc::cursor & cursor, pybind11::iterable const & columns)
+{
 }
 
 }
@@ -43,5 +48,6 @@ PYBIND11_PLUGIN(turbodbc_numpy_support) {
         .def("fetch_next_batch", &numpy_result_set::fetch_next_batch);
 
     module.def("make_numpy_result_set", make_numpy_result_set);
+    module.def("set_numpy_parameters", set_numpy_parameters);
     return module.ptr();
 }
