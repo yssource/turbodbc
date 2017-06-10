@@ -14,6 +14,19 @@
 
 namespace turbodbc_numpy {
 
+namespace {
+
+    template<typename Value>
+    void set_batch(turbodbc::parameter & parameter, pybind11::array const & column, std::size_t start, std::size_t elements)
+    {
+        auto unchecked = column.unchecked<Value, 1>();
+        auto data_ptr = unchecked.data(0);
+        auto & buffer = parameter.get_buffer();
+        std::memcpy(buffer.data_pointer(), data_ptr + start, elements * sizeof(Value));
+        std::fill_n(buffer.indicator_pointer(), elements, static_cast<intptr_t>(sizeof(Value)));
+    }
+
+}
 
 void set_numpy_parameters(turbodbc::bound_parameter_set & parameters, std::vector<pybind11::array> const & columns)
 {
@@ -23,13 +36,12 @@ void set_numpy_parameters(turbodbc::bound_parameter_set & parameters, std::vecto
     auto const dtype = column.dtype();
 
     if (dtype == np_int64) {
-        auto unchecked = column.unchecked<std::int64_t, 1>();
-        auto data_ptr = unchecked.data(0);
         parameters.rebind(0, turbodbc::make_description(turbodbc::type_code::integer, 0));
-        auto & buffer = parameters.get_parameters()[0]->get_buffer();
-        std::memcpy(buffer.data_pointer(), data_ptr, unchecked.size() * sizeof(std::int64_t));
-        std::fill_n(buffer.indicator_pointer(), unchecked.size(), static_cast<intptr_t>(sizeof(std::int64_t)));
-        parameters.execute_batch(unchecked.size());
+        for (std::size_t start = 0; start < column.size(); start += parameters.buffered_sets()) {
+            auto const in_this_batch = std::min(parameters.buffered_sets(), column.size() - start);
+            set_batch<std::int64_t>(*parameters.get_parameters()[0], column, start, in_this_batch);
+            parameters.execute_batch(in_this_batch);
+        }
     } else {
         throw turbodbc::interface_error("Encountered unsupported NumPy dtype '" +
                                         static_cast<std::string>(pybind11::str(dtype)) + "'");

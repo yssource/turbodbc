@@ -49,3 +49,14 @@ def test_integer_column(dsn, configuration):
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[17], [23], [42]]
+
+
+@for_each_database
+def test_integer_column_exceeds_buffer_size(dsn, configuration):
+    with open_cursor(configuration, parameter_sets_to_buffer=2) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            columns = [MaskedArray([17, 23, 42], mask=False)]
+            cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+
+            results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
+            assert results == [[17], [23], [42]]
