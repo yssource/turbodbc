@@ -42,7 +42,7 @@ def test_column_with_incompatible_dtype_raises(dsn, configuration):
 
 
 @for_one_database
-def test_column_with_multiple_dimenstions_raises(dsn, configuration):
+def test_column_with_multiple_dimensions_raises(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
             two_dimensional = array([[1, 2, 3], [4, 5, 6]])
@@ -59,6 +59,15 @@ def test_column_with_non_contiguous_data_raises(dsn, configuration):
             one_dimensional = two_dimensional[:, 1]
             assert one_dimensional.flags.c_contiguous == False
             columns = [one_dimensional]
+            with pytest.raises(turbodbc.InterfaceError):
+                cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+
+
+@for_one_database
+def test_number_of_columns_does_not_match_parameter_count(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            columns = [array([42]), array([17])]
             with pytest.raises(turbodbc.InterfaceError):
                 cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
 
@@ -127,6 +136,8 @@ def test_multiple_columns(dsn, configuration):
 
             results = cursor.execute("SELECT A, B FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[17, 3], [23, 2], [42, 1]]
+
+# TODO test different number of parameters
 
 # TODO test zero parameters
 

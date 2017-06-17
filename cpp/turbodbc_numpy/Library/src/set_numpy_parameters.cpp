@@ -40,7 +40,10 @@ namespace {
 
 void set_numpy_parameters(turbodbc::bound_parameter_set & parameters, std::vector<std::tuple<pybind11::array, pybind11::array_t<bool>>> const & columns)
 {
-    // TODO check appropriate number of parameters
+    if (parameters.number_of_parameters() != columns.size()) {
+        throw turbodbc::interface_error("Number of passed columns is not equal to the number of parameters");
+    }
+
     pybind11::dtype const np_int64("int64");
     auto const total_sets = std::get<0>(columns.front()).size();
 
