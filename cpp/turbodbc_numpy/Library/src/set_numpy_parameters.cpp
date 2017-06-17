@@ -44,6 +44,10 @@ void set_numpy_parameters(turbodbc::bound_parameter_set & parameters, std::vecto
         throw turbodbc::interface_error("Number of passed columns is not equal to the number of parameters");
     }
 
+    if (columns.size() == 0) {
+        return;
+    }
+
     pybind11::dtype const np_int64("int64");
     auto const total_sets = std::get<0>(columns.front()).size();
 

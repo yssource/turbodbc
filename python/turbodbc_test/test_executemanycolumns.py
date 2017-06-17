@@ -72,6 +72,17 @@ def test_number_of_columns_does_not_match_parameter_count(dsn, configuration):
                 cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
 
 
+@for_one_database
+def test_passing_empty_list_is_ok(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.executemanycolumns("INSERT INTO {} VALUES (42)".format(table_name), [])
+
+            results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
+            assert results == [[42]]
+
+
+
 @for_each_database
 def test_integer_column(dsn, configuration):
     with open_cursor(configuration) as cursor:
@@ -136,9 +147,5 @@ def test_multiple_columns(dsn, configuration):
 
             results = cursor.execute("SELECT A, B FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[17, 3], [23, 2], [42, 1]]
-
-# TODO test different number of parameters
-
-# TODO test zero parameters
 
 # TODO test zero length parameters
