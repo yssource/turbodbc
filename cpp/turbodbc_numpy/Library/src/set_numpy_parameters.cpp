@@ -40,22 +40,28 @@ namespace {
 
 void set_numpy_parameters(turbodbc::bound_parameter_set & parameters, std::vector<std::tuple<pybind11::array, pybind11::array_t<bool>>> const & columns)
 {
+    // TODO check appropriate number of parameters
     pybind11::dtype const np_int64("int64");
+    auto const total_sets = std::get<0>(columns.front()).size();
 
-    auto const & data = std::get<0>(columns.front());
-    auto const & mask = std::get<1>(columns.front());
-    auto const dtype = data.dtype();
-
-    if (dtype == np_int64) {
-        parameters.rebind(0, turbodbc::make_description(turbodbc::type_code::integer, 0));
-        for (std::size_t start = 0; start < data.size(); start += parameters.buffered_sets()) {
-            auto const in_this_batch = std::min(parameters.buffered_sets(), data.size() - start);
-            set_batch<std::int64_t>(*parameters.get_parameters()[0], data, mask, start, in_this_batch);
-            parameters.execute_batch(in_this_batch);
+    for (std::size_t i = 0; i != columns.size(); ++i) {
+        auto const dtype = std::get<0>(columns[i]).dtype();
+        if (dtype == np_int64) {
+            parameters.rebind(i, turbodbc::make_description(turbodbc::type_code::integer, 0));
+        } else {
+            throw turbodbc::interface_error("Encountered unsupported NumPy dtype '" +
+                                            static_cast<std::string>(pybind11::str(dtype)) + "'");
         }
-    } else {
-        throw turbodbc::interface_error("Encountered unsupported NumPy dtype '" +
-                                        static_cast<std::string>(pybind11::str(dtype)) + "'");
+    }
+
+    for (std::size_t start = 0; start < total_sets; start += parameters.buffered_sets()) {
+        auto const in_this_batch = std::min(parameters.buffered_sets(), total_sets - start);
+        for (std::size_t i = 0; i != columns.size(); ++i) {
+            auto const & data = std::get<0>(columns[i]);
+            auto const & mask = std::get<1>(columns[i]);
+            set_batch<std::int64_t>(*parameters.get_parameters()[i], data, mask, start, in_this_batch);
+        }
+        parameters.execute_batch(in_this_batch);
     }
 }
 

@@ -116,3 +116,18 @@ def test_masked_integer_column_exceeds_buffer_size(dsn, configuration):
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[23], [None], [None]]
+
+
+@for_each_database
+def test_multiple_columns(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:
+            columns = [array([17, 23, 42]), array([3, 2, 1])]
+            cursor.executemanycolumns("INSERT INTO {} VALUES (?, ?)".format(table_name), columns)
+
+            results = cursor.execute("SELECT A, B FROM {} ORDER BY A".format(table_name)).fetchall()
+            assert results == [[17, 3], [23, 2], [42, 1]]
+
+# TODO test zero parameters
+
+# TODO test zero length parameters
