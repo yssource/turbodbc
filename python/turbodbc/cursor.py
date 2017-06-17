@@ -165,11 +165,14 @@ class Cursor(object):
 
         from numpy.ma import MaskedArray
         from numpy import ndarray
-        for column in columns:
+        n_columns = len(columns)
+        for index, column in enumerate(columns, start=1):
             if type(column) not in [MaskedArray, ndarray]:
-                raise InterfaceError("Only numpy.ndarray and numpy.ma.MaskedArrays are supported as columns, got type {}".format(type(column)))
-
-        # TODO Add check for contiguousness
+                raise InterfaceError("Bad type for column {} of {}. Only numpy.ndarray and numpy.ma.MaskedArrays are supported".format(index, n_columns))
+            if column.ndim != 1:
+                raise InterfaceError("Column {} of {} is not one-dimensional".format(index, n_columns))
+            if not column.flags.c_contiguous:
+                raise InterfaceError("Column {} of {} is not contiguous".format(index, n_columns))
 
         lengths = [len(column) for column in columns]
         all_same_length = all(l == lengths[0] for l in lengths)

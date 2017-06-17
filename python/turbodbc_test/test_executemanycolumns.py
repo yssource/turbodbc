@@ -14,7 +14,7 @@ from helpers import open_cursor, for_each_database, for_one_database
 
 
 @for_one_database
-def test_column_must_be_masked_array(dsn, configuration):
+def test_column_of_unsupported_type_raises(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
             columns = ["this is not a NumPy MaskedArray"]
@@ -23,7 +23,7 @@ def test_column_must_be_masked_array(dsn, configuration):
 
 
 @for_one_database
-def test_columns_must_have_equal_size(dsn, configuration):
+def test_columns_of_unequal_sizes_raise(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
             columns = [MaskedArray([1, 2, 3], mask=False),
@@ -33,10 +33,32 @@ def test_columns_must_have_equal_size(dsn, configuration):
 
 
 @for_one_database
-def test_column_with_incompatible_dtype(dsn, configuration):
+def test_column_with_incompatible_dtype_raises(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
             columns = [MaskedArray([1, 2, 3], mask=False, dtype='int16')]
+            with pytest.raises(turbodbc.InterfaceError):
+                cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+
+
+@for_one_database
+def test_column_with_multiple_dimenstions_raises(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            two_dimensional = array([[1, 2, 3], [4, 5, 6]])
+            columns = [two_dimensional]
+            with pytest.raises(turbodbc.InterfaceError):
+                cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+
+
+@for_one_database
+def test_column_with_non_contiguous_data_raises(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            two_dimensional = array([[1, 2, 3], [4, 5, 6]])
+            one_dimensional = two_dimensional[:, 1]
+            assert one_dimensional.flags.c_contiguous == False
+            columns = [one_dimensional]
             with pytest.raises(turbodbc.InterfaceError):
                 cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
 
@@ -51,6 +73,16 @@ def test_integer_column(dsn, configuration):
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[17], [23], [42]]
 
+
+@for_each_database
+def test_integer_column_exceeds_buffer_size(dsn, configuration):
+    with open_cursor(configuration, parameter_sets_to_buffer=2) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            columns = [array([17, 23, 42])]
+            cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+
+            results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
+            assert results == [[17], [23], [42]]
 
 
 @for_each_database
