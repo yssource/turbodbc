@@ -164,9 +164,10 @@ class Cursor(object):
         self._assert_valid()
 
         from numpy.ma import MaskedArray
+        from numpy import ndarray
         for column in columns:
-            if type(column) != MaskedArray:
-                raise InterfaceError("Only NumPy MaskedArrays are supported as columns, got type {}".format(type(column)))
+            if type(column) not in [MaskedArray, ndarray]:
+                raise InterfaceError("Only numpy.ndarray and numpy.ma.MaskedArrays are supported as columns, got type {}".format(type(column)))
 
         # TODO Add check for contiguousness
 
@@ -178,7 +179,13 @@ class Cursor(object):
         self.impl.prepare(sql)
 
         from turbodbc_numpy_support import set_numpy_parameters
-        set_numpy_parameters(self.impl, [(c.data, c.mask) for c in columns])
+        split_arrays = []
+        for column in columns:
+            if isinstance(column, MaskedArray):
+                split_arrays.append((column.data, column.mask))
+            else:
+                split_arrays.append((column, False))
+        set_numpy_parameters(self.impl, split_arrays)
 
         self.impl.execute()
 

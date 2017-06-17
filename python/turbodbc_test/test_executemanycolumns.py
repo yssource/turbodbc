@@ -2,6 +2,7 @@ import datetime
 from collections import OrderedDict
 
 from numpy.ma import MaskedArray
+from numpy import array
 from numpy.testing import assert_equal
 import numpy
 import pytest
@@ -44,16 +45,16 @@ def test_column_with_incompatible_dtype(dsn, configuration):
 def test_integer_column(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
-            columns = [MaskedArray([17, 23, 42], mask=False)]
-            columns[0].shrink_mask()
+            columns = [array([17, 23, 42])]
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[17], [23], [42]]
 
 
+
 @for_each_database
-def test_integer_column_with_nullable(dsn, configuration):
+def test_masked_integer_column(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
             columns = [MaskedArray([17, 23, 42], mask=[False, True, False])]
@@ -64,11 +65,22 @@ def test_integer_column_with_nullable(dsn, configuration):
 
 
 @for_each_database
-def test_integer_column_exceeds_buffer_size(dsn, configuration):
-    with open_cursor(configuration, parameter_sets_to_buffer=2) as cursor:
+def test_masked_integer_column_with_shrunk_mask(dsn, configuration):
+    with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
             columns = [MaskedArray([17, 23, 42], mask=False)]
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[17], [23], [42]]
+
+
+@for_each_database
+def test_masked_integer_column_exceeds_buffer_size(dsn, configuration):
+    with open_cursor(configuration, parameter_sets_to_buffer=2) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            columns = [MaskedArray([17, 23, 42], mask=[True, False, True])]
+            cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+
+            results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
+            assert results == [[23], [None], [None]]
