@@ -6,6 +6,6 @@
 
 namespace turbodbc_numpy {
 
-void set_numpy_parameters(turbodbc::bound_parameter_set & parameters, std::vector<pybind11::array> const & columns);
+void set_numpy_parameters(turbodbc::bound_parameter_set & parameters, std::vector<std::tuple<pybind11::array, pybind11::array_t<bool>>> const & columns);
 
 }

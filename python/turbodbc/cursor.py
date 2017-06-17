@@ -168,6 +168,8 @@ class Cursor(object):
             if type(column) != MaskedArray:
                 raise InterfaceError("Only NumPy MaskedArrays are supported as columns, got type {}".format(type(column)))
 
+        # TODO Add check for contiguousness
+
         lengths = [len(column) for column in columns]
         all_same_length = all(l == lengths[0] for l in lengths)
         if not all_same_length:
@@ -176,7 +178,7 @@ class Cursor(object):
         self.impl.prepare(sql)
 
         from turbodbc_numpy_support import set_numpy_parameters
-        set_numpy_parameters(self.impl, columns)
+        set_numpy_parameters(self.impl, [(c.data, c.mask) for c in columns])
 
         self.impl.execute()
 

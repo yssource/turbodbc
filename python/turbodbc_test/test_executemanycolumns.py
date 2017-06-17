@@ -45,10 +45,22 @@ def test_integer_column(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
             columns = [MaskedArray([17, 23, 42], mask=False)]
+            columns[0].shrink_mask()
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[17], [23], [42]]
+
+
+@for_each_database
+def test_integer_column_with_nullable(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            columns = [MaskedArray([17, 23, 42], mask=[False, True, False])]
+            cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+
+            results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
+            assert results == [[17], [42], [None]]
 
 
 @for_each_database
