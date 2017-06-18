@@ -22,8 +22,8 @@ def test_column_of_unsupported_type_raises(dsn, configuration):
 def test_columns_of_unequal_sizes_raise(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
-            columns = [MaskedArray([1, 2, 3], mask=False),
-                       MaskedArray([1, 2], mask=False)]
+            columns = [MaskedArray([1, 2, 3], mask=False, dtype='int64'),
+                       MaskedArray([1, 2], mask=False, dtype='int64')]
             with pytest.raises(turbodbc.InterfaceError):
                 cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
 
@@ -41,7 +41,7 @@ def test_column_with_incompatible_dtype_raises(dsn, configuration):
 def test_column_with_multiple_dimensions_raises(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
-            two_dimensional = array([[1, 2, 3], [4, 5, 6]])
+            two_dimensional = array([[1, 2, 3], [4, 5, 6]], dtype='int64')
             columns = [two_dimensional]
             with pytest.raises(turbodbc.InterfaceError):
                 cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
@@ -51,7 +51,7 @@ def test_column_with_multiple_dimensions_raises(dsn, configuration):
 def test_column_with_non_contiguous_data_raises(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
-            two_dimensional = array([[1, 2, 3], [4, 5, 6]])
+            two_dimensional = array([[1, 2, 3], [4, 5, 6]], dtype='int64')
             one_dimensional = two_dimensional[:, 1]
             assert one_dimensional.flags.c_contiguous == False
             columns = [one_dimensional]
@@ -63,7 +63,7 @@ def test_column_with_non_contiguous_data_raises(dsn, configuration):
 def test_number_of_columns_does_not_match_parameter_count(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
-            columns = [array([42]), array([17])]
+            columns = [array([42], dtype='int64'), array([17], dtype='int64')]
             with pytest.raises(turbodbc.InterfaceError):
                 cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
 
