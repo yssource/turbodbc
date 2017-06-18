@@ -49,12 +49,15 @@ void set_numpy_parameters(turbodbc::bound_parameter_set & parameters, std::vecto
     }
 
     pybind11::dtype const np_int64("int64");
+    pybind11::dtype const np_float64("float64");
     auto const total_sets = std::get<0>(columns.front()).size();
 
     for (std::size_t i = 0; i != columns.size(); ++i) {
         auto const dtype = std::get<0>(columns[i]).dtype();
         if (dtype == np_int64) {
             parameters.rebind(i, turbodbc::make_description(turbodbc::type_code::integer, 0));
+        } else if (dtype == np_float64) {
+            parameters.rebind(i, turbodbc::make_description(turbodbc::type_code::floating_point, 0));
         } else {
             throw turbodbc::interface_error("Encountered unsupported NumPy dtype '" +
                                             static_cast<std::string>(pybind11::str(dtype)) + "'");
