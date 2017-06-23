@@ -185,9 +185,9 @@ class Cursor(object):
         split_arrays = []
         for column in columns:
             if isinstance(column, MaskedArray):
-                split_arrays.append((column.data, column.mask))
+                split_arrays.append((column.data, column.mask, str(column.dtype)))
             else:
-                split_arrays.append((column, False))
+                split_arrays.append((column, False, str(column.dtype)))
         set_numpy_parameters(self.impl, split_arrays)
 
         self.impl.execute()

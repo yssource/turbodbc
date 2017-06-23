@@ -22,7 +22,7 @@ numpy_result_set make_numpy_result_set(std::shared_ptr<turbodbc::result_sets::re
     return numpy_result_set(*result_set_pointer);
 }
 
-void set_numpy_parameters(turbodbc::cursor & cursor, std::vector<std::tuple<pybind11::array, pybind11::array_t<bool>>> const & columns)
+void set_numpy_parameters(turbodbc::cursor & cursor, std::vector<std::tuple<pybind11::array, pybind11::array_t<bool>, std::string>> const & columns)
 {
     turbodbc_numpy::set_numpy_parameters(cursor.get_command()->get_parameters(), columns);
 }

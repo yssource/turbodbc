@@ -1,8 +1,10 @@
+import datetime
+
 from numpy.ma import MaskedArray
 from numpy import array
 
 from query_fixture import query_fixture
-from helpers import open_cursor, for_each_database
+from helpers import open_cursor, for_each_database, generate_microseconds_with_precision
 
 
 def _test_basic_column(configuration, fixture, values, dtype):
@@ -56,12 +58,23 @@ def _test_masked_column_exceeds_buffer_size(configuration, fixture, values, dtyp
             assert results == [[values[1]], [None], [None]]
 
 
+def _test_single_masked_value(configuration, fixture, values, dtype):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, fixture) as table_name:
+            columns = [MaskedArray([values[0]], mask=[True], dtype=dtype)]
+            cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+
+            results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
+            assert results == [[None]]
+
+
 def _full_column_tests(configuration, fixture, values, dtype):
     _test_basic_column(configuration, fixture, values, dtype)
     _test_column_exceeds_buffer_size(configuration, fixture, values, dtype)
     _test_masked_column(configuration, fixture, values, dtype)
     _test_masked_column_with_shrunk_mask(configuration, fixture, values, dtype)
     _test_masked_column_exceeds_buffer_size(configuration, fixture, values, dtype)
+    _test_single_masked_value(configuration, fixture, values, dtype)
 
 
 @for_each_database
@@ -72,6 +85,20 @@ def test_integer_column(dsn, configuration):
 @for_each_database
 def test_float64_column(dsn, configuration):
     _full_column_tests(configuration, "INSERT DOUBLE", [2.71, 3.14, 6.25], 'float64')
+
+
+@for_each_database
+def test_datetime64_us_column(dsn, configuration):
+    supported_digits = configuration['capabilities']['fractional_second_digits']
+    fractional = generate_microseconds_with_precision(supported_digits)
+
+    _full_column_tests(configuration,
+                       "INSERT TIMESTAMP",
+                       [datetime.datetime(2015, 12, 31, 1, 2, 3, fractional),
+                        datetime.datetime(2016, 01, 01, 4, 5, 6, fractional),
+                        datetime.datetime(2017, 05, 06, 7, 8, 9, fractional)],
+                       'datetime64[us]')
+
 
 
 @for_each_database

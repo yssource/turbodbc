@@ -5,9 +5,11 @@
 #include <turbodbc/errors.h>
 #include <turbodbc/make_description.h>
 #include <turbodbc/type_code.h>
+#include <turbodbc/time_helpers.h>
 
 #include <iostream>
 #include <algorithm>
+#include <sstream>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -18,27 +20,124 @@ namespace turbodbc_numpy {
 
 namespace {
 
-    template<typename Value>
-    void set_batch(turbodbc::parameter & parameter, pybind11::array const & column, pybind11::array_t<bool> const & mask, std::size_t start, std::size_t elements)
-    {
-        auto unchecked = column.unchecked<Value, 1>();
-        auto data_ptr = unchecked.data(0);
-        auto & buffer = parameter.get_buffer();
-        std::memcpy(buffer.data_pointer(), data_ptr + start, elements * sizeof(Value));
-        if (mask.size() != 1) {
-            auto const indicator = buffer.indicator_pointer();
-            auto const mask_start = mask.unchecked<1>().data(start);
-            for (std::size_t i = 0; i != elements; ++i) {
-                *(indicator + i) = (*(mask_start + i) == NPY_TRUE) ? SQL_NULL_DATA : 7;
-            }
-        } else {
-            std::fill_n(buffer.indicator_pointer(), elements, static_cast<intptr_t>(sizeof(Value)));
+    struct parameter_converter {
+        parameter_converter(pybind11::array const & data, pybind11::array_t<bool> const & mask) :
+            data(data),
+            mask(mask)
+        {}
+
+        virtual void initialize(turbodbc::bound_parameter_set & parameters, std::size_t parameter_index) = 0;
+        virtual void set_batch(turbodbc::parameter & parameter, std::size_t start, std::size_t elements) = 0;
+
+        virtual ~parameter_converter() = default;
+
+        pybind11::array const & data;
+        pybind11::array_t<bool> const & mask;
+    };
+
+    template <typename Value>
+    struct binary_converter : public parameter_converter {
+        binary_converter(pybind11::array const & data, pybind11::array_t<bool> const & mask, turbodbc::type_code type) :
+            parameter_converter(data, mask),
+            type(type)
+        {}
+
+        void initialize(turbodbc::bound_parameter_set & parameters, std::size_t parameter_index) final
+        {
+            parameters.rebind(parameter_index, turbodbc::make_description(type, 0));
         }
+
+        void set_batch(turbodbc::parameter & parameter, std::size_t start, std::size_t elements) final
+        {
+            auto data_ptr = data.unchecked<Value, 1>().data(0);
+            auto & buffer = parameter.get_buffer();
+            std::memcpy(buffer.data_pointer(), data_ptr + start, elements * sizeof(Value));
+            if (mask.size() != 1) {
+                auto const indicator = buffer.indicator_pointer();
+                auto const mask_start = mask.unchecked<1>().data(start);
+                for (std::size_t i = 0; i != elements; ++i) {
+                    indicator[i] = (mask_start[i] == NPY_TRUE) ? SQL_NULL_DATA : sizeof(Value);
+                }
+            } else {
+                intptr_t const sql_mask = (*mask.data() == NPY_TRUE) ? SQL_NULL_DATA : sizeof(Value);
+                std::fill_n(buffer.indicator_pointer(), elements, sql_mask);
+            }
+        }
+    private:
+        turbodbc::type_code type;
+    };
+
+
+    struct timestamp_converter : public parameter_converter {
+        timestamp_converter(pybind11::array const & data, pybind11::array_t<bool> const & mask) :
+            parameter_converter(data, mask)
+        {}
+
+        void initialize(turbodbc::bound_parameter_set & parameters, std::size_t parameter_index) final
+        {
+            parameters.rebind(parameter_index, turbodbc::make_description(turbodbc::type_code::timestamp, 0));
+        }
+
+        void set_batch(turbodbc::parameter & parameter, std::size_t start, std::size_t elements) final
+        {
+            auto & buffer = parameter.get_buffer();
+            auto const data_start = data.unchecked<std::int64_t, 1>().data(start);
+
+            bool const uses_mask = (mask.size() != 1);
+            if (uses_mask) {
+                auto const mask_start = mask.unchecked<1>().data(start);
+                for (std::size_t i = 0; i != elements; ++i) {
+                    auto element = buffer[i];
+                    if (mask_start[i] == NPY_TRUE) {
+                        element.indicator = SQL_NULL_DATA;
+                    } else {
+                        turbodbc::microseconds_to_timestamp(data_start[i], element.data_pointer);
+                        element.indicator = sizeof(SQL_TIMESTAMP_STRUCT);
+                    }
+                }
+            } else {
+                if (*mask.data() == NPY_TRUE) {
+                    std::fill_n(buffer.indicator_pointer(), elements, static_cast<std::int64_t>(SQL_NULL_DATA));
+                } else {
+                    for (std::size_t i = 0; i != elements; ++i) {
+                        auto element = buffer[i];
+                        turbodbc::microseconds_to_timestamp(data_start[i], element.data_pointer);
+                        element.indicator = sizeof(SQL_TIMESTAMP_STRUCT);
+                    }
+                }
+            }
+        }
+    };
+
+
+    std::vector<std::unique_ptr<parameter_converter>> make_converters(std::vector<std::tuple<pybind11::array, pybind11::array_t<bool>, std::string>> const & columns)
+    {
+        std::vector<std::unique_ptr<parameter_converter>> converters;
+
+        for (std::size_t i = 0; i != columns.size(); ++i) {
+            auto const & data = std::get<0>(columns[i]);
+            auto const & mask = std::get<1>(columns[i]);
+            auto const & dtype = std::get<2>(columns[i]);
+            if (dtype == "int64") {
+               converters.emplace_back(new binary_converter<std::int64_t>(data, mask, turbodbc::type_code::integer));
+            } else if (dtype == "float64") {
+                converters.emplace_back(new binary_converter<double>(data, mask, turbodbc::type_code::floating_point));
+            } else if (dtype == "datetime64[us]") {
+                converters.emplace_back(new timestamp_converter(data, mask));
+            } else {
+                std::ostringstream message;
+                message << "Unsupported NumPy dtype for column " << (i + 1) << " of " << columns.size();
+                message << " (unsupported type: " << dtype << ")";
+                throw turbodbc::interface_error(message.str());
+            }
+        }
+
+        return converters;
     }
 
 }
 
-void set_numpy_parameters(turbodbc::bound_parameter_set & parameters, std::vector<std::tuple<pybind11::array, pybind11::array_t<bool>>> const & columns)
+void set_numpy_parameters(turbodbc::bound_parameter_set & parameters, std::vector<std::tuple<pybind11::array, pybind11::array_t<bool>, std::string>> const & columns)
 {
     if (parameters.number_of_parameters() != columns.size()) {
         throw turbodbc::interface_error("Number of passed columns is not equal to the number of parameters");
@@ -48,28 +147,17 @@ void set_numpy_parameters(turbodbc::bound_parameter_set & parameters, std::vecto
         return;
     }
 
-    pybind11::dtype const np_int64("int64");
-    pybind11::dtype const np_float64("float64");
-    auto const total_sets = std::get<0>(columns.front()).size();
-
+    auto converters = make_converters(columns);
     for (std::size_t i = 0; i != columns.size(); ++i) {
-        auto const dtype = std::get<0>(columns[i]).dtype();
-        if (dtype == np_int64) {
-            parameters.rebind(i, turbodbc::make_description(turbodbc::type_code::integer, 0));
-        } else if (dtype == np_float64) {
-            parameters.rebind(i, turbodbc::make_description(turbodbc::type_code::floating_point, 0));
-        } else {
-            throw turbodbc::interface_error("Encountered unsupported NumPy dtype '" +
-                                            static_cast<std::string>(pybind11::str(dtype)) + "'");
-        }
+        converters[i]->initialize(parameters, i);
     }
+
+    auto const total_sets = std::get<0>(columns.front()).size();
 
     for (std::size_t start = 0; start < total_sets; start += parameters.buffered_sets()) {
         auto const in_this_batch = std::min(parameters.buffered_sets(), total_sets - start);
         for (std::size_t i = 0; i != columns.size(); ++i) {
-            auto const & data = std::get<0>(columns[i]);
-            auto const & mask = std::get<1>(columns[i]);
-            set_batch<std::int64_t>(*parameters.get_parameters()[i], data, mask, start, in_this_batch);
+            converters[i]->set_batch(*parameters.get_parameters()[i], start, in_this_batch);
         }
         parameters.execute_batch(in_this_batch);
     }
