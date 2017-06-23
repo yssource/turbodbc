@@ -34,7 +34,8 @@ def _test_masked_column(configuration, fixture, values, dtype):
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
-            assert results == [[value] for value in [values[0], values[2]]] + [[None]]
+            assert results == [[value] for value in [values[0], values[2]]] + [[None]] or \
+                results == [[None]] + [[value] for value in [values[0], values[2]]]
 
 
 def _test_masked_column_with_shrunk_mask(configuration, fixture, values, dtype):
@@ -55,7 +56,8 @@ def _test_masked_column_exceeds_buffer_size(configuration, fixture, values, dtyp
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
-            assert results == [[values[1]], [None], [None]]
+            assert results == [[values[1]], [None], [None]] or \
+                results == [[None], [None], [values[1]]]
 
 
 def _test_single_masked_value(configuration, fixture, values, dtype):
@@ -95,8 +97,8 @@ def test_datetime64_us_column(dsn, configuration):
     _full_column_tests(configuration,
                        "INSERT TIMESTAMP",
                        [datetime.datetime(2015, 12, 31, 1, 2, 3, fractional),
-                        datetime.datetime(2016, 01, 01, 4, 5, 6, fractional),
-                        datetime.datetime(2017, 05, 06, 7, 8, 9, fractional)],
+                        datetime.datetime(2016, 1, 1, 4, 5, 6, fractional),
+                        datetime.datetime(2017, 5, 6, 7, 8, 9, fractional)],
                        'datetime64[us]')
 
 
