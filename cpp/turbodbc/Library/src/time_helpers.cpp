@@ -22,6 +22,21 @@ namespace turbodbc {
         return (ts - timestamp_epoch).total_microseconds();
     }
 
+    void microseconds_to_timestamp(int64_t microseconds, char * data_pointer)
+    {
+        auto const ptime = timestamp_epoch + boost::posix_time::microseconds(microseconds);
+        auto const date = ptime.date();
+        auto const time = ptime.time_of_day();
+        auto & sql_ts = *reinterpret_cast<SQL_TIMESTAMP_STRUCT *>(data_pointer);
+        sql_ts.year = date.year();
+        sql_ts.month = date.month();
+        sql_ts.day = date.day();
+        sql_ts.hour = time.hours();
+        sql_ts.minute = time.minutes();
+        sql_ts.second = time.seconds();
+        sql_ts.fraction = time.fractional_seconds() * 1000;
+    }
+
     boost::gregorian::date const date_epoch(1970, 1, 1);
 
     intptr_t date_to_days(char const * data_pointer)
