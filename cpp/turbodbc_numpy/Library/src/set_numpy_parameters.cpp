@@ -68,88 +68,76 @@ namespace {
     };
 
 
-    struct timestamp_converter : public parameter_converter {
+    struct datetime64_converter : public parameter_converter {
+        datetime64_converter(pybind11::array const & data,
+                             pybind11::array_t<bool> const & mask,
+                             turbodbc::type_code code,
+                             std::intptr_t element_size) :
+            parameter_converter(data, mask),
+            code(code),
+            element_size(element_size)
+        {}
+
+        void initialize(turbodbc::bound_parameter_set & parameters, std::size_t parameter_index) final
+        {
+            parameters.rebind(parameter_index, turbodbc::make_description(code, 0));
+        }
+
+        void set_batch(turbodbc::parameter & parameter, std::size_t start, std::size_t elements) final
+        {
+            auto & buffer = parameter.get_buffer();
+            auto const data_start = data.unchecked<std::int64_t, 1>().data(start);
+
+            bool const uses_mask = (mask.size() != 1);
+            if (uses_mask) {
+                auto const mask_start = mask.unchecked<1>().data(start);
+                for (std::size_t i = 0; i != elements; ++i) {
+                    auto element = buffer[i];
+                    if (mask_start[i] == NPY_TRUE) {
+                        element.indicator = SQL_NULL_DATA;
+                    } else {
+                        convert(data_start[i], element.data_pointer);
+                        element.indicator = element_size;
+                    }
+                }
+            } else {
+                if (*mask.data() == NPY_TRUE) {
+                    std::fill_n(buffer.indicator_pointer(), elements, static_cast<std::int64_t>(SQL_NULL_DATA));
+                } else {
+                    for (std::size_t i = 0; i != elements; ++i) {
+                        auto element = buffer[i];
+                        convert(data_start[i], element.data_pointer);
+                        element.indicator = element_size;
+                    }
+                }
+            }
+        }
+
+        virtual void convert(std::int64_t data, char * destination) = 0;
+
+        turbodbc::type_code code;
+        std::intptr_t element_size;
+    };
+
+    struct timestamp_converter : public datetime64_converter {
         timestamp_converter(pybind11::array const & data, pybind11::array_t<bool> const & mask) :
-            parameter_converter(data, mask)
+            datetime64_converter(data, mask, turbodbc::type_code::timestamp, sizeof(SQL_TIMESTAMP_STRUCT))
         {}
 
-        void initialize(turbodbc::bound_parameter_set & parameters, std::size_t parameter_index) final
-        {
-            parameters.rebind(parameter_index, turbodbc::make_description(turbodbc::type_code::timestamp, 0));
-        }
-
-        void set_batch(turbodbc::parameter & parameter, std::size_t start, std::size_t elements) final
-        {
-            auto & buffer = parameter.get_buffer();
-            auto const data_start = data.unchecked<std::int64_t, 1>().data(start);
-
-            bool const uses_mask = (mask.size() != 1);
-            if (uses_mask) {
-                auto const mask_start = mask.unchecked<1>().data(start);
-                for (std::size_t i = 0; i != elements; ++i) {
-                    auto element = buffer[i];
-                    if (mask_start[i] == NPY_TRUE) {
-                        element.indicator = SQL_NULL_DATA;
-                    } else {
-                        turbodbc::microseconds_to_timestamp(data_start[i], element.data_pointer);
-                        element.indicator = sizeof(SQL_TIMESTAMP_STRUCT);
-                    }
-                }
-            } else {
-                if (*mask.data() == NPY_TRUE) {
-                    std::fill_n(buffer.indicator_pointer(), elements, static_cast<std::int64_t>(SQL_NULL_DATA));
-                } else {
-                    for (std::size_t i = 0; i != elements; ++i) {
-                        auto element = buffer[i];
-                        turbodbc::microseconds_to_timestamp(data_start[i], element.data_pointer);
-                        element.indicator = sizeof(SQL_TIMESTAMP_STRUCT);
-                    }
-                }
-            }
+        virtual void convert(std::int64_t data, char * destination) {
+            turbodbc::microseconds_to_timestamp(data, destination);
         }
     };
 
-    struct date_converter : public parameter_converter {
+    struct date_converter : public datetime64_converter {
         date_converter(pybind11::array const & data, pybind11::array_t<bool> const & mask) :
-            parameter_converter(data, mask)
+            datetime64_converter(data, mask, turbodbc::type_code::date, sizeof(SQL_DATE_STRUCT))
         {}
 
-        void initialize(turbodbc::bound_parameter_set & parameters, std::size_t parameter_index) final
-        {
-            parameters.rebind(parameter_index, turbodbc::make_description(turbodbc::type_code::date, 0));
-        }
-
-        void set_batch(turbodbc::parameter & parameter, std::size_t start, std::size_t elements) final
-        {
-            auto & buffer = parameter.get_buffer();
-            auto const data_start = data.unchecked<std::int64_t, 1>().data(start);
-
-            bool const uses_mask = (mask.size() != 1);
-            if (uses_mask) {
-                auto const mask_start = mask.unchecked<1>().data(start);
-                for (std::size_t i = 0; i != elements; ++i) {
-                    auto element = buffer[i];
-                    if (mask_start[i] == NPY_TRUE) {
-                        element.indicator = SQL_NULL_DATA;
-                    } else {
-                        turbodbc::days_to_date(data_start[i], element.data_pointer);
-                        element.indicator = sizeof(SQL_DATE_STRUCT);
-                    }
-                }
-            } else {
-                if (*mask.data() == NPY_TRUE) {
-                    std::fill_n(buffer.indicator_pointer(), elements, static_cast<std::int64_t>(SQL_NULL_DATA));
-                } else {
-                    for (std::size_t i = 0; i != elements; ++i) {
-                        auto element = buffer[i];
-                        turbodbc::days_to_date(data_start[i], element.data_pointer);
-                        element.indicator = sizeof(SQL_DATE_STRUCT);
-                    }
-                }
-            }
+        virtual void convert(std::int64_t data, char * destination) {
+            turbodbc::days_to_date(data, destination);
         }
     };
-
 
 
     std::vector<std::unique_ptr<parameter_converter>> make_converters(std::vector<std::tuple<pybind11::array, pybind11::array_t<bool>, std::string>> const & columns)
