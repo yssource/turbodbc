@@ -109,6 +109,48 @@ namespace {
         }
     };
 
+    struct date_converter : public parameter_converter {
+        date_converter(pybind11::array const & data, pybind11::array_t<bool> const & mask) :
+            parameter_converter(data, mask)
+        {}
+
+        void initialize(turbodbc::bound_parameter_set & parameters, std::size_t parameter_index) final
+        {
+            parameters.rebind(parameter_index, turbodbc::make_description(turbodbc::type_code::date, 0));
+        }
+
+        void set_batch(turbodbc::parameter & parameter, std::size_t start, std::size_t elements) final
+        {
+            auto & buffer = parameter.get_buffer();
+            auto const data_start = data.unchecked<std::int64_t, 1>().data(start);
+
+            bool const uses_mask = (mask.size() != 1);
+            if (uses_mask) {
+                auto const mask_start = mask.unchecked<1>().data(start);
+                for (std::size_t i = 0; i != elements; ++i) {
+                    auto element = buffer[i];
+                    if (mask_start[i] == NPY_TRUE) {
+                        element.indicator = SQL_NULL_DATA;
+                    } else {
+                        turbodbc::days_to_date(data_start[i], element.data_pointer);
+                        element.indicator = sizeof(SQL_DATE_STRUCT);
+                    }
+                }
+            } else {
+                if (*mask.data() == NPY_TRUE) {
+                    std::fill_n(buffer.indicator_pointer(), elements, static_cast<std::int64_t>(SQL_NULL_DATA));
+                } else {
+                    for (std::size_t i = 0; i != elements; ++i) {
+                        auto element = buffer[i];
+                        turbodbc::days_to_date(data_start[i], element.data_pointer);
+                        element.indicator = sizeof(SQL_DATE_STRUCT);
+                    }
+                }
+            }
+        }
+    };
+
+
 
     std::vector<std::unique_ptr<parameter_converter>> make_converters(std::vector<std::tuple<pybind11::array, pybind11::array_t<bool>, std::string>> const & columns)
     {
@@ -124,6 +166,8 @@ namespace {
                 converters.emplace_back(new binary_converter<double>(data, mask, turbodbc::type_code::floating_point));
             } else if (dtype == "datetime64[us]") {
                 converters.emplace_back(new timestamp_converter(data, mask));
+            } else if (dtype == "datetime64[D]") {
+                converters.emplace_back(new date_converter(data, mask));
             } else {
                 std::ostringstream message;
                 message << "Unsupported NumPy dtype for column " << (i + 1) << " of " << columns.size();

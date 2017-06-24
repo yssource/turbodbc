@@ -90,7 +90,7 @@ def test_float64_column(dsn, configuration):
 
 
 @for_each_database
-def test_datetime64_us_column(dsn, configuration):
+def test_datetime64_microseconds_column(dsn, configuration):
     supported_digits = configuration['capabilities']['fractional_second_digits']
     fractional = generate_microseconds_with_precision(supported_digits)
 
@@ -101,6 +101,15 @@ def test_datetime64_us_column(dsn, configuration):
                         datetime.datetime(2017, 5, 6, 7, 8, 9, fractional)],
                        'datetime64[us]')
 
+
+@for_each_database
+def test_datetime64_days_column(dsn, configuration):
+    _full_column_tests(configuration,
+                       "INSERT DATE",
+                       [datetime.date(2015, 12, 31),
+                        datetime.date(2016, 1, 1),
+                        datetime.date(2017, 5, 6)],
+                       'datetime64[D]')
 
 
 @for_each_database
