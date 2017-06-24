@@ -113,6 +113,11 @@ def test_datetime64_days_column(dsn, configuration):
 
 
 @for_each_database
+def test_boolean_column(dsn, configuration):
+    _full_column_tests(configuration, "INSERT BOOL", [True, False, True], 'bool')
+
+
+@for_each_database
 def test_multiple_columns(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:

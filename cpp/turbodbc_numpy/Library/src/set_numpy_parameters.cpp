@@ -127,7 +127,7 @@ namespace {
         }
 
         virtual void convert(std::int64_t data, char * destination) = 0;
-
+    private:
         bool const uses_individual_mask;
         turbodbc::type_code code;
         std::intptr_t element_size;
@@ -153,7 +153,6 @@ namespace {
         }
     };
 
-
     std::vector<std::unique_ptr<parameter_converter>> make_converters(std::vector<std::tuple<pybind11::array, pybind11::array_t<bool>, std::string>> const & columns)
     {
         std::vector<std::unique_ptr<parameter_converter>> converters;
@@ -170,6 +169,8 @@ namespace {
                 converters.emplace_back(new timestamp_converter(data, mask));
             } else if (dtype == "datetime64[D]") {
                 converters.emplace_back(new date_converter(data, mask));
+            } else if (dtype == "bool") {
+                converters.emplace_back(new binary_converter<std::int8_t>(data, mask, turbodbc::type_code::boolean));
             } else {
                 std::ostringstream message;
                 message << "Unsupported NumPy dtype for column " << (i + 1) << " of " << columns.size();
