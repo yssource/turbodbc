@@ -74,6 +74,7 @@ namespace {
                              turbodbc::type_code code,
                              std::intptr_t element_size) :
             parameter_converter(data, mask),
+            uses_individual_mask(mask.size() != 1),
             code(code),
             element_size(element_size)
         {}
@@ -83,38 +84,51 @@ namespace {
             parameters.rebind(parameter_index, turbodbc::make_description(code, 0));
         }
 
-        void set_batch(turbodbc::parameter & parameter, std::size_t start, std::size_t elements) final
+        void set_batch_with_individual_mask(turbodbc::parameter & parameter, std::size_t start, std::size_t elements)
+        {
+            auto & buffer = parameter.get_buffer();
+            auto const data_start = data.unchecked<std::int64_t, 1>().data(start);
+            auto const mask_start = mask.unchecked<1>().data(start);
+
+            for (std::size_t i = 0; i != elements; ++i) {
+                auto element = buffer[i];
+                if (mask_start[i] == NPY_TRUE) {
+                    element.indicator = SQL_NULL_DATA;
+                } else {
+                    convert(data_start[i], element.data_pointer);
+                    element.indicator = element_size;
+                }
+            }
+        }
+
+        void set_batch_with_shared_mask(turbodbc::parameter & parameter, std::size_t start, std::size_t elements)
         {
             auto & buffer = parameter.get_buffer();
             auto const data_start = data.unchecked<std::int64_t, 1>().data(start);
 
-            bool const uses_mask = (mask.size() != 1);
-            if (uses_mask) {
-                auto const mask_start = mask.unchecked<1>().data(start);
+            if (*mask.data() == NPY_TRUE) {
+                std::fill_n(buffer.indicator_pointer(), elements, static_cast<std::int64_t>(SQL_NULL_DATA));
+            } else {
                 for (std::size_t i = 0; i != elements; ++i) {
                     auto element = buffer[i];
-                    if (mask_start[i] == NPY_TRUE) {
-                        element.indicator = SQL_NULL_DATA;
-                    } else {
-                        convert(data_start[i], element.data_pointer);
-                        element.indicator = element_size;
-                    }
+                    convert(data_start[i], element.data_pointer);
+                    element.indicator = element_size;
                 }
+            }
+        }
+
+        void set_batch(turbodbc::parameter & parameter, std::size_t start, std::size_t elements) final
+        {
+            if (uses_individual_mask) {
+                set_batch_with_individual_mask(parameter, start, elements);
             } else {
-                if (*mask.data() == NPY_TRUE) {
-                    std::fill_n(buffer.indicator_pointer(), elements, static_cast<std::int64_t>(SQL_NULL_DATA));
-                } else {
-                    for (std::size_t i = 0; i != elements; ++i) {
-                        auto element = buffer[i];
-                        convert(data_start[i], element.data_pointer);
-                        element.indicator = element_size;
-                    }
-                }
+                set_batch_with_shared_mask(parameter, start, elements);
             }
         }
 
         virtual void convert(std::int64_t data, char * destination) = 0;
 
+        bool const uses_individual_mask;
         turbodbc::type_code code;
         std::intptr_t element_size;
     };
