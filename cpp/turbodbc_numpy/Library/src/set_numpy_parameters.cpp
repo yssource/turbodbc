@@ -174,8 +174,7 @@ namespace {
 
             for (std::size_t i = 0; i != elements; ++i) {
                 auto element = buffer[i];
-                // if (data_start[i].is_none()) {
-                if (mask_start[i] == NPY_TRUE) {
+                if ((mask_start[i] == NPY_TRUE) or (data_start[i].is_none())) {
                     element.indicator = SQL_NULL_DATA;
                 } else {
                     auto const s = pybind11::cast<std::string>(data_start[i]);
@@ -192,7 +191,7 @@ namespace {
 
             for (std::size_t i = 0; i != elements; ++i) {
                 auto element = buffer[i];
-                if (*mask.data() == NPY_TRUE) {
+                if ((*mask.data() == NPY_TRUE) or (data_start[i].is_none())) {
                     element.indicator = SQL_NULL_DATA;
                 } else {
                     auto const s = pybind11::cast<std::string>(data_start[i]);
