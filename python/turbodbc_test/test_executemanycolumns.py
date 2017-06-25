@@ -118,6 +118,14 @@ def test_boolean_column(dsn, configuration):
 
 
 @for_each_database
+def test_string_column(dsn, configuration):
+    _full_column_tests(configuration,
+                       "INSERT STRING",
+                       ["Simple", "non-unicode", "strings"],
+                       'object')
+
+
+@for_each_database
 def test_multiple_columns(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:

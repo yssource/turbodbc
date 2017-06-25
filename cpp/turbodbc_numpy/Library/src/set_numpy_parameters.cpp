@@ -133,6 +133,7 @@ namespace {
         std::intptr_t element_size;
     };
 
+
     struct timestamp_converter : public datetime64_converter {
         timestamp_converter(pybind11::array const & data, pybind11::array_t<bool> const & mask) :
             datetime64_converter(data, mask, turbodbc::type_code::timestamp, sizeof(SQL_TIMESTAMP_STRUCT))
@@ -143,6 +144,7 @@ namespace {
         }
     };
 
+
     struct date_converter : public datetime64_converter {
         date_converter(pybind11::array const & data, pybind11::array_t<bool> const & mask) :
             datetime64_converter(data, mask, turbodbc::type_code::date, sizeof(SQL_DATE_STRUCT))
@@ -152,6 +154,64 @@ namespace {
             turbodbc::days_to_date(data, destination);
         }
     };
+
+
+    struct string_converter : public parameter_converter {
+        string_converter(pybind11::array const & data, pybind11::array_t<bool> const & mask) :
+            parameter_converter(data, mask)
+        {}
+
+        void initialize(turbodbc::bound_parameter_set & parameters, std::size_t parameter_index) final
+        {
+            parameters.rebind(parameter_index, turbodbc::make_description(turbodbc::type_code::string, 20));
+        }
+
+        void set_batch_with_individual_mask(turbodbc::parameter & parameter, std::size_t start, std::size_t elements)
+        {
+            auto data_start = data.unchecked<pybind11::object, 1>().data(start);
+            auto mask_start = mask.unchecked<1>().data(start);
+            auto & buffer = parameter.get_buffer();
+
+            for (std::size_t i = 0; i != elements; ++i) {
+                auto element = buffer[i];
+                // if (data_start[i].is_none()) {
+                if (mask_start[i] == NPY_TRUE) {
+                    element.indicator = SQL_NULL_DATA;
+                } else {
+                    auto const s = pybind11::cast<std::string>(data_start[i]);
+                    std::memcpy(element.data_pointer, s.c_str(), s.size() + 1);
+                    element.indicator = s.size();
+                }
+            }
+        }
+
+        void set_batch_with_shared_mask(turbodbc::parameter & parameter, std::size_t start, std::size_t elements)
+        {
+            auto data_start = data.unchecked<pybind11::object, 1>().data(start);
+            auto & buffer = parameter.get_buffer();
+
+            for (std::size_t i = 0; i != elements; ++i) {
+                auto element = buffer[i];
+                if (*mask.data() == NPY_TRUE) {
+                    element.indicator = SQL_NULL_DATA;
+                } else {
+                    auto const s = pybind11::cast<std::string>(data_start[i]);
+                    std::memcpy(element.data_pointer, s.c_str(), s.size() + 1);
+                    element.indicator = s.size();
+                }
+            }
+        }
+
+        void set_batch(turbodbc::parameter & parameter, std::size_t start, std::size_t elements) final
+        {
+            if (mask.size() != 1) {
+                set_batch_with_individual_mask(parameter, start, elements);
+            } else {
+                set_batch_with_shared_mask(parameter, start, elements);
+            }
+        }
+    };
+
 
     std::vector<std::unique_ptr<parameter_converter>> make_converters(std::vector<std::tuple<pybind11::array, pybind11::array_t<bool>, std::string>> const & columns)
     {
@@ -171,6 +231,8 @@ namespace {
                 converters.emplace_back(new date_converter(data, mask));
             } else if (dtype == "bool") {
                 converters.emplace_back(new binary_converter<std::int8_t>(data, mask, turbodbc::type_code::boolean));
+            } else if (dtype == "object") {
+                converters.emplace_back(new string_converter(data, mask));
             } else {
                 std::ostringstream message;
                 message << "Unsupported NumPy dtype for column " << (i + 1) << " of " << columns.size();
