@@ -121,7 +121,7 @@ def test_boolean_column(dsn, configuration):
 def test_string_column(dsn, configuration):
     _full_column_tests(configuration,
                        "INSERT STRING",
-                       ["Simple", "non-unicode", "strings"],
+                       ["Simple", "Non-unicode", "Strings"],
                        'object')
 
 
@@ -131,6 +131,23 @@ def test_string_column_with_None(dsn, configuration):
                        "INSERT STRING",
                        [None, None, None],
                        'object')
+
+
+@for_each_database
+def test_unicode_column(dsn, configuration):
+    _full_column_tests(configuration,
+                       "INSERT UNICODE",
+                       [u"I \u2665 Unicode", u"Really \u2665", u"Unicode rocks"],
+                       'object')
+
+
+@for_each_database
+def test_unicde_column_with_None(dsn, configuration):
+    _full_column_tests(configuration,
+                       "INSERT UNICODE",
+                       [None, None, None],
+                       'object')
+
 
 
 @for_each_database

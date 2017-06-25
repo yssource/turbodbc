@@ -170,7 +170,23 @@ namespace {
                     maximum_string_length = std::max(maximum_string_length, pybind11::len(data_ptr[i]));
                 }
             }
-            parameters.rebind(parameter_index, turbodbc::make_description(turbodbc::type_code::string, maximum_string_length));
+
+            prefer_unicode = parameters.get_initial_parameter_types()[parameter_index] == turbodbc::type_code::unicode;
+            auto const type = prefer_unicode ? turbodbc::type_code::unicode : turbodbc::type_code::string;
+            parameters.rebind(parameter_index, turbodbc::make_description(type, maximum_string_length));
+        }
+
+        void set_string(cpp_odbc::writable_buffer_element & element, pybind11::object const & data)
+        {
+            if (prefer_unicode) {
+                auto const s = pybind11::cast<std::u16string>(data);
+                std::memcpy(element.data_pointer, s.c_str(), 2 * (s.size() + 1));
+                element.indicator = s.size() * 2;
+            } else {
+                auto const s = pybind11::cast<std::string>(data);
+                std::memcpy(element.data_pointer, s.c_str(), s.size() + 1);
+                element.indicator = s.size();
+            }
         }
 
         void set_batch_with_individual_mask(turbodbc::parameter & parameter, std::size_t start, std::size_t elements)
@@ -184,9 +200,7 @@ namespace {
                 if ((mask_start[i] == NPY_TRUE) or (data_start[i].is_none())) {
                     element.indicator = SQL_NULL_DATA;
                 } else {
-                    auto const s = pybind11::cast<std::string>(data_start[i]);
-                    std::memcpy(element.data_pointer, s.c_str(), s.size() + 1);
-                    element.indicator = s.size();
+                    set_string(element, data_start[i]);
                 }
             }
         }
@@ -201,9 +215,7 @@ namespace {
                 if ((*mask.data() == NPY_TRUE) or (data_start[i].is_none())) {
                     element.indicator = SQL_NULL_DATA;
                 } else {
-                    auto const s = pybind11::cast<std::string>(data_start[i]);
-                    std::memcpy(element.data_pointer, s.c_str(), s.size() + 1);
-                    element.indicator = s.size();
+                    set_string(element, data_start[i]);
                 }
             }
         }
@@ -216,6 +228,8 @@ namespace {
                 set_batch_with_shared_mask(parameter, start, elements);
             }
         }
+    private:
+        bool prefer_unicode;
     };
 
 
