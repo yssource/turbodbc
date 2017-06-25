@@ -163,7 +163,14 @@ namespace {
 
         void initialize(turbodbc::bound_parameter_set & parameters, std::size_t parameter_index) final
         {
-            parameters.rebind(parameter_index, turbodbc::make_description(turbodbc::type_code::string, 20));
+            std::size_t maximum_string_length = 0;
+            auto data_ptr = data.unchecked<pybind11::object, 1>().data(0);
+            for (std::size_t i = 0; i != data.size(); ++i) {
+                if (not data_ptr[i].is_none()) {
+                    maximum_string_length = std::max(maximum_string_length, pybind11::len(data_ptr[i]));
+                }
+            }
+            parameters.rebind(parameter_index, turbodbc::make_description(turbodbc::type_code::string, maximum_string_length));
         }
 
         void set_batch_with_individual_mask(turbodbc::parameter & parameter, std::size_t start, std::size_t elements)
