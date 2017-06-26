@@ -137,12 +137,12 @@ def test_string_column_with_None(dsn, configuration):
 def test_unicode_column(dsn, configuration):
     _full_column_tests(configuration,
                        "INSERT UNICODE",
-                       [u"I \u2665 Unicode", u"Really \u2665", u"Unicode rocks"],
+                       [u"a\u2665\u2665\u2665\u2665\u2665", u"b\u2665", u"c\u2665\u2665\u2665"],
                        'object')
 
 
 @for_each_database
-def test_unicde_column_with_None(dsn, configuration):
+def test_unicode_column_with_None(dsn, configuration):
     _full_column_tests(configuration,
                        "INSERT UNICODE",
                        [None, None, None],

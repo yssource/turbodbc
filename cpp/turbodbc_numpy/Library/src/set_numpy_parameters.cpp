@@ -163,17 +163,34 @@ namespace {
 
         void initialize(turbodbc::bound_parameter_set & parameters, std::size_t parameter_index) final
         {
-            std::size_t maximum_string_length = 0;
+            prefer_unicode = parameters.get_initial_parameter_types()[parameter_index] == turbodbc::type_code::unicode;
+
+            auto const maximum_string_length = get_maximum_length();
+            auto const type = prefer_unicode ? turbodbc::type_code::unicode : turbodbc::type_code::string;
+
+            parameters.rebind(parameter_index, turbodbc::make_description(type, maximum_string_length));
+        }
+
+        std::size_t get_maximum_length()
+        {
             auto data_ptr = data.unchecked<pybind11::object, 1>().data(0);
-            for (std::size_t i = 0; i != data.size(); ++i) {
-                if (not data_ptr[i].is_none()) {
-                    maximum_string_length = std::max(maximum_string_length, pybind11::len(data_ptr[i]));
+            std::size_t maximum_string_length = 0;
+            if (prefer_unicode) {
+                for (std::size_t i = 0; i != data.size(); ++i) {
+                    if (not data_ptr[i].is_none()) {
+                        maximum_string_length = std::max(maximum_string_length, pybind11::len(data_ptr[i]));
+                    }
+                }
+            } else {
+                for (std::size_t i = 0; i != data.size(); ++i) {
+                    if (not data_ptr[i].is_none()) {
+                        // conversion to std::string to do implicit conversion to UTF-8
+                        maximum_string_length = std::max(maximum_string_length,
+                                                         pybind11::cast<std::string>(data_ptr[i]).size());
+                    }
                 }
             }
-
-            prefer_unicode = parameters.get_initial_parameter_types()[parameter_index] == turbodbc::type_code::unicode;
-            auto const type = prefer_unicode ? turbodbc::type_code::unicode : turbodbc::type_code::string;
-            parameters.rebind(parameter_index, turbodbc::make_description(type, maximum_string_length));
+            return maximum_string_length;
         }
 
         void set_string(cpp_odbc::writable_buffer_element & element, pybind11::object const & data)
