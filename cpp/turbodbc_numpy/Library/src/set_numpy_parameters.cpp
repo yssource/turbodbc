@@ -10,6 +10,7 @@
 #include <iostream>
 #include <algorithm>
 #include <sstream>
+#include <ciso646>
 
 #ifdef _WIN32
 #include <windows.h>
