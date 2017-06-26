@@ -126,14 +126,6 @@ def test_string_column(dsn, configuration):
 
 
 @for_each_database
-def test_string_column_with_None(dsn, configuration):
-    _full_column_tests(configuration,
-                       "INSERT STRING",
-                       [None, None, None],
-                       'object')
-
-
-@for_each_database
 def test_unicode_column(dsn, configuration):
     _full_column_tests(configuration,
                        "INSERT UNICODE",
@@ -141,13 +133,24 @@ def test_unicode_column(dsn, configuration):
                        'object')
 
 
+def _test_none_in_string_column(configuration, fixture):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, fixture) as table_name:
+            columns = [array([None], dtype='object')]
+            cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+
+            results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
+            assert results == [[None]]
+
+
+@for_each_database
+def test_string_column_with_None(dsn, configuration):
+    _test_none_in_string_column(configuration, "INSERT STRING")
+
+
 @for_each_database
 def test_unicode_column_with_None(dsn, configuration):
-    _full_column_tests(configuration,
-                       "INSERT UNICODE",
-                       [None, None, None],
-                       'object')
-
+    _test_none_in_string_column(configuration, "INSERT UNICODE")
 
 
 @for_each_database
