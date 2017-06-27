@@ -27,7 +27,13 @@ include(FindPkgConfig)
 
 unset(ARROW_FOUND)
 
-if ("$ENV{ARROW_HOME}" STREQUAL "")
+if (NOT "$ENV{ARROW_HOME}" STREQUAL "")
+  set(ARROW_HOME "$ENV{ARROW_HOME}")
+elseif(NOT "$ENV{CONDA_PREFIX}" STREQUAL "")
+  set(ARROW_HOME "$ENV{CONDA_PREFIX}")
+endif()
+
+if (NOT ARROW_HOME)
   pkg_check_modules(ARROW arrow)
   if (ARROW_FOUND)
     pkg_get_variable(ARROW_ABI_VERSION arrow abi_version)
@@ -43,8 +49,6 @@ if ("$ENV{ARROW_HOME}" STREQUAL "")
     get_filename_component(ARROW_SEARCH_LIB_PATH ${ARROW_INCLUDE_DIR} DIRECTORY)
   endif()
 else()
-  set(ARROW_HOME "$ENV{ARROW_HOME}")
-
   set(ARROW_SEARCH_HEADER_PATHS
     ${ARROW_HOME}/include
     )
