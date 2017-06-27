@@ -191,8 +191,13 @@ class Cursor(object):
         set_numpy_parameters(self.impl, split_arrays)
 
         self.impl.execute()
+        cpp_result_set = self.impl.get_result_set()
+        if cpp_result_set:
+            self.result_set = make_row_based_result_set(cpp_result_set)
+        else:
+            self.result_set = None
 
-        # TODO fix chaining
+        return self
 
     @translate_exceptions
     def fetchone(self):

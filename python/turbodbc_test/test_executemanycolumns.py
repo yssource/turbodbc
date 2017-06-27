@@ -4,7 +4,7 @@ from numpy.ma import MaskedArray
 from numpy import array
 
 from query_fixture import query_fixture
-from helpers import open_cursor, for_each_database, generate_microseconds_with_precision
+from helpers import open_cursor, for_each_database, for_one_database, generate_microseconds_with_precision
 
 
 def _test_basic_column(configuration, fixture, values, dtype):
@@ -162,3 +162,17 @@ def test_multiple_columns(dsn, configuration):
 
             results = cursor.execute("SELECT A, B FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[17, 3], [23, 2], [42, 1]]
+
+
+@for_one_database
+def test_execute_many_columns_creates_result_set(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        cursor.executemanycolumns("SELECT 42", [])
+        assert cursor.fetchall() == [[42]]
+
+
+@for_one_database
+def test_execute_many_columns_supports_chaining(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        rows = cursor.executemanycolumns("SELECT 42", []).fetchall()
+        assert rows == [[42]]
