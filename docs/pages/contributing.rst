@@ -55,27 +55,32 @@ do the following:
 #.  Make sure your development environment meets the prerequisites mentioned
     in the :ref:`getting started guide <getting_started>`.
 
-#.  Create a Python virtual environment, activate it, and install the necessary
-    packages numpy, pytest, and mock:
+#.  Create development environment depending on your Python package manager.
 
-    ::
+    - For a pip-based workflow, a virtual environment, activate it, and install
+      the necessary packages numpy, pyarrow, pytest, and mock:
 
-        pip install numpy pytest pytest-cov mock
+      ::
 
-#.  If you also want to work on the Apache Arrow features, make sure to install
-    ``pyarrow`` as well:
+           pip install numpy pytest pytest-cov mock pyarrow
 
-    ::
 
-        pip install pyarrow
+      Make sure you have a recent version of ``cmake`` installed. For some operating
+      systems, binary wheels are available in addition to the package your operating
+      system offers:
 
-#.  Make sure you have a recent version of ``cmake`` installed. For some operating
-    systems, binary wheels are available in addition to the package your operating
-    system offers:
+      ::
 
-    ::
+          pip install cmake
 
-        pip install cmake
+   - If you're using ``conda`` to manage your python packages, you can install the
+     dependencies from conda-forge:
+
+     ::
+
+        conda create -y -q -n turbodbc-dev pyarrow numpy pybind11 boost-cpp \
+            pytest pytest-cov mock cmake -c conda-forge
+        source activate turbodbc-dev
 
 #.  Clone turbodbc into the virtual environment somewhere:
 
