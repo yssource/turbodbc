@@ -191,6 +191,7 @@ class Cursor(object):
         set_numpy_parameters(self.impl, split_arrays)
 
         self.impl.execute()
+        self.rowcount = self.impl.get_row_count()
         cpp_result_set = self.impl.get_result_set()
         if cpp_result_set:
             self.result_set = make_row_based_result_set(cpp_result_set)

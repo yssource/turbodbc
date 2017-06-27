@@ -12,9 +12,11 @@ def _test_basic_column(configuration, fixture, values, dtype):
         with query_fixture(cursor, configuration, fixture) as table_name:
             columns = [array(values, dtype=dtype)]
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+            assert cursor.rowcount == len(values)
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[value] for value in sorted(values)]
+
 
 
 def _test_column_exceeds_buffer_size(configuration, fixture, values, dtype):
@@ -22,6 +24,7 @@ def _test_column_exceeds_buffer_size(configuration, fixture, values, dtype):
         with query_fixture(cursor, configuration, fixture) as table_name:
             columns = [array(values, dtype=dtype)]
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+            assert cursor.rowcount == len(values)
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[value] for value in sorted(values)]
@@ -32,6 +35,7 @@ def _test_masked_column(configuration, fixture, values, dtype):
         with query_fixture(cursor, configuration, fixture) as table_name:
             columns = [MaskedArray(values, mask=[False, True, False], dtype=dtype)]
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+            assert cursor.rowcount == len(values)
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[value] for value in [values[0], values[2]]] + [[None]] or \
@@ -44,6 +48,7 @@ def _test_masked_column_with_shrunk_mask(configuration, fixture, values, dtype):
             columns = [MaskedArray(values, mask=False, dtype=dtype)]
             columns[0].shrink_mask()
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+            assert cursor.rowcount == len(values)
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[value] for value in sorted(values)]
@@ -54,6 +59,7 @@ def _test_masked_column_exceeds_buffer_size(configuration, fixture, values, dtyp
         with query_fixture(cursor, configuration, fixture) as table_name:
             columns = [MaskedArray(values, mask=[True, False, True], dtype=dtype)]
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+            assert cursor.rowcount == len(values)
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[values[1]], [None], [None]] or \
@@ -65,6 +71,7 @@ def _test_single_masked_value(configuration, fixture, values, dtype):
         with query_fixture(cursor, configuration, fixture) as table_name:
             columns = [MaskedArray([values[0]], mask=[True], dtype=dtype)]
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+            assert cursor.rowcount == 1
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[None]]
