@@ -83,6 +83,16 @@ class Cursor(object):
         else:
             return None
 
+    def _execute(self):
+        self.impl.execute()
+        self.rowcount = self.impl.get_row_count()
+        cpp_result_set = self.impl.get_result_set()
+        if cpp_result_set:
+            self.result_set = make_row_based_result_set(cpp_result_set)
+        else:
+            self.result_set = None
+        return self
+
     @translate_exceptions
     def execute(self, sql, parameters=None):
         """
@@ -102,14 +112,7 @@ class Cursor(object):
             buffer = make_parameter_set(self.impl)
             buffer.add_set(parameters)
             buffer.flush()
-        self.impl.execute()
-        self.rowcount = self.impl.get_row_count()
-        cpp_result_set = self.impl.get_result_set()
-        if cpp_result_set:
-            self.result_set = make_row_based_result_set(cpp_result_set)
-        else:
-            self.result_set = None
-        return self
+        return self._execute()
 
     @translate_exceptions
     def executemany(self, sql, parameters=None):
@@ -136,14 +139,7 @@ class Cursor(object):
                 buffer.add_set(parameter_set)
             buffer.flush()
 
-        self.impl.execute()
-        self.rowcount = self.impl.get_row_count()
-        cpp_result_set = self.impl.get_result_set()
-        if cpp_result_set:
-            self.result_set = make_row_based_result_set(cpp_result_set)
-        else:
-            self.result_set = None
-        return self
+        return self._execute()
 
     @translate_exceptions
     def executemanycolumns(self, sql, columns):
@@ -190,15 +186,7 @@ class Cursor(object):
                 split_arrays.append((column, False, str(column.dtype)))
         set_numpy_parameters(self.impl, split_arrays)
 
-        self.impl.execute()
-        self.rowcount = self.impl.get_row_count()
-        cpp_result_set = self.impl.get_result_set()
-        if cpp_result_set:
-            self.result_set = make_row_based_result_set(cpp_result_set)
-        else:
-            self.result_set = None
-
-        return self
+        return self._execute()
 
     @translate_exceptions
     def fetchone(self):
