@@ -43,6 +43,24 @@ def _make_masked_arrays(result_batch):
     return masked_arrays
 
 
+def _assert_numpy_column_preconditions(columns):
+    from numpy.ma import MaskedArray
+    from numpy import ndarray
+    n_columns = len(columns)
+    for index, column in enumerate(columns, start=1):
+        if type(column) not in [MaskedArray, ndarray]:
+            raise InterfaceError("Bad type for column {} of {}. Only numpy.ndarray and numpy.ma.MaskedArrays are supported".format(index, n_columns))
+        if column.ndim != 1:
+            raise InterfaceError("Column {} of {} is not one-dimensional".format(index, n_columns))
+        if not column.flags.c_contiguous:
+            raise InterfaceError("Column {} of {} is not contiguous".format(index, n_columns))
+
+    lengths = [len(column) for column in columns]
+    all_same_length = all(l == lengths[0] for l in lengths)
+    if not all_same_length:
+        raise InterfaceError("All columns must have the same length, got lengths {}".format(lengths))
+
+
 class Cursor(object):
     """
     This class allows you to send SQL commands and queries to a database and retrieve
@@ -168,24 +186,11 @@ class Cursor(object):
         self.rowcount = -1
         self._assert_valid()
 
-        from numpy.ma import MaskedArray
-        from numpy import ndarray
-        n_columns = len(columns)
-        for index, column in enumerate(columns, start=1):
-            if type(column) not in [MaskedArray, ndarray]:
-                raise InterfaceError("Bad type for column {} of {}. Only numpy.ndarray and numpy.ma.MaskedArrays are supported".format(index, n_columns))
-            if column.ndim != 1:
-                raise InterfaceError("Column {} of {} is not one-dimensional".format(index, n_columns))
-            if not column.flags.c_contiguous:
-                raise InterfaceError("Column {} of {} is not contiguous".format(index, n_columns))
-
-        lengths = [len(column) for column in columns]
-        all_same_length = all(l == lengths[0] for l in lengths)
-        if not all_same_length:
-            raise InterfaceError("All columns must have the same length, got lengths {}".format(lengths))
+        _assert_numpy_column_preconditions(columns)
 
         self.impl.prepare(sql)
 
+        from numpy.ma import MaskedArray
         from turbodbc_numpy_support import set_numpy_parameters
         split_arrays = []
         for column in columns:
@@ -272,7 +277,7 @@ class Cursor(object):
         self._assert_valid_result_set()
         if not _has_numpy_support():
             raise Error(_NO_NUMPY_SUPPORT_MSG)
-        
+
         from turbodbc_numpy_support import make_numpy_result_set
         numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
         first_run = True
