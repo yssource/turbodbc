@@ -3,8 +3,12 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
-Version 2.x.y (unreleased)
+Version 2.1.0 (unreleased)
 --------------------------
+
+*   Add new method ``cursor.executemanycolumns()`` that accepts parameters
+    in columnar fashion as a list of NumPy (masked) arrays.
+*   Cmake build now supports `conda` environments
 
 Version 2.0.0
 -------------
