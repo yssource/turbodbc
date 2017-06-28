@@ -11,7 +11,8 @@ Features
 --------
 
 *   Bulk retrieval of result sets
-*   Built-in NumPy conversion
+*   Built-in NumPy support
+*   Built-in Apache Arrow support
 *   Bulk transfer of query parameters
 *   Asynchronous I/O for result sets
 *   Automatic conversion of decimal type to integer, float, and string as

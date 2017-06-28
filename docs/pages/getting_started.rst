@@ -166,7 +166,7 @@ Alternatively, you can fetch all results as a list of rows:
     >>> cursor.fetchall()
     [[42L]]
 
-You can also retrieve result sets as NumPy arrays, see :ref:`advanced_usage`.
+You can also retrieve result sets as NumPy arrays or Apache Arrow tables, see :ref:`advanced_usage`.
 
 
 Executing manipulating SQL queries
@@ -209,10 +209,14 @@ in efficiently by using ``executemany()``:
     ...                    parameter_sets)
 
 
+If you already have parameters stored as NumPy arrays, check the
+:ref:`advanced_usage_numpy_parameters` section to use them even more efficiently.
+
+
 Transactions
 ~~~~~~~~~~~~
 
-Turbodbc currently does not support autocommit. To commit your changes to the database,
+By default, turbodbc does not enable automatic commits (``autocommit``). To commit your changes to the database,
 please use the following command:
 
 ::
@@ -224,6 +228,10 @@ If you want to roll back your changes, use the following command:
 ::
 
     >>> connection.rollback()
+
+If you prefer ``autocommit`` for your workflow or your database does not support
+transactions at all, you can use the :ref:`autocommit <advanced_usage_options_autocommit>`
+option.
 
 
 Supported data types
@@ -253,3 +261,12 @@ basically reversed. The first type in the "database type(s)" column denotes
 the type used to transfer back data. For integers, 64-bit integers are transferred.
 For strings, the length of the transferred ``VARCHAR`` depends on the length of
 the transferred strings.
+
+
+What to read next
+-----------------
+
+Continue with the :ref:`advanced usage <advanced_usage>` section.
+Besides general :ref:`tuning parameters <advanced_usage_options>` it also
+discusses how to leverage :ref:`NumPy <advanced_usage_numpy>` or
+:ref:`Apache Arrow <advanced_usage_numpy>` for even better performance.
