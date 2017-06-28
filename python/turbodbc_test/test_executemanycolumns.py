@@ -18,6 +18,16 @@ def _test_basic_column(configuration, fixture, values, dtype):
             assert results == [[value] for value in sorted(values)]
 
 
+def _test_column_matches_buffer_size(configuration, fixture, values, dtype):
+    with open_cursor(configuration, parameter_sets_to_buffer=len(values)) as cursor:
+        with query_fixture(cursor, configuration, fixture) as table_name:
+            columns = [array(values, dtype=dtype)]
+            cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
+            assert cursor.rowcount == len(values)
+
+            results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
+            assert results == [[value] for value in sorted(values)]
+
 
 def _test_column_exceeds_buffer_size(configuration, fixture, values, dtype):
     with open_cursor(configuration, parameter_sets_to_buffer=2) as cursor:
@@ -79,6 +89,7 @@ def _test_single_masked_value(configuration, fixture, values, dtype):
 
 def _full_column_tests(configuration, fixture, values, dtype):
     _test_basic_column(configuration, fixture, values, dtype)
+    _test_column_matches_buffer_size(configuration, fixture, values, dtype)
     _test_column_exceeds_buffer_size(configuration, fixture, values, dtype)
     _test_masked_column(configuration, fixture, values, dtype)
     _test_masked_column_with_shrunk_mask(configuration, fixture, values, dtype)
