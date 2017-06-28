@@ -8,6 +8,13 @@ from turbodbc_intern import make_row_based_result_set, make_parameter_set
 from .exceptions import translate_exceptions, InterfaceError, Error
 
 
+_NO_NUMPY_SUPPORT_MSG = "This installation of turbodbc does not support NumPy extensions. " \
+                        "Please install the `numpy` package. If you have built turbodbc from source, " \
+                        "you may also need to reinstall turbodbc to compile the extensions."
+_NO_ARROW_SUPPORT_MSG = "This installation of turbodbc does not support Apache Arrow extensions. " \
+                        "Please install the `pyarrow` package. If you have built turbodbc from source, " \
+                        "you may also need to reinstall turbodbc to compile the extensions."
+
 def _has_numpy_support():
     try:
         import turbodbc_numpy_support
@@ -155,7 +162,9 @@ class Cursor(object):
                parameter data,
         :return: The ``Cursor`` object to allow chaining of operations.
         """
-        # TODO Add check for numpy support
+        if not _has_numpy_support():
+            raise Error(_NO_NUMPY_SUPPORT_MSG)
+
         self.rowcount = -1
         self._assert_valid()
 
@@ -261,11 +270,10 @@ class Cursor(object):
 
     def _numpy_batch_generator(self):
         self._assert_valid_result_set()
-        if _has_numpy_support():
-            from turbodbc_numpy_support import make_numpy_result_set
-        else:
-            raise Error("turbodbc was compiled without numpy support. Please install "
-                        "numpy and reinstall turbodbc")
+        if not _has_numpy_support():
+            raise Error(_NO_NUMPY_SUPPORT_MSG)
+        
+        from turbodbc_numpy_support import make_numpy_result_set
         numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
         first_run = True
         while True:
@@ -282,8 +290,7 @@ class Cursor(object):
             from turbodbc_arrow_support import make_arrow_result_set
             return make_arrow_result_set(self.impl.get_result_set()).fetch_all()
         else:
-            raise Error("turbodbc was compiled without Apache Arrow support. Please install "
-                        "pyarrow and reinstall turbodbc")
+            raise Error(_NO_ARROW_SUPPORT_MSG)
 
     def close(self):
         """

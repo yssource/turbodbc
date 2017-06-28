@@ -1,5 +1,6 @@
 from numpy.ma import MaskedArray
 from numpy import array
+from mock import patch
 
 import pytest
 
@@ -87,3 +88,11 @@ def test_passing_empty_column_is_ok(dsn, configuration):
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == []
+
+
+@for_one_database
+def test_executemanycolumns_without_numpy_support(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with patch('turbodbc.cursor._has_numpy_support', return_value=False):
+            with pytest.raises(turbodbc.Error):
+                cursor.executemanycolumns("SELECT 42", [])
