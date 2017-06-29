@@ -269,4 +269,4 @@ What to read next
 Continue with the :ref:`advanced usage <advanced_usage>` section.
 Besides general :ref:`tuning parameters <advanced_usage_options>` it also
 discusses how to leverage :ref:`NumPy <advanced_usage_numpy>` or
-:ref:`Apache Arrow <advanced_usage_numpy>` for even better performance.
+:ref:`Apache Arrow <advanced_usage_arrow>` for even better performance.
