@@ -7,8 +7,15 @@ from turbodbc_intern import make_row_based_result_set, make_parameter_set
 
 from .exceptions import translate_exceptions, InterfaceError, Error
 
-def _has_numpy_support():
 
+_NO_NUMPY_SUPPORT_MSG = "This installation of turbodbc does not support NumPy extensions. " \
+                        "Please install the `numpy` package. If you have built turbodbc from source, " \
+                        "you may also need to reinstall turbodbc to compile the extensions."
+_NO_ARROW_SUPPORT_MSG = "This installation of turbodbc does not support Apache Arrow extensions. " \
+                        "Please install the `pyarrow` package. If you have built turbodbc from source, " \
+                        "you may also need to reinstall turbodbc to compile the extensions."
+
+def _has_numpy_support():
     try:
         import turbodbc_numpy_support
         return True
@@ -34,6 +41,24 @@ def _make_masked_arrays(result_batch):
         else:
             masked_arrays.append(MaskedArray(data=data, mask=mask))
     return masked_arrays
+
+
+def _assert_numpy_column_preconditions(columns):
+    from numpy.ma import MaskedArray
+    from numpy import ndarray
+    n_columns = len(columns)
+    for index, column in enumerate(columns, start=1):
+        if type(column) not in [MaskedArray, ndarray]:
+            raise InterfaceError("Bad type for column {} of {}. Only numpy.ndarray and numpy.ma.MaskedArrays are supported".format(index, n_columns))
+        if column.ndim != 1:
+            raise InterfaceError("Column {} of {} is not one-dimensional".format(index, n_columns))
+        if not column.flags.c_contiguous:
+            raise InterfaceError("Column {} of {} is not contiguous".format(index, n_columns))
+
+    lengths = [len(column) for column in columns]
+    all_same_length = all(l == lengths[0] for l in lengths)
+    if not all_same_length:
+        raise InterfaceError("All columns must have the same length, got lengths {}".format(lengths))
 
 
 class Cursor(object):
@@ -83,6 +108,16 @@ class Cursor(object):
         else:
             return None
 
+    def _execute(self):
+        self.impl.execute()
+        self.rowcount = self.impl.get_row_count()
+        cpp_result_set = self.impl.get_result_set()
+        if cpp_result_set:
+            self.result_set = make_row_based_result_set(cpp_result_set)
+        else:
+            self.result_set = None
+        return self
+
     @translate_exceptions
     def execute(self, sql, parameters=None):
         """
@@ -102,19 +137,13 @@ class Cursor(object):
             buffer = make_parameter_set(self.impl)
             buffer.add_set(parameters)
             buffer.flush()
-        self.impl.execute()
-        self.rowcount = self.impl.get_row_count()
-        cpp_result_set = self.impl.get_result_set()
-        if cpp_result_set:
-            self.result_set = make_row_based_result_set(cpp_result_set)
-        else:
-            self.result_set = None
-        return self
+        return self._execute()
 
     @translate_exceptions
     def executemany(self, sql, parameters=None):
         """
-        Execute an SQL command or query with multiple parameter sets.
+        Execute an SQL command or query with multiple parameter sets passed in a row-wise fashion.
+        This function is part of PEP-249.
 
         :param sql: A (unicode) string that contains the SQL command or query. If you would like to
                use parameters, please use a question mark ``?`` at the location where the
@@ -135,14 +164,43 @@ class Cursor(object):
                 buffer.add_set(parameter_set)
             buffer.flush()
 
-        self.impl.execute()
-        self.rowcount = self.impl.get_row_count()
-        cpp_result_set = self.impl.get_result_set()
-        if cpp_result_set:
-            self.result_set = make_row_based_result_set(cpp_result_set)
-        else:
-            self.result_set = None
-        return self
+        return self._execute()
+
+    @translate_exceptions
+    def executemanycolumns(self, sql, columns):
+        """
+        Execute an SQL command or query with multiple parameter sets that are passed in
+        a column-wise fashion as opposed to the row-wise parameters in ``executemany()``.
+        This function is a turbodbc-specific extension to PEP-249.
+        
+        :param sql: A (unicode) string that contains the SQL command or query. If you would like to
+               use parameters, please use a question mark ``?`` at the location where the
+               parameter shall be inserted.
+        :param columns: An iterable of NumPy MaskedArrays. The Arrays represent the columnar
+               parameter data,
+        :return: The ``Cursor`` object to allow chaining of operations.
+        """
+        if not _has_numpy_support():
+            raise Error(_NO_NUMPY_SUPPORT_MSG)
+
+        self.rowcount = -1
+        self._assert_valid()
+
+        _assert_numpy_column_preconditions(columns)
+
+        self.impl.prepare(sql)
+
+        from numpy.ma import MaskedArray
+        from turbodbc_numpy_support import set_numpy_parameters
+        split_arrays = []
+        for column in columns:
+            if isinstance(column, MaskedArray):
+                split_arrays.append((column.data, column.mask, str(column.dtype)))
+            else:
+                split_arrays.append((column, False, str(column.dtype)))
+        set_numpy_parameters(self.impl, split_arrays)
+
+        return self._execute()
 
     @translate_exceptions
     def fetchone(self):
@@ -217,11 +275,10 @@ class Cursor(object):
 
     def _numpy_batch_generator(self):
         self._assert_valid_result_set()
-        if _has_numpy_support():
-            from turbodbc_numpy_support import make_numpy_result_set
-        else:
-            raise Error("turbodbc was compiled without numpy support. Please install "
-                        "numpy and reinstall turbodbc")
+        if not _has_numpy_support():
+            raise Error(_NO_NUMPY_SUPPORT_MSG)
+
+        from turbodbc_numpy_support import make_numpy_result_set
         numpy_result_set = make_numpy_result_set(self.impl.get_result_set())
         first_run = True
         while True:
@@ -238,8 +295,7 @@ class Cursor(object):
             from turbodbc_arrow_support import make_arrow_result_set
             return make_arrow_result_set(self.impl.get_result_set()).fetch_all()
         else:
-            raise Error("turbodbc was compiled without Apache Arrow support. Please install "
-                        "pyarrow and reinstall turbodbc")
+            raise Error(_NO_ARROW_SUPPORT_MSG)
 
     def close(self):
         """

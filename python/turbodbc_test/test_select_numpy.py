@@ -9,7 +9,6 @@ from mock import patch
 
 import turbodbc
 
-from turbodbc.cursor import _has_numpy_support
 from query_fixture import query_fixture
 from helpers import open_cursor, for_each_database, for_one_database, generate_microseconds_with_precision
 

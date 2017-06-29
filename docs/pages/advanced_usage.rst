@@ -47,6 +47,7 @@ buffer size. This can happen if large fields such as ``VARCHAR(8000000)`` or ``T
 are part of the result set. In this case, results are fetched in batches of single rows
 that exceed the specified size.
 
+.. _advanced_usage_options_write_buffer:
 
 Buffered parameter sets
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,6 +82,9 @@ Set ``prefer_unicode`` to ``True`` if your database does not fully support
 the UTF-8 encoding turbodbc prefers. With this option you can tell turbodbc
 to use two-byte character strings with UCS-2/UTF-16 encoding. Use this option
 if you try to connection to Microsoft SQL server (MSSQL).
+
+
+.. _advanced_usage_options_autocommit:
 
 Autocommit
 ~~~~~~~~~~
@@ -165,8 +169,8 @@ The size of the batches depends on the ``read_buffer_size`` attribute set in
 the :ref:`performance options <advanced_usage_options_read_buffer>`.
 
 
-Notes regarding NumPy support
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Notes regarding NumPy result sets
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 *   NumPy results are returned as an ``OrderedDict`` of column name/value pairs. The column
@@ -174,7 +178,6 @@ Notes regarding NumPy support
 *   The column values are of type ``MaskedArray``. Any ``NULL`` values you have in your
     database will show up as masked entries (``NULL`` values in string-like columns
     will shop up as ``None`` objects).
-*   NumPy support is currently limited to result sets.
 
 The following table shows how the most common data types data scientists are interested in
 are converted to NumPy columns:
@@ -195,6 +198,55 @@ are converted to NumPy columns:
 | ``VARCHAR``, strings, ``DECIMAL(>18, 0)`` | ``object_``           |
 +-------------------------------------------+-----------------------+
 
+
+.. _advanced_usage_numpy_parameters:
+
+Using NumPy arrays as query parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here is how to use turbodbc to use values stored in NumPy arrays
+as query parameters with ``executemanycolumns()``:
+
+::
+
+    >>> from numpy import array
+    >>> from numpy.ma import MaskedArray
+    >>> normal_param = array([1, 2, 3], dtype='int64')
+    >>> masked_param = MaskedArray([3.14, 1.23, 4.56], mask=[False, True, False], dtype='float64')
+
+    >>> cursor.executemanycolumns("INSERT INTO my_table VALUES (?, ?)", [normal_param, masked_param])
+    # functionally equivalent, but much faster than:
+    # cursor.execute("INSERT INTO my_table VALUES (1, 3.14)")
+    # cursor.execute("INSERT INTO my_table VALUES (2, NULL)")
+    # cursor.execute("INSERT INTO my_table VALUES (3, 4.56)")
+
+    >>> cursor.execute("SELECT * FROM my_table").fetchall()
+    [[1L, 3.14], [2L, None], [3L, 4.56]]
+
+*   Columns must either be of type ``MaskedArray`` or ``ndarray``.
+*   Each column must contain one-dimensional, contiguous data.
+*   All columns must have equal size.
+*   The ``dtype`` of each column must be supported, see the table below.
+*   Use ``MaskedArray``s with and set the ``mask`` to ``True`` for individual
+    elements to use ``None`` values.
+*   Data is transfered in batches (see :ref:`advanced_usage_options_write_buffer`)
+
+
++-------------------------------------------------------------------------+--------------------------------+
+| Supported NumPy type                                                    | Transfered as                  |
++=========================================================================+================================+
+| ``int64``                                                               | ``BIGINT`` (64 bits)           |
++-------------------------------------------------------------------------+--------------------------------+
+| ``float64``                                                             | ``DOUBLE PRECISION`` (64 bits) |
++-------------------------------------------------------------------------+--------------------------------+
+| ``bool_``                                                               | ``BIT``                        |
++-------------------------------------------------------------------------+--------------------------------+
+| ``datetime64[us]``                                                      | ``TIMESTAMP``                  |
++-------------------------------------------------------------------------+--------------------------------+
+| ``datetime64[D]``                                                       | ``DATE``                       |
++-------------------------------------------------------------------------+--------------------------------+
+| ``object_`` (only ``str``, ``unicode``, and ``None`` objects supported) | ``VARCHAR`` (automatic sizing) |
++-------------------------------------------------------------------------+--------------------------------+
 
 .. _advanced_usage_arrow:
 

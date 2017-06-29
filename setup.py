@@ -197,7 +197,7 @@ def get_extension_modules():
 
 
 setup(name = 'turbodbc',
-      version = '2.0.0',
+      version = '2.1.0',
       description = 'turbodbc is a Python DB API 2.0 compatible ODBC driver',
       include_package_data = True,
       url = 'https://github.com/blue-yonder/turbodbc',

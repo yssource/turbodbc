@@ -32,6 +32,9 @@ def test_closed_cursor_raises_when_used(dsn, configuration):
         cursor.executemany("SELECT 42")
 
     with pytest.raises(InterfaceError):
+        cursor.executemanycolumns("SELECT 42", [])
+
+    with pytest.raises(InterfaceError):
         cursor.fetchone()
 
     with pytest.raises(InterfaceError):
@@ -103,4 +106,15 @@ def test_rowcount_is_reset_after_executemany_raises(dsn, configuration):
             assert cursor.rowcount == 1
             with pytest.raises(Error):
                 cursor.executemany("this is not even a valid SQL statement")
+            assert cursor.rowcount == -1
+
+
+@for_one_database
+def test_rowcount_is_reset_after_executemanycolumns_raises(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), [42])
+            assert cursor.rowcount == 1
+            with pytest.raises(Error):
+                cursor.executemanycolumns("this is not even a valid SQL statement", [])
             assert cursor.rowcount == -1

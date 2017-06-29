@@ -3,8 +3,12 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
-Version 2.x.y (unreleased)
+Version 2.1.0 (unreleased)
 --------------------------
+
+*   Add new method ``cursor.executemanycolumns()`` that accepts parameters
+    in columnar fashion as a list of NumPy (masked) arrays.
+*   CMake build now supports `conda` environments
 
 Version 2.0.0
 -------------
@@ -152,7 +156,7 @@ Version 1.0.0
 *   A more modern compiler is required due to the pybind11 dependency.
     GCC 4.8 will suffice.
 *   Internal: Move remaining stuff depending on python to turbodbc_python
-*   Internal: Now requires cmake 2.8.12+ (get it with ``pip install cmake``)
+*   Internal: Now requires CMake 2.8.12+ (get it with ``pip install cmake``)
 
 Version 0.5.1
 -------------
