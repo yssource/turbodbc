@@ -22,10 +22,16 @@ set(BUILD_SHARED_LIBS TRUE)
 option(BUILD_COVERAGE
        "Determines whether C++ files will be built with support for coverage measurement"
        OFF)
+option(DISABLE_CXX11_ABI
+       "Determines whether the C++ compiler shall link to a C++11 conforming standard library, see https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html for details"
+       OFF)
 
 if (UNIX)
     # flags apply for both Linux and OSX!
     set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+    if (DISABLE_CXX11_ABI)
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
+    endif()
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -pedantic")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pedantic")
 

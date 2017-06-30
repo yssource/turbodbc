@@ -100,13 +100,32 @@ do the following:
 
     ::
 
-        cmake -DCMAKE_INSTALL_PREFIX=./dist /path/to/turbodbc
+        cmake -DCMAKE_INSTALL_PREFIX=./dist -DPYTHON_EXECUTABLE=`which python` /path/to/turbodbc
 
     where the final path parameter is the directory to the turbodbc git repo,
     specifically the directory containing ``setup.py``. This ``cmake`` command will
     prepare the build directory for the actual build step.
 
 #.  Run ``make``. This will build (compile) the source code.
+
+    .. note::
+        Some Linux distributions with very modern C++ compilers, e.g., Fedora 24+, may yield
+        linker error messages such as
+
+        ::
+
+            arrow_result_set_test.cpp:168: undefined reference to `arrow::Status::ToString[abi:cxx11]() const'
+
+        This error is caused because some Linux distributions use a C++11 compliant
+        `ABI version <https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html>`_
+        of the standard library, while the ``pyarrow`` manylinux wheel does not. In this
+        case, throw away your build directory and use
+
+        ::
+
+            cmake -DDISABLE_CXX11_ABI=ON -DCMAKE_INSTALL_PREFIX=./dist -DPYTHON_EXECUTABLE=`which python` /path/to/turbodbc
+
+        in place of the CMake command in the previous step.
 
 #.  At this point you can run the test suite. First, make a copy of the
     relevant json documents from the turbodbc ``python/turbodbc_test`` directory,
