@@ -106,6 +106,11 @@ do the following:
     specifically the directory containing ``setup.py``. This ``cmake`` command will
     prepare the build directory for the actual build step.
 
+    .. note::
+        The ``-DPYTHON_EXECUTABLE`` flag is not strictly necessary, but
+        it helps ``pybind11`` to detect the correct Python version, in particular
+        when using virtual environments.
+
 #.  Run ``make``. This will build (compile) the source code.
 
     .. note::
