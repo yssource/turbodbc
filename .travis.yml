@@ -127,6 +127,7 @@ script:
 deploy:
   skip_cleanup: true
   provider: pypi
+  server: "https://upload.pypi.org/legacy/"
   user: MathMagic
   password:
     secure: "A0Xv0/7EXcDUzevO3lLVr6OUg1wy1NrFKGwruHr0rUfdBBRmDHVm2njvuiRkPgMH0IiWw/HscxNvHYs1U1CpGsWLJ+/TLOc5UQEKl9kkopEAPrwgQeIg7jOiC6bUDgXbZ5iYU8PIl7ygpBNoGJ2sdIP4nwH1COtntSdVr3oy7VwcVge0QhvccYTt4b49YcaJ6rBMntBWo2UhFZ1PGGWrCbPJB+lhwOv1OkbIyV8jXQ3FrENJGIDQiVMoTdWdoYDPP05lFVrsADwD+TRxEdM7z+cIyFhTTUuabRbPDyRiUd69it2WfCRUb4r+fNeF1abh8GRkk5jE4RQWt/DJiZG/yqZU3SKvIf4/pxZywpmqIZr6CEAJ3iriHHN0Khv1fPnyJ6LJ+paOHcrkDKFTbOb32pOjOdDr9UVN5z7tHdN1MmrrMAbzaIcldLcHq69iocXfUWWR5H/CR43Tm422z0ILbMsdQ+z2epTG+l/qLs8ZxSjWeleMIff5n2x3k6U4QXcdwM8x8axYYgq9WoutI90/97zpvf0h8J8K5+Mr7ucNRLbsPU0OKMZknBOT0SRtJFxokDYZU0OCFLIukIlUYCRuh4es/9w30+kPExfhB5i7LKnpvILtPqIU6KDiUQe8mW1+GnnW/hk3WCdkLT6gwOBNBLVPoIJEuCcYjKdHksMrCnY="
