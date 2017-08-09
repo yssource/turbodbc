@@ -212,9 +212,12 @@ as query parameters with ``executemanycolumns()``:
     >>> from numpy import array
     >>> from numpy.ma import MaskedArray
     >>> normal_param = array([1, 2, 3], dtype='int64')
-    >>> masked_param = MaskedArray([3.14, 1.23, 4.56], mask=[False, True, False], dtype='float64')
+    >>> masked_param = MaskedArray([3.14, 1.23, 4.56],
+    ...                            mask=[False, True, False],
+    ...                            dtype='float64')
 
-    >>> cursor.executemanycolumns("INSERT INTO my_table VALUES (?, ?)", [normal_param, masked_param])
+    >>> cursor.executemanycolumns("INSERT INTO my_table VALUES (?, ?)",
+    ...                           [normal_param, masked_param])
     # functionally equivalent, but much faster than:
     # cursor.execute("INSERT INTO my_table VALUES (1, 3.14)")
     # cursor.execute("INSERT INTO my_table VALUES (2, NULL)")
