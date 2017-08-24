@@ -4,7 +4,8 @@ def make_options(read_buffer_size=None,
                  parameter_sets_to_buffer=None,
                  prefer_unicode=None,
                  use_async_io=None,
-                 autocommit=None):
+                 autocommit=None,
+                 large_decimals_as_64_bit_types=None):
     """
     Create options that control how turbodbc interacts with a database. These
     options affect performance for the most part, but some options may require adjustment
@@ -28,6 +29,11 @@ def make_options(read_buffer_size=None,
      with `cursor.execute()` or `cursor.executemany()` will be succeeded by an implicit `commit`
      operation, persisting any changes made to the database. If not set or set to `False`,
      users has to take care of calling `cursor.commit()` themselves.
+    :param large_decimals_as_64_bit_types: Affects behavior. If set to `True`, `DECIMAL(x, y)`
+     results with `x > 18` will be rendered as 64 bit integers (`y == 0`) or 64 bit floating
+     point numbers (`y > 0`). Use this option if your data types are larger than the data they
+     actually hold. Using this data type can lead to overflow errors and loss of precision.
+     The default of `False` renders large decimals as strings.
     :return: An option struct that is suitable to pass to the `turbodbc_options` parameter of
      `turbodbc.connect()`
     """
@@ -47,5 +53,8 @@ def make_options(read_buffer_size=None,
 
     if not autocommit is None:
         options.autocommit = autocommit
+
+    if not large_decimals_as_64_bit_types is None:
+            options.large_decimals_as_64_bit_types = large_decimals_as_64_bit_types
 
     return options

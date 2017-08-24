@@ -16,6 +16,7 @@ TEST(ConfigurationTest, OptionsDefaults)
     EXPECT_FALSE(options.use_async_io);
     EXPECT_FALSE(options.prefer_unicode);
     EXPECT_FALSE(options.autocommit);
+    EXPECT_FALSE(options.large_decimals_as_64_bit_types);
 }
 
 

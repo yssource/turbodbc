@@ -12,6 +12,7 @@ struct options {
     bool use_async_io;
     bool prefer_unicode;
     bool autocommit;
+    bool large_decimals_as_64_bit_types;
 };
 
 struct capabilities {
