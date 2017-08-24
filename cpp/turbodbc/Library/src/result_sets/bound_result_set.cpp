@@ -4,7 +4,6 @@
 
 #include <turbodbc/buffer_size.h>
 
-#include <boost/variant.hpp>
 #include <sqlext.h>
 
 namespace turbodbc { namespace result_sets {
