@@ -103,6 +103,15 @@ def test_select_single_row_large_numeric_result_as_string(configuration, dsn):
 
 
 @for_each_database
+def test_select_single_row_large_integer_decimal_as_64_bit_type(configuration, dsn):
+    with open_cursor(configuration, large_decimals_as_64_bit_types=True) as cursor:
+        with query_fixture(cursor, configuration, 'SELECT LARGE INTEGER DECIMAL') as query:
+            cursor.execute(query)
+            row = cursor.fetchone()
+            assert row == [42]
+
+
+@for_each_database
 def test_select_single_row_multiple_columns(configuration, dsn):
     _test_single_row_result_set(configuration,
                                 "SELECT 40, 41, 42, 43",

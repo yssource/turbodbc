@@ -55,6 +55,6 @@ def make_options(read_buffer_size=None,
         options.autocommit = autocommit
 
     if not large_decimals_as_64_bit_types is None:
-            options.large_decimals_as_64_bit_types = large_decimals_as_64_bit_types
+        options.large_decimals_as_64_bit_types = large_decimals_as_64_bit_types
 
     return options
