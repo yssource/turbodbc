@@ -3,12 +3,20 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
+Version 2.2.0 (unreleased)
+--------------------------
+
+*   Add new keyword argument ``large_decimals_as_64_bit_types`` to
+    ``make_options()``. If set to ``True``, decimals with more than ``18``
+    digits will be retrieved as 64 bit integers or floats as appropriate.
+    The default retains the previous behavior of returning strings.
+
 Version 2.1.0
 -------------
 
 *   Add new method ``cursor.executemanycolumns()`` that accepts parameters
     in columnar fashion as a list of NumPy (masked) arrays.
-*   CMake build now supports `conda` environments
+*   CMake build now supports ``conda`` environments
 *   CMake build offers ``DISABLE_CXX11_ABI`` option to fix linking issues
     with ``pyarrow`` on systems with the new C++11 compliant ABI enabled
 

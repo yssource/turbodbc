@@ -26,8 +26,9 @@ options, supply keyword arguments to ``make_options()``:
     >>> options = make_options(read_buffer_size=Megabytes(100),
     ...                        parameter_sets_to_buffer=1000,
     ...                        use_async_io=True,
-    ...                        prefer_unicode=True)
-    ...                        autocommit=True)
+    ...                        prefer_unicode=True,
+    ...                        autocommit=True,
+    ...                        large_decimals_as_64_bit_types=True)
 
 
 .. _advanced_usage_options_read_buffer:
@@ -97,6 +98,22 @@ their changes.
 .. note::
     Some databases that do not support transactions may even require this
     option to be set to ``True`` in order to establish a connection at all.
+
+
+.. _advanced_usage_options_large_decimals:
+
+Large decimals as 64 bit types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Set ``large_decimals_as_64_bit_types`` to ``True`` if you want to retrieve
+``Decimal`` and ``Numeric`` types with more than ``18`` digits as the 64 bit
+``integer`` and ``float`` numbers. The default is to retrieve such fields
+as strings instead.
+
+Please note that this option may lead to overflows or loss of precision. If,
+however, your data type is much larger than the data it is supposed to hold,
+this option is very useful to obtain numeric Python objects and
+:ref:`NumPy arrays <advanced_usage_numpy>`.
 
 
 Controlling autocommit behavior at runtime
@@ -182,21 +199,28 @@ Notes regarding NumPy result sets
 The following table shows how the most common data types data scientists are interested in
 are converted to NumPy columns:
 
-+-------------------------------------------+-----------------------+
-| Database type(s)                          | Python type           |
-+===========================================+=======================+
-| Integers, ``DECIMAL(<19,0)``              | ``int64``             |
-+-------------------------------------------+-----------------------+
-| ``DOUBLE``, ``DECIMAL(x, >0)``            | ``float64``           |
-+-------------------------------------------+-----------------------+
-| ``BIT``, boolean-like                     | ``bool_``             |
-+-------------------------------------------+-----------------------+
-| ``TIMESTAMP``, ``TIME``                   | ``datetime64[us]``    |
-+-------------------------------------------+-----------------------+
-| ``DATE``                                  | ``datetime64[D}``     |
-+-------------------------------------------+-----------------------+
-| ``VARCHAR``, strings, ``DECIMAL(>18, 0)`` | ``object_``           |
-+-------------------------------------------+-----------------------+
++-----------------------------------+------------------------------+
+| Database type(s)                  | Python type                  |
++===================================+==============================+
+| Integers, ``DECIMAL(<19,0)``      | ``int64``                    |
++-----------------------------------+------------------------------+
+| ``DOUBLE``, ``DECIMAL(<19, >0)``  | ``float64``                  |
++-----------------------------------+------------------------------+
+| ``DECIMAL(>18, 0)``               | ``object_`` or ``int64`` *   |
++-----------------------------------+------------------------------+
+| ``DECIMAL(>18, >0)``              | ``object_`` or ``float64`` * |
++-----------------------------------+------------------------------+
+| ``BIT``, boolean-like             | ``bool_``                    |
++-----------------------------------+------------------------------+
+| ``TIMESTAMP``, ``TIME``           | ``datetime64[us]``           |
++-----------------------------------+------------------------------+
+| ``DATE``                          | ``datetime64[D}``            |
++-----------------------------------+------------------------------+
+| ``VARCHAR``, strings              | ``object_``                  |
++-----------------------------------+------------------------------+
+
+\*) The conversion depends on turbodbc's ``large_decimals_as_64_bit_types``
+:ref:`option <advanced_usage_options_large_decimals>`.
 
 
 .. _advanced_usage_numpy_parameters:
