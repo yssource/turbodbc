@@ -30,6 +30,12 @@ TEST(ConfigurationTest, CapabilitiesDependOnDatabase)
     EXPECT_FALSE(capabilities.supports_describe_parameter);
 }
 
+TEST(ConfigurationTest, CapabilitiesCanBeSpecified)
+{
+    EXPECT_FALSE(turbodbc::capabilities(false).supports_describe_parameter);
+    EXPECT_TRUE(turbodbc::capabilities(true).supports_describe_parameter);
+}
+
 
 TEST(ConfigurationTest, ConfigurationComprisesOptionsAndCapabilities)
 {

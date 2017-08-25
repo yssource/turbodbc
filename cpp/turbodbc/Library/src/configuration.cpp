@@ -19,6 +19,11 @@ capabilities::capabilities(cpp_odbc::connection const & connection) :
 {
 }
 
+capabilities::capabilities(bool supports_describe_parameter) :
+    supports_describe_parameter(supports_describe_parameter)
+{
+}
+
 configuration::configuration(turbodbc::options options, turbodbc::capabilities capabilities) :
     options(options),
     capabilities(capabilities)

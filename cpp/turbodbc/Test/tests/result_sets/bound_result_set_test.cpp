@@ -17,6 +17,13 @@ using turbodbc_test::mock_statement;
 
 namespace {
 
+    turbodbc::options make_options(turbodbc::buffer_size const & size, bool prefer_unicode) {
+        turbodbc::options options;
+        options.read_buffer_size = size;
+        options.prefer_unicode = prefer_unicode;
+        return options;
+    }
+
     bool const prefer_string = false;
     bool const prefer_unicode = true;
 
@@ -71,7 +78,7 @@ TEST(BoundResultSetTest, BindColumnsWithFixedRowsInConstructor)
     expect_calls_to_bind_buffer(*statement, c_column_types);
     EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffered_rows));
 
-    bound_result_set rs(statement, turbodbc::rows(buffered_rows), prefer_string);
+    bound_result_set rs(statement, make_options(turbodbc::rows(buffered_rows), prefer_string));
 }
 
 TEST(BoundResultSetTest, BindColumnsWithFixedMegabytesInConstructor)
@@ -85,7 +92,7 @@ TEST(BoundResultSetTest, BindColumnsWithFixedMegabytesInConstructor)
     expect_calls_to_bind_buffer(*statement, c_column_types);
     EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, expected_rows));
 
-    bound_result_set rs(statement, turbodbc::megabytes(1), prefer_string);
+    bound_result_set rs(statement, make_options(turbodbc::megabytes(1), prefer_string));
 }
 
 
@@ -114,7 +121,7 @@ TEST(BoundResultSetTest, FetchNextBatch)
     auto statement = prepare_mock_with_columns(sql_column_types, prefer_string);
     expect_rows_fetched_pointer_set(*statement, rows_fetched);
 
-    bound_result_set rs(statement, turbodbc::rows(1000), prefer_string);
+    bound_result_set rs(statement, make_options(turbodbc::rows(1000), prefer_string));
     ASSERT_TRUE(rows_fetched != nullptr);
 
     *rows_fetched = 123;
@@ -128,7 +135,7 @@ TEST(BoundResultSetTest, GetColumnInfo)
 {
     auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_VARCHAR}, prefer_string);
 
-    bound_result_set rs(statement, turbodbc::rows(123), prefer_string);
+    bound_result_set rs(statement, make_options(turbodbc::rows(123), prefer_string));
 
     ASSERT_EQ(2, rs.get_column_info().size());
     EXPECT_EQ(turbodbc::type_code::integer, rs.get_column_info()[0].type);
@@ -141,7 +148,7 @@ TEST(BoundResultSetTest, GetBuffers)
     auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_VARCHAR}, prefer_string);
     std::size_t const buffered_rows = 1234;
 
-    bound_result_set rs(statement, turbodbc::rows(buffered_rows), prefer_string);
+    bound_result_set rs(statement, make_options(turbodbc::rows(buffered_rows), prefer_string));
     auto const buffers = rs.get_buffers();
     ASSERT_EQ(2, buffers.size());
 
@@ -163,7 +170,7 @@ TEST(BoundResultSetTest, Rebind)
     auto statement = prepare_mock_with_columns(sql_column_types, prefer_string);
     EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROW_ARRAY_SIZE, buffered_rows));
 
-    bound_result_set rs(statement, turbodbc::rows(buffered_rows), prefer_string);
+    bound_result_set rs(statement, make_options(turbodbc::rows(buffered_rows), prefer_string));
 
     expect_calls_to_bind_buffer(*statement, c_column_types);
     EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>()));
@@ -175,7 +182,7 @@ TEST(BoundResultSetTest, MoveConstructorRebinds)
 {
     auto statement = prepare_mock_with_columns({SQL_INTEGER, SQL_VARCHAR}, prefer_string);
 
-    bound_result_set moved(statement, turbodbc::rows(123), prefer_string);
+    bound_result_set moved(statement, make_options(turbodbc::rows(123), prefer_string));
 
     // rebind includes setting fetched pointer
     EXPECT_CALL(*statement, do_set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, testing::An<SQLULEN *>()));
@@ -197,7 +204,7 @@ namespace {
         auto statement = prepare_mock_with_columns(sql_column_types, use_unicode);
         expect_calls_to_bind_buffer(*statement, c_column_types);
 
-        bound_result_set rs(statement, turbodbc::rows(1), use_unicode);
+        bound_result_set rs(statement, make_options(turbodbc::rows(1), use_unicode));
         EXPECT_EQ(expected_name, rs.get_column_info()[0].name);
     }
 

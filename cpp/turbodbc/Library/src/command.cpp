@@ -11,10 +11,7 @@ namespace turbodbc {
 command::command(std::shared_ptr<cpp_odbc::statement const> statement,
                  turbodbc::configuration configuration) :
     statement_(statement),
-    params_(*statement,
-            configuration.options.parameter_sets_to_buffer,
-            configuration.options.prefer_unicode,
-            configuration.capabilities.supports_describe_parameter),
+    params_(*statement, configuration),
     configuration_(std::move(configuration))
 {
 }
@@ -34,13 +31,9 @@ void command::execute()
     std::size_t const columns = statement_->number_of_columns();
     if (columns != 0) {
         if (configuration_.options.use_async_io) {
-            results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_,
-                                                                                 configuration_.options.read_buffer_size,
-                                                                                 configuration_.options.prefer_unicode);
+            results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, configuration_.options);
         } else {
-            results_ = std::make_shared<result_sets::bound_result_set>(statement_,
-                                                                       configuration_.options.read_buffer_size,
-                                                                       configuration_.options.prefer_unicode);
+            results_ = std::make_shared<result_sets::bound_result_set>(statement_, configuration_.options);
         }
     }
 }

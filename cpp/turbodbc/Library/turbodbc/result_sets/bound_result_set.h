@@ -2,8 +2,7 @@
 
 #include <turbodbc/result_sets/result_set.h>
 #include <turbodbc/column.h>
-
-#include <turbodbc/buffer_size.h>
+#include <turbodbc/configuration.h>
 
 #include <cpp_odbc/statement.h>
 #include <memory>
@@ -22,8 +21,7 @@ public:
      *        the given statement.
      */
     bound_result_set(std::shared_ptr<cpp_odbc::statement const> statement,
-                     turbodbc::buffer_size buffer_size,
-                     bool prefer_unicode);
+                     turbodbc::options const & options);
 
     /**
      * @brief Move constructor

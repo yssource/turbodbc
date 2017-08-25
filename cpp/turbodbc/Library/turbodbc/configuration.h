@@ -17,6 +17,7 @@ struct options {
 
 struct capabilities {
     capabilities(cpp_odbc::connection const & connection);
+    capabilities(bool supports_describe_parameter);
     bool supports_describe_parameter;
 };
 

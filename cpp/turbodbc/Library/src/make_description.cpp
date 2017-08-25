@@ -82,13 +82,14 @@ struct description_by_value : public boost::static_visitor<description_ptr> {
 }
 
 
-std::unique_ptr<description const> make_description(cpp_odbc::column_description const & source, bool prefer_unicode)
+std::unique_ptr<description const> make_description(cpp_odbc::column_description const & source,
+                                                    turbodbc::options const & options)
 {
     switch (source.data_type) {
         case SQL_CHAR:
         case SQL_VARCHAR:
         case SQL_LONGVARCHAR:
-            if (prefer_unicode) {
+            if (options.prefer_unicode) {
                 return std::unique_ptr<description>(new unicode_description(source.name, source.allows_null_values, source.size));
             } else {
                 return std::unique_ptr<description>(new string_description(source.name, source.allows_null_values, source.size));
