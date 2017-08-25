@@ -16,7 +16,7 @@ namespace turbodbc {
  *                       treated just like unicode fields.
  */
 std::unique_ptr<description const> make_description(cpp_odbc::column_description const & source,
-                                                    turbodbc::options const & prefer_unicode);
+                                                    turbodbc::options const & options);
 
 /**
  * @brief Create a buffer description based on the type and content of a value

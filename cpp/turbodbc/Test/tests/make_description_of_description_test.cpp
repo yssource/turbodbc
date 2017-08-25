@@ -13,17 +13,18 @@ using turbodbc::make_description;
 
 namespace {
 
-    turbodbc::options prefer_strings() {
+    turbodbc::options make_options(bool prefer_unicode, bool large_decimals_as_64_bit_types)
+    {
         turbodbc::options options;
-        options.prefer_unicode = false;
+        options.prefer_unicode = prefer_unicode;
+        options.large_decimals_as_64_bit_types = large_decimals_as_64_bit_types;
         return options;
     }
 
-    turbodbc::options prefer_unicode() {
-        turbodbc::options options;
-        options.prefer_unicode = true;
-        return options;
-    }
+    bool const prefer_strings = false;
+    bool const prefer_unicode = true;
+    bool const large_decimals_as_strings = false;
+    bool const large_decimals_as_64_bit_types = true;
 
     std::string const name("custom_name");
     bool const supports_null_values = false;
@@ -34,18 +35,23 @@ namespace {
         EXPECT_EQ(supports_null_values, description.supports_null_values());
     }
 
-    void test_as_integer(cpp_odbc::column_description const & column_description)
+    void test_as_integer(cpp_odbc::column_description const & column_description, bool use_64_bit_types)
     {
-        auto const description = make_description(column_description, prefer_strings());
+        auto const description = make_description(column_description, make_options(prefer_strings, use_64_bit_types));
         ASSERT_TRUE(dynamic_cast<turbodbc::integer_description const *>(description.get()))
             << "Could not convert type identifier '" << column_description.data_type << "' to integer description";
 
         assert_custom_name_and_nullable_support(*description);
     }
 
+    void test_as_integer(cpp_odbc::column_description const & column_description)
+    {
+        test_as_integer(column_description, large_decimals_as_strings);
+    }
+
     void test_as_floating_point(cpp_odbc::column_description const & column_description)
     {
-        auto const description = make_description(column_description, prefer_strings());
+        auto const description = make_description(column_description, make_options(prefer_strings, large_decimals_as_strings));
         ASSERT_TRUE(dynamic_cast<turbodbc::floating_point_description const *>(description.get()))
             << "Could not convert type identifier '" << column_description.data_type << "' to floating point description";
 
@@ -54,13 +60,13 @@ namespace {
 
     void test_unsupported(cpp_odbc::column_description const & column_description)
     {
-        ASSERT_THROW(make_description(column_description, prefer_strings()), std::runtime_error);
+        ASSERT_THROW(make_description(column_description, make_options(prefer_strings, large_decimals_as_strings)), std::runtime_error);
     }
 
     template <typename Description>
     void test_text_with_string_preference(cpp_odbc::column_description const & column_description, std::size_t expected_size)
     {
-        auto const description = make_description(column_description, prefer_strings());
+        auto const description = make_description(column_description, make_options(prefer_strings, large_decimals_as_strings));
 
         ASSERT_TRUE(dynamic_cast<Description const *>(description.get()))
             << "Could not convert type identifier '" << column_description.data_type << "' to expected description";
@@ -72,7 +78,7 @@ namespace {
     template <typename Description>
     void test_text_with_unicode_preference(cpp_odbc::column_description const & column_description, std::size_t expected_size)
     {
-        auto const description = make_description(column_description, prefer_unicode());
+        auto const description = make_description(column_description, make_options(prefer_unicode, large_decimals_as_strings));
 
         ASSERT_TRUE(dynamic_cast<Description const *>(description.get()))
             << "Could not convert type identifier '" << column_description.data_type << "' to expected description";
@@ -172,7 +178,7 @@ TEST(MakeDescriptionOfDescriptionTest, BitType)
     SQLSMALLINT const type = SQL_BIT;
 
     cpp_odbc::column_description column_description = {name, type, 0, 0, supports_null_values};
-    auto const description = make_description(column_description, prefer_strings());
+    auto const description = make_description(column_description, make_options(prefer_strings, large_decimals_as_strings));
     ASSERT_TRUE(dynamic_cast<turbodbc::boolean_description const *>(description.get()));
     assert_custom_name_and_nullable_support(*description);
 }
@@ -182,7 +188,7 @@ TEST(MakeDescriptionOfDescriptionTest, DateType)
     SQLSMALLINT const type = SQL_TYPE_DATE;
 
     cpp_odbc::column_description column_description = {name, type, 0, 0, supports_null_values};
-    auto const description = make_description(column_description, prefer_strings());
+    auto const description = make_description(column_description, make_options(prefer_strings, large_decimals_as_strings));
     ASSERT_TRUE(dynamic_cast<turbodbc::date_description const *>(description.get()));
     assert_custom_name_and_nullable_support(*description);
 }
@@ -192,7 +198,7 @@ TEST(MakeDescriptionOfDescriptionTest, TimestampTypes)
     SQLSMALLINT const type = SQL_TYPE_TIMESTAMP;
 
     cpp_odbc::column_description column_description = {name, type, 0, 0, supports_null_values};
-    auto const description = make_description(column_description, prefer_strings());
+    auto const description = make_description(column_description, make_options(prefer_strings, large_decimals_as_strings));
     ASSERT_TRUE(dynamic_cast<turbodbc::timestamp_description const *>(description.get()));
     assert_custom_name_and_nullable_support(*description);
 }
@@ -211,7 +217,7 @@ namespace {
 
 }
 
-TEST(MakeDescriptionOfDescriptionTest, DecimalAsInteger)
+TEST(MakeDescriptionOfDescriptionTest, SmallDecimalAsInteger)
 {
     test_as_integer(make_decimal_column_description(18, 0));
     test_as_integer(make_decimal_column_description(9, 0));
@@ -221,13 +227,13 @@ TEST(MakeDescriptionOfDescriptionTest, DecimalAsInteger)
     test_as_integer(make_numeric_column_description(1, 0));
 }
 
-TEST(MakeDescriptionOfDescriptionTest, DecimalAsFloatingPoint)
+TEST(MakeDescriptionOfDescriptionTest, SmallDecimalAsFloatingPoint)
 {
     test_as_floating_point(make_decimal_column_description(18, 1));
     test_as_floating_point(make_numeric_column_description(18, 1));
 }
 
-TEST(MakeDescriptionOfDescriptionTest, DecimalAsString)
+TEST(MakeDescriptionOfDescriptionTest, LargeDecimalAsString)
 {
     std::size_t const size = 19;
     // add three bytes to size (null-termination, sign, decimal point
@@ -236,3 +242,11 @@ TEST(MakeDescriptionOfDescriptionTest, DecimalAsString)
     test_text_with_string_preference<turbodbc::string_description>(make_numeric_column_description(size, 0), size + 3);
     test_text_with_string_preference<turbodbc::string_description>(make_numeric_column_description(size, 5), size + 3);
 }
+
+
+TEST(MakeDescriptionOfDescriptionTest, LargeDecimalAsInteger)
+{
+    std::size_t const size = 19;
+    test_as_integer(make_decimal_column_description(size, 0), large_decimals_as_64_bit_types);
+}
+
