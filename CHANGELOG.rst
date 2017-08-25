@@ -3,12 +3,26 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
+Version 2.2.0 (unreleased)
+--------------------------
+
+*   Added new keyword argument ``large_decimals_as_64_bit_types`` to
+    ``make_options()``. If set to ``True``, decimals with more than ``18``
+    digits will be retrieved as 64 bit integers or floats as appropriate.
+    The default retains the previous behavior of returning strings.
+*   Fixed an `issue with some versions of Boost <https://svn.boost.org/trac10/ticket/3471>`_
+    that lead to problems with ``datetime64[us]`` columns with ``executemanycolumns()``.
+    An overflow when converting microseconds since 1970 to a database-readable timestamp
+    could happen, badly garbling the timestamps in the process. The issue was
+    surfaced with Debian 7's Boost version (1.49), although the Boost
+    issue was allegedly fixed with version 1.43.
+
 Version 2.1.0
 -------------
 
-*   Add new method ``cursor.executemanycolumns()`` that accepts parameters
+*   Added new method ``cursor.executemanycolumns()`` that accepts parameters
     in columnar fashion as a list of NumPy (masked) arrays.
-*   CMake build now supports `conda` environments
+*   CMake build now supports ``conda`` environments
 *   CMake build offers ``DISABLE_CXX11_ABI`` option to fix linking issues
     with ``pyarrow`` on systems with the new C++11 compliant ABI enabled
 
@@ -21,8 +35,8 @@ Version 2.0.0
 *   ``prefer_unicode`` option now also affects column name rendering
     when gathering results from the database. This effectively enables
     support for Unicode column names for some databases.
-*   Add module version number ``turbodbc.__version__``
-*   Remove deprecated performance options for ``connect()``. Use
+*   Added module version number ``turbodbc.__version__``
+*   Removed deprecated performance options for ``connect()``. Use
     ``connect(..., turbodbc_options=make_options(...))`` instead.
 
 Earlier versions (not conforming to semantic versioning)

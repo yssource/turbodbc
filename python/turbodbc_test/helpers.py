@@ -101,7 +101,11 @@ for_one_database = pytest.mark.parametrize("dsn,configuration",
 
 
 @contextmanager
-def open_connection(configuration, rows_to_buffer=None, parameter_sets_to_buffer=100, use_async_io=False):
+def open_connection(configuration,
+                    rows_to_buffer=None,
+                    parameter_sets_to_buffer=100,
+                    use_async_io=False,
+                    large_decimals_as_64_bit_types=False):
     dsn = configuration['data_source_name']
     prefer_unicode = configuration.get('prefer_unicode', False)
     read_buffer_size = turbodbc.Rows(rows_to_buffer) if rows_to_buffer else turbodbc.Megabytes(1)
@@ -109,7 +113,8 @@ def open_connection(configuration, rows_to_buffer=None, parameter_sets_to_buffer
     options = turbodbc.make_options(read_buffer_size=read_buffer_size,
                                     parameter_sets_to_buffer=parameter_sets_to_buffer,
                                     use_async_io=use_async_io,
-                                    prefer_unicode=prefer_unicode)
+                                    prefer_unicode=prefer_unicode,
+                                    large_decimals_as_64_bit_types=large_decimals_as_64_bit_types)
     connection = turbodbc.connect(dsn, turbodbc_options=options, **get_credentials(configuration))
 
     yield connection
@@ -117,8 +122,16 @@ def open_connection(configuration, rows_to_buffer=None, parameter_sets_to_buffer
 
 
 @contextmanager
-def open_cursor(configuration, rows_to_buffer=None, parameter_sets_to_buffer=100, use_async_io=False):
-    with open_connection(configuration, rows_to_buffer, parameter_sets_to_buffer, use_async_io) as connection:
+def open_cursor(configuration,
+                rows_to_buffer=None,
+                parameter_sets_to_buffer=100,
+                use_async_io=False,
+                large_decimals_as_64_bit_types=False):
+    with open_connection(configuration,
+                         rows_to_buffer,
+                         parameter_sets_to_buffer,
+                         use_async_io,
+                         large_decimals_as_64_bit_types) as connection:
         cursor = connection.cursor()
         yield cursor
         cursor.close()

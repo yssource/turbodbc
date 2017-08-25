@@ -11,12 +11,12 @@ def test_options_with_overrides():
                            parameter_sets_to_buffer=2500,
                            prefer_unicode=True,
                            use_async_io=True,
-                           autocommit=True)
+                           autocommit=True,
+                           large_decimals_as_64_bit_types=True)
 
     assert options.read_buffer_size.rows == 123
     assert options.parameter_sets_to_buffer == 2500
     assert options.prefer_unicode == True
     assert options.use_async_io == True
     assert options.autocommit == True
-
-
+    assert options.large_decimals_as_64_bit_types == True

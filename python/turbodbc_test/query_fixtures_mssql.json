@@ -53,6 +53,14 @@
 		"SELECT TIMESTAMP": {
 			"payload": "SELECT CAST('2015-12-31 01:02:03' AS DATETIME2(6)) AS a"
 		},
+
+		"SELECT LARGE INTEGER DECIMAL": {
+			"payload": "SELECT CAST(42 AS DECIMAL(24, 0)) AS a"
+		},
+
+		"SELECT LARGE FRACTIONAL DECIMAL": {
+			"payload": "SELECT CAST(3.14 AS DECIMAL(24, 8)) AS a"
+		},
 	
 		"INSERT STRING": {
 			"table": "a VARCHAR(20)"

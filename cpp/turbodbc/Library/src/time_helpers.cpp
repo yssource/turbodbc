@@ -29,7 +29,10 @@ int64_t timestamp_to_microseconds(char const * data_pointer)
 
 void microseconds_to_timestamp(int64_t microseconds, char * data_pointer)
 {
-    auto const ptime = timestamp_epoch + boost::posix_time::microseconds(microseconds);
+    // use time duration constructor instead of boost::posix_time::microseconds here
+    // because some older version of boost cause an overflow, see https://svn.boost.org/trac10/ticket/3471
+    // Debian 7's boost 1.49 seems to be affected, though the fix claims to be done with boost 1.43.
+    auto const ptime = timestamp_epoch + boost::posix_time::time_duration(0, 0, 0, microseconds);
     auto const date = ptime.date();
     auto const time = ptime.time_of_day();
     auto & sql_ts = *reinterpret_cast<SQL_TIMESTAMP_STRUCT *>(data_pointer);

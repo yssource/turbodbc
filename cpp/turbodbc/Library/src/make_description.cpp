@@ -12,7 +12,7 @@ namespace turbodbc {
 
 namespace {
 
-SQLULEN const digits_representable_by_long = 18;
+SQLULEN const digits_representable_by_64_bit_integer = 18;
 
 /*
  * This function returns a buffer size for the given string
@@ -30,17 +30,33 @@ std::size_t size_after_growth_strategy(std::size_t const & size)
     return std::ceil(size * 1.2);
 }
 
-std::unique_ptr<description const> make_decimal_description(cpp_odbc::column_description const & source)
+std::unique_ptr<description const> make_small_decimal_description(cpp_odbc::column_description const & source)
 {
-    if (source.size <= digits_representable_by_long) {
-        if (source.decimal_digits == 0) {
-            return std::unique_ptr<description>(new integer_description(source.name, source.allows_null_values));
-        } else {
-            return std::unique_ptr<description>(new floating_point_description(source.name, source.allows_null_values));
-        }
+    if (source.decimal_digits == 0) {
+        return std::unique_ptr<description>(new integer_description(source.name, source.allows_null_values));
+    } else {
+        return std::unique_ptr<description>(new floating_point_description(source.name, source.allows_null_values));
+    }
+}
+
+std::unique_ptr<description const> make_large_decimal_description(cpp_odbc::column_description const & source, turbodbc::options const & options)
+{
+    if (options.large_decimals_as_64_bit_types) {
+        return make_small_decimal_description(source);
     } else {
         // fall back to strings; add two characters for decimal point and sign!
-        return std::unique_ptr<description>(new string_description(source.name, source.allows_null_values, source.size + 2));
+        return std::unique_ptr<description>(new string_description(source.name,
+                                                                   source.allows_null_values,
+                                                                   source.size + 2));
+    }
+}
+
+std::unique_ptr<description const> make_decimal_description(cpp_odbc::column_description const & source, turbodbc::options const & options)
+{
+    if (source.size <= digits_representable_by_64_bit_integer) {
+        return make_small_decimal_description(source);
+    } else {
+        return make_large_decimal_description(source, options);
     }
 }
 
@@ -82,13 +98,14 @@ struct description_by_value : public boost::static_visitor<description_ptr> {
 }
 
 
-std::unique_ptr<description const> make_description(cpp_odbc::column_description const & source, bool prefer_unicode)
+std::unique_ptr<description const> make_description(cpp_odbc::column_description const & source,
+                                                    turbodbc::options const & options)
 {
     switch (source.data_type) {
         case SQL_CHAR:
         case SQL_VARCHAR:
         case SQL_LONGVARCHAR:
-            if (prefer_unicode) {
+            if (options.prefer_unicode) {
                 return std::unique_ptr<description>(new unicode_description(source.name, source.allows_null_values, source.size));
             } else {
                 return std::unique_ptr<description>(new string_description(source.name, source.allows_null_values, source.size));
@@ -110,7 +127,7 @@ std::unique_ptr<description const> make_description(cpp_odbc::column_description
             return std::unique_ptr<description>(new boolean_description(source.name, source.allows_null_values));
         case SQL_NUMERIC:
         case SQL_DECIMAL:
-            return make_decimal_description(source);
+            return make_decimal_description(source, options);
         case SQL_TYPE_DATE:
             return std::unique_ptr<description>(new date_description(source.name, source.allows_null_values));
         case SQL_TYPE_TIMESTAMP:
