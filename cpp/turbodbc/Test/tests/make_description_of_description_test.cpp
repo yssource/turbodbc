@@ -49,13 +49,18 @@ namespace {
         test_as_integer(column_description, large_decimals_as_strings);
     }
 
-    void test_as_floating_point(cpp_odbc::column_description const & column_description)
+    void test_as_floating_point(cpp_odbc::column_description const & column_description, bool use_64_bit_types)
     {
-        auto const description = make_description(column_description, make_options(prefer_strings, large_decimals_as_strings));
+        auto const description = make_description(column_description, make_options(prefer_strings, use_64_bit_types));
         ASSERT_TRUE(dynamic_cast<turbodbc::floating_point_description const *>(description.get()))
             << "Could not convert type identifier '" << column_description.data_type << "' to floating point description";
 
         assert_custom_name_and_nullable_support(*description);
+    }
+
+    void test_as_floating_point(cpp_odbc::column_description const & column_description)
+    {
+        test_as_floating_point(column_description, large_decimals_as_strings);
     }
 
     void test_unsupported(cpp_odbc::column_description const & column_description)
@@ -248,5 +253,11 @@ TEST(MakeDescriptionOfDescriptionTest, LargeDecimalAsInteger)
 {
     std::size_t const size = 19;
     test_as_integer(make_decimal_column_description(size, 0), large_decimals_as_64_bit_types);
+}
+
+TEST(MakeDescriptionOfDescriptionTest, LargeDecimalAsFloatingPoint)
+{
+    std::size_t const size = 19;
+    test_as_floating_point(make_decimal_column_description(size, 1), large_decimals_as_64_bit_types);
 }
 

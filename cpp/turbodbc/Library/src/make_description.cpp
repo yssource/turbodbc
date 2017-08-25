@@ -42,7 +42,7 @@ std::unique_ptr<description const> make_small_decimal_description(cpp_odbc::colu
 std::unique_ptr<description const> make_large_decimal_description(cpp_odbc::column_description const & source, turbodbc::options const & options)
 {
     if (options.large_decimals_as_64_bit_types) {
-        return std::unique_ptr<description>(new integer_description(source.name, source.allows_null_values));
+        return make_small_decimal_description(source);
     } else {
         // fall back to strings; add two characters for decimal point and sign!
         return std::unique_ptr<description>(new string_description(source.name,
