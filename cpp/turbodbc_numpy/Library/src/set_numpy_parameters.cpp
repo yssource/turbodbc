@@ -142,8 +142,8 @@ namespace {
     };
 
 
-    struct timestamp_converter : public datetime64_converter {
-        timestamp_converter(pybind11::array const & data,
+    struct microseconds_converter : public datetime64_converter {
+        microseconds_converter(pybind11::array const & data,
                             pybind11::array_t<bool> const & mask,
                             turbodbc::bound_parameter_set & parameters,
                             std::size_t parameter_index) :
@@ -157,6 +157,25 @@ namespace {
 
         virtual void convert(std::int64_t data, char * destination) {
             turbodbc::microseconds_to_timestamp(data, destination);
+        }
+    };
+
+
+    struct nanoseconds_converter : public datetime64_converter {
+        nanoseconds_converter(pybind11::array const & data,
+                              pybind11::array_t<bool> const & mask,
+                              turbodbc::bound_parameter_set & parameters,
+                              std::size_t parameter_index) :
+            datetime64_converter(data,
+                                 mask,
+                                 parameters,
+                                 parameter_index,
+                                 turbodbc::type_code::timestamp,
+                                 sizeof(SQL_TIMESTAMP_STRUCT))
+        {}
+
+        virtual void convert(std::int64_t data, char * destination) {
+            turbodbc::nanoseconds_to_timestamp(data, destination);
         }
     };
 
@@ -299,7 +318,9 @@ namespace {
             } else if (dtype == "float64") {
                 converters.emplace_back(new binary_converter<double>(data, mask, parameters, i, turbodbc::type_code::floating_point));
             } else if (dtype == "datetime64[us]") {
-                converters.emplace_back(new timestamp_converter(data, mask, parameters, i));
+                converters.emplace_back(new microseconds_converter(data, mask, parameters, i));
+            } else if (dtype == "datetime64[ns]") {
+                converters.emplace_back(new nanoseconds_converter(data, mask, parameters, i));
             } else if (dtype == "datetime64[D]") {
                 converters.emplace_back(new date_converter(data, mask, parameters, i));
             } else if (dtype == "bool") {

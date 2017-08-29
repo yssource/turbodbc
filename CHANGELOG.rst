@@ -10,6 +10,9 @@ Version 2.2.0 (unreleased)
     ``make_options()``. If set to ``True``, decimals with more than ``18``
     digits will be retrieved as 64 bit integers or floats as appropriate.
     The default retains the previous behavior of returning strings.
+*   Added support for ``datetime64[ns]`` data type for ``executemanycolumns()``.
+    This is particularly helpful when dealing with `pandas <https://pandas.pydata.org>`_
+    ``DataFrame`` objects, since this is the type that contains time stamps.
 *   Fixed an `issue with some versions of Boost <https://svn.boost.org/trac10/ticket/3471>`_
     that lead to problems with ``datetime64[us]`` columns with ``executemanycolumns()``.
     An overflow when converting microseconds since 1970 to a database-readable timestamp

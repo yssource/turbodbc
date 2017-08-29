@@ -121,6 +121,20 @@ def test_datetime64_microseconds_column(dsn, configuration):
 
 
 @for_each_database
+def test_datetime64_nanoseconds_column(dsn, configuration):
+    supported_digits = configuration['capabilities']['fractional_second_digits']
+    # C++ unit test checks that conversion method is capable of nanosecond precision
+    fractional = generate_microseconds_with_precision(supported_digits)
+
+    _full_column_tests(configuration,
+                       "INSERT TIMESTAMP",
+                       [datetime.datetime(2015, 12, 31, 1, 2, 3, fractional),
+                        datetime.datetime(2016, 1, 1, 4, 5, 6, fractional),
+                        datetime.datetime(2017, 5, 6, 7, 8, 9, fractional)],
+                       'datetime64[ns]')
+
+
+@for_each_database
 def test_datetime64_days_column(dsn, configuration):
     _full_column_tests(configuration,
                        "INSERT DATE",
