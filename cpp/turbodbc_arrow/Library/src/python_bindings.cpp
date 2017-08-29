@@ -1,8 +1,10 @@
 #include <turbodbc_arrow/arrow_result_set.h>
+#include <turbodbc_arrow/set_arrow_parameters.h>
 
 #include <pybind11/pybind11.h>
 
 using turbodbc_arrow::arrow_result_set;
+using turbodbc_arrow::set_arrow_parameters;
 
 namespace {
 
@@ -21,6 +23,6 @@ PYBIND11_MODULE(turbodbc_arrow_support, module)
     pybind11::class_<arrow_result_set>(module, "ArrowResultSet")
         .def("fetch_all", &arrow_result_set::fetch_all);
 
-    module.def("make_arrow_result_set", make_arrow_result_set,
-        pybind11::arg("result_set"), pybind11::arg("strings_as_dictionary"));
+    module.def("make_arrow_result_set", make_arrow_result_set);
+    module.def("set_arrow_parameters", set_arrow_parameters);
 }

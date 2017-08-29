@@ -228,6 +228,7 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
 pybind11::object arrow_result_set::fetch_all()
 {
     std::shared_ptr<arrow::Table> table;
+    // TODO: Check Arrow Status
     fetch_all_native(&table);
 
     arrow::py::import_pyarrow();
