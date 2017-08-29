@@ -2,9 +2,10 @@
 FLAGS=$1
 
 echo "Cloning latest google test repository"
-git clone https://github.com/google/googletest.git
+wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz -O googletest-1.8.0.tar.gz
+tar xf googletest-1.8.0.tar.gz
 
 mkdir build
 cd build
-cmake ../googletest -DCMAKE_INSTALL_PREFIX=../dist -DCMAKE_CXX_FLAGS="${FLAGS}"
+cmake ../googletest-release-1.8.0 -DCMAKE_INSTALL_PREFIX=../dist -DCMAKE_CXX_FLAGS="${FLAGS}"
 cmake --build . --target install
