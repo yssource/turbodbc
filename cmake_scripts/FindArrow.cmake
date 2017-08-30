@@ -47,6 +47,10 @@ if (NOT ARROW_HOME)
     find_path(ARROW_INCLUDE_DIR arrow/api.h HINTS
       $ENV{VIRTUAL_ENV}/lib/*/site-packages/pyarrow/include)
     get_filename_component(ARROW_SEARCH_LIB_PATH ${ARROW_INCLUDE_DIR} DIRECTORY)
+  else()
+    find_path(ARROW_INCLUDE_DIR arrow/api.h HINTS
+      /usr/local/lib/*/dist-packages/pyarrow/include)
+    get_filename_component(ARROW_SEARCH_LIB_PATH ${ARROW_INCLUDE_DIR} DIRECTORY)
   endif()
 else()
   set(ARROW_SEARCH_HEADER_PATHS
