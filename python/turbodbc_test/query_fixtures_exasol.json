@@ -60,8 +60,16 @@
 			"table": "a VARCHAR(20)"
 		},
 
+		"INSERT STRING MAX": {
+			"table": "a VARCHAR(2000000)"
+		},
+
 		"INSERT UNICODE": {
 			"table": "a VARCHAR(20) CHARACTER SET UTF8"
+		},
+
+		"INSERT UNICODE MAX": {
+			"table": "a VARCHAR(2000000) CHARACTER SET UTF8"
 		},
 
 		"INSERT LONG STRING": {

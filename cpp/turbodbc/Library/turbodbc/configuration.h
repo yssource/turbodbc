@@ -9,6 +9,7 @@ struct options {
     options();
     buffer_size read_buffer_size;
     std::size_t parameter_sets_to_buffer;
+    std::size_t varchar_max_character_limit;
     bool use_async_io;
     bool prefer_unicode;
     bool autocommit;

@@ -95,7 +95,19 @@ struct description_by_value : public boost::static_visitor<description_ptr> {
     }
 };
 
+
+template <typename Description>
+std::unique_ptr<description> make_character_description(cpp_odbc::column_description const & source,
+                                                        turbodbc::options const & options)
+{
+    std::size_t const sanitized_size = (source.size == 0 ? options.varchar_max_character_limit : source.size);
+    return std::unique_ptr<description>(new Description(source.name,
+                                                        source.allows_null_values,
+                                                        sanitized_size));
 }
+
+}
+
 
 
 std::unique_ptr<description const> make_description(cpp_odbc::column_description const & source,
@@ -106,14 +118,14 @@ std::unique_ptr<description const> make_description(cpp_odbc::column_description
         case SQL_VARCHAR:
         case SQL_LONGVARCHAR:
             if (options.prefer_unicode) {
-                return std::unique_ptr<description>(new unicode_description(source.name, source.allows_null_values, source.size));
+                return make_character_description<unicode_description>(source, options);
             } else {
-                return std::unique_ptr<description>(new string_description(source.name, source.allows_null_values, source.size));
+                return make_character_description<string_description>(source, options);
             }
         case SQL_WVARCHAR:
         case SQL_WLONGVARCHAR:
         case SQL_WCHAR:
-            return std::unique_ptr<description>(new unicode_description(source.name, source.allows_null_values, source.size));
+            return make_character_description<unicode_description>(source, options);
         case SQL_INTEGER:
         case SQL_SMALLINT:
         case SQL_BIGINT:

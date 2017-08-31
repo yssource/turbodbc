@@ -166,6 +166,48 @@ TEST(MakeDescriptionOfDescriptionTest, UnicodeTypesWithUnicodePreferenceYieldsUn
 }
 
 
+TEST(MakeDescriptionOfDescriptionTest, VarcharMaxRespectsConfiguredLimitForStringPreference)
+{
+    std::size_t const max_size = 0;
+    cpp_odbc::column_description column_description = {name, SQL_VARCHAR, max_size, 0, supports_null_values};
+
+    turbodbc::options options;
+    options.prefer_unicode = false;
+    options.varchar_max_character_limit = 10;
+
+    auto const description = make_description(column_description, options);
+    EXPECT_EQ(10 + 1, description->element_size());
+}
+
+
+TEST(MakeDescriptionOfDescriptionTest, VarcharMaxRespectsConfiguredLimitForUnicodePreference)
+{
+    std::size_t const max_size = 0;
+    cpp_odbc::column_description column_description = {name, SQL_VARCHAR, max_size, 0, supports_null_values};
+
+    turbodbc::options options;
+    options.prefer_unicode = true;
+    options.varchar_max_character_limit = 10;
+
+    auto const description = make_description(column_description, options);
+    EXPECT_EQ(2 * (10 + 1), description->element_size());
+}
+
+
+TEST(MakeDescriptionOfDescriptionTest, VarcharMaxRespectsConfiguredLimitForUnicode)
+{
+    std::size_t const max_size = 0;
+    cpp_odbc::column_description column_description = {name, SQL_WVARCHAR, max_size, 0, supports_null_values};
+
+    turbodbc::options options;
+    options.varchar_max_character_limit = 10;
+
+    auto const description = make_description(column_description, options);
+    EXPECT_EQ(2 * (10 + 1), description->element_size());
+}
+
+
+
 TEST(MakeDescriptionOfDescriptionTest, FloatingPointTypes)
 {
     std::vector<SQLSMALLINT> const types = {
