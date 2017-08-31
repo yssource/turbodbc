@@ -61,7 +61,7 @@
 		},
 
 		"INSERT STRING MAX": {
-			"table": "a VARCHAR(65000)"
+			"table": "a TEXT"
 		},
 
 		"INSERT UNICODE": {
@@ -69,7 +69,7 @@
 		},
 
 		"INSERT UNICODE MAX": {
-			"table": "a VARCHAR(65000)"
+			"table": "a TEXT"
 		},
 
 		"INSERT LONG STRING": {
