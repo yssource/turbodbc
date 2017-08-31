@@ -25,6 +25,7 @@ options, supply keyword arguments to ``make_options()``:
     >>> from turbodbc import Megabytes
     >>> options = make_options(read_buffer_size=Megabytes(100),
     ...                        parameter_sets_to_buffer=1000,
+    ...                        varchar_max_character_limit=10000,
     ...                        use_async_io=True,
     ...                        prefer_unicode=True,
     ...                        autocommit=True,
@@ -57,6 +58,23 @@ Similarly, ``parameter_sets_to_buffer`` changes the number of parameter sets
 which are transferred per batch of parameters (e.g., as sent with ``executemany()``).
 Please note that it is not (yet) possible to use the `Megabytes` and `Rows` classes
 here.
+
+
+.. _advanced_usage_options_varchar_max:
+
+VARCHAR(max) character limit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``varchar_max_character_limit`` specifies the buffer size for result set columns
+of types ``VARCHAR(max)``, ``NVARCHAR(max)``, or similar types your database supports.
+Small values increase the chance of truncation, large ones require more memory. Depending
+on your setting of ``read_buffer_size``, this may increase the total memory consumption
+or reduce the number of rows fetched per batch, thus affecting performance.
+The default value is ``65535`` characters.
+
+.. note::
+    This value does not affect fields of type ``VARCHAR(n)`` with ``n > 0``. Also,
+    this option does not affect parameters that you may pass to the database.
 
 
 Asynchronous input/output

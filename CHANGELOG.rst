@@ -13,6 +13,9 @@ Version 2.2.0 (unreleased)
 *   Added support for ``datetime64[ns]`` data type for ``executemanycolumns()``.
     This is particularly helpful when dealing with `pandas <https://pandas.pydata.org>`_
     ``DataFrame`` objects, since this is the type that contains time stamps.
+*   Fixed an issue with retrieving result sets with ``VARCHAR(max)`` fields and
+    similar types. The size of the buffer allocated for such fields can be controlled
+    with the ``varchar_max_character_limit`` option to ``make_options()``.
 *   Fixed an `issue with some versions of Boost <https://svn.boost.org/trac10/ticket/3471>`_
     that lead to problems with ``datetime64[us]`` columns with ``executemanycolumns()``.
     An overflow when converting microseconds since 1970 to a database-readable timestamp
