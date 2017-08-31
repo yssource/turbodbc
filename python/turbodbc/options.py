@@ -2,6 +2,7 @@ from turbodbc_intern import Options
 
 def make_options(read_buffer_size=None,
                  parameter_sets_to_buffer=None,
+                 varchar_max_character_limit=None,
                  prefer_unicode=None,
                  use_async_io=None,
                  autocommit=None,
@@ -18,6 +19,12 @@ def make_options(read_buffer_size=None,
      or ``turbodbc.Rows``.
     :param parameter_sets_to_buffer: Affects performance. Number of parameter sets (rows) which shall be
      transferred to the server in a single batch when ``executemany()`` is called. Must be an integer.
+    :param varchar_max_character_limit: Affects behavior/performance. If a result set contains fields
+     of type ``VARCHAR(max)`` or ``NVARCHAR(max)`` or the equivalent type of your database, buffers
+     will be allocated to hold the specified number of characters. This may lead to truncation. The
+     default value is ``65535`` characters. Please note that large values reduce the risk of
+     truncation, but may affect the number of rows in a batch of result sets (see ``read_buffer_size``).
+     Thus, performance may be affected.
     :param use_async_io: Affects performance. Set this option to ``True`` if you want to use asynchronous
      I/O, i.e., while Python is busy converting database results to Python objects, new result sets are
      fetched from the database in the background.
@@ -44,6 +51,9 @@ def make_options(read_buffer_size=None,
 
     if not parameter_sets_to_buffer is None:
         options.parameter_sets_to_buffer = parameter_sets_to_buffer
+
+    if not varchar_max_character_limit is None:
+        options.varchar_max_character_limit = varchar_max_character_limit
 
     if not prefer_unicode is None:
         options.prefer_unicode = prefer_unicode
