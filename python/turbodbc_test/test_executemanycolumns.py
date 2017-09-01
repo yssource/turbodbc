@@ -1,16 +1,33 @@
 import datetime
 
+import pytest
+
 from numpy.ma import MaskedArray
 from numpy import array
 
 from query_fixture import query_fixture
 from helpers import open_cursor, for_each_database, for_one_database, generate_microseconds_with_precision
 
+column_backends = ["numpy"]
 
-def _test_basic_column(configuration, fixture, values, dtype):
+try:
+    import pyarrow as pa
+    column_backends.append('arrow')
+    # column_backends.append('pandas')
+except:
+    pass
+
+for_each_column_backend = pytest.mark.parametrize("column_backend",
+                                                  column_backends)
+
+def _test_basic_column(configuration, fixture, values, dtype, column_backend):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, fixture) as table_name:
-            columns = [array(values, dtype=dtype)]
+            if column_backend == 'numpy':
+                columns = [array(values, dtype=dtype)]
+            elif column_backend == 'arrow':
+                columns = pa.Array.from_pandas(array(values, dtype=dtype))
+                columns = pa.Table.from_arrays([columns], ['column'])
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
             assert cursor.rowcount == len(values)
 
@@ -87,8 +104,8 @@ def _test_single_masked_value(configuration, fixture, values, dtype):
             assert results == [[None]]
 
 
-def _full_column_tests(configuration, fixture, values, dtype):
-    _test_basic_column(configuration, fixture, values, dtype)
+def _full_column_tests(configuration, fixture, values, dtype, column_backend):
+    _test_basic_column(configuration, fixture, values, dtype, column_backend)
     _test_column_matches_buffer_size(configuration, fixture, values, dtype)
     _test_column_exceeds_buffer_size(configuration, fixture, values, dtype)
     _test_masked_column(configuration, fixture, values, dtype)
@@ -97,18 +114,21 @@ def _full_column_tests(configuration, fixture, values, dtype):
     _test_single_masked_value(configuration, fixture, values, dtype)
 
 
+@for_each_column_backend
 @for_each_database
-def test_integer_column(dsn, configuration):
-    _full_column_tests(configuration, "INSERT INTEGER", [17, 23, 42], 'int64')
+def test_integer_column(dsn, configuration, column_backend):
+    _full_column_tests(configuration, "INSERT INTEGER", [17, 23, 42], 'int64', column_backend)
 
 
+@for_each_column_backend
 @for_each_database
-def test_float64_column(dsn, configuration):
-    _full_column_tests(configuration, "INSERT DOUBLE", [2.71, 3.14, 6.25], 'float64')
+def test_float64_column(dsn, configuration, column_backend):
+    _full_column_tests(configuration, "INSERT DOUBLE", [2.71, 3.14, 6.25], 'float64', column_backend)
 
 
+@for_each_column_backend
 @for_each_database
-def test_datetime64_microseconds_column(dsn, configuration):
+def test_datetime64_microseconds_column(dsn, configuration, column_backend):
     supported_digits = configuration['capabilities']['fractional_second_digits']
     fractional = generate_microseconds_with_precision(supported_digits)
 
@@ -117,11 +137,13 @@ def test_datetime64_microseconds_column(dsn, configuration):
                        [datetime.datetime(2015, 12, 31, 1, 2, 3, fractional),
                         datetime.datetime(2016, 1, 1, 4, 5, 6, fractional),
                         datetime.datetime(2017, 5, 6, 7, 8, 9, fractional)],
-                       'datetime64[us]')
+                       'datetime64[us]',
+                       column_backend)
 
 
+@for_each_column_backend
 @for_each_database
-def test_datetime64_nanoseconds_column(dsn, configuration):
+def test_datetime64_nanoseconds_column(dsn, configuration, column_backend):
     supported_digits = configuration['capabilities']['fractional_second_digits']
     # C++ unit test checks that conversion method is capable of nanosecond precision
     fractional = generate_microseconds_with_precision(supported_digits)
@@ -131,38 +153,46 @@ def test_datetime64_nanoseconds_column(dsn, configuration):
                        [datetime.datetime(2015, 12, 31, 1, 2, 3, fractional),
                         datetime.datetime(2016, 1, 1, 4, 5, 6, fractional),
                         datetime.datetime(2017, 5, 6, 7, 8, 9, fractional)],
-                       'datetime64[ns]')
+                       'datetime64[ns]',
+                       column_backend)
 
 
+@for_each_column_backend
 @for_each_database
-def test_datetime64_days_column(dsn, configuration):
+def test_datetime64_days_column(dsn, configuration, column_backend):
     _full_column_tests(configuration,
                        "INSERT DATE",
                        [datetime.date(2015, 12, 31),
                         datetime.date(2016, 1, 1),
                         datetime.date(2017, 5, 6)],
-                       'datetime64[D]')
+                       'datetime64[D]',
+                       column_backend)
 
 
+@for_each_column_backend
 @for_each_database
-def test_boolean_column(dsn, configuration):
-    _full_column_tests(configuration, "INSERT BOOL", [True, False, True], 'bool')
+def test_boolean_column(dsn, configuration, column_backend):
+    _full_column_tests(configuration, "INSERT BOOL", [True, False, True], 'bool', column_backend)
 
 
+@for_each_column_backend
 @for_each_database
-def test_string_column(dsn, configuration):
+def test_string_column(dsn, configuration, column_backend):
     _full_column_tests(configuration,
                        "INSERT STRING",
                        ["Simple", "Non-unicode", "Strings"],
-                       'object')
+                       'object',
+                       column_backend)
 
 
+@for_each_column_backend
 @for_each_database
-def test_unicode_column(dsn, configuration):
+def test_unicode_column(dsn, configuration, column_backend):
     _full_column_tests(configuration,
                        "INSERT UNICODE",
                        [u"a\u2665\u2665\u2665\u2665\u2665", u"b\u2665", u"c\u2665\u2665\u2665"],
-                       'object')
+                       'object',
+                       column_backend)
 
 
 def _test_none_in_string_column(configuration, fixture):

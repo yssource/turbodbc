@@ -101,7 +101,11 @@ void set_arrow_parameters(turbodbc::bound_parameter_set & parameters, pybind11::
     arrow::py::unwrap_table(pyarrow_table.ptr(), &table);
 
     if (static_cast<int32_t>(parameters.number_of_parameters()) != table->num_columns()) {
-        throw turbodbc::interface_error("Number of passed columns is not equal to the number of parameters");
+        std::stringstream ss;
+        ss << "Number of passed columns (" << table->num_columns();
+        ss << ") is not equal to the number of parameters (";
+        ss << parameters.number_of_parameters() << ")";
+        throw turbodbc::interface_error(ss.str());
     }
 
     if (table->num_columns() == 0) {
