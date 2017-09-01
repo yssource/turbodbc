@@ -262,6 +262,8 @@ namespace {
         void fill_batch(std::vector<std::pair<bool, String>> const & batch)
         {
             auto const maximum_length = maximum_string_length(batch);
+            // Propagate the maximum string length to the parameters.
+            // These then adjust the size of the underlying buffer.
             parameters.rebind(parameter_index, turbodbc::make_description(type, maximum_length));
             auto & buffer = get_buffer();
             auto const character_size = sizeof(typename String::value_type);
