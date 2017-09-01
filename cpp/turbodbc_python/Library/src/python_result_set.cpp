@@ -39,9 +39,9 @@ namespace {
             case type_code::floating_point:
                 return cast(*reinterpret_cast<double const *>(data_pointer));
             case type_code::string:
-                return reinterpret_steal<object>(PyUnicode_FromString(data_pointer));
+                return reinterpret_steal<object>(PyUnicode_DecodeUTF8(data_pointer, size, "ignore"));
             case type_code::unicode:
-                return reinterpret_steal<object>(PyUnicode_DecodeUTF16(data_pointer, size, NULL, NULL));
+                return reinterpret_steal<object>(PyUnicode_DecodeUTF16(data_pointer, size, "ignore", NULL));
             case type_code::date:
                 return make_date(*reinterpret_cast<SQL_DATE_STRUCT const *>(data_pointer));
             case type_code::timestamp:

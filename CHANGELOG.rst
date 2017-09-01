@@ -22,6 +22,9 @@ Version 2.2.0 (unreleased)
     could happen, badly garbling the timestamps in the process. The issue was
     surfaced with Debian 7's Boost version (1.49), although the Boost
     issue was allegedly fixed with version 1.43.
+*   Fixed an issue that lead to undefined behavior when character sequences
+    could not be decoded into Unicode code points. The new (and defined) behavior
+    is to ignore the offending character sequences completely.
 
 Version 2.1.0
 -------------

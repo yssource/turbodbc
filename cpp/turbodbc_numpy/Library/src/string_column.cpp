@@ -25,7 +25,7 @@ void string_column::do_append(cpp_odbc::multi_value_buffer const & buffer, std::
 		if (element.indicator == SQL_NULL_DATA) {
 			data_.append(pybind11::none());
 		} else {
-			data_.append(reinterpret_steal<object>(PyUnicode_FromString(element.data_pointer)));
+			data_.append(reinterpret_steal<object>(PyUnicode_DecodeUTF8(element.data_pointer, element.indicator, "ignore")));
 		}
 	}
 }
