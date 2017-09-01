@@ -69,6 +69,7 @@ void for_options(pybind11::module & module)
         .def_readwrite("prefer_unicode", &turbodbc::options::prefer_unicode)
         .def_readwrite("autocommit", &turbodbc::options::autocommit)
         .def_readwrite("large_decimals_as_64_bit_types", &turbodbc::options::large_decimals_as_64_bit_types)
+        .def_readwrite("limit_varchar_results_to_max", &turbodbc::options::limit_varchar_results_to_max)
     ;
 
 }

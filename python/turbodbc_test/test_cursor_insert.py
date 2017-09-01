@@ -53,6 +53,18 @@ def test_insert_string_max_column(dsn, configuration):
 
 
 @for_each_database
+def test_insert_string_column_with_limit(dsn, configuration):
+    with open_cursor(configuration,
+                     varchar_max_character_limit=9,
+                     limit_varchar_results_to_max=True) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT LONG STRING') as table_name:
+            cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), ['Truncated strings suck'])
+            cursor.execute("SELECT a FROM {}".format(table_name))
+
+            assert cursor.fetchall() == [['Truncated']]
+
+
+@for_each_database
 def test_insert_unicode_column(dsn, configuration):
     _test_insert_many(configuration,
                       'INSERT UNICODE',
@@ -64,6 +76,18 @@ def test_insert_unicode_max_column(dsn, configuration):
     _test_insert_many(configuration,
                       'INSERT UNICODE MAX',
                       [[u'a I \u2665 unicode'], [u'b I really d\u00f8']])
+
+
+# @for_each_database
+# def test_insert_unicode_column_with_limit(dsn, configuration):
+#     with open_cursor(configuration,
+#                      varchar_max_character_limit=4,
+#                      limit_varchar_results_to_max=True) as cursor:
+#         with query_fixture(cursor, configuration, 'INSERT LONG STRING') as table_name:
+#             cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), [u'I \u2665 truncated'])
+#             cursor.execute("SELECT a FROM {}".format(table_name))
+#
+#             assert cursor.fetchall() == [[u'I \u2665']]
 
 
 @for_each_database

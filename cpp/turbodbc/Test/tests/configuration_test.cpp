@@ -18,6 +18,7 @@ TEST(ConfigurationTest, OptionsDefaults)
     EXPECT_FALSE(options.prefer_unicode);
     EXPECT_FALSE(options.autocommit);
     EXPECT_FALSE(options.large_decimals_as_64_bit_types);
+    EXPECT_FALSE(options.limit_varchar_results_to_max);
 }
 
 
