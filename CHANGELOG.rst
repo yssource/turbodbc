@@ -22,6 +22,9 @@ Version 2.2.0 (unreleased)
     could happen, badly garbling the timestamps in the process. The issue was
     surfaced with Debian 7's Boost version (1.49), although the Boost
     issue was allegedly fixed with version 1.43.
+*   Updated Apache Arrow support to work with version 0.6.x
+*   NumPy and Apache Arrow requirements can now be enforced using extra requirements:
+    `pip install turbodbc[arrow,numpy]`
 
 Version 2.1.0
 -------------

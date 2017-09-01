@@ -204,6 +204,11 @@ setup(name = 'turbodbc',
       author='Michael Koenig',
       author_email = 'michael.koenig@blue-yonder.com',
       packages = ['turbodbc'],
+      extras_require={
+          # We pin Apache Arrow quite restrictively until they guarantee a stable API
+          'arrow': ['pyarrow>=0.6,<0.7'],
+          'numpy': 'numpy>=1.10.4'
+      },
       classifiers = ['Development Status :: 5 - Production/Stable',
                      'Intended Audience :: Developers',
                      'License :: OSI Approved :: MIT License',
