@@ -27,7 +27,7 @@ column::~column() = default;
 
 column_info column::get_info() const
 {
-	return {description_->name(), description_->get_type_code(), description_->supports_null_values()};
+	return {description_->name(), description_->get_type_code(), description_->element_size(), description_->supports_null_values()};
 }
 
 cpp_odbc::multi_value_buffer const & column::get_buffer() const

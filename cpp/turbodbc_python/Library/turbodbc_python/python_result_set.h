@@ -1,8 +1,6 @@
 #pragma once
 
 #include <turbodbc/result_sets/row_based_result_set.h>
-#include <turbodbc/field.h>
-#include <turbodbc/field_translator.h>
 #include <pybind11/pybind11.h>
 
 namespace turbodbc { namespace result_sets {
@@ -32,7 +30,7 @@ public:
 
 private:
 	row_based_result_set row_based_;
-	std::vector<type_code> types_;
+	std::vector<column_info> columns_;
 };
 
 } }

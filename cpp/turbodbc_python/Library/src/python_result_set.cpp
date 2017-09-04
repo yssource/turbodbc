@@ -3,6 +3,7 @@
 #include <turbodbc/make_field_translator.h>
 
 #include <sql.h>
+#include <sqlext.h>
 #include <Python.h>
 #include <datetime.h> // Python header
 
@@ -29,9 +30,9 @@ namespace {
                                                                     ts.hour, ts.minute, ts.second, adjusted_fraction));
     }
 
-    object make_object(turbodbc::type_code code, char const * data_pointer, int64_t size)
+    object make_object(turbodbc::column_info const & info, char const * data_pointer, int64_t size)
     {
-        switch (code) {
+        switch (info.type) {
             case type_code::boolean:
                 return cast(*reinterpret_cast<bool const *>(data_pointer));
             case type_code::integer:
@@ -39,9 +40,13 @@ namespace {
             case type_code::floating_point:
                 return cast(*reinterpret_cast<double const *>(data_pointer));
             case type_code::string:
-                return reinterpret_steal<object>(PyUnicode_DecodeUTF8(data_pointer, size, "ignore"));
+                return reinterpret_steal<object>(PyUnicode_DecodeUTF8(data_pointer,
+                                                                      size == SQL_NO_TOTAL ? (info.element_size - 1) : size,
+                                                                      "ignore"));
             case type_code::unicode:
-                return reinterpret_steal<object>(PyUnicode_DecodeUTF16(data_pointer, size, "ignore", NULL));
+                return reinterpret_steal<object>(PyUnicode_DecodeUTF16(data_pointer,
+                                                                       size == SQL_NO_TOTAL ? (info.element_size - 2) : size,
+                                                                       "ignore", NULL));
             case type_code::date:
                 return make_date(*reinterpret_cast<SQL_DATE_STRUCT const *>(data_pointer));
             case type_code::timestamp:
@@ -55,17 +60,15 @@ namespace {
 
 
 python_result_set::python_result_set(result_set & base) :
-    row_based_(base)
+    row_based_(base),
+    columns_(row_based_.get_column_info())
 {
     PyDateTime_IMPORT;
-    for (auto const & info : row_based_.get_column_info()) {
-        types_.emplace_back(info.type);
-    }
 }
 
 std::vector<column_info> python_result_set::get_column_info() const
 {
-    return row_based_.get_column_info();
+    return columns_;
 }
 
 
@@ -74,11 +77,13 @@ object python_result_set::fetch_row()
     auto const row = row_based_.fetch_row();
     if (not row.empty()) {
         pybind11::list python_row;
-        for (std::size_t column = 0; column != row.size(); ++column) {
-            if (row[column].indicator == SQL_NULL_DATA) {
+        for (std::size_t column_index = 0; column_index != row.size(); ++column_index) {
+            if (row[column_index].indicator == SQL_NULL_DATA) {
                 python_row.append(pybind11::none());
             } else {
-                python_row.append(make_object(types_[column], row[column].data_pointer, row[column].indicator));
+                python_row.append(make_object(columns_[column_index],
+                                              row[column_index].data_pointer,
+                                              row[column_index].indicator));
             }
         }
         return python_row;
