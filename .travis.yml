@@ -112,6 +112,9 @@ script:
   - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/ -s $PWD -X gcov
   - cd ../..
   - echo "Uploading C++ coverage"
+  - ls $PWD/gcov/*#Applications#Xcode.app#Contents#Developer#Toolchains#XcodeDefault.xctoolchain#usr#bin#^#include#c++#*.gcov
+  - rm -f 'gcov/*#Applications#Xcode.app#Contents#Developer#Toolchains#XcodeDefault.xctoolchain#usr#bin#^#include#c++#*.gcov'
+  - rm -f 'gcov/*#turbodbc#pybind11#include#*.gcov'
   - bash <(curl -s https://codecov.io/bash) -s $PWD/gcov/ -X coveragepy -X gcov
 
   - cd build
