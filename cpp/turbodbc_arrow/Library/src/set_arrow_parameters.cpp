@@ -2,6 +2,7 @@
 
 #include <turbodbc/errors.h>
 #include <turbodbc/make_description.h>
+#include <turbodbc/time_helpers.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -11,10 +12,16 @@
 using arrow::BooleanArray;
 using arrow::BinaryArray;
 using arrow::ChunkedArray;
+using arrow::Date32Array;
+using arrow::DoubleType;
 using arrow::Int64Type;
 using arrow::NumericArray;
 using arrow::StringArray;
 using arrow::Table;
+using arrow::TimestampArray;
+using arrow::TimestampType;
+using arrow::TimeUnit;
+using arrow::TypeTraits;
 
 namespace turbodbc_arrow {
 
@@ -118,23 +125,46 @@ namespace {
         turbodbc::type_code type;
     };
 
-    struct int64_converter : public parameter_converter {
-      using parameter_converter::parameter_converter;
-
+    template <typename ArrowType>
+    struct numeric_converter : public parameter_converter {
+        numeric_converter(std::shared_ptr<ChunkedArray> const & data,
+                         turbodbc::bound_parameter_set & parameters,
+                         std::size_t parameter_index,
+                         turbodbc::type_code type) :
+            parameter_converter(data, parameters, parameter_index)
+        {
+          parameters.rebind(parameter_index, turbodbc::make_description(type, 0));
+        }
+      
       void set_batch(int64_t start, int64_t elements) final {
-        // parameters.rebind(parameter_index, turbodbc::make_description(turbodbc::type_code::integer, 0));
         auto & buffer = get_buffer();
 
         if (data->num_chunks() != 1) {
           throw turbodbc::interface_error("Chunked int64 columns are not yet supported");
         }
 
-        auto const& typed_array = static_cast<const NumericArray<Int64Type>&>(*data->chunk(0));
-        int64_t const* data_ptr = typed_array.raw_values();
-        memcpy(buffer.data_pointer(), data_ptr + start, elements * sizeof(int64_t));
+        auto const& typed_array = static_cast<const typename TypeTraits<ArrowType>::ArrayType&>(*data->chunk(0));
+        typename ArrowType::c_type const* data_ptr = typed_array.raw_values();
+        memcpy(buffer.data_pointer(), data_ptr + start, elements * sizeof(typename ArrowType::c_type));
 
-        set_indicator<sizeof(int64_t)>(buffer, start, elements);
+        set_indicator<sizeof(typename ArrowType::c_type)>(buffer, start, elements);
       }
+    };
+
+    struct double_converter : public numeric_converter<DoubleType> {
+        double_converter(std::shared_ptr<ChunkedArray> const & data,
+                         turbodbc::bound_parameter_set & parameters,
+                         std::size_t parameter_index) :
+            numeric_converter<DoubleType>(data, parameters, parameter_index, turbodbc::type_code::floating_point)
+        { }
+    };
+    
+    struct int64_converter : public numeric_converter<Int64Type> {
+        int64_converter(std::shared_ptr<ChunkedArray> const & data,
+                         turbodbc::bound_parameter_set & parameters,
+                         std::size_t parameter_index) :
+            numeric_converter<Int64Type>(data, parameters, parameter_index, turbodbc::type_code::integer)
+        { }
     };
 
     struct bool_converter : public parameter_converter {
@@ -165,6 +195,80 @@ namespace {
       };
     };
 
+    struct date_converter : public parameter_converter {
+        date_converter(std::shared_ptr<ChunkedArray> const & data,
+                         turbodbc::bound_parameter_set & parameters,
+                         std::size_t parameter_index) :
+            parameter_converter(data, parameters, parameter_index)
+        {
+          parameters.rebind(parameter_index, turbodbc::make_description(turbodbc::type_code::date, 0));
+        }
+
+      void set_batch(int64_t start, int64_t elements) final {
+        if (data->num_chunks() != 1) {
+          throw turbodbc::interface_error("Chunked int64 columns are not yet supported");
+        }
+
+        auto & buffer = get_buffer();
+        auto const& typed_array = static_cast<const Date32Array&>(*data->chunk(0));
+        for (int64_t i = 0; i != elements; ++i) {
+          auto element = buffer[i];
+          if (not typed_array.IsNull(start + i)) {
+            turbodbc::days_to_date(typed_array.Value(start + i), element.data_pointer);
+            element.indicator = sizeof(SQL_DATE_STRUCT);
+          } else {
+            element.indicator = SQL_NULL_DATA; 
+          }
+        }
+      };
+    };
+
+    struct timestamp_converter : public parameter_converter {
+        timestamp_converter(std::shared_ptr<ChunkedArray> const & data,
+                         turbodbc::bound_parameter_set & parameters,
+                         std::size_t parameter_index) :
+            parameter_converter(data, parameters, parameter_index)
+        {
+          parameters.rebind(parameter_index, turbodbc::make_description(turbodbc::type_code::timestamp, 0));
+        }
+
+        virtual void convert(std::int64_t data, char * destination) = 0;
+
+      void set_batch(int64_t start, int64_t elements) final {
+        if (data->num_chunks() != 1) {
+          throw turbodbc::interface_error("Chunked columns are not yet supported");
+        }
+
+        auto & buffer = get_buffer();
+        auto const& typed_array = static_cast<const TimestampArray&>(*data->chunk(0));
+        for (int64_t i = 0; i != elements; ++i) {
+          auto element = buffer[i];
+          if (not typed_array.IsNull(start + i)) {
+            convert(typed_array.Value(start + i), element.data_pointer);
+            element.indicator = sizeof(SQL_TIMESTAMP_STRUCT);
+          } else {
+            element.indicator = SQL_NULL_DATA; 
+          }
+        }
+      }
+    };
+
+    struct nanosecond_converter : public timestamp_converter {
+      using timestamp_converter::timestamp_converter;
+
+        void convert(std::int64_t data, char * destination) final {
+            turbodbc::nanoseconds_to_timestamp(data, destination);
+        }
+    };
+
+    struct microsecond_converter : public timestamp_converter {
+      using timestamp_converter::timestamp_converter;
+
+        void convert(std::int64_t data, char * destination) final {
+            turbodbc::microseconds_to_timestamp(data, destination);
+        }
+    };
+
     std::vector<std::unique_ptr<parameter_converter>> make_converters(
         Table const & table,
         turbodbc::bound_parameter_set & parameters)
@@ -183,11 +287,30 @@ namespace {
               case arrow::Type::STRING:
                 converters.emplace_back(new string_converter(data, parameters, i));
                 break;
+              case arrow::Type::DATE32:
+                converters.emplace_back(new date_converter(data, parameters, i));
+                break;
+              case arrow::Type::TIMESTAMP: 
+                {
+                  auto const& time_dtype = static_cast<TimestampType const&>(*data->type());
+                  switch (time_dtype.unit()) {
+                    case TimeUnit::MICRO:
+                      converters.emplace_back(new microsecond_converter(data, parameters, i));
+                      break;
+                    case TimeUnit::NANO:
+                      converters.emplace_back(new nanosecond_converter(data, parameters, i));
+                      break;
+                    default:
+                      throw turbodbc::interface_error("Unsupported timestamp resolution");
+                  }
+                }
+                break;
               case arrow::Type::BOOL:
                 converters.emplace_back(new bool_converter(data, parameters, i));
                 break;
-              // TODO: timestamp, date, bool
               case arrow::Type::DOUBLE:
+                converters.emplace_back(new double_converter(data, parameters, i));
+                break;
               default:
                 std::ostringstream message;
                 message << "Unsupported Arrow type for column " << (i + 1) << " of ";
