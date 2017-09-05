@@ -24,6 +24,7 @@ TEST(BaseResultSetTest, GetColumnInfoForwards)
     mock_result_set rs;
     std::vector<turbodbc::column_info> expected = {{"column name",
                                                     turbodbc::type_code::integer,
+                                                    10,
                                                     true}};
 
     EXPECT_CALL(rs, do_get_column_info()).WillOnce(testing::Return(expected));

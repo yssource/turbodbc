@@ -53,7 +53,7 @@ def test_insert_string_max_column(dsn, configuration):
 
 
 @for_each_database
-def test_insert_string_column_with_limit(dsn, configuration):
+def test_insert_string_column_with_truncation(dsn, configuration):
     with open_cursor(configuration,
                      varchar_max_character_limit=9,
                      limit_varchar_results_to_max=True) as cursor:
@@ -79,11 +79,11 @@ def test_insert_unicode_max_column(dsn, configuration):
 
 
 @for_each_database
-def test_insert_unicode_column_with_limit(dsn, configuration):
+def test_insert_unicode_column_with_truncation(dsn, configuration):
     with open_cursor(configuration,
                      varchar_max_character_limit=4,
                      limit_varchar_results_to_max=True) as cursor:
-        with query_fixture(cursor, configuration, 'INSERT LONG STRING') as table_name:
+        with query_fixture(cursor, configuration, 'INSERT UNICODE MAX') as table_name:
             cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), [u'I \u2665 truncated'])
             cursor.execute("SELECT a FROM {}".format(table_name))
 
