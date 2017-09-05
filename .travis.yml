@@ -106,6 +106,8 @@ script:
   - mkdir gcov
   - cd gcov
   - gcov -l -p `find ../build -name "*.gcda"` > /dev/null
+  - rm `find . -name "*#boost#*"`
+  - rm `find . -name "*#c++#*"`
   - cd ..
   - cd python/turbodbc_test/
   - echo "Uploading Python coverage"
