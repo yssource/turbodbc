@@ -106,8 +106,9 @@ script:
   - mkdir gcov
   - cd gcov
   - gcov -l -p `find ../build -name "*.gcda"` > /dev/null
-  - rm *#boost#*
-  - rm *#c++#*
+  - echo "Removing coverage for boost and C++ standard library"
+  - find . -name "*#boost#*" | xargs rm
+  - find . -name "*#c++#*" | xargs rm
   - cd ..
   - cd python/turbodbc_test/
   - echo "Uploading Python coverage"
