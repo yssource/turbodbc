@@ -53,6 +53,18 @@ def test_insert_string_max_column(dsn, configuration):
 
 
 @for_each_database
+def test_insert_string_column_with_truncation(dsn, configuration):
+    with open_cursor(configuration,
+                     varchar_max_character_limit=9,
+                     limit_varchar_results_to_max=True) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT LONG STRING') as table_name:
+            cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), ['Truncated strings suck'])
+            cursor.execute("SELECT a FROM {}".format(table_name))
+
+            assert cursor.fetchall() == [['Truncated']]
+
+
+@for_each_database
 def test_insert_unicode_column(dsn, configuration):
     _test_insert_many(configuration,
                       'INSERT UNICODE',
@@ -64,6 +76,23 @@ def test_insert_unicode_max_column(dsn, configuration):
     _test_insert_many(configuration,
                       'INSERT UNICODE MAX',
                       [[u'a I \u2665 unicode'], [u'b I really d\u00f8']])
+
+
+@for_each_database
+def test_insert_unicode_column_with_truncation(dsn, configuration):
+    with open_cursor(configuration,
+                     varchar_max_character_limit=4,
+                     limit_varchar_results_to_max=True) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT UNICODE MAX') as table_name:
+            cursor.execute("INSERT INTO {} VALUES (?)".format(table_name), [u'I \u2665 truncated'])
+            cursor.execute("SELECT a FROM {}".format(table_name))
+
+            # depending on the database and the settings, this test may cut through the
+            # multi-byte UTF-8 representation of \u2665, or it may not if UTF-16 characters
+            # are used. Hence, the assertions are more fuzzy than expected.
+            truncated = cursor.fetchall()[0]
+            assert len(truncated) > 0
+            assert len(truncated) <= 4
 
 
 @for_each_database

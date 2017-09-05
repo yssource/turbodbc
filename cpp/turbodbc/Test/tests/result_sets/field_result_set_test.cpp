@@ -19,7 +19,7 @@ struct mock_result_set : public turbodbc::result_sets::result_set
 TEST(FieldResultSetTest, GetColumnInfoForwards)
 {
     testing::NiceMock<mock_result_set> base;
-    std::vector<turbodbc::column_info> const info = {{"my column", turbodbc::type_code::integer, true}};
+    std::vector<turbodbc::column_info> const info = {{"my column", turbodbc::type_code::integer, 8, true}};
     ON_CALL(base, do_get_column_info()).WillByDefault(testing::Return(info));
 
     field_result_set rs(base);
@@ -34,8 +34,8 @@ TEST(FieldResultSetTest, FetchRow)
     double const expected_float = 3.14;
     cpp_odbc::multi_value_buffer buffer_int(8, 3);
     cpp_odbc::multi_value_buffer buffer_float(8, 3);
-    std::vector<turbodbc::column_info> const infos = {{"my column", turbodbc::type_code::integer, true},
-                                                      {"my column", turbodbc::type_code::floating_point, true}};
+    std::vector<turbodbc::column_info> const infos = {{"my column", turbodbc::type_code::integer, 8, true},
+                                                      {"my column", turbodbc::type_code::floating_point, 8, true}};
 
     *reinterpret_cast<intptr_t *>(buffer_int[0].data_pointer) = expected_int;
     buffer_int[0].indicator = 8;
@@ -59,7 +59,7 @@ TEST(FieldResultSetTest, FetchRow)
 TEST(FieldResultSetTest, FetchRowEmptyResultSet)
 {
     cpp_odbc::multi_value_buffer buffer(8, 3);
-    std::vector<turbodbc::column_info> const infos = {{"my column", turbodbc::type_code::integer, true}};
+    std::vector<turbodbc::column_info> const infos = {{"my column", turbodbc::type_code::integer, 8, true}};
 
     std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>> buffers = {std::cref(buffer)};
 

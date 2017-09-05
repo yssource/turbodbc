@@ -6,7 +6,8 @@ def make_options(read_buffer_size=None,
                  prefer_unicode=None,
                  use_async_io=None,
                  autocommit=None,
-                 large_decimals_as_64_bit_types=None):
+                 large_decimals_as_64_bit_types=None,
+                 limit_varchar_results_to_max=None):
     """
     Create options that control how turbodbc interacts with a database. These
     options affect performance for the most part, but some options may require adjustment
@@ -24,7 +25,8 @@ def make_options(read_buffer_size=None,
      will be allocated to hold the specified number of characters. This may lead to truncation. The
      default value is ``65535`` characters. Please note that large values reduce the risk of
      truncation, but may affect the number of rows in a batch of result sets (see ``read_buffer_size``).
-     Thus, performance may be affected.
+     Please note that this option only relates to retrieving results, not sending parameters to the
+     database.
     :param use_async_io: Affects performance. Set this option to ``True`` if you want to use asynchronous
      I/O, i.e., while Python is busy converting database results to Python objects, new result sets are
      fetched from the database in the background.
@@ -41,6 +43,15 @@ def make_options(read_buffer_size=None,
      point numbers (``y > 0``), respectively. Use this option if your decimal data types are larger
      than the data they actually hold. Using this data type can lead to overflow errors and loss
      of precision. If not set or set to ``False``, large decimals are rendered as strings.
+    :param limit_varchar_results_to_max: Affects behavior/performance. If set to ``True``,
+     any text-like fields such as ``VARCHAR(n)`` and ``NVARCHAR(n)`` will be limited to a maximum
+     size of ``varchar_max_character_limit`` characters. This may lead to values being truncated,
+     but reduces the amount of memory required to allocate string buffers, leading to larger, more
+     efficient batches. If not set or set to ``False``, strings can exceed ``varchar_max_character_limit``
+     in size if the database reports them this way. For fields such as ``TEXT``, some databases
+     report a size of 2 billion characters.
+     Please note that this option only relates to retrieving results, not sending parameters to the
+     database.
     :return: An option struct that is suitable to pass to the ``turbodbc_options`` parameter of
      ``turbodbc.connect()``
     """
@@ -66,5 +77,8 @@ def make_options(read_buffer_size=None,
 
     if not large_decimals_as_64_bit_types is None:
         options.large_decimals_as_64_bit_types = large_decimals_as_64_bit_types
+
+    if not limit_varchar_results_to_max is None:
+        options.limit_varchar_results_to_max = limit_varchar_results_to_max
 
     return options

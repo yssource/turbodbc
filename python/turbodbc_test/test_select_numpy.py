@@ -211,6 +211,18 @@ def test_numpy_string_column(dsn, configuration):
 
 
 @for_each_database
+def test_numpy_string_column_with_truncation(dsn, configuration):
+    with open_cursor(configuration, varchar_max_character_limit=9, limit_varchar_results_to_max=True) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT STRING MAX') as table_name:
+            cursor.execute('INSERT INTO {} VALUES (?)'.format(table_name), [u'truncated string'])
+            cursor.execute('SELECT a FROM {}'.format(table_name))
+            results = cursor.fetchallnumpy()
+            expected = MaskedArray([u'truncated'], mask=[0], dtype=numpy.object_)
+            assert results[_fix_case(configuration, 'a')].dtype == numpy.object_
+            assert_equal(results[_fix_case(configuration, 'a')], expected)
+
+
+@for_each_database
 def test_numpy_unicode_column(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT UNICODE') as table_name:
@@ -218,6 +230,18 @@ def test_numpy_unicode_column(dsn, configuration):
             cursor.execute('SELECT a FROM {}'.format(table_name))
             results = cursor.fetchallnumpy()
             expected = MaskedArray([u'unicode \u2665'], mask=[0], dtype=numpy.object_)
+            assert results[_fix_case(configuration, 'a')].dtype == numpy.object_
+            assert_equal(results[_fix_case(configuration, 'a')], expected)
+
+
+@for_each_database
+def test_numpy_unicode_column_with_truncation(dsn, configuration):
+    with open_cursor(configuration, rows_to_buffer=1, varchar_max_character_limit=9, limit_varchar_results_to_max=True) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT UNICODE MAX') as table_name:
+            cursor.execute('INSERT INTO {} VALUES (?)'.format(table_name), [u'truncated string'])
+            cursor.execute('SELECT a FROM {}'.format(table_name))
+            results = cursor.fetchallnumpy()
+            expected = MaskedArray([u'truncated'], mask=[0], dtype=numpy.object_)
             assert results[_fix_case(configuration, 'a')].dtype == numpy.object_
             assert_equal(results[_fix_case(configuration, 'a')], expected)
 

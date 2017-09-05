@@ -29,7 +29,8 @@ options, supply keyword arguments to ``make_options()``:
     ...                        use_async_io=True,
     ...                        prefer_unicode=True,
     ...                        autocommit=True,
-    ...                        large_decimals_as_64_bit_types=True)
+    ...                        large_decimals_as_64_bit_types=True,
+    ...                        limit_varchar_results_to_max=True)
 
 
 .. _advanced_usage_options_read_buffer:
@@ -47,7 +48,8 @@ batches of 13 rows. By default, turbodbc fetches results in batches of 20 MB.
 Please note that sometimes a single row of a result set may exceed the specified
 buffer size. This can happen if large fields such as ``VARCHAR(8000000)`` or ``TEXT``
 are part of the result set. In this case, results are fetched in batches of single rows
-that exceed the specified size.
+that exceed the specified size. Buffer sizes for large text fields can be controlled
+with the :ref:`advanced_usage_options_varchar_max` and XXX options.
 
 .. _advanced_usage_options_write_buffer:
 
@@ -73,8 +75,9 @@ or reduce the number of rows fetched per batch, thus affecting performance.
 The default value is ``65535`` characters.
 
 .. note::
-    This value does not affect fields of type ``VARCHAR(n)`` with ``n > 0``. Also,
-    this option does not affect parameters that you may pass to the database.
+    This value does not affect fields of type ``VARCHAR(n)`` with ``n > 0``, unless
+    the option :ref:`advanced_usage_options_limit_varchar_results` is set. Also, this
+    option does not affect parameters that you may pass to the database.
 
 
 Asynchronous input/output
@@ -132,6 +135,25 @@ Please note that this option may lead to overflows or loss of precision. If,
 however, your data type is much larger than the data it is supposed to hold,
 this option is very useful to obtain numeric Python objects and
 :ref:`NumPy arrays <advanced_usage_numpy>`.
+
+
+.. _advanced_usage_options_limit_varchar_results:
+
+Limit VARCHAR results to MAX
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Set ``limit_varchar_results_to_max`` to ``True`` if you want to limit *all*
+string-like fields (``VARCHAR(n)``, ``NVARCHAR(n)``, etc. with ``n > 0``) in
+result sets to a maximum of :ref:`advanced_usage_options_varchar_max` characters.
+
+Please note that enabling this option can lead to truncation of string-like
+data when retrieving results. Parameters sent to the database are not
+affected by this option.
+
+If not set or set to ``False``, string-like result fields with a specific size will
+*always* be retrieved with a sufficiently large buffer so that no truncation occurs.
+String-like fields of indeterminate size (``VARCHAR(max)``, ``TEXT``, etc. on some
+databases) are still subject to :ref:`advanced_usage_options_varchar_max`.
 
 
 Controlling autocommit behavior at runtime
