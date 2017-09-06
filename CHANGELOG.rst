@@ -16,6 +16,9 @@ Version 2.2.0 (unreleased)
 *   Added the keyword argument ``limit_varchar_results_to_max`` to ``make_options()``. This
     allows to truncate ``VARCHAR(n)`` fields to ``varchar_max_character_limit``
     characters, see the next item.
+*   Added possibility to enforce NumPy and Apache Arrow requirements using extra requirements
+    during installation: ``pip install turbodbc[arrow,numpy]``
+*   Updated Apache Arrow support to work with version 0.6.x
 *   Fixed an issue with retrieving result sets with ``VARCHAR(max)`` fields and
     similar types. The size of the buffer allocated for such fields can be controlled
     with the ``varchar_max_character_limit`` option to ``make_options()``.
@@ -28,6 +31,7 @@ Version 2.2.0 (unreleased)
 *   Fixed an issue that lead to undefined behavior when character sequences
     could not be decoded into Unicode code points. The new (and defined) behavior
     is to ignore the offending character sequences completely.
+
 
 Version 2.1.0
 -------------

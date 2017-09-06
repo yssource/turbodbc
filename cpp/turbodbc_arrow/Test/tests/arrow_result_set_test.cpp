@@ -43,7 +43,7 @@ class ArrowResultSetTest : public ::testing::Test {
             size_t bytes_per_value = std::dynamic_pointer_cast<arrow::FixedWidthType>(array->type())->bit_width() / 8;
             auto typed_array = std::dynamic_pointer_cast<arrow::PrimitiveArray>(array);
             buffers.emplace_back(cpp_odbc::multi_value_buffer(bytes_per_value, size));
-            memcpy(buffers.back().data_pointer(), typed_array->data()->data() + (bytes_per_value * offset), bytes_per_value * size);
+            memcpy(buffers.back().data_pointer(), typed_array->raw_values() + (bytes_per_value * offset), bytes_per_value * size);
             for (size_t i = 0; i < size; i++) {
                 if (array->IsNull(i + offset)) {
                     buffers.back().indicator_pointer()[i] = SQL_NULL_DATA;
@@ -183,7 +183,7 @@ TEST_F(ArrowResultSetTest, SingleBatchSingleColumnResultSetConversion)
     // Mock output columns
     // * Single batch of 100 ints
     cpp_odbc::multi_value_buffer buffer(sizeof(int64_t), OUTPUT_SIZE);
-    memcpy(buffer.data_pointer(), typed_array->data()->data(), sizeof(int64_t) * OUTPUT_SIZE);
+    memcpy(buffer.data_pointer(), typed_array->raw_values(), sizeof(int64_t) * OUTPUT_SIZE);
     std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>> expected_buffers = {buffer};
     EXPECT_CALL(rs, do_get_buffers()).WillOnce(testing::Return(expected_buffers));
     EXPECT_CALL(rs, do_fetch_next_batch()).WillOnce(testing::Return(OUTPUT_SIZE)).WillOnce(testing::Return(0));
