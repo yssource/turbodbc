@@ -7,6 +7,7 @@ Turbodbc - Turbocharged database access for data scientists.
 [![Build status](https://ci.appveyor.com/api/projects/status/e1e8wlidpvpmcauu/branch/master?svg=true)](https://ci.appveyor.com/project/MathMagique/turbodbc/branch/master)
 [![Documentation Status](https://readthedocs.org/projects/turbodbc/badge/?version=latest)](http://turbodbc.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/blue-yonder/turbodbc/branch/master/graph/badge.svg)](https://codecov.io/gh/blue-yonder/turbodbc)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/turbodbc/badges/installer/conda.svg)](https://conda.anaconda.org/conda-forge)
 
 Turbodbc is a Python module to access relational databases via the
 [Open Database Connectivity (ODBC)](https://en.wikipedia.org/wiki/Open_Database_Connectivity)

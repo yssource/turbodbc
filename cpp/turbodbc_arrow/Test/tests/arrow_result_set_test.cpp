@@ -9,14 +9,17 @@
 #include <gmock/gmock.h>
 #include <sql.h>
 
-const int64_t OUTPUT_SIZE = 100;
+namespace {
 
-struct mock_result_set : public turbodbc::result_sets::result_set
-{
-    MOCK_METHOD0(do_fetch_next_batch, std::size_t());
-    MOCK_CONST_METHOD0(do_get_column_info, std::vector<turbodbc::column_info>());
-    MOCK_CONST_METHOD0(do_get_buffers, std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>>());
-};
+    const int64_t OUTPUT_SIZE = 100;
+    const std::size_t size_unimportant = 8;
+
+    struct mock_result_set : public turbodbc::result_sets::result_set {
+        MOCK_METHOD0(do_fetch_next_batch, std::size_t());
+        MOCK_CONST_METHOD0(do_get_column_info, std::vector<turbodbc::column_info>());
+        MOCK_CONST_METHOD0(do_get_buffers, std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>>());
+    };
+}
 
 class ArrowResultSetTest : public ::testing::Test {
     public:
@@ -108,7 +111,7 @@ class ArrowResultSetTest : public ::testing::Test {
 TEST_F(ArrowResultSetTest, SimpleSchemaConversion)
 {
     std::vector<turbodbc::column_info> expected = {{
-        "int_column", turbodbc::type_code::integer, true}};
+        "int_column", turbodbc::type_code::integer, size_unimportant, true}};
     EXPECT_CALL(rs, do_get_column_info()).WillRepeatedly(testing::Return(expected));
 
     turbodbc_arrow::arrow_result_set ars(rs);
@@ -123,18 +126,18 @@ TEST_F(ArrowResultSetTest, SimpleSchemaConversion)
 TEST_F(ArrowResultSetTest, AllTypesSchemaConversion)
 {
     MockSchema({
-        {"float_column", turbodbc::type_code::floating_point, true},
-        {"boolean_column", turbodbc::type_code::boolean, true},
-        {"timestamp_column", turbodbc::type_code::timestamp, true},
-        {"date_column", turbodbc::type_code::date, true},
-        {"string_column", turbodbc::type_code::string, true},
-        {"int_column", turbodbc::type_code::integer, true},
-        {"nonnull_float_column", turbodbc::type_code::floating_point, false},
-        {"nonnull_boolean_column", turbodbc::type_code::boolean, false},
-        {"nonnull_timestamp_column", turbodbc::type_code::timestamp, false},
-        {"nonnull_date_column", turbodbc::type_code::date, false},
-        {"nonnull_string_column", turbodbc::type_code::string, false},
-        {"nonnull_int_column", turbodbc::type_code::integer, false}});
+        {"float_column", turbodbc::type_code::floating_point, size_unimportant, true},
+        {"boolean_column", turbodbc::type_code::boolean, size_unimportant, true},
+        {"timestamp_column", turbodbc::type_code::timestamp, size_unimportant, true},
+        {"date_column", turbodbc::type_code::date, size_unimportant, true},
+        {"string_column", turbodbc::type_code::string, size_unimportant, true},
+        {"int_column", turbodbc::type_code::integer, size_unimportant, true},
+        {"nonnull_float_column", turbodbc::type_code::floating_point, size_unimportant, false},
+        {"nonnull_boolean_column", turbodbc::type_code::boolean, size_unimportant, false},
+        {"nonnull_timestamp_column", turbodbc::type_code::timestamp, size_unimportant, false},
+        {"nonnull_date_column", turbodbc::type_code::date, size_unimportant, false},
+        {"nonnull_string_column", turbodbc::type_code::string, size_unimportant, false},
+        {"nonnull_int_column", turbodbc::type_code::integer, size_unimportant, false}});
 
     std::vector<std::shared_ptr<arrow::Field>> expected_fields = {
         std::make_shared<arrow::Field>("float_column", arrow::float64()),
@@ -175,7 +178,7 @@ TEST_F(ArrowResultSetTest, SingleBatchSingleColumnResultSetConversion)
     std::vector<std::shared_ptr<arrow::Column>> columns ({std::make_shared<arrow::Column>(fields[0], array)});
     std::shared_ptr<arrow::Table> expected_table = std::make_shared<arrow::Table>(schema, columns);
 
-    MockSchema({{"int_column", turbodbc::type_code::integer, true}});
+    MockSchema({{"int_column", turbodbc::type_code::integer, size_unimportant, true}});
 
     // Mock output columns
     // * Single batch of 100 ints
@@ -200,8 +203,8 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionInteger)
     expected_arrays.push_back(nonnull_array);
     expected_fields.push_back(arrow::field("nonnull_int_column", arrow::int64(), false));
     
-    MockSchema({{"int_column", turbodbc::type_code::integer, true},
-            {"nonnull_int_column", turbodbc::type_code::integer, false}});
+    MockSchema({{"int_column", turbodbc::type_code::integer, size_unimportant, true},
+            {"nonnull_int_column", turbodbc::type_code::integer, size_unimportant, false}});
     MockOutput({{BufferFromPrimitive(array, OUTPUT_SIZE, 0), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, 0)},
             {BufferFromPrimitive(array, OUTPUT_SIZE, OUTPUT_SIZE), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, OUTPUT_SIZE)}});
     CheckRoundtrip();
@@ -216,8 +219,8 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionFloat)
     expected_arrays.push_back(nonnull_array);
     expected_fields.push_back(arrow::field("nonnull_float_column", arrow::float64(), false));
     
-    MockSchema({{"float_column", turbodbc::type_code::floating_point, true},
-            {"nonnull_float_column", turbodbc::type_code::floating_point, false}});
+    MockSchema({{"float_column", turbodbc::type_code::floating_point, size_unimportant, true},
+            {"nonnull_float_column", turbodbc::type_code::floating_point, size_unimportant, false}});
     MockOutput({{BufferFromPrimitive(array, OUTPUT_SIZE, 0), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, 0)},
             {BufferFromPrimitive(array, OUTPUT_SIZE, OUTPUT_SIZE), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, OUTPUT_SIZE)}});
     CheckRoundtrip();
@@ -270,8 +273,8 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionBoolean)
     expected_arrays.push_back(nonnull_array);
     expected_fields.push_back(arrow::field("nonnull_bool_column", arrow::boolean(), false));
     
-    MockSchema({{"bool_column", turbodbc::type_code::boolean, true},
-            {"nonnull_bool_column", turbodbc::type_code::boolean, false}});
+    MockSchema({{"bool_column", turbodbc::type_code::boolean, size_unimportant, true},
+            {"nonnull_bool_column", turbodbc::type_code::boolean, size_unimportant, false}});
     MockOutput({{buffer_1, buffer_2}, {buffer_1_2, buffer_2_2}});
     CheckRoundtrip();
 }
@@ -330,8 +333,8 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionString)
     expected_arrays.push_back(nonnull_array);
     expected_fields.push_back(arrow::field("nonnull_str_column", arrow::utf8(), false));
     
-    MockSchema({{"str_column", turbodbc::type_code::string, true},
-            {"nonnull_str_column", turbodbc::type_code::string, false}});
+    MockSchema({{"str_column", turbodbc::type_code::string, size_unimportant, true},
+            {"nonnull_str_column", turbodbc::type_code::string, size_unimportant, false}});
     MockOutput({{buffer_1, buffer_2}, {buffer_1_2, buffer_2_2}});
     CheckRoundtrip();
 }
@@ -403,8 +406,8 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionTimestamp)
     expected_arrays.push_back(nonnull_array);
     expected_fields.push_back(arrow::field("nonnull_timestamp_column", arrow::timestamp(arrow::TimeUnit::MICRO), false));
     
-    MockSchema({{"timestamp_column", turbodbc::type_code::timestamp, true},
-            {"nonnull_timestamp_column", turbodbc::type_code::timestamp, false}});
+    MockSchema({{"timestamp_column", turbodbc::type_code::timestamp, size_unimportant, true},
+            {"nonnull_timestamp_column", turbodbc::type_code::timestamp, size_unimportant, false}});
     MockOutput({{buffer_1, buffer_2}, {buffer_1_2, buffer_2_2}});
     CheckRoundtrip();
 }

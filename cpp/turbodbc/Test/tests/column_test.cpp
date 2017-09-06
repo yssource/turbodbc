@@ -31,6 +31,7 @@ TEST(ColumnTest, GetInfo)
 	EXPECT_EQ("custom_name", info.name);
 	EXPECT_FALSE(info.supports_null_values);
 	EXPECT_EQ(turbodbc::type_code::string, info.type);
+	EXPECT_EQ(129, info.element_size);
 }
 
 

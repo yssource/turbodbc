@@ -11,7 +11,8 @@ options::options() :
     use_async_io(false),
     prefer_unicode(false),
     autocommit(false),
-    large_decimals_as_64_bit_types(false)
+    large_decimals_as_64_bit_types(false),
+    limit_varchar_results_to_max(false)
 {
 }
 

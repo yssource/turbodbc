@@ -6,9 +6,10 @@
 namespace turbodbc {
 
 struct column_info {
-	std::string name;
-	type_code type;
-	bool supports_null_values;
+    std::string name;
+    type_code type;
+    std::size_t element_size;
+    bool supports_null_values;
 };
 
 }

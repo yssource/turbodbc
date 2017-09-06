@@ -14,9 +14,9 @@ namespace turbodbc_numpy {
 
 namespace {
 
-    std::unique_ptr<masked_column> make_masked_column(turbodbc::type_code type)
+    std::unique_ptr<masked_column> make_masked_column(turbodbc::column_info const & info)
     {
-        switch (type) {
+        switch (info.type) {
             case turbodbc::type_code::floating_point:
                 return std::unique_ptr<binary_column>(new binary_column(numpy_double_type));
             case turbodbc::type_code::integer:
@@ -25,11 +25,11 @@ namespace {
                 return std::unique_ptr<binary_column>(new binary_column(numpy_bool_type));
             case turbodbc::type_code::timestamp:
             case turbodbc::type_code::date:
-                return std::unique_ptr<datetime_column>(new datetime_column(type));
+                return std::unique_ptr<datetime_column>(new datetime_column(info.type));
             case turbodbc::type_code::unicode:
-                return std::unique_ptr<unicode_column>(new unicode_column());
+                return std::unique_ptr<unicode_column>(new unicode_column(info.element_size));
             default:
-                return std::unique_ptr<string_column>(new string_column());
+                return std::unique_ptr<string_column>(new string_column(info.element_size));
         }
     }
 
@@ -60,7 +60,7 @@ pybind11::object numpy_result_set::fetch_next_batch()
 
     std::vector<std::unique_ptr<masked_column>> columns;
     for (std::size_t i = 0; i != n_columns; ++i) {
-        columns.push_back(make_masked_column(column_info[i].type));
+        columns.push_back(make_masked_column(column_info[i]));
     }
 
     auto const buffers = base_result_.get_buffers();

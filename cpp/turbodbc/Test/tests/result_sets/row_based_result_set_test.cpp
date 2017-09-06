@@ -18,7 +18,7 @@ TEST(RowBasedResultSetTest, GetColumnInfoForwards)
 {
 	testing::NiceMock<mock_result_set> base;
 	row_based_result_set rs(base);
-	std::vector<turbodbc::column_info> const info = {{"my column", turbodbc::type_code::integer, true}};
+	std::vector<turbodbc::column_info> const info = {{"my column", turbodbc::type_code::integer, 8, true}};
 
 	ON_CALL(base, do_get_column_info()).WillByDefault(testing::Return(info));
 	auto const actual = rs.get_column_info();

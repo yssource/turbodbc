@@ -207,6 +207,24 @@ TEST(MakeDescriptionOfDescriptionTest, VarcharMaxRespectsConfiguredLimitForUnico
 }
 
 
+TEST(MakeDescriptionOfDescriptionTest, VarcharFieldsCanBeLimited)
+{
+    std::size_t const reported_size = 20;
+    std::size_t const limit = 10;
+    cpp_odbc::column_description column_description = {name, SQL_VARCHAR, reported_size, 0, supports_null_values};
+
+    turbodbc::options options;
+    options.varchar_max_character_limit = limit;
+    options.limit_varchar_results_to_max = false;
+
+    auto const unlimited = make_description(column_description, options);
+    EXPECT_EQ(reported_size + 1, unlimited->element_size());
+
+    options.limit_varchar_results_to_max = true;
+    auto const limited = make_description(column_description, options);
+    EXPECT_EQ(limit + 1, limited->element_size());
+}
+
 
 TEST(MakeDescriptionOfDescriptionTest, FloatingPointTypes)
 {
