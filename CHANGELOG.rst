@@ -3,8 +3,8 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
-Version 2.2.0 (unreleased)
---------------------------
+Version 2.2.0
+-------------
 
 *   Added new keyword argument ``large_decimals_as_64_bit_types`` to
     ``make_options()``. If set to ``True``, decimals with more than ``18``
