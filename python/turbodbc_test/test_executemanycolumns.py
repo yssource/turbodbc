@@ -230,10 +230,15 @@ def test_unicode_column_with_None(dsn, configuration, column_backend):
     _test_none_in_string_column(configuration, "INSERT UNICODE", column_backend)
 
 
+@for_each_column_backend
 @for_each_database
-def test_multiple_columns(dsn, configuration):
+def test_multiple_columns(dsn, configuration, column_backend):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:
+            columns = [array([17, 23, 42], dtype='int64'), array([3, 2, 1], dtype='int64')]
+            if column_backend == 'arrow':
+                columns = map(lambda x: pa.Array.from_pandas(x), columns)
+                columns = pa.Table.from_arrays(columns, ['column1', 'column2'])
             columns = [array([17, 23, 42], dtype='int64'), array([3, 2, 1], dtype='int64')]
             cursor.executemanycolumns("INSERT INTO {} VALUES (?, ?)".format(table_name), columns)
 
