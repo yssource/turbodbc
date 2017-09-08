@@ -20,14 +20,27 @@ except:
 for_each_column_backend = pytest.mark.parametrize("column_backend",
                                                   column_backends)
 
+
+def _to_columns(values, dtype, column_backend):
+    if column_backend == 'numpy':
+        return [array(values, dtype=dtype)]
+    elif column_backend == 'arrow':
+        columns = pa.Array.from_pandas(array(values, dtype=dtype))
+        return pa.Table.from_arrays([columns], ['column'])
+
+
+def _to_masked_columns(values, dtype, mask, column_backend):
+    if column_backend == 'numpy':
+        return [MaskedArray(values, mask=mask, dtype=dtype)]
+    elif column_backend == 'arrow':
+        columns = pa.Array.from_pandas(array(values, dtype=dtype), mask=array(mask))
+        return pa.Table.from_arrays([columns], ['column'])
+
+
 def _test_basic_column(configuration, fixture, values, dtype, column_backend):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, fixture) as table_name:
-            if column_backend == 'numpy':
-                columns = [array(values, dtype=dtype)]
-            elif column_backend == 'arrow':
-                columns = pa.Array.from_pandas(array(values, dtype=dtype))
-                columns = pa.Table.from_arrays([columns], ['column'])
+            columns = _to_columns(values, dtype, column_backend)
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
             assert cursor.rowcount == len(values)
 
@@ -35,10 +48,10 @@ def _test_basic_column(configuration, fixture, values, dtype, column_backend):
             assert results == [[value] for value in sorted(values)]
 
 
-def _test_column_matches_buffer_size(configuration, fixture, values, dtype):
+def _test_column_matches_buffer_size(configuration, fixture, values, dtype, column_backend):
     with open_cursor(configuration, parameter_sets_to_buffer=len(values)) as cursor:
         with query_fixture(cursor, configuration, fixture) as table_name:
-            columns = [array(values, dtype=dtype)]
+            columns = _to_columns(values, dtype, column_backend)
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
             assert cursor.rowcount == len(values)
 
@@ -46,10 +59,10 @@ def _test_column_matches_buffer_size(configuration, fixture, values, dtype):
             assert results == [[value] for value in sorted(values)]
 
 
-def _test_column_exceeds_buffer_size(configuration, fixture, values, dtype):
+def _test_column_exceeds_buffer_size(configuration, fixture, values, dtype, column_backend):
     with open_cursor(configuration, parameter_sets_to_buffer=2) as cursor:
         with query_fixture(cursor, configuration, fixture) as table_name:
-            columns = [array(values, dtype=dtype)]
+            columns = _to_columns(values, dtype, column_backend)
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
             assert cursor.rowcount == len(values)
 
@@ -57,10 +70,10 @@ def _test_column_exceeds_buffer_size(configuration, fixture, values, dtype):
             assert results == [[value] for value in sorted(values)]
 
 
-def _test_masked_column(configuration, fixture, values, dtype):
+def _test_masked_column(configuration, fixture, values, dtype, column_backend):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, fixture) as table_name:
-            columns = [MaskedArray(values, mask=[False, True, False], dtype=dtype)]
+            columns = _to_masked_columns(values, dtype, [False, True, False], column_backend)
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
             assert cursor.rowcount == len(values)
 
@@ -81,10 +94,10 @@ def _test_masked_column_with_shrunk_mask(configuration, fixture, values, dtype):
             assert results == [[value] for value in sorted(values)]
 
 
-def _test_masked_column_exceeds_buffer_size(configuration, fixture, values, dtype):
+def _test_masked_column_exceeds_buffer_size(configuration, fixture, values, dtype, column_backend):
     with open_cursor(configuration, parameter_sets_to_buffer=2) as cursor:
         with query_fixture(cursor, configuration, fixture) as table_name:
-            columns = [MaskedArray(values, mask=[True, False, True], dtype=dtype)]
+            columns = _to_masked_columns(values, dtype, [True, False, True], column_backend)
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
             assert cursor.rowcount == len(values)
 
@@ -106,11 +119,11 @@ def _test_single_masked_value(configuration, fixture, values, dtype):
 
 def _full_column_tests(configuration, fixture, values, dtype, column_backend):
     _test_basic_column(configuration, fixture, values, dtype, column_backend)
-    _test_column_matches_buffer_size(configuration, fixture, values, dtype)
-    _test_column_exceeds_buffer_size(configuration, fixture, values, dtype)
-    _test_masked_column(configuration, fixture, values, dtype)
+    _test_column_matches_buffer_size(configuration, fixture, values, dtype, column_backend)
+    _test_column_exceeds_buffer_size(configuration, fixture, values, dtype, column_backend)
+    _test_masked_column(configuration, fixture, values, dtype, column_backend)
     _test_masked_column_with_shrunk_mask(configuration, fixture, values, dtype)
-    _test_masked_column_exceeds_buffer_size(configuration, fixture, values, dtype)
+    _test_masked_column_exceeds_buffer_size(configuration, fixture, values, dtype, column_backend)
     _test_single_masked_value(configuration, fixture, values, dtype)
 
 
@@ -195,24 +208,26 @@ def test_unicode_column(dsn, configuration, column_backend):
                        column_backend)
 
 
-def _test_none_in_string_column(configuration, fixture):
+def _test_none_in_string_column(configuration, fixture, column_backend):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, fixture) as table_name:
-            columns = [array([None], dtype='object')]
+            columns = _to_columns([None], 'object', column_backend)
             cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), columns)
 
             results = cursor.execute("SELECT A FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[None]]
 
 
+@for_each_column_backend
 @for_each_database
-def test_string_column_with_None(dsn, configuration):
-    _test_none_in_string_column(configuration, "INSERT STRING")
+def test_string_column_with_None(dsn, configuration, column_backend):
+    _test_none_in_string_column(configuration, "INSERT STRING", column_backend)
 
 
+@for_each_column_backend
 @for_each_database
-def test_unicode_column_with_None(dsn, configuration):
-    _test_none_in_string_column(configuration, "INSERT UNICODE")
+def test_unicode_column_with_None(dsn, configuration, column_backend):
+    _test_none_in_string_column(configuration, "INSERT UNICODE", column_backend)
 
 
 @for_each_database

@@ -43,7 +43,7 @@ namespace {
         template <size_t element_size>
         void set_indicator(cpp_odbc::multi_value_buffer & buffer, int64_t start, int64_t elements) {
             if (data->num_chunks() != 1) {
-              throw turbodbc::interface_error("Chunked columns are not yet supported");
+              throw turbodbc::interface_error("Chunked columns are not yet supported on indicators");
             }
 
             arrow::Array const& chunk = *data->chunk(0);
@@ -63,9 +63,18 @@ namespace {
 
         virtual ~parameter_converter() = default;
 
-        std::shared_ptr<ChunkedArray> const & data;
+        std::shared_ptr<ChunkedArray> data;
         turbodbc::bound_parameter_set & parameters;
         std::size_t const parameter_index;
+    };
+
+    struct null_converter : public parameter_converter {
+      using parameter_converter::parameter_converter;
+
+      void set_batch(int64_t, int64_t elements) final {
+        auto & buffer = get_buffer();
+        std::fill_n(buffer.indicator_pointer(), elements, SQL_NULL_DATA);
+      }
     };
 
     struct string_converter : public parameter_converter {
@@ -80,7 +89,7 @@ namespace {
         void set_batch_of_type(std::size_t start, std::size_t elements)
         {
             if (data->num_chunks() != 1) {
-              throw turbodbc::interface_error("Chunked int64 columns are not yet supported");
+              throw turbodbc::interface_error("Chunked string columns are not yet supported");
             }
         
             auto const& typed_array = static_cast<const BinaryArray&>(*data->chunk(0));
@@ -140,7 +149,7 @@ namespace {
         auto & buffer = get_buffer();
 
         if (data->num_chunks() != 1) {
-          throw turbodbc::interface_error("Chunked int64 columns are not yet supported");
+          throw turbodbc::interface_error("Chunked columns are not yet supported");
         }
 
         auto const& typed_array = static_cast<const typename TypeTraits<ArrowType>::ArrayType&>(*data->chunk(0));
@@ -178,7 +187,7 @@ namespace {
 
       void set_batch(int64_t start, int64_t elements) final {
         if (data->num_chunks() != 1) {
-          throw turbodbc::interface_error("Chunked int64 columns are not yet supported");
+          throw turbodbc::interface_error("Chunked columns are not yet supported");
         }
 
         auto & buffer = get_buffer();
@@ -206,7 +215,7 @@ namespace {
 
       void set_batch(int64_t start, int64_t elements) final {
         if (data->num_chunks() != 1) {
-          throw turbodbc::interface_error("Chunked int64 columns are not yet supported");
+          throw turbodbc::interface_error("Chunked columns are not yet supported");
         }
 
         auto & buffer = get_buffer();
@@ -280,6 +289,8 @@ namespace {
             arrow::Type::type dtype = data->type()->id();
 
             switch (dtype) {
+              case arrow::Type::NA:
+                converters.emplace_back(new null_converter(data, parameters, i));
               case arrow::Type::INT64:
                 converters.emplace_back(new int64_converter(data, parameters, i));
                 break;
