@@ -25,7 +25,7 @@ public:
 	 * @brief Create a new numpy_result_set which presents data contained
 	 *        in the base result set in a row-based fashion
 	 */
-	arrow_result_set(turbodbc::result_sets::result_set & base);
+	arrow_result_set(turbodbc::result_sets::result_set & base, bool strings_as_dictionary);
 
 	/**
 	 * @brief Retrieve a native (C++) Arrow Table which contains
@@ -46,6 +46,7 @@ public:
 
 private:
 	turbodbc::result_sets::result_set & base_result_;
+  bool strings_as_dictionary_;
 };
 
 }

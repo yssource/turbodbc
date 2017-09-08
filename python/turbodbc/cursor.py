@@ -172,7 +172,7 @@ class Cursor(object):
         Execute an SQL command or query with multiple parameter sets that are passed in
         a column-wise fashion as opposed to the row-wise parameters in ``executemany()``.
         This function is a turbodbc-specific extension to PEP-249.
-        
+
         :param sql: A (unicode) string that contains the SQL command or query. If you would like to
                use parameters, please use a question mark ``?`` at the location where the
                parameter shall be inserted.
@@ -289,11 +289,11 @@ class Cursor(object):
             first_run = False
             yield result_batch
 
-    def fetchallarrow(self):
+    def fetchallarrow(self, strings_as_dictionary=False):
         self._assert_valid_result_set()
         if _has_arrow_support():
             from turbodbc_arrow_support import make_arrow_result_set
-            return make_arrow_result_set(self.impl.get_result_set()).fetch_all()
+            return make_arrow_result_set(self.impl.get_result_set(), strings_as_dictionary=strings_as_dictionary).fetch_all()
         else:
             raise Error(_NO_ARROW_SUPPORT_MSG)
 

@@ -19,6 +19,7 @@ using arrow::DoubleBuilder;
 using arrow::Int64Builder;
 using arrow::Status;
 using arrow::StringBuilder;
+using arrow::StringDictionaryBuilder;
 using arrow::TimeUnit;
 using arrow::TimestampBuilder;
 
@@ -27,7 +28,7 @@ namespace turbodbc_arrow {
 
 namespace {
 
-std::unique_ptr<ArrayBuilder> make_array_builder(turbodbc::type_code type)
+std::unique_ptr<ArrayBuilder> make_array_builder(turbodbc::type_code type, bool strings_as_dictionary)
 {
     switch (type) {
         case turbodbc::type_code::floating_point:
@@ -41,14 +42,18 @@ std::unique_ptr<ArrayBuilder> make_array_builder(turbodbc::type_code type)
         case turbodbc::type_code::date:
             return std::unique_ptr<Date32Builder>(new Date32Builder(default_memory_pool()));
         default:
-            return std::unique_ptr<StringBuilder>(new StringBuilder(default_memory_pool()));
+            if (strings_as_dictionary) {
+                return std::unique_ptr<StringDictionaryBuilder>(new StringDictionaryBuilder(default_memory_pool()));
+            } else {
+                return std::unique_ptr<StringBuilder>(new StringBuilder(default_memory_pool()));
+            }
     }
 }
 
 }
 
-arrow_result_set::arrow_result_set(turbodbc::result_sets::result_set & base) :
-    base_result_(base)
+arrow_result_set::arrow_result_set(turbodbc::result_sets::result_set & base, bool strings_as_dictionary) :
+    base_result_(base), strings_as_dictionary_(strings_as_dictionary)
 {
 }
 
@@ -125,14 +130,26 @@ Status append_to_date_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuilder
     return Status::OK();
 }
 
-Status append_to_string_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuilder> const& builder, cpp_odbc::multi_value_buffer const& input_buffer, uint8_t*) {
-    auto typed_builder = static_cast<StringBuilder*>(builder.get());
-    for (std::size_t j = 0; j != rows_in_batch; ++j) {
-        auto const element = input_buffer[j];
-        if (element.indicator == SQL_NULL_DATA) {
-            ARROW_RETURN_NOT_OK(typed_builder->AppendNull());
-        } else {
-            ARROW_RETURN_NOT_OK(typed_builder->Append(element.data_pointer, element.indicator));
+Status append_to_string_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuilder> const& builder, cpp_odbc::multi_value_buffer const& input_buffer, uint8_t*, bool strings_as_dictionary) {
+    if (strings_as_dictionary) {
+        auto typed_builder = static_cast<StringDictionaryBuilder*>(builder.get());
+        for (std::size_t j = 0; j != rows_in_batch; ++j) {
+            auto const element = input_buffer[j];
+            if (element.indicator == SQL_NULL_DATA) {
+                ARROW_RETURN_NOT_OK(typed_builder->AppendNull());
+            } else {
+                ARROW_RETURN_NOT_OK(typed_builder->Append(element.data_pointer, element.indicator));
+            }
+        }
+    } else {
+        auto typed_builder = static_cast<StringBuilder*>(builder.get());
+        for (std::size_t j = 0; j != rows_in_batch; ++j) {
+            auto const element = input_buffer[j];
+            if (element.indicator == SQL_NULL_DATA) {
+                ARROW_RETURN_NOT_OK(typed_builder->AppendNull());
+            } else {
+                ARROW_RETURN_NOT_OK(typed_builder->Append(element.data_pointer, element.indicator));
+            }
         }
     }
     return Status::OK();
@@ -145,12 +162,15 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
     auto const n_columns = column_info.size();
 
     // Construct the Arrow schema from the SQL schema information
+    // We only use this schema for the type information. It does not match the
+    // resulting Table as for example String columns may also be encoded as
+    // dictionaries.
     std::shared_ptr<arrow::Schema> arrow_schema = schema();
 
     // Create Builders for all columns
     std::vector<std::unique_ptr<ArrayBuilder>> columns;
     for (std::size_t i = 0; i != n_columns; ++i) {
-        columns.push_back(make_array_builder(column_info[i].type));
+        columns.push_back(make_array_builder(column_info[i].type, strings_as_dictionary_));
     }
 
     do {
@@ -185,7 +205,7 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
                     break;
                 default:
                     // Strings are the only remaining type
-                    ARROW_RETURN_NOT_OK(append_to_string_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data()));
+                    ARROW_RETURN_NOT_OK(append_to_string_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data(), strings_as_dictionary_));
                     break;
             }
         }
@@ -193,11 +213,15 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
     } while (rows_in_batch != 0);
 
     std::vector<std::shared_ptr<arrow::Array>> arrow_arrays;
+    std::vector<std::shared_ptr<arrow::Field>> fields;
     for (size_t i = 0; i != n_columns; ++i) {
         std::shared_ptr<arrow::Array> array;
         columns[i]->Finish(&array);
+        fields.emplace_back(std::make_shared<arrow::Field>(column_info[i].name, array->type(), column_info[i].supports_null_values));
         arrow_arrays.emplace_back(array);
     }
+    // Update to the correct schema, account for e.g. Dictionary columns
+    arrow_schema = std::make_shared<arrow::Schema>(fields);
     ARROW_RETURN_NOT_OK(MakeTable(arrow_schema, arrow_arrays, out));
 
     return Status::OK();
