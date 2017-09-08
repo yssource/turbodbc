@@ -78,60 +78,60 @@ namespace {
     };
 
     struct string_converter : public parameter_converter {
-        string_converter(std::shared_ptr<ChunkedArray> const & data,
-                         turbodbc::bound_parameter_set & parameters,
-                         std::size_t parameter_index) :
-            parameter_converter(data, parameters, parameter_index),
-            type(parameters.get_initial_parameter_types()[parameter_index])
-        {}
-        
-        template <typename String>
+      string_converter(std::shared_ptr<ChunkedArray> const & data,
+          turbodbc::bound_parameter_set & parameters,
+          std::size_t parameter_index) :
+        parameter_converter(data, parameters, parameter_index),
+        type(parameters.get_initial_parameter_types()[parameter_index])
+      {}
+
+      template <typename String>
         void set_batch_of_type(std::size_t start, std::size_t elements)
         {
-            if (data->num_chunks() != 1) {
-              throw turbodbc::interface_error("Chunked string columns are not yet supported");
+          if (data->num_chunks() != 1) {
+            throw turbodbc::interface_error("Chunked string columns are not yet supported");
+          }
+
+          auto const& typed_array = static_cast<const BinaryArray&>(*data->chunk(0));
+
+          int32_t maximum_length = 0;
+          for (int64_t i = 0; i != elements; ++i) {
+            if (!typed_array.IsNull(start + i)) {
+              maximum_length = std::max(maximum_length, typed_array.value_length(start + i));
             }
-        
-            auto const& typed_array = static_cast<const BinaryArray&>(*data->chunk(0));
+          }
 
-            int32_t maximum_length = 0;
-            for (int64_t i = 0; i != elements; ++i) {
-                if (!typed_array.IsNull(start + i)) {
-                    maximum_length = std::max(maximum_length, typed_array.value_length(start + i));
-                }
-            }
+          // Propagate the maximum string length to the parameters.
+          // These then adjust the size of the underlying buffer.
+          parameters.rebind(parameter_index, turbodbc::make_description(type, maximum_length));
+          auto & buffer = get_buffer();
+          auto const character_size = sizeof(typename String::value_type);
 
-            // Propagate the maximum string length to the parameters.
-            // These then adjust the size of the underlying buffer.
-            parameters.rebind(parameter_index, turbodbc::make_description(type, maximum_length));
-            auto & buffer = get_buffer();
-            auto const character_size = sizeof(typename String::value_type);
-
-            for (int64_t i = 0; i != elements; ++i) {
-                auto element = buffer[i];
-                if (typed_array.IsNull(start + i)) {
-                    element.indicator = SQL_NULL_DATA;
-                } else {
-                    int32_t out_length;
-                    const uint8_t *value = typed_array.GetValue(start + i, &out_length);
-                    std::memcpy(element.data_pointer, value, out_length);
-                    element.indicator = character_size * typed_array.value_length(start + i);
-                }
-            }
-        }
-
-        void set_batch(int64_t start, int64_t elements) final
-        {
-            if (type == turbodbc::type_code::unicode) {
-                throw turbodbc::interface_error("UTF-16 Strings are not supported yet");
-                // set_batch_of_type<std::u16string>(start, elements);
+          for (int64_t i = 0; i != elements; ++i) {
+            auto element = buffer[i];
+            if (typed_array.IsNull(start + i)) {
+              element.indicator = SQL_NULL_DATA;
             } else {
-                set_batch_of_type<std::string>(start, elements);
+              int32_t out_length;
+              const uint8_t *value = typed_array.GetValue(start + i, &out_length);
+              std::memcpy(element.data_pointer, value, out_length);
+              element.indicator = character_size * typed_array.value_length(start + i);
             }
+          }
         }
 
-    private:
-        turbodbc::type_code type;
+      void set_batch(int64_t start, int64_t elements) final
+      {
+        if (type == turbodbc::type_code::unicode) {
+          throw turbodbc::interface_error("UTF-16 Strings are not supported yet");
+          // set_batch_of_type<std::u16string>(start, elements);
+        } else {
+          set_batch_of_type<std::string>(start, elements);
+        }
+      }
+
+      private:
+      turbodbc::type_code type;
     };
 
     template <typename ArrowType>
@@ -338,8 +338,9 @@ void set_arrow_parameters(turbodbc::bound_parameter_set & parameters, pybind11::
   arrow::py::import_pyarrow();
   if (arrow::py::is_table(pyarrow_table.ptr())) {
     std::shared_ptr<Table> table;
-    // TODO: Check status
-    arrow::py::unwrap_table(pyarrow_table.ptr(), &table);
+    if (not arrow::py::unwrap_table(pyarrow_table.ptr(), &table).ok()) {
+      throw turbodbc::interface_error("Could not unwrap the C++ object from Python pyarrow.Table");
+    }
 
     if (static_cast<int32_t>(parameters.number_of_parameters()) != table->num_columns()) {
         std::stringstream ss;
