@@ -39,7 +39,7 @@ namespace {
         cpp_odbc::multi_value_buffer & get_buffer() {
             return parameters.get_parameters()[parameter_index]->get_buffer();
         }
-        
+
         template <size_t element_size>
         void set_indicator(cpp_odbc::multi_value_buffer & buffer, int64_t start, int64_t elements) {
             if (data->num_chunks() != 1) {
@@ -144,7 +144,7 @@ namespace {
         {
           parameters.rebind(parameter_index, turbodbc::make_description(type, 0));
         }
-      
+
       void set_batch(int64_t start, int64_t elements) final {
         auto & buffer = get_buffer();
 
@@ -167,7 +167,7 @@ namespace {
             numeric_converter<DoubleType>(data, parameters, parameter_index, turbodbc::type_code::floating_point)
         { }
     };
-    
+
     struct int64_converter : public numeric_converter<Int64Type> {
         int64_converter(std::shared_ptr<ChunkedArray> const & data,
                          turbodbc::bound_parameter_set & parameters,
@@ -199,7 +199,7 @@ namespace {
             }
           }
         }
-        
+
         set_indicator<sizeof(bool)>(buffer, start, elements);
       };
     };
@@ -256,7 +256,7 @@ namespace {
             convert(typed_array.Value(start + i), element.data_pointer);
             element.indicator = sizeof(SQL_TIMESTAMP_STRUCT);
           } else {
-            element.indicator = SQL_NULL_DATA; 
+            element.indicator = SQL_NULL_DATA;
           }
         }
       }
@@ -301,7 +301,7 @@ namespace {
               case arrow::Type::DATE32:
                 converters.emplace_back(new date_converter(data, parameters, i));
                 break;
-              case arrow::Type::TIMESTAMP: 
+              case arrow::Type::TIMESTAMP:
                 {
                   auto const& time_dtype = static_cast<TimestampType const&>(*data->type());
                   switch (time_dtype.unit()) {
