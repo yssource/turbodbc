@@ -5,6 +5,8 @@ import pytest
 from numpy.ma import MaskedArray
 from numpy import array
 
+from turbodbc import InterfaceError
+
 from query_fixture import query_fixture
 from helpers import open_cursor, for_each_database, for_one_database, generate_microseconds_with_precision
 
@@ -239,11 +241,22 @@ def test_multiple_columns(dsn, configuration, column_backend):
             if column_backend == 'arrow':
                 columns = map(lambda x: pa.Array.from_pandas(x), columns)
                 columns = pa.Table.from_arrays(columns, ['column1', 'column2'])
-            columns = [array([17, 23, 42], dtype='int64'), array([3, 2, 1], dtype='int64')]
             cursor.executemanycolumns("INSERT INTO {} VALUES (?, ?)".format(table_name), columns)
 
             results = cursor.execute("SELECT A, B FROM {} ORDER BY A".format(table_name)).fetchall()
             assert results == [[17, 3], [23, 2], [42, 1]]
+
+
+@for_one_database
+def test_arrow_table_exceeds_expected_columns(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:
+            columns = [array([17, 23, 42], dtype='int64'), array([3, 2, 1], dtype='int64'), array([17, 23, 42], dtype='int64')]
+            columns = map(lambda x: pa.Array.from_pandas(x), columns)
+            columns = pa.Table.from_arrays(columns, ['column1', 'column2', 'column3'])
+            # InterfaceError: Number of passed columns (3) is not equal to the number of parameters (2)
+            with pytest.raises(InterfaceError):
+                cursor.executemanycolumns("INSERT INTO {} VALUES (?, ?)".format(table_name), columns)
 
 
 @for_one_database
