@@ -72,6 +72,7 @@ class _deferred_pybind11_include(object):
 
 
 extra_compile_args = []
+hidden_visibility_args = []
 include_dirs = ['include/', _deferred_pybind11_include()]
 
 library_dirs = [_get_distutils_build_directory()]
@@ -82,6 +83,7 @@ if sys.platform == 'darwin':
     extra_compile_args.append('--std=c++11')
     extra_compile_args.append('--stdlib=libc++')
     extra_compile_args.append('-mmacosx-version-min=10.9')
+    hidden_visibility_args.append('-fvisibility=hidden')
     include_dirs.append(os.getenv('UNIXODBC_INCLUDE_DIR', '/usr/local/include/'))
     library_dirs.append(os.getenv('UNIXODBC_LIBRARY_DIR', '/usr/local/lib/'))
 
@@ -105,6 +107,7 @@ elif sys.platform == 'win32':
     odbclib = 'odbc32'
 else:
     extra_compile_args.append('--std=c++11')
+    hidden_visibility_args.append('-fvisibility=hidden')
     python_module_link_args.append("-Wl,-rpath,$ORIGIN")
     if 'UNIXODBC_INCLUDE_DIR' in os.environ:
         include_dirs.append(os.getenv('UNIXODBC_INCLUDE_DIR'))
@@ -142,7 +145,7 @@ def get_extension_modules():
     turbodbc_python = Extension('turbodbc_intern',
                                 sources=turbodbc_python_sources,
                                 include_dirs=include_dirs,
-                                extra_compile_args=extra_compile_args,
+                                extra_compile_args=extra_compile_args + hidden_visibility_args,
                                 libraries=[odbclib] + turbodbc_libs,
                                 extra_link_args=python_module_link_args,
                                 library_dirs=library_dirs)
@@ -160,7 +163,7 @@ def get_extension_modules():
         turbodbc_numpy = Extension('turbodbc_numpy_support',
                                    sources=turbodbc_numpy_sources,
                                    include_dirs=include_dirs + [numpy.get_include()],
-                                   extra_compile_args=extra_compile_args,
+                                   extra_compile_args=extra_compile_args + hidden_visibility_args,
                                    libraries=[odbclib] + turbodbc_libs,
                                    extra_link_args=python_module_link_args,
                                    library_dirs=library_dirs)
@@ -187,7 +190,7 @@ def get_extension_modules():
         turbodbc_arrow = Extension('turbodbc_arrow_support',
                                    sources=turbodbc_arrow_sources,
                                    include_dirs=include_dirs + [pyarrow_include_dir],
-                                   extra_compile_args=extra_compile_args,
+                                   extra_compile_args=extra_compile_args + hidden_visibility_args,
                                    libraries=[odbclib, 'arrow', 'arrow_python'] + turbodbc_libs,
                                    extra_link_args=pyarrow_module_link_args,
                                    library_dirs=library_dirs + [pyarrow_location])
@@ -223,5 +226,5 @@ setup(name = 'turbodbc',
                      'Programming Language :: Python :: Implementation :: CPython',
                      'Topic :: Database'],
       ext_modules = get_extension_modules(),
-      install_requires=['pybind11>=2.1.0', 'six']
+      install_requires=['pybind11>=2.2.0', 'six']
       )

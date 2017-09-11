@@ -3,6 +3,11 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
+Version 2.x.y (unreleased)
+--------------------------
+
+*   Upgraded to pybind11 2.2.x
+
 Version 2.2.0
 -------------
 

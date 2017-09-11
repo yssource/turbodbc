@@ -19,7 +19,7 @@ namespace turbodbc_arrow {
  * @brief This class adapts a result_set to provide access in
  *        terms of Apache Arrow python objects
  */
-class arrow_result_set {
+class PYBIND11_EXPORT arrow_result_set {
 public:
 	/**
 	 * @brief Create a new numpy_result_set which presents data contained

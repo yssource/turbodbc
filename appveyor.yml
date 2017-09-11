@@ -76,7 +76,7 @@ test_script:
 
 after_test:
   - cmake --build . --config Release --target install
-  - pip install wheel pybind11==2.1.0
+  - pip install wheel pybind11==2.2.0
   - cd dist
   - python setup.py bdist_wheel
   - cd dist
