@@ -290,6 +290,14 @@ class Cursor(object):
             yield result_batch
 
     def fetchallarrow(self, strings_as_dictionary=False):
+        """
+        Fetches all rows in the active result set generated with ``execute()`` or
+        ``executemany()``.
+
+        :param strings_as_dictionary: If true, fetch string columns as
+                 dictionary[string] instead of a plain string column.
+        :return: ``pyarrow.Table``
+        """
         self._assert_valid_result_set()
         if _has_arrow_support():
             from turbodbc_arrow_support import make_arrow_result_set

@@ -20,33 +20,33 @@ namespace turbodbc_arrow {
  *        terms of Apache Arrow python objects
  */
 class PYBIND11_EXPORT arrow_result_set {
-public:
-	/**
-	 * @brief Create a new numpy_result_set which presents data contained
-	 *        in the base result set in a row-based fashion
-	 */
-	arrow_result_set(turbodbc::result_sets::result_set & base, bool strings_as_dictionary);
+  public:
+    /**
+     * @brief Create a new numpy_result_set which presents data contained
+     *        in the base result set in a row-based fashion
+     */
+    arrow_result_set(turbodbc::result_sets::result_set & base, bool strings_as_dictionary);
 
-	/**
-	 * @brief Retrieve a native (C++) Arrow Table which contains
-	 *        values and masks for all data
-	 */
-  arrow::Status fetch_all_native(std::shared_ptr<arrow::Table>* out);
+    /**
+     * @brief Retrieve a native (C++) Arrow Table which contains
+     *        values and masks for all data
+     */
+    arrow::Status fetch_all_native(std::shared_ptr<arrow::Table>* out);
 
-	/**
-	 * @brief Retrieve a boost Python object which contains
-	 *        values and masks for all data as pyarrow.Table
-	 */
-  pybind11::object fetch_all();
+    /**
+     * @brief Retrieve a boost Python object which contains
+     *        values and masks for all data as pyarrow.Table
+     */
+    pybind11::object fetch_all();
 
-  /**
-   * @brief Translate the schema information into an Arrow schema
-   */
-  std::shared_ptr<arrow::Schema> schema();
+    /**
+     * @brief Translate the schema information into an Arrow schema
+     */
+    std::shared_ptr<arrow::Schema> schema();
 
-private:
-	turbodbc::result_sets::result_set & base_result_;
-  bool strings_as_dictionary_;
+  private:
+    turbodbc::result_sets::result_set & base_result_;
+    bool strings_as_dictionary_;
 };
 
 }

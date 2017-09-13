@@ -50,6 +50,19 @@ std::unique_ptr<ArrayBuilder> make_array_builder(turbodbc::type_code type, bool 
     }
 }
 
+template <typename BuilderType>
+Status AppendStringsToBuilder(size_t rows_in_batch, BuilderType& builder, cpp_odbc::multi_value_buffer const& input_buffer) {
+    for (std::size_t j = 0; j != rows_in_batch; ++j) {
+        auto const element = input_buffer[j];
+        if (element.indicator == SQL_NULL_DATA) {
+            ARROW_RETURN_NOT_OK(builder.AppendNull());
+        } else {
+            ARROW_RETURN_NOT_OK(builder.Append(element.data_pointer, element.indicator));
+        }
+    }
+    return Status::OK();
+}
+
 }
 
 arrow_result_set::arrow_result_set(turbodbc::result_sets::result_set & base, bool strings_as_dictionary) :
@@ -132,27 +145,12 @@ Status append_to_date_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuilder
 
 Status append_to_string_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuilder> const& builder, cpp_odbc::multi_value_buffer const& input_buffer, uint8_t*, bool strings_as_dictionary) {
     if (strings_as_dictionary) {
-        auto typed_builder = static_cast<StringDictionaryBuilder*>(builder.get());
-        for (std::size_t j = 0; j != rows_in_batch; ++j) {
-            auto const element = input_buffer[j];
-            if (element.indicator == SQL_NULL_DATA) {
-                ARROW_RETURN_NOT_OK(typed_builder->AppendNull());
-            } else {
-                ARROW_RETURN_NOT_OK(typed_builder->Append(element.data_pointer, element.indicator));
-            }
-        }
-    } else {
-        auto typed_builder = static_cast<StringBuilder*>(builder.get());
-        for (std::size_t j = 0; j != rows_in_batch; ++j) {
-            auto const element = input_buffer[j];
-            if (element.indicator == SQL_NULL_DATA) {
-                ARROW_RETURN_NOT_OK(typed_builder->AppendNull());
-            } else {
-                ARROW_RETURN_NOT_OK(typed_builder->Append(element.data_pointer, element.indicator));
-            }
-        }
+        return AppendStringsToBuilder<StringDictionaryBuilder>(rows_in_batch,
+            static_cast<StringDictionaryBuilder&>(*builder), input_buffer);
     }
-    return Status::OK();
+
+    return AppendStringsToBuilder<StringBuilder>(rows_in_batch,
+        static_cast<StringBuilder&>(*builder), input_buffer);
 }
 
 Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
