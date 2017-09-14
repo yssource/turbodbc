@@ -7,6 +7,10 @@ Version 2.x.y (unreleased)
 --------------------------
 
 *   Upgraded to pybind11 2.2.x
+*   ``fetchallarrow()`` has an additional option to enable the fetching of string
+    columns as dictionary-encoded string columns. In most cases, this increases
+    performance and reduces RAM usage. Arrow columns of type ``dictionary[string]``
+    will result in ``pandas.Categorical`` columns on conversion.
 
 Version 2.2.0
 -------------

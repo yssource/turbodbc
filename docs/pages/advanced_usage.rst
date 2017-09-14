@@ -367,3 +367,34 @@ like this:
     >>> table.to_pandas()
         A      B
     0  42  hello
+
+
+As a performance optimisation for string columns, you can specify the parameter
+``strings_as_dictionary``. This will retrieve all string columns as Arrow
+``DictionaryArray``. The data will here be split into two arrays, one that stores
+all unique string values and one integer array that stores for each row the index
+in the dictionary. On converions to Pandas, these columns will be turned into
+``pandas.Categorical``.
+
+::
+
+    >>> cursor.execute("SELECT a, b FROM my_other_table")
+    >>> table = cursor.fetchallarrow(strings_as_dictionary=True)
+    >>> table
+    pyarrow.Table
+    a: int64
+    b: dictionary<values=binary, indices=int8, ordered=0>
+      dictionary: [61, 62]
+    >>> table.to_pandas()
+       a  b
+    0  1  a
+    1  2  b
+    2  3  b
+    >>> table.to_pandas().info()
+    <class 'pandas.core.frame.DataFrame'>
+    Int64Index: 3 entries, 0 to 2
+    Data columns (total 2 columns):
+    a    3 non-null int64
+    b    3 non-null category
+    dtypes: category(1), int64(1)
+    memory usage: 147.0 bytes
