@@ -3,14 +3,16 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
-Version 2.x.y (unreleased)
+Version 2.3.0 (unreleased)
 --------------------------
 
-*   Upgraded to pybind11 2.2.x
-*   ``fetchallarrow()`` has an additional option to enable the fetching of string
+*   Added an option to ``fetchallarrow()`` that enables the fetching of string
     columns as dictionary-encoded string columns. In most cases, this increases
     performance and reduces RAM usage. Arrow columns of type ``dictionary[string]``
     will result in ``pandas.Categorical`` columns on conversion.
+*   Updated pybind11 dependency to version 2.2+
+*   Fixed a symbol visibility issue when building Arrow unit tests on systems
+    that hide symbols by default.
 
 Version 2.2.0
 -------------
