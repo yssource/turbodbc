@@ -3,8 +3,8 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
-Version 2.3.0 (unreleased)
---------------------------
+Version 2.3.0
+-------------
 
 *   Added an option to ``fetchallarrow()`` that enables the fetching of string
     columns as dictionary-encoded string columns. In most cases, this increases
