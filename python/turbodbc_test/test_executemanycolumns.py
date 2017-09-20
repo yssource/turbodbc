@@ -240,7 +240,7 @@ def test_multiple_columns(dsn, configuration, column_backend):
         with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:
             columns = [array([17, 23, 42], dtype='int64'), array([3, 2, 1], dtype='int64')]
             if column_backend == 'arrow':
-                columns = list(map(lambda x: pa.Array.from_pandas(x), columns))
+                columns = [pa.Array.from_pandas(x) for x in columns]
                 columns = pa.Table.from_arrays(columns, ['column1', 'column2'])
             cursor.executemanycolumns("INSERT INTO {} VALUES (?, ?)".format(table_name), columns)
 
@@ -253,7 +253,7 @@ def test_arrow_table_exceeds_expected_columns(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:
             columns = [array([17, 23, 42], dtype='int64'), array([3, 2, 1], dtype='int64'), array([17, 23, 42], dtype='int64')]
-            columns = map(lambda x: pa.Array.from_pandas(x), columns)
+            columns = [pa.Array.from_pandas(x) for x in columns]
             columns = pa.Table.from_arrays(columns, ['column1', 'column2', 'column3'])
             # InterfaceError: Number of passed columns (3) is not equal to the number of parameters (2)
             with pytest.raises(InterfaceError):
