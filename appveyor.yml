@@ -33,6 +33,7 @@ install:
     SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
 
     pip install numpy pytest pytest-cov mock pyarrow==0.7.0
+
     pip uninstall pyarrow
 
     echo %PYTHON%
