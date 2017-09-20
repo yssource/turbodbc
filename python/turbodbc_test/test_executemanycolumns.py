@@ -14,6 +14,7 @@ column_backends = ["numpy"]
 
 try:
     import pyarrow as pa
+    import turbodbc_arrow_support
     column_backends.append('arrow')
     # column_backends.append('pandas')
 except:

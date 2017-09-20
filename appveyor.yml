@@ -34,8 +34,6 @@ install:
 
     pip install numpy pytest pytest-cov mock pyarrow==0.7.0
 
-    pip uninstall pyarrow
-
     echo %PYTHON%
 
 before_build:
