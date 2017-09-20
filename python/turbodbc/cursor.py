@@ -314,7 +314,7 @@ class Cursor(object):
         self._assert_valid_result_set()
         if _has_arrow_support():
             from turbodbc_arrow_support import make_arrow_result_set
-            return make_arrow_result_set(self.impl.get_result_set(), strings_as_dictionary=strings_as_dictionary).fetch_all()
+            return make_arrow_result_set(self.impl.get_result_set(), strings_as_dictionary).fetch_all()
         else:
             raise Error(_NO_ARROW_SUPPORT_MSG)
 
