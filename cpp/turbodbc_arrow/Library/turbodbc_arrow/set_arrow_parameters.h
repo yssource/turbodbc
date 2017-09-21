@@ -5,7 +5,6 @@
 #undef BOOL
 #undef timezone
 #include <arrow/api.h>
-#include <arrow/python/pyarrow.h>
 #include <pybind11/pybind11.h>
 
 namespace turbodbc_arrow {
