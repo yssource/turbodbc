@@ -30,7 +30,7 @@ endif()
 
 install(
     TARGETS turbodbc_arrow_support
-    LIBRARY DESTINATION lib
+    DESTINATION lib
 )
 
 install(

@@ -79,7 +79,7 @@ if (MSVC)
   SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".dll")
 endif()
 
-find_library(ARROW_LIB_PATH NAMES arrow arrow.dll
+find_library(ARROW_LIB_PATH NAMES arrow
   PATHS
   ${ARROW_SEARCH_LIB_PATH}
   NO_DEFAULT_PATH)
@@ -112,7 +112,6 @@ if (ARROW_FOUND)
   if (NOT Arrow_FIND_QUIETLY)
     message(STATUS "Found the Arrow core library: ${ARROW_LIB_PATH}")
     message(STATUS "Found the Arrow Python library: ${ARROW_PYTHON_LIB_PATH}")
-    message(STATUS "Found the Arrow jemalloc library: ${ARROW_JEMALLOC_LIB_PATH}")
   endif ()
 else ()
   if (NOT Arrow_FIND_QUIETLY)
