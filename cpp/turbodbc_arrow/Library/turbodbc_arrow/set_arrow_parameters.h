@@ -3,8 +3,9 @@
 #include <turbodbc/parameter_sets/bound_parameter_set.h>
 
 #undef BOOL
-#undef timezone_
-#undef __timezone
+#if _MSC_VER >= 1900
+  #undef timezone
+#endif
 #include <arrow/api.h>
 #include <arrow/python/pyarrow.h>
 #include <pybind11/pybind11.h>
