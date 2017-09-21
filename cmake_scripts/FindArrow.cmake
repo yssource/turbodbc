@@ -75,7 +75,7 @@ else()
     )
 endif()
 
-find_library(ARROW_LIB_PATH NAMES arrow
+find_library(ARROW_LIB_PATH NAMES arrow arrow.dll
   PATHS
   ${ARROW_SEARCH_LIB_PATH}
   NO_DEFAULT_PATH)
