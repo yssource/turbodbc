@@ -2,6 +2,7 @@
 
 // Somewhere a macro defines BOOL as a constant. This is in conflict with array/type.h
 #undef BOOL
+#undef timezone
 #include <arrow/api.h>
 #include <arrow/python/pyarrow.h>
 

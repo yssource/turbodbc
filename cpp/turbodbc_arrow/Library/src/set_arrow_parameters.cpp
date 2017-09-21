@@ -1,8 +1,7 @@
 #include <turbodbc_arrow/set_arrow_parameters.h>
 
-#undef timezone
 #include <arrow/python/pyarrow.h>
-#undef timezone
+
 #include <turbodbc/errors.h>
 #include <turbodbc/make_description.h>
 #include <turbodbc/time_helpers.h>
