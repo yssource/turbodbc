@@ -75,6 +75,10 @@ else()
     )
 endif()
 
+if (MSVC)
+  SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".dll")
+endif()
+
 find_library(ARROW_LIB_PATH NAMES arrow arrow.dll
   PATHS
   ${ARROW_SEARCH_LIB_PATH}
