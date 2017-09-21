@@ -45,7 +45,7 @@ namespace {
         template <size_t element_size>
         void set_indicator(cpp_odbc::multi_value_buffer & buffer, int64_t start, int64_t elements) {
             if (data->num_chunks() != 1) {
-              throw turbodbc::interface_error("Chunked columns are not yet supported on indicators");
+              throw turbodbc::interface_error("Chunked columns are yet supported on indicators");
             }
 
             arrow::Array const& chunk = *data->chunk(0);
@@ -196,7 +196,7 @@ namespace {
         auto const& typed_array = static_cast<const BooleanArray&>(*data->chunk(0));
         if (typed_array.null_count() < typed_array.length()) {
           for (int64_t i = 0; i != elements; ++i) {
-            if (not typed_array.IsNull(start + i)) {
+            if (!typed_array.IsNull(start + i)) {
               buffer.data_pointer()[i] = static_cast<int8_t>(typed_array.Value(start + i));
             }
           }
@@ -224,7 +224,7 @@ namespace {
         auto const& typed_array = static_cast<const Date32Array&>(*data->chunk(0));
         for (int64_t i = 0; i != elements; ++i) {
           auto element = buffer[i];
-          if (not typed_array.IsNull(start + i)) {
+          if (!typed_array.IsNull(start + i)) {
             turbodbc::days_to_date(typed_array.Value(start + i), element.data_pointer);
             element.indicator = sizeof(SQL_DATE_STRUCT);
           } else {
@@ -254,7 +254,7 @@ namespace {
         auto const& typed_array = static_cast<const TimestampArray&>(*data->chunk(0));
         for (int64_t i = 0; i != elements; ++i) {
           auto element = buffer[i];
-          if (not typed_array.IsNull(start + i)) {
+          if (!typed_array.IsNull(start + i)) {
             convert(typed_array.Value(start + i), element.data_pointer);
             element.indicator = sizeof(SQL_TIMESTAMP_STRUCT);
           } else {
@@ -340,7 +340,7 @@ void set_arrow_parameters(turbodbc::bound_parameter_set & parameters, pybind11::
   arrow::py::import_pyarrow();
   if (arrow::py::is_table(pyarrow_table.ptr())) {
     std::shared_ptr<Table> table;
-    if (not arrow::py::unwrap_table(pyarrow_table.ptr(), &table).ok()) {
+    if (!arrow::py::unwrap_table(pyarrow_table.ptr(), &table).ok()) {
       throw turbodbc::interface_error("Could not unwrap the C++ object from Python pyarrow.Table");
     }
 
