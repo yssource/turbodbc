@@ -11,6 +11,8 @@
 #endif
 #include <sql.h>
 
+#include <ciso646>
+
 using arrow::BooleanArray;
 using arrow::BinaryArray;
 using arrow::ChunkedArray;

@@ -10,6 +10,7 @@
 
 #include <turbodbc/time_helpers.h>
 
+#include <ciso646>
 #include <vector>
 
 using arrow::default_memory_pool;
