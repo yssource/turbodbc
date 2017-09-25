@@ -248,8 +248,13 @@ def test_multiple_columns(dsn, configuration, column_backend):
             assert results == [[17, 3], [23, 2], [42, 1]]
 
 
+@for_each_column_backend
 @for_one_database
-def test_arrow_table_exceeds_expected_columns(dsn, configuration):
+def test_arrow_table_exceeds_expected_columns(dsn, configuration, column_backend):
+    # Only execute on the arrow backend. This will skip the test completely
+    # if there is no Arrow support.
+    if column_backend != "arrow":
+        return
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:
             columns = [array([17, 23, 42], dtype='int64'), array([3, 2, 1], dtype='int64'), array([17, 23, 42], dtype='int64')]
