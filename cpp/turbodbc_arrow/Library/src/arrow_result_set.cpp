@@ -230,8 +230,9 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
 pybind11::object arrow_result_set::fetch_all()
 {
     std::shared_ptr<arrow::Table> table;
-    // TODO: Check Arrow Status
-    fetch_all_native(&table);
+    if (not fetch_all_native(&table).ok()) {
+        throw turbodbc::interface_error("Fetching Arrow result set failed.");
+    }
 
     arrow::py::import_pyarrow();
     return pybind11::reinterpret_borrow<pybind11::object>(pybind11::handle(arrow::py::wrap_table(table)));
