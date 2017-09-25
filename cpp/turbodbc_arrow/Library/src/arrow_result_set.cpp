@@ -8,6 +8,7 @@
 
 #include <sql.h>
 
+#include <turbodbc/errors.h>
 #include <turbodbc/time_helpers.h>
 
 #include <ciso646>
