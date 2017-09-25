@@ -10,4 +10,4 @@ RUN apt-get install -y mysql-server-5.6 mysql-client-core-5.6 mysql-client-5.6 l
 RUN apt-get install -y postgresql odbc-postgresql=1:09.02.0100-2ubuntu1
 
 RUN pip install -U pip setuptools setuptools_scm
-RUN pip install -U numpy==1.10.4 pyarrow==0.7.0 pybind11 pytest pytest-cov mock six pandas
+RUN pip install -U numpy==1.10.4 pyarrow==0.7.0 pybind11==2.2.0 pytest pytest-cov mock six pandas
