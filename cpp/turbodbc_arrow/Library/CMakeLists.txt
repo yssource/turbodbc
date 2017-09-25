@@ -5,6 +5,7 @@ pybind11_add_module(turbodbc_arrow_support SHARED ${LIBRARY_FILES})
 set_target_properties(turbodbc_arrow_support PROPERTIES
     PREFIX ""
     INSTALL_RPATH "../../.."
+    LINK_FLAGS "/GL-"
 )
 
 add_dependencies(turbodbc_arrow_support
