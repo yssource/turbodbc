@@ -3,6 +3,15 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
+Version 2.4.0
+-------------
+
+*   Support Apache Arrow ``pyarrow.Table`` objects as the input for
+    ``executemanycolumns()``. In addition to direct Arrow support, this
+    should also help with more graceful handling of Pandas DataFrames
+    as ``pa.Table.from_pandas(…)`` handles additional corner cases of
+    Pandas data structures.
+
 Version 2.3.0
 -------------
 
