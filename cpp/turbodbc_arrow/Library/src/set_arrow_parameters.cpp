@@ -89,6 +89,20 @@ namespace {
         type(parameters.get_initial_parameter_types()[parameter_index])
       {}
 
+      void rebind_to_maximum_length(BinaryArray const & array, std::size_t start, std::size_t elements)
+      {
+          int32_t maximum_length = 0;
+          for (int64_t i = 0; i != elements; ++i) {
+            if (!array.IsNull(start + i)) {
+              maximum_length = std::max(maximum_length, array.value_length(start + i));
+            }
+          }
+
+          // Propagate the maximum string length to the parameters.
+          // These then adjust the size of the underlying buffer.
+          parameters.rebind(parameter_index, turbodbc::make_description(type, maximum_length));
+      }
+
       template <typename String>
         void set_batch_of_type(std::size_t start, std::size_t elements)
         {
@@ -97,17 +111,7 @@ namespace {
           }
 
           auto const& typed_array = static_cast<const BinaryArray&>(*data->chunk(0));
-
-          int32_t maximum_length = 0;
-          for (int64_t i = 0; i != elements; ++i) {
-            if (!typed_array.IsNull(start + i)) {
-              maximum_length = std::max(maximum_length, typed_array.value_length(start + i));
-            }
-          }
-
-          // Propagate the maximum string length to the parameters.
-          // These then adjust the size of the underlying buffer.
-          parameters.rebind(parameter_index, turbodbc::make_description(type, maximum_length));
+          rebind_to_maximum_length(typed_array, start, elements);
           auto & buffer = get_buffer();
           auto const character_size = sizeof(typename String::value_type);
 
@@ -117,9 +121,9 @@ namespace {
               element.indicator = SQL_NULL_DATA;
             } else {
               int32_t out_length;
-              const uint8_t *value = typed_array.GetValue(start + i, &out_length);
+              uint8_t const *value = typed_array.GetValue(start + i, &out_length);
               std::memcpy(element.data_pointer, value, out_length);
-              element.indicator = character_size * typed_array.value_length(start + i);
+              element.indicator = character_size * out_length;
             }
           }
         }
@@ -230,7 +234,7 @@ namespace {
             turbodbc::days_to_date(typed_array.Value(start + i), element.data_pointer);
             element.indicator = sizeof(SQL_DATE_STRUCT);
           } else {
-            element.indicator = SQL_NULL_DATA; 
+            element.indicator = SQL_NULL_DATA;
           }
         }
       };
@@ -338,21 +342,28 @@ namespace {
     }
 }
 
-void set_arrow_parameters(turbodbc::bound_parameter_set & parameters, pybind11::object const & pyarrow_table) {
-  arrow::py::import_pyarrow();
-  if (arrow::py::is_table(pyarrow_table.ptr())) {
+std::shared_ptr<Table> unwrap_pyarrow_table(pybind11::object const & pyarrow_table) {
     std::shared_ptr<Table> table;
     if (not arrow::py::unwrap_table(pyarrow_table.ptr(), &table).ok()) {
       throw turbodbc::interface_error("Could not unwrap the C++ object from Python pyarrow.Table");
     }
+    return table;
+}
 
-    if (static_cast<int32_t>(parameters.number_of_parameters()) != table->num_columns()) {
+void assert_table_columns_match_parameters(turbodbc::bound_parameter_set & parameters, Table const& table) {
+    if (static_cast<int32_t>(parameters.number_of_parameters()) != table.num_columns()) {
         std::stringstream ss;
-        ss << "Number of passed columns (" << table->num_columns();
+        ss << "Number of passed columns (" << table.num_columns();
         ss << ") is not equal to the number of parameters (";
         ss << parameters.number_of_parameters() << ")";
         throw turbodbc::interface_error(ss.str());
     }
+}
+
+void set_arrow_parameters(turbodbc::bound_parameter_set & parameters, pybind11::object const & pyarrow_table) {
+    arrow::py::import_pyarrow();
+    std::shared_ptr<Table> table = unwrap_pyarrow_table(pyarrow_table);
+    assert_table_columns_match_parameters(parameters, *table);
 
     if (table->num_columns() == 0) {
         return;
@@ -368,8 +379,6 @@ void set_arrow_parameters(turbodbc::bound_parameter_set & parameters, pybind11::
         }
         parameters.execute_batch(in_this_batch);
     }
-
-  }
 }
 
 }
