@@ -126,7 +126,7 @@ def test_arrow_table_exceeds_expected_columns(dsn, configuration):
 
 @arrow_support
 @for_one_database
-def test_arrow_table_exceeds_expected_columns(dsn, configuration):
+def test_arrow_table_chunked_arrays_not_supported(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
             arr = pa.array([1, 2])
