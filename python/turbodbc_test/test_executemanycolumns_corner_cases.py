@@ -123,3 +123,14 @@ def test_arrow_table_exceeds_expected_columns(dsn, configuration):
             # InterfaceError: Number of passed columns (3) is not equal to the number of parameters (2)
             with pytest.raises(InterfaceError):
                 cursor.executemanycolumns("INSERT INTO {} VALUES (?, ?)".format(table_name), columns)
+
+@arrow_support
+@for_one_database
+def test_arrow_table_exceeds_expected_columns(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            arr = pa.array([1, 2])
+            rb = pa.RecordBatch.from_arrays([arr], ['a'])
+            table = pa.Table.from_batches([rb, rb])
+            with pytest.raises(NotImplementedError):
+                cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), table)

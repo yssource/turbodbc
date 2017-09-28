@@ -46,10 +46,7 @@ namespace {
 
         template <size_t element_size>
         void set_indicator(cpp_odbc::multi_value_buffer & buffer, int64_t start, int64_t elements) {
-            if (data->num_chunks() != 1) {
-              throw turbodbc::interface_error("Chunked columns are not yet supported on indicators");
-            }
-
+            // Currently only non-chunked columns are supported
             arrow::Array const& chunk = *data->chunk(0);
             if (chunk.null_count() == 0) {
               std::fill_n(buffer.indicator_pointer(), elements, element_size);
@@ -106,10 +103,7 @@ namespace {
       template <typename String>
         void set_batch_of_type(std::size_t start, std::size_t elements)
         {
-          if (data->num_chunks() != 1) {
-            throw turbodbc::interface_error("Chunked string columns are not yet supported");
-          }
-
+          // Currently only non-chunked columns are supported
           auto const& typed_array = static_cast<const BinaryArray&>(*data->chunk(0));
           rebind_to_maximum_length(typed_array, start, elements);
           auto & buffer = get_buffer();
@@ -156,10 +150,7 @@ namespace {
       void set_batch(int64_t start, int64_t elements) final {
         auto & buffer = get_buffer();
 
-        if (data->num_chunks() != 1) {
-          throw turbodbc::interface_error("Chunked columns are not yet supported");
-        }
-
+        // Currently only non-chunked columns are supported
         auto const& typed_array = static_cast<const typename TypeTraits<ArrowType>::ArrayType&>(*data->chunk(0));
         typename ArrowType::c_type const* data_ptr = typed_array.raw_values();
         memcpy(buffer.data_pointer(), data_ptr + start, elements * sizeof(typename ArrowType::c_type));
@@ -194,11 +185,8 @@ namespace {
         }
 
       void set_batch(int64_t start, int64_t elements) final {
-        if (data->num_chunks() != 1) {
-          throw turbodbc::interface_error("Chunked columns are not yet supported");
-        }
-
         auto & buffer = get_buffer();
+        // Currently only non-chunked columns are supported
         auto const& typed_array = static_cast<const BooleanArray&>(*data->chunk(0));
         if (typed_array.null_count() < typed_array.length()) {
           for (int64_t i = 0; i != elements; ++i) {
@@ -222,11 +210,8 @@ namespace {
         }
 
       void set_batch(int64_t start, int64_t elements) final {
-        if (data->num_chunks() != 1) {
-          throw turbodbc::interface_error("Chunked columns are not yet supported");
-        }
-
         auto & buffer = get_buffer();
+        // Currently only non-chunked columns are supported
         auto const& typed_array = static_cast<const Date32Array&>(*data->chunk(0));
         for (int64_t i = 0; i != elements; ++i) {
           auto element = buffer[i];
@@ -252,11 +237,8 @@ namespace {
         virtual void convert(std::int64_t data, char * destination) = 0;
 
       void set_batch(int64_t start, int64_t elements) final {
-        if (data->num_chunks() != 1) {
-          throw turbodbc::interface_error("Chunked columns are not yet supported");
-        }
-
         auto & buffer = get_buffer();
+        // Currently only non-chunked columns are supported
         auto const& typed_array = static_cast<const TimestampArray&>(*data->chunk(0));
         for (int64_t i = 0; i != elements; ++i) {
           auto element = buffer[i];
