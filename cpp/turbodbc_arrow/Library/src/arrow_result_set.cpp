@@ -15,6 +15,7 @@
 #include <vector>
 
 using arrow::default_memory_pool;
+using arrow::AdaptiveIntBuilder;
 using arrow::ArrayBuilder;
 using arrow::BooleanBuilder;
 using arrow::Date32Builder;
@@ -31,13 +32,17 @@ namespace turbodbc_arrow {
 
 namespace {
 
-std::unique_ptr<ArrayBuilder> make_array_builder(turbodbc::type_code type, bool strings_as_dictionary)
+std::unique_ptr<ArrayBuilder> make_array_builder(turbodbc::type_code type, bool strings_as_dictionary, bool adaptive_integers)
 {
     switch (type) {
         case turbodbc::type_code::floating_point:
             return std::unique_ptr<ArrayBuilder>(new DoubleBuilder(default_memory_pool(), arrow::float64()));
         case turbodbc::type_code::integer:
-            return std::unique_ptr<ArrayBuilder>(new Int64Builder(default_memory_pool(), arrow::int64()));
+            if (adaptive_integers) {
+                return std::unique_ptr<ArrayBuilder>(new AdaptiveIntBuilder(default_memory_pool()));
+            } else {
+                return std::unique_ptr<ArrayBuilder>(new Int64Builder(default_memory_pool(), arrow::int64()));
+            }
         case turbodbc::type_code::boolean:
             return std::unique_ptr<ArrayBuilder>(new BooleanBuilder(default_memory_pool(), std::make_shared<arrow::BooleanType>()));
         case turbodbc::type_code::timestamp:
@@ -66,10 +71,17 @@ Status AppendStringsToBuilder(size_t rows_in_batch, BuilderType& builder, cpp_od
     return Status::OK();
 }
 
+template <typename BuilderType>
+Status AppendIntsToBuilder(size_t rows_in_batch, std::unique_ptr<ArrayBuilder> const& builder, cpp_odbc::multi_value_buffer const& input_buffer, uint8_t* valid_bytes) {
+    auto typed_builder = static_cast<BuilderType*>(builder.get());
+    auto data_ptr = reinterpret_cast<const int64_t*>(input_buffer.data_pointer());
+    return typed_builder->Append(data_ptr, rows_in_batch, valid_bytes);
 }
 
-arrow_result_set::arrow_result_set(turbodbc::result_sets::result_set & base, bool strings_as_dictionary) :
-    base_result_(base), strings_as_dictionary_(strings_as_dictionary)
+}
+
+arrow_result_set::arrow_result_set(turbodbc::result_sets::result_set & base, bool strings_as_dictionary, bool adaptive_integers) :
+    base_result_(base), strings_as_dictionary_(strings_as_dictionary), adaptive_integers_(adaptive_integers)
 {
 }
 
@@ -108,10 +120,12 @@ Status append_to_double_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuild
     return typed_builder->Append(data_ptr, rows_in_batch, valid_bytes);
 }
 
-Status append_to_int_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuilder> const& builder, cpp_odbc::multi_value_buffer const& input_buffer, uint8_t* valid_bytes) {
-    auto typed_builder = static_cast<Int64Builder*>(builder.get());
-    auto data_ptr = reinterpret_cast<const int64_t*>(input_buffer.data_pointer());
-    return typed_builder->Append(data_ptr, rows_in_batch, valid_bytes);
+Status append_to_int_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuilder> const& builder, cpp_odbc::multi_value_buffer const& input_buffer, uint8_t* valid_bytes, bool adaptive_integers) {
+    if (adaptive_integers) {
+      return AppendIntsToBuilder<AdaptiveIntBuilder>(rows_in_batch, builder, input_buffer, valid_bytes);
+    } else {
+      return AppendIntsToBuilder<Int64Builder>(rows_in_batch, builder, input_buffer, valid_bytes);
+    }
 }
 
 Status append_to_bool_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuilder> const& builder, cpp_odbc::multi_value_buffer const& input_buffer, uint8_t* valid_bytes) {
@@ -171,7 +185,7 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
     // Create Builders for all columns
     std::vector<std::unique_ptr<ArrayBuilder>> columns;
     for (std::size_t i = 0; i != n_columns; ++i) {
-        columns.push_back(make_array_builder(column_info[i].type, strings_as_dictionary_));
+        columns.push_back(make_array_builder(column_info[i].type, strings_as_dictionary_, adaptive_integers_));
     }
 
     do {
@@ -193,7 +207,7 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
                     ARROW_RETURN_NOT_OK(append_to_double_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data()));
                     break;
                 case turbodbc::type_code::integer:
-                    ARROW_RETURN_NOT_OK(append_to_int_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data()));
+                    ARROW_RETURN_NOT_OK(append_to_int_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data(), adaptive_integers_));
                     break;
                 case turbodbc::type_code::boolean:
                     ARROW_RETURN_NOT_OK(append_to_bool_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data()));

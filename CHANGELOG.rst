@@ -3,6 +3,14 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
+Version 2.5.0
+-------------
+
+*   Added an option to ``fetchallarrow()`` that fetches integer columns in the
+    smallest possible integer type the retrieved values fit in. While this
+    reduces the memory footprint of the resulting table, the schema of the
+    table is now dependent on the data it contains.
+
 Version 2.4.1
 -------------
 
