@@ -180,15 +180,33 @@ class Cursor(object):
                parameter data,
         :return: The ``Cursor`` object to allow chaining of operations.
         """
-        if not _has_numpy_support():
-            raise Error(_NO_NUMPY_SUPPORT_MSG)
-
         self.rowcount = -1
         self._assert_valid()
 
+        self.impl.prepare(sql)
+
+        if _has_arrow_support():
+            import pyarrow as pa
+            if isinstance(columns, pa.Table):
+                from turbodbc_arrow_support import set_arrow_parameters
+
+                for column in columns.itercolumns():
+                    if column.data.num_chunks != 1:
+                        raise NotImplementedError("Chunked Arrays are not yet supported")
+
+                set_arrow_parameters(self.impl, columns)
+                return self._execute()
+
+        # Workaround to give users a better error message without a need
+        # to import pyarrow
+        if columns.__class__.__module__.startswith('pyarrow'):
+            raise Error(_NO_ARROW_SUPPORT_MSG)
+
+        if not _has_numpy_support():
+            raise Error(_NO_NUMPY_SUPPORT_MSG)
+
         _assert_numpy_column_preconditions(columns)
 
-        self.impl.prepare(sql)
 
         from numpy.ma import MaskedArray
         from turbodbc_numpy_support import set_numpy_parameters
@@ -301,7 +319,7 @@ class Cursor(object):
         self._assert_valid_result_set()
         if _has_arrow_support():
             from turbodbc_arrow_support import make_arrow_result_set
-            return make_arrow_result_set(self.impl.get_result_set(), strings_as_dictionary=strings_as_dictionary).fetch_all()
+            return make_arrow_result_set(self.impl.get_result_set(), strings_as_dictionary).fetch_all()
         else:
             raise Error(_NO_ARROW_SUPPORT_MSG)
 

@@ -398,3 +398,60 @@ in the dictionary. On converions to Pandas, these columns will be turned into
     b    3 non-null category
     dtypes: category(1), int64(1)
     memory usage: 147.0 bytes
+
+
+.. _advanced_usage_arrow_parameters:
+
+Using Apache Arrow tables as query parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here is how to use turbodbc to use values stored in Apache Arrow
+tables as query parameters with ``executemanycolumns()``:
+
+::
+
+    >>> import numpy as np
+    >>> import pyarrow as pa
+    >>> normal_param = pa.array([1, 2, 3], type=pa.int64())
+    >>> masked_param = pa.Array.from_pandas(np.array([3.14, 1.23, 4.56])
+    ...                            mask=np.array([False, True, False])
+    ...                            type=pa.float64())
+    >>> table = pa.Table.from_arrays([normal_param, masked_param], ['a', 'b'])
+
+    >>> cursor.executemanycolumns("INSERT INTO my_table VALUES (?, ?)",
+    ...                           table)
+    # functionally equivalent, but much faster than:
+    # cursor.execute("INSERT INTO my_table VALUES (1, 3.14)")
+    # cursor.execute("INSERT INTO my_table VALUES (2, NULL)")
+    # cursor.execute("INSERT INTO my_table VALUES (3, 4.56)")
+
+    >>> cursor.execute("SELECT * FROM my_table").fetchall()
+    [[1L, 3.14], [2L, None], [3L, 4.56]]
+
+*   Tables must be of type ``pyarrow.Table``.
+*   Each column must contain one-dimensional, contiguous data. There is
+    no support for chunked arrays yet.
+*   All columns must have equal size.
+*   The ``dtype`` of each column must be supported, see the table below.
+*   Data is transfered in batches (see :ref:`advanced_usage_options_write_buffer`)
+
+
++-------------------------------------------------------------------------+--------------------------------+
+| Supported Apache Arrow type                                             | Transferred as                 |
++=========================================================================+================================+
+| ``INT64``                                                               | ``BIGINT`` (64 bits)           |
++-------------------------------------------------------------------------+--------------------------------+
+| ``DOUBLE``                                                              | ``DOUBLE PRECISION`` (64 bits) |
++-------------------------------------------------------------------------+--------------------------------+
+| ``BOOL``                                                                | ``BIT``                        |
++-------------------------------------------------------------------------+--------------------------------+
+| ``TIMESTAMP[us]``                                                       | ``TIMESTAMP``                  |
++-------------------------------------------------------------------------+--------------------------------+
+| ``TIMESTAMP[ns]``                                                       | ``TIMESTAMP``                  |
++-------------------------------------------------------------------------+--------------------------------+
+| ``DATE32``                                                              | ``DATE``                       |
++-------------------------------------------------------------------------+--------------------------------+
+| ``BINARY``                                                              | ``VARCHAR`` (automatic sizing) |
++-------------------------------------------------------------------------+--------------------------------+
+| ``STRING``                                                              | ``VARCHAR`` (automatic sizing) |
++-------------------------------------------------------------------------+--------------------------------+

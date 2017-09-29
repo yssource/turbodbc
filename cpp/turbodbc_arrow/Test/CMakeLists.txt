@@ -23,9 +23,21 @@ target_link_libraries(turbodbc_arrow_test
     gmock_main
     gtest
     gmock
-    pthread
 )
+
+if (UNIX)
+    target_link_libraries(turbodbc_arrow_test
+        pthread
+    )
+endif()
 
 add_test(NAME turbodbc_arrow_unit_test
          COMMAND turbodbc_arrow_test --gtest_output=xml:${CMAKE_BINARY_DIR}/turbodbc_arrow_test.xml)
 
+if (WIN32)
+    set_tests_properties(
+        turbodbc_arrow_unit_test
+        PROPERTIES
+        ENVIRONMENT "PATH=${CMAKE_BINARY_DIR};$ENV{PATH}"
+    )
+endif()

@@ -2,13 +2,16 @@
 
 // Somewhere a macro defines BOOL as a constant. This is in conflict with array/type.h
 #undef BOOL
+#undef timezone
 #include <arrow/api.h>
 #include <arrow/python/pyarrow.h>
 
 #include <sql.h>
 
+#include <turbodbc/errors.h>
 #include <turbodbc/time_helpers.h>
 
+#include <ciso646>
 #include <vector>
 
 using arrow::default_memory_pool;
@@ -228,7 +231,9 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
 pybind11::object arrow_result_set::fetch_all()
 {
     std::shared_ptr<arrow::Table> table;
-    fetch_all_native(&table);
+    if (not fetch_all_native(&table).ok()) {
+        throw turbodbc::interface_error("Fetching Arrow result set failed.");
+    }
 
     arrow::py::import_pyarrow();
     return pybind11::reinterpret_borrow<pybind11::object>(pybind11::handle(arrow::py::wrap_table(table)));

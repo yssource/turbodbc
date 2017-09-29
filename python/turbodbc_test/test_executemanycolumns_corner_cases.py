@@ -6,8 +6,22 @@ import pytest
 
 import turbodbc
 
+from turbodbc import InterfaceError
+
 from query_fixture import query_fixture
 from helpers import open_cursor, for_one_database
+
+
+try:
+    import pyarrow as pa
+    import turbodbc_arrow_support
+
+    HAVE_ARROW = True
+except:
+    HAVE_ARROW = False
+
+
+arrow_support = pytest.mark.skipif(not HAVE_ARROW, reason="not build with Arrow support")
 
 
 @for_one_database
@@ -96,3 +110,27 @@ def test_executemanycolumns_without_numpy_support(dsn, configuration):
         with patch('turbodbc.cursor._has_numpy_support', return_value=False):
             with pytest.raises(turbodbc.Error):
                 cursor.executemanycolumns("SELECT 42", [])
+
+
+@arrow_support
+@for_one_database
+def test_arrow_table_exceeds_expected_columns(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:
+            columns = [array([17, 23, 42], dtype='int64'), array([3, 2, 1], dtype='int64'), array([17, 23, 42], dtype='int64')]
+            columns = [pa.Array.from_pandas(x) for x in columns]
+            columns = pa.Table.from_arrays(columns, ['column1', 'column2', 'column3'])
+            # InterfaceError: Number of passed columns (3) is not equal to the number of parameters (2)
+            with pytest.raises(InterfaceError):
+                cursor.executemanycolumns("INSERT INTO {} VALUES (?, ?)".format(table_name), columns)
+
+@arrow_support
+@for_one_database
+def test_arrow_table_chunked_arrays_not_supported(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT INTEGER') as table_name:
+            arr = pa.array([1, 2])
+            rb = pa.RecordBatch.from_arrays([arr], ['a'])
+            table = pa.Table.from_batches([rb, rb])
+            with pytest.raises(NotImplementedError):
+                cursor.executemanycolumns("INSERT INTO {} VALUES (?)".format(table_name), table)

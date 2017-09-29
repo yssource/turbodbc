@@ -16,9 +16,19 @@ target_link_libraries(turbodbc_arrow_support
     PUBLIC ${Odbc_LIBRARIES}
     PUBLIC cpp_odbc
     PUBLIC turbodbc
-    PUBLIC arrow
-    PUBLIC arrow_python
 )
+
+if (MSVC)
+    target_link_libraries(turbodbc_arrow_support
+        PUBLIC ${ARROW_SHARED_IMP_LIB}
+        PUBLIC ${ARROW_PYTHON_SHARED_IMP_LIB}
+    )
+else()
+    target_link_libraries(turbodbc_arrow_support
+        PUBLIC ${ARROW_SHARED_LIB}
+        PUBLIC ${ARROW_PYTHON_SHARED_LIB}
+    )
+endif()
 
 add_custom_command(TARGET turbodbc_arrow_support POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
@@ -30,7 +40,7 @@ endif()
 
 install(
     TARGETS turbodbc_arrow_support
-    LIBRARY DESTINATION lib
+    DESTINATION lib
 )
 
 install(

@@ -48,9 +48,16 @@ if (NOT ARROW_HOME)
       $ENV{VIRTUAL_ENV}/lib/*/site-packages/pyarrow/include)
     get_filename_component(ARROW_SEARCH_LIB_PATH ${ARROW_INCLUDE_DIR} DIRECTORY)
   else()
-    find_path(ARROW_INCLUDE_DIR arrow/api.h HINTS
-      /usr/local/lib/*/dist-packages/pyarrow/include)
+    if (MSVC)
+      find_path(ARROW_INCLUDE_DIR arrow/api.h HINTS
+        $ENV{PYTHON}/lib/site-packages/pyarrow/include)
+    else()
+      find_path(ARROW_INCLUDE_DIR arrow/api.h HINTS
+        /usr/local/lib/*/dist-packages/pyarrow/include)
+    endif()
     get_filename_component(ARROW_SEARCH_LIB_PATH ${ARROW_INCLUDE_DIR} DIRECTORY)
+    set(ARROW_SEARCH_HEADER_PATHS ${ARROW_INCLUDE_DIR})
+    message(STATUS "Found candidate Arrow location: ${ARROW_SEARCH_LIB_PATH}")
   endif()
 else()
   set(ARROW_SEARCH_HEADER_PATHS
@@ -68,16 +75,16 @@ else()
     )
 endif()
 
+if (MSVC)
+  SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".dll")
+endif()
+
 find_library(ARROW_LIB_PATH NAMES arrow
   PATHS
   ${ARROW_SEARCH_LIB_PATH}
   NO_DEFAULT_PATH)
+message(STATUS "Found ${ARROW_LIB_PATH} in ${ARROW_SEARCH_LIB_PATH}")
 get_filename_component(ARROW_LIBS ${ARROW_LIB_PATH} DIRECTORY)
-
-find_library(ARROW_JEMALLOC_LIB_PATH NAMES arrow_jemalloc
-  PATHS
-  ${ARROW_SEARCH_LIB_PATH}
-  NO_DEFAULT_PATH)
 
 find_library(ARROW_PYTHON_LIB_PATH NAMES arrow_python
   PATHS
@@ -87,18 +94,21 @@ find_library(ARROW_PYTHON_LIB_PATH NAMES arrow_python
 if (ARROW_INCLUDE_DIR AND ARROW_LIBS)
   set(ARROW_FOUND TRUE)
 
+  set(ARROW_LIB_NAME arrow)
+  set(ARROW_PYTHON_LIB_NAME arrow_python)
+
   if (MSVC)
-    set(ARROW_STATIC_LIB ${ARROW_LIB_PATH})
-    set(ARROW_PYTHON_STATIC_LIB ${ARROW_PYTHON_LIB_PATH})
-    set(ARROW_SHARED_LIB ${ARROW_STATIC_LIB})
-    set(ARROW_PYTHON_SHARED_LIB ${ARROW_PYTHON_STATIC_LIB})
+    set(ARROW_STATIC_LIB ${ARROW_LIBS}/${ARROW_LIB_NAME}${ARROW_MSVC_STATIC_LIB_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX})
+    set(ARROW_PYTHON_STATIC_LIB ${ARROW_PYTHON_LIBS}/${ARROW_PYTHON_LIB_NAME}${ARROW_MSVC_STATIC_LIB_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX})
+    set(ARROW_SHARED_LIB ${ARROW_LIBS}/${ARROW_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+    set(ARROW_PYTHON_SHARED_LIB ${ARROW_LIBS}/${ARROW_PYTHON_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+    set(ARROW_SHARED_IMP_LIB ${ARROW_LIBS}/${ARROW_LIB_NAME}.lib)
+    set(ARROW_PYTHON_SHARED_IMP_LIB ${ARROW_LIBS}/${ARROW_PYTHON_LIB_NAME}.lib)
   else()
     set(ARROW_STATIC_LIB ${ARROW_PYTHON_LIB_PATH}/libarrow.a)
     set(ARROW_PYTHON_STATIC_LIB ${ARROW_PYTHON_LIB_PATH}/libarrow_python.a)
-    set(ARROW_JEMALLOC_STATIC_LIB ${ARROW_PYTHON_LIB_PATH}/libarrow_jemalloc.a)
 
     set(ARROW_SHARED_LIB ${ARROW_LIBS}/libarrow${CMAKE_SHARED_LIBRARY_SUFFIX})
-    set(ARROW_JEMALLOC_SHARED_LIB ${ARROW_LIBS}/libarrow_jemalloc${CMAKE_SHARED_LIBRARY_SUFFIX})
     set(ARROW_PYTHON_SHARED_LIB ${ARROW_LIBS}/libarrow_python${CMAKE_SHARED_LIBRARY_SUFFIX})
   endif()
 endif()
@@ -107,7 +117,6 @@ if (ARROW_FOUND)
   if (NOT Arrow_FIND_QUIETLY)
     message(STATUS "Found the Arrow core library: ${ARROW_LIB_PATH}")
     message(STATUS "Found the Arrow Python library: ${ARROW_PYTHON_LIB_PATH}")
-    message(STATUS "Found the Arrow jemalloc library: ${ARROW_JEMALLOC_LIB_PATH}")
   endif ()
 else ()
   if (NOT Arrow_FIND_QUIETLY)

@@ -1,4 +1,6 @@
 #include <turbodbc_arrow/arrow_result_set.h>
+#include <turbodbc_arrow/set_arrow_parameters.h>
+#include <turbodbc/cursor.h>
 
 #include <pybind11/pybind11.h>
 
@@ -12,6 +14,11 @@ arrow_result_set make_arrow_result_set(std::shared_ptr<turbodbc::result_sets::re
 	return arrow_result_set(*result_set_pointer, strings_as_dictionary);
 }
 
+void set_arrow_parameters(turbodbc::cursor & cursor, pybind11::object const & pyarrow_table)
+{
+    turbodbc_arrow::set_arrow_parameters(cursor.get_command()->get_parameters(), pyarrow_table);
+}
+
 }
 
 PYBIND11_MODULE(turbodbc_arrow_support, module)
@@ -21,6 +28,6 @@ PYBIND11_MODULE(turbodbc_arrow_support, module)
     pybind11::class_<arrow_result_set>(module, "ArrowResultSet")
         .def("fetch_all", &arrow_result_set::fetch_all);
 
-    module.def("make_arrow_result_set", make_arrow_result_set,
-        pybind11::arg("result_set"), pybind11::arg("strings_as_dictionary"));
+    module.def("make_arrow_result_set", make_arrow_result_set);
+    module.def("set_arrow_parameters", set_arrow_parameters);
 }
