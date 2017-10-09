@@ -27,6 +27,17 @@ namespace {
         MOCK_CONST_METHOD0(do_get_column_info, std::vector<turbodbc::column_info>());
         MOCK_CONST_METHOD0(do_get_buffers, std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>>());
     };
+
+    template <typename ArrowType>
+    void make_int_range(int64_t size, std::shared_ptr<arrow::Array>* out) {
+        typename arrow::TypeTraits<ArrowType>::BuilderType builder;
+        for (int64_t i = 0; i < size; i++) {
+          ASSERT_OK(builder.Append(i));
+        }
+        std::shared_ptr<arrow::Array> array;
+        ASSERT_OK(builder.Finish(out));
+    }
+
 }
 
 class ArrowResultSetTest : public ::testing::Test {
@@ -220,23 +231,18 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionInteger)
 
 TEST_F(ArrowResultSetTest, ConversionCompressedInteger)
 {
-    arrow::Int64Builder builder;
-    arrow::Int16Builder compressed_builder;
-    for (int64_t i = 0; i < 1024; i++) {
-      ASSERT_OK(builder.Append(i));
-      ASSERT_OK(compressed_builder.Append(i));
-    }
     std::shared_ptr<arrow::Array> array;
-    ASSERT_OK(builder.Finish(&array));
-    std::shared_ptr<arrow::Array> compressed_array;
-    ASSERT_OK(compressed_builder.Finish(&compressed_array));
-
-    expected_arrays.push_back(compressed_array);
-    expected_fields.push_back(arrow::field("int_column", arrow::int16(), true));
+    make_int_range<arrow::Int64Type>(1024, &array);
 
     MockSchema({{"int_column", turbodbc::type_code::integer, size_unimportant, true}});
     MockOutput({{BufferFromPrimitive(array, 512, 0)},
             {BufferFromPrimitive(array, 512, 512)}});
+
+    std::shared_ptr<arrow::Array> expected_array;
+    make_int_range<arrow::Int16Type>(1024, &expected_array);
+    expected_arrays.push_back(expected_array);
+    expected_fields.push_back(arrow::field("int_column", arrow::int16(), true));
+
     CheckRoundtrip(strings_as_strings, compressed_integers);
 }
 
