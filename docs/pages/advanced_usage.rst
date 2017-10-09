@@ -400,6 +400,53 @@ in the dictionary. On converions to Pandas, these columns will be turned into
     memory usage: 147.0 bytes
 
 
+To further reduce the memory usage of the returned results, the Arrow based
+interface can return the integer columns as the minimal possible integer
+storage type. This type can be different from the integer type used and
+returned by the database. This mode can be activated by setting
+``adaptive_integers=True``.
+
+::
+
+    >>> # Standard result retrieval
+    >>> cursor.execute("SELECT * FROM (VALUES(1), (2), (3))")
+    >>> table = cursor.fetchallarrow()
+    >>> table
+    pyarrow.Table
+    __COL0__: int64
+    >>> table.to_pandas()
+       __COL0__
+    0         1
+    1         3
+    2         2
+    >>> table.to_pandas().info()
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 3 entries, 0 to 2
+    Data columns (total 1 columns):
+    __COL0__    3 non-null int64
+    dtypes: int64(1)
+    memory usage: 96.0 bytes
+
+    >>> # With adaptive integer storage
+    >>> cursor.execute("SELECT * FROM (VALUES(1), (2), (3))")
+    >>> table = cursor.fetchallarrow(adaptive_integers=True)
+    >>> table
+    pyarrow.Table
+    __COL0__: int8
+    >>> table.to_pandas()
+       __COL0__
+    0         1
+    1         3
+    2         2
+    >>> table.to_pandas().info()
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 3 entries, 0 to 2
+    Data columns (total 1 columns):
+    __COL0__    3 non-null int8
+    dtypes: int8(1)
+    memory usage: 75.0 bytes
+
+
 .. _advanced_usage_arrow_parameters:
 
 Using Apache Arrow tables as query parameters
