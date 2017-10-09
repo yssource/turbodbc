@@ -2,7 +2,9 @@ from collections import OrderedDict
 from mock import patch
 
 import datetime
+import gc
 import pytest
+import sys
 import turbodbc
 
 from query_fixture import query_fixture
@@ -54,6 +56,8 @@ def test_arrow_empty_column(dsn, configuration):
             assert isinstance(result, pa.Table)
             assert result.num_columns == 1
             assert result.num_rows == 0
+            gc.collect()
+            assert sys.getrefcount(result) == 2
 
 
 @for_each_database
