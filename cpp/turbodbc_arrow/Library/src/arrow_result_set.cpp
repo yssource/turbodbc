@@ -236,7 +236,7 @@ pybind11::object arrow_result_set::fetch_all()
     }
 
     arrow::py::import_pyarrow();
-    return pybind11::reinterpret_borrow<pybind11::object>(pybind11::handle(arrow::py::wrap_table(table)));
+    return pybind11::reinterpret_steal<pybind11::object>(pybind11::handle(arrow::py::wrap_table(table)));
 }
 
 
