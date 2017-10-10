@@ -3,6 +3,12 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
+Version 2.4.1
+-------------
+
+*   Fixed a memory leak on ``fetchallarrow()`` that increased the reference
+    count of the returned table by one too much.
+
 Version 2.4.0
 -------------
 
