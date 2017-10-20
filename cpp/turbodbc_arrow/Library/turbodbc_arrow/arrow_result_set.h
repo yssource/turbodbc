@@ -25,7 +25,8 @@ class PYBIND11_EXPORT arrow_result_set {
      * @brief Create a new numpy_result_set which presents data contained
      *        in the base result set in a row-based fashion
      */
-    arrow_result_set(turbodbc::result_sets::result_set & base, bool strings_as_dictionary);
+    arrow_result_set(turbodbc::result_sets::result_set & base, bool strings_as_dictionary,
+        bool adaptive_integers);
 
     /**
      * @brief Retrieve a native (C++) Arrow Table which contains
@@ -47,6 +48,7 @@ class PYBIND11_EXPORT arrow_result_set {
   private:
     turbodbc::result_sets::result_set & base_result_;
     bool strings_as_dictionary_;
+    bool adaptive_integers_;
 };
 
 }

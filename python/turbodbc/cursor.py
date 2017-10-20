@@ -307,19 +307,29 @@ class Cursor(object):
             first_run = False
             yield result_batch
 
-    def fetchallarrow(self, strings_as_dictionary=False):
+    def fetchallarrow(self, strings_as_dictionary=False, adaptive_integers=False):
         """
         Fetches all rows in the active result set generated with ``execute()`` or
         ``executemany()``.
 
         :param strings_as_dictionary: If true, fetch string columns as
                  dictionary[string] instead of a plain string column.
+
+        :param adaptive_integers: If true, instead of the integer type returned
+                by the database (driver), this produce integer columns with the
+                smallest possible integer type in which all values can be
+                stored. Be aware that here the type depends on the resulting
+                data.
+
         :return: ``pyarrow.Table``
         """
         self._assert_valid_result_set()
         if _has_arrow_support():
             from turbodbc_arrow_support import make_arrow_result_set
-            return make_arrow_result_set(self.impl.get_result_set(), strings_as_dictionary).fetch_all()
+            return make_arrow_result_set(
+                    self.impl.get_result_set(),
+                    strings_as_dictionary,
+                    adaptive_integers).fetch_all()
         else:
             raise Error(_NO_ARROW_SUPPORT_MSG)
 

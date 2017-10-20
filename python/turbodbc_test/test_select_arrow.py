@@ -85,6 +85,16 @@ def test_arrow_int_column(dsn, configuration):
 
 @for_each_database
 @pyarrow
+def test_arrow_int_column_adaptive(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        cursor.execute("SELECT 42 AS a")
+        result = cursor.fetchallarrow(adaptive_integers=True)
+        assert str(result.column(0).type) == "int8"
+        assert result.column(0).to_pylist() == [42]
+
+
+@for_each_database
+@pyarrow
 def test_arrow_double_column(dsn, configuration):
     with open_cursor(configuration) as cursor:
         with query_fixture(cursor, configuration, 'SELECT DOUBLE') as query:

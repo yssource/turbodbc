@@ -19,11 +19,25 @@ namespace {
     bool const strings_as_strings = false;
     bool const strings_as_dictionaries = true;
 
+    bool const plain_integers = false;
+    bool const compressed_integers = true;
+
     struct mock_result_set : public turbodbc::result_sets::result_set {
         MOCK_METHOD0(do_fetch_next_batch, std::size_t());
         MOCK_CONST_METHOD0(do_get_column_info, std::vector<turbodbc::column_info>());
         MOCK_CONST_METHOD0(do_get_buffers, std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>>());
     };
+
+    template <typename ArrowType>
+    void make_int_range(int64_t size, std::shared_ptr<arrow::Array>* out) {
+        typename arrow::TypeTraits<ArrowType>::BuilderType builder;
+        for (int64_t i = 0; i < size; i++) {
+          ASSERT_OK(builder.Append(i));
+        }
+        std::shared_ptr<arrow::Array> array;
+        ASSERT_OK(builder.Finish(out));
+    }
+
 }
 
 class ArrowResultSetTest : public ::testing::Test {
@@ -92,12 +106,12 @@ class ArrowResultSetTest : public ::testing::Test {
             return std::make_shared<ArrayType>(length, data, null_bitmap, null_count);
         }
 
-        void CheckRoundtrip(bool strings_as_dictionary) {
+        void CheckRoundtrip(bool strings_as_dictionary, bool adaptive_integers) {
             auto schema = std::make_shared<arrow::Schema>(expected_fields);
             std::shared_ptr<arrow::Table> expected_table;
             ASSERT_OK(MakeTable(schema, expected_arrays, &expected_table));
 
-            turbodbc_arrow::arrow_result_set ars(rs, strings_as_dictionary);
+            turbodbc_arrow::arrow_result_set ars(rs, strings_as_dictionary, adaptive_integers);
             std::shared_ptr<arrow::Table> table;
             ASSERT_OK(ars.fetch_all_native(&table));
             ASSERT_TRUE(expected_table->Equals(*table));
@@ -119,7 +133,7 @@ TEST_F(ArrowResultSetTest, SimpleSchemaConversion)
         "int_column", turbodbc::type_code::integer, size_unimportant, true}};
     EXPECT_CALL(rs, do_get_column_info()).WillRepeatedly(testing::Return(expected));
 
-    turbodbc_arrow::arrow_result_set ars(rs, strings_as_strings);
+    turbodbc_arrow::arrow_result_set ars(rs, strings_as_strings, plain_integers);
     auto schema = ars.schema();
     ASSERT_EQ(schema->num_fields(), 1);
     auto field = schema->field(0);
@@ -159,7 +173,7 @@ TEST_F(ArrowResultSetTest, AllTypesSchemaConversion)
         std::make_shared<arrow::Field>("nonnull_int_column", arrow::int64(), false)
     };
 
-    turbodbc_arrow::arrow_result_set ars(rs, strings_as_strings);
+    turbodbc_arrow::arrow_result_set ars(rs, strings_as_strings, plain_integers);
     auto schema = ars.schema();
 
     ASSERT_EQ(schema->num_fields(), 12);
@@ -193,7 +207,7 @@ TEST_F(ArrowResultSetTest, SingleBatchSingleColumnResultSetConversion)
     EXPECT_CALL(rs, do_get_buffers()).WillOnce(testing::Return(expected_buffers));
     EXPECT_CALL(rs, do_fetch_next_batch()).WillOnce(testing::Return(OUTPUT_SIZE)).WillOnce(testing::Return(0));
 
-    turbodbc_arrow::arrow_result_set ars(rs, strings_as_strings);
+    turbodbc_arrow::arrow_result_set ars(rs, strings_as_strings, plain_integers);
     std::shared_ptr<arrow::Table> table;
     ASSERT_OK(ars.fetch_all_native(&table));
     ASSERT_TRUE(expected_table->Equals(*table));
@@ -212,7 +226,24 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionInteger)
             {"nonnull_int_column", turbodbc::type_code::integer, size_unimportant, false}});
     MockOutput({{BufferFromPrimitive(array, OUTPUT_SIZE, 0), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, 0)},
             {BufferFromPrimitive(array, OUTPUT_SIZE, OUTPUT_SIZE), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, OUTPUT_SIZE)}});
-    CheckRoundtrip(strings_as_strings);
+    CheckRoundtrip(strings_as_strings, plain_integers);
+}
+
+TEST_F(ArrowResultSetTest, ConversionCompressedInteger)
+{
+    std::shared_ptr<arrow::Array> array;
+    make_int_range<arrow::Int64Type>(1024, &array);
+
+    MockSchema({{"int_column", turbodbc::type_code::integer, size_unimportant, true}});
+    MockOutput({{BufferFromPrimitive(array, 512, 0)},
+            {BufferFromPrimitive(array, 512, 512)}});
+
+    std::shared_ptr<arrow::Array> expected_array;
+    make_int_range<arrow::Int16Type>(1024, &expected_array);
+    expected_arrays.push_back(expected_array);
+    expected_fields.push_back(arrow::field("int_column", arrow::int16(), true));
+
+    CheckRoundtrip(strings_as_strings, compressed_integers);
 }
 
 TEST_F(ArrowResultSetTest, MultiBatchConversionFloat)
@@ -228,7 +259,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionFloat)
             {"nonnull_float_column", turbodbc::type_code::floating_point, size_unimportant, false}});
     MockOutput({{BufferFromPrimitive(array, OUTPUT_SIZE, 0), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, 0)},
             {BufferFromPrimitive(array, OUTPUT_SIZE, OUTPUT_SIZE), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, OUTPUT_SIZE)}});
-    CheckRoundtrip(strings_as_strings);
+    CheckRoundtrip(strings_as_strings, plain_integers);
 }
 
 TEST_F(ArrowResultSetTest, MultiBatchConversionBoolean)
@@ -281,7 +312,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionBoolean)
     MockSchema({{"bool_column", turbodbc::type_code::boolean, size_unimportant, true},
             {"nonnull_bool_column", turbodbc::type_code::boolean, size_unimportant, false}});
     MockOutput({{buffer_1, buffer_2}, {buffer_1_2, buffer_2_2}});
-    CheckRoundtrip(strings_as_strings);
+    CheckRoundtrip(strings_as_strings, plain_integers);
 }
 
 TEST_F(ArrowResultSetTest, MultiBatchConversionString)
@@ -341,7 +372,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionString)
     MockSchema({{"str_column", turbodbc::type_code::string, size_unimportant, true},
             {"nonnull_str_column", turbodbc::type_code::string, size_unimportant, false}});
     MockOutput({{buffer_1, buffer_2}, {buffer_1_2, buffer_2_2}});
-    CheckRoundtrip(strings_as_strings);
+    CheckRoundtrip(strings_as_strings, plain_integers);
 
     // Convert to dictionaries
     for (size_t i = 0; i < expected_arrays.size(); i++) {
@@ -355,7 +386,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionString)
     MockSchema({{"str_column", turbodbc::type_code::string, size_unimportant, true},
             {"nonnull_str_column", turbodbc::type_code::string, size_unimportant, false}});
     MockOutput({{buffer_1, buffer_2}, {buffer_1_2, buffer_2_2}});
-    CheckRoundtrip(strings_as_dictionaries);
+    CheckRoundtrip(strings_as_dictionaries, plain_integers);
 }
 
 TEST_F(ArrowResultSetTest, MultiBatchConversionTimestamp)
@@ -428,5 +459,5 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionTimestamp)
     MockSchema({{"timestamp_column", turbodbc::type_code::timestamp, size_unimportant, true},
             {"nonnull_timestamp_column", turbodbc::type_code::timestamp, size_unimportant, false}});
     MockOutput({{buffer_1, buffer_2}, {buffer_1_2, buffer_2_2}});
-    CheckRoundtrip(strings_as_strings);
+    CheckRoundtrip(strings_as_strings, plain_integers);
 }
