@@ -34,7 +34,7 @@ def _to_masked_columns(values, dtype, mask, column_backend):
     if column_backend == 'numpy':
         return [MaskedArray(values, mask=mask, dtype=dtype)]
     elif column_backend == 'arrow':
-        columns = pa.Array.from_pandas(array(values, dtype=dtype), mask=array(mask))
+        columns = pa.array(array(values, dtype=dtype), mask=array(mask))
         return pa.Table.from_arrays([columns], ['column'])
 
 

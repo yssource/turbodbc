@@ -36,24 +36,24 @@ std::unique_ptr<ArrayBuilder> make_array_builder(turbodbc::type_code type, bool 
 {
     switch (type) {
         case turbodbc::type_code::floating_point:
-            return std::unique_ptr<ArrayBuilder>(new DoubleBuilder(default_memory_pool(), arrow::float64()));
+            return std::unique_ptr<ArrayBuilder>(new DoubleBuilder());
         case turbodbc::type_code::integer:
             if (adaptive_integers) {
-                return std::unique_ptr<ArrayBuilder>(new AdaptiveIntBuilder(default_memory_pool()));
+                return std::unique_ptr<ArrayBuilder>(new AdaptiveIntBuilder());
             } else {
-                return std::unique_ptr<ArrayBuilder>(new Int64Builder(default_memory_pool(), arrow::int64()));
+                return std::unique_ptr<ArrayBuilder>(new Int64Builder());
             }
         case turbodbc::type_code::boolean:
-            return std::unique_ptr<ArrayBuilder>(new BooleanBuilder(default_memory_pool(), std::make_shared<arrow::BooleanType>()));
+            return std::unique_ptr<ArrayBuilder>(new BooleanBuilder());
         case turbodbc::type_code::timestamp:
-            return std::unique_ptr<TimestampBuilder>(new TimestampBuilder(default_memory_pool(), arrow::timestamp(TimeUnit::MICRO)));
+            return std::unique_ptr<TimestampBuilder>(new TimestampBuilder(arrow::timestamp(TimeUnit::MICRO), ::arrow::default_memory_pool()));
         case turbodbc::type_code::date:
-            return std::unique_ptr<Date32Builder>(new Date32Builder(default_memory_pool()));
+            return std::unique_ptr<Date32Builder>(new Date32Builder());
         default:
             if (strings_as_dictionary) {
-                return std::unique_ptr<StringDictionaryBuilder>(new StringDictionaryBuilder(default_memory_pool()));
+                return std::unique_ptr<StringDictionaryBuilder>(new StringDictionaryBuilder(::arrow::utf8(), ::arrow::default_memory_pool()));
             } else {
-                return std::unique_ptr<StringBuilder>(new StringBuilder(default_memory_pool()));
+                return std::unique_ptr<StringBuilder>(new StringBuilder());
             }
     }
 }
