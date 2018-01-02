@@ -209,7 +209,7 @@ setup(name = 'turbodbc',
       packages = ['turbodbc'],
       extras_require={
           # We pin Apache Arrow quite restrictively until they guarantee a stable API
-          'arrow': ['pyarrow>=0.7,<0.8'],
+          'arrow': ['pyarrow>=0.8,<0.9'],
           'numpy': 'numpy>=1.10.4'
       },
       classifiers = ['Development Status :: 5 - Production/Stable',
