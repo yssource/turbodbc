@@ -10,6 +10,7 @@ Version 2.5.0
     smallest possible integer type the retrieved values fit in. While this
     reduces the memory footprint of the resulting table, the schema of the
     table is now dependent on the data it contains.
+*   Updated Apache Arrow support to work with version 0.8.x
 
 Version 2.4.1
 -------------
