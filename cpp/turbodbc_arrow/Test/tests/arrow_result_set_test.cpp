@@ -185,7 +185,7 @@ TEST_F(ArrowResultSetTest, AllTypesSchemaConversion)
 TEST_F(ArrowResultSetTest, SingleBatchSingleColumnResultSetConversion)
 {
     // Expected output: a Table with a single column of int64s
-    arrow::Int64Builder builder(pool, arrow::int64());
+    arrow::Int64Builder builder;
     for (int64_t i = 0; i < OUTPUT_SIZE; i++) {
         ASSERT_OK(builder.Append(i));
     }
@@ -195,7 +195,7 @@ TEST_F(ArrowResultSetTest, SingleBatchSingleColumnResultSetConversion)
     std::vector<std::shared_ptr<arrow::Field>> fields({std::make_shared<arrow::Field>("int_column", arrow::int64(), true)});
     std::shared_ptr<arrow::Schema> schema = std::make_shared<arrow::Schema>(fields);
     std::vector<std::shared_ptr<arrow::Column>> columns ({std::make_shared<arrow::Column>(fields[0], array)});
-    std::shared_ptr<arrow::Table> expected_table = std::make_shared<arrow::Table>(schema, columns);
+    std::shared_ptr<arrow::Table> expected_table = arrow::Table::Make(schema, columns);
 
     MockSchema({{"int_column", turbodbc::type_code::integer, size_unimportant, true}});
 
@@ -268,7 +268,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionBoolean)
     cpp_odbc::multi_value_buffer buffer_1(sizeof(bool), OUTPUT_SIZE);
     cpp_odbc::multi_value_buffer buffer_1_2(sizeof(bool), OUTPUT_SIZE);
     {
-        arrow::BooleanBuilder builder(pool, arrow::boolean());
+        arrow::BooleanBuilder builder;
         for (int64_t i = 0; i < 2 * OUTPUT_SIZE; i++) {
             if (i % 5 == 0) {
                 ASSERT_OK(builder.AppendNull());
@@ -295,7 +295,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionBoolean)
     cpp_odbc::multi_value_buffer buffer_2(sizeof(bool), OUTPUT_SIZE);
     cpp_odbc::multi_value_buffer buffer_2_2(sizeof(bool), OUTPUT_SIZE);
     {
-        arrow::BooleanBuilder builder(pool, arrow::boolean());
+        arrow::BooleanBuilder builder;
         for (int64_t i = 0; i < 2 * OUTPUT_SIZE; i++) {
             ASSERT_OK(builder.Append(i % 3 == 0));
             if (i < OUTPUT_SIZE) {
@@ -395,7 +395,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionTimestamp)
     cpp_odbc::multi_value_buffer buffer_1(sizeof(SQL_TIMESTAMP_STRUCT), OUTPUT_SIZE);
     cpp_odbc::multi_value_buffer buffer_1_2(sizeof(SQL_TIMESTAMP_STRUCT), OUTPUT_SIZE);
     {
-        arrow::TimestampBuilder builder(pool, arrow::timestamp(arrow::TimeUnit::MICRO));
+        arrow::TimestampBuilder builder(arrow::timestamp(arrow::TimeUnit::MICRO), pool);
         for (int64_t i = 0; i < 2 * OUTPUT_SIZE; i++) {
             if (i % 5 == 0) {
                 ASSERT_OK(builder.AppendNull());
@@ -432,7 +432,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionTimestamp)
     cpp_odbc::multi_value_buffer buffer_2(sizeof(SQL_TIMESTAMP_STRUCT), OUTPUT_SIZE);
     cpp_odbc::multi_value_buffer buffer_2_2(sizeof(SQL_TIMESTAMP_STRUCT), OUTPUT_SIZE);
     {
-        arrow::TimestampBuilder builder(pool, arrow::timestamp(arrow::TimeUnit::MICRO));
+        arrow::TimestampBuilder builder(arrow::timestamp(arrow::TimeUnit::MICRO), pool);
         for (int64_t i = 0; i < 2 * OUTPUT_SIZE; i++) {
             ASSERT_OK(builder.Append(i));
             auto td = boost::posix_time::microseconds(i);
