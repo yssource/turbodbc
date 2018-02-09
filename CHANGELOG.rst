@@ -3,6 +3,13 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
+Version 2.5.1 (UNRELEASED)
+--------------------------
+
+*   Fixed a bug that lead to ``handle limit exceeded`` error messages when
+    ``Cursor`` objects were not closed *manually*. With this fix, cursors
+    are garbage collected as expected.
+
 Version 2.5.0
 -------------
 

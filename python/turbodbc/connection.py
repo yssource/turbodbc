@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+from weakref import WeakSet
+
 from .exceptions import translate_exceptions, InterfaceError
 from .cursor import Cursor
 
@@ -11,7 +13,7 @@ class Connection(object):
 
     def __init__(self, impl):
         self.impl = impl
-        self.cursors = []
+        self.cursors = WeakSet([])
 
     @translate_exceptions
     def cursor(self):
@@ -22,7 +24,7 @@ class Connection(object):
         """
         self._assert_valid()
         c = Cursor(self.impl.cursor())
-        self.cursors.append(c)
+        self.cursors.add(c)
         return c
 
     @translate_exceptions

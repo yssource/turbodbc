@@ -118,3 +118,11 @@ def test_rowcount_is_reset_after_executemanycolumns_raises(dsn, configuration):
             with pytest.raises(Error):
                 cursor.executemanycolumns("this is not even a valid SQL statement", [])
             assert cursor.rowcount == -1
+
+
+@for_one_database
+def test_connection_does_not_strongly_reference_cursors(dsn, configuration):
+    connection = connect(dsn, **get_credentials(configuration))
+    cursor = connection.cursor()
+    import sys
+    assert sys.getrefcount(cursor) == 2
