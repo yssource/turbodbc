@@ -129,7 +129,11 @@ std::unique_ptr<description const> make_description(cpp_odbc::column_description
         case SQL_WVARCHAR:
         case SQL_WLONGVARCHAR:
         case SQL_WCHAR:
-            return make_character_description<unicode_description>(source, options);
+            if (options.decode_wchar_as_utf8) {
+                return make_character_description<string_description>(source, options);
+            } else {
+                return make_character_description<unicode_description>(source, options);
+            }
         case SQL_INTEGER:
         case SQL_SMALLINT:
         case SQL_BIGINT:

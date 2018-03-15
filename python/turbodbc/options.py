@@ -7,7 +7,8 @@ def make_options(read_buffer_size=None,
                  use_async_io=None,
                  autocommit=None,
                  large_decimals_as_64_bit_types=None,
-                 limit_varchar_results_to_max=None):
+                 limit_varchar_results_to_max=None,
+                 decode_wchar_as_utf8=None):
     """
     Create options that control how turbodbc interacts with a database. These
     options affect performance for the most part, but some options may require adjustment
@@ -52,6 +53,7 @@ def make_options(read_buffer_size=None,
      report a size of 2 billion characters.
      Please note that this option only relates to retrieving results, not sending parameters to the
      database.
+    :param decode_wchar_as_utf8: Set this to true to enable decoding ``NVARCHAR`` type fields as UTF8
     :return: An option struct that is suitable to pass to the ``turbodbc_options`` parameter of
      ``turbodbc.connect()``
     """
@@ -80,5 +82,8 @@ def make_options(read_buffer_size=None,
 
     if not limit_varchar_results_to_max is None:
         options.limit_varchar_results_to_max = limit_varchar_results_to_max
+
+    if not decode_wchar_as_utf8 is None:
+        options.decode_wchar_as_utf8 = decode_wchar_as_utf8
 
     return options
