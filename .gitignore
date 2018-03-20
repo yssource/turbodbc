@@ -1,5 +1,10 @@
+.idea
 .project
 .pydevproject
+.pytest_cache
+build_docker
+cmake-build-debug
+.coverage
 *.pyc
 
 PyTest/PyTest
