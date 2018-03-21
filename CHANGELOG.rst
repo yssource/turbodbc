@@ -10,6 +10,10 @@ Version 2.6.0 (UNRELEASED)
     ``Cursor`` objects were not closed *manually*. With this fix, cursors
     are garbage collected as expected.
 *   Can be build against pyarrow 0.9.0.
+*   Added new keyword argument ``force_extra_capacity_for_unicode`` to
+    ``make_options()``. If set to ``True``, memory allocation is modified
+    to operate under the assumption that the database driver reports field
+    lengths in characters, rather than code units (thanks @yaxxie).
 
 Version 2.5.0
 -------------

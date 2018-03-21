@@ -7,7 +7,8 @@ def make_options(read_buffer_size=None,
                  use_async_io=None,
                  autocommit=None,
                  large_decimals_as_64_bit_types=None,
-                 limit_varchar_results_to_max=None):
+                 limit_varchar_results_to_max=None,
+                 force_extra_capacity_for_unicode=None):
     """
     Create options that control how turbodbc interacts with a database. These
     options affect performance for the most part, but some options may require adjustment
@@ -52,6 +53,12 @@ def make_options(read_buffer_size=None,
      report a size of 2 billion characters.
      Please note that this option only relates to retrieving results, not sending parameters to the
      database.
+    :param force_extra_capacity_for_unicode Affects behavior/performance. Some ODBC drivers report the
+     length of the ``VARCHAR``/``NVARCHAR`` field rather than the number of code points for which space is required
+     to be allocated, resulting in string truncations. Set this option to ``True`` to increase the memory
+     allocated for ``VARCHAR`` and ``NVARCHAR`` fields and prevent string truncations.
+     Please note that this option only relates to retrieving results, not sending parameters to the
+     database.
     :return: An option struct that is suitable to pass to the ``turbodbc_options`` parameter of
      ``turbodbc.connect()``
     """
@@ -80,5 +87,8 @@ def make_options(read_buffer_size=None,
 
     if not limit_varchar_results_to_max is None:
         options.limit_varchar_results_to_max = limit_varchar_results_to_max
+
+    if not force_extra_capacity_for_unicode is None:
+        options.force_extra_capacity_for_unicode = force_extra_capacity_for_unicode
 
     return options
