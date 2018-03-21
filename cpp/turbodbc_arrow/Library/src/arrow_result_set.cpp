@@ -237,7 +237,7 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
     }
     // Update to the correct schema, account for e.g. Dictionary columns
     arrow_schema = std::make_shared<arrow::Schema>(fields);
-    *out = arrow::Table(arrow_schema, arrow_arrays);
+    *out = arrow::Table::Make(arrow_schema, arrow_arrays);
 
     return Status::OK();
 }
