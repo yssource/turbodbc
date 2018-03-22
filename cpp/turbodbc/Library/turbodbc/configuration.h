@@ -15,6 +15,7 @@ struct options {
     bool autocommit;
     bool large_decimals_as_64_bit_types;
     bool limit_varchar_results_to_max;
+    bool force_extra_capacity_for_unicode;
     bool decode_wchar_as_utf8;
 };
 

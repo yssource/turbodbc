@@ -200,7 +200,7 @@ def get_extension_modules():
 
 
 setup(name = 'turbodbc',
-      version = '2.5.1',
+      version = '2.6.0',
       description = 'turbodbc is a Python DB API 2.0 compatible ODBC driver',
       include_package_data = True,
       url = 'https://github.com/blue-yonder/turbodbc',
@@ -209,7 +209,7 @@ setup(name = 'turbodbc',
       packages = ['turbodbc'],
       extras_require={
           # We pin Apache Arrow quite restrictively until they guarantee a stable API
-          'arrow': ['pyarrow>=0.8,<0.9'],
+          'arrow': ['pyarrow>=0.8'],
           'numpy': 'numpy>=1.10.4'
       },
       classifiers = ['Development Status :: 5 - Production/Stable',
