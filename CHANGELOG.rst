@@ -3,12 +3,13 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
-Version 2.5.1 (UNRELEASED)
+Version 2.6.0 (UNRELEASED)
 --------------------------
 
 *   Fixed a bug that lead to ``handle limit exceeded`` error messages when
     ``Cursor`` objects were not closed *manually*. With this fix, cursors
     are garbage collected as expected.
+*   Can be build against pyarrow 0.9.0.
 *   Added new keyword argument ``force_extra_capacity_for_unicode`` to
     ``make_options()``. If set to ``True``, memory allocation is modified
     to operate under the assumption that the database driver reports field
