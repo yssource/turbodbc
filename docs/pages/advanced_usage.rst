@@ -155,7 +155,7 @@ If not set or set to ``False``, string-like result fields with a specific size w
 String-like fields of indeterminate size (``VARCHAR(max)``, ``TEXT``, etc. on some
 databases) are still subject to :ref:`advanced_usage_options_varchar_max`.
 
-.. _advanced_usage_options_limit_varchar_results:
+.. _advanced_usage_options_unicode_extra_capacity:
 
 Extra capacity for unicode strings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -168,6 +168,15 @@ so that retrieving these strings are not truncated. If ``limit_varchar_results_t
 
 Please note that enabling this option leads to increased memory usage when retrieving string
 fields in result sets. Parameters sent to the database are not affected by this option.
+
+.. _advanced_usage_options_wide_chars_as_narrow:
+Decoding wide character types as narrow types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Set ``fetch_wchar_as_char`` to ``True`` if  you find that strings retrieved
+from ``NVARCHAR(n)`` fields are being corrupted. Some ODBC drivers place single byte encodings
+into ``SQL_WCHAR`` type strings and as a consequence are corrupted upon retrieval by turbodbc.
+Setting this option forces turbodbc to decode ``SQL_WCHAR`` as single byte encodings.
 
 
 Controlling autocommit behavior at runtime

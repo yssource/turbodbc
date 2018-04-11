@@ -3,11 +3,19 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
+Version 2.6.1 (UNRELEASED)
+-------------
+
+*   Added new keyword argument ``fetch_wchar_as_char`` to ``make_options()``.
+    If set to ``True``, wide character types (``NVARCHAR``) are fetched and
+    decoded as narrow character types for compatibility with certain
+    databases/drivers (thanks @yaxxie).
+
 Version 2.6.0
 -------------
 
 *   Added support for ``with`` blocks for ``Cursor`` and ``Connection``
-    objects. This makes turbodbc conform with 
+    objects. This makes turbodbc conform with
     `PEP 343 <https://www.python.org/dev/peps/pep-0343/>`_
     (thanks @AtomBaf)
 *   Added new keyword argument ``force_extra_capacity_for_unicode`` to

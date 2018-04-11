@@ -14,7 +14,7 @@ options::options() :
     large_decimals_as_64_bit_types(false),
     limit_varchar_results_to_max(false),
     force_extra_capacity_for_unicode(false),
-    decode_wchar_as_utf8(false)
+    fetch_wchar_as_char(false)
 {
 }
 
