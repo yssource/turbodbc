@@ -16,6 +16,7 @@ struct options {
     bool large_decimals_as_64_bit_types;
     bool limit_varchar_results_to_max;
     bool force_extra_capacity_for_unicode;
+    bool fetch_wchar_as_char;
 };
 
 struct capabilities {

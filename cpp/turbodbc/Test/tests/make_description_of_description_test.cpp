@@ -293,6 +293,29 @@ TEST(MakeDescriptionOfDescriptionTest, VarcharFieldsLimitedModifiedMemoryAllocat
     EXPECT_EQ(size_with_extra_capacity, make_description(column_description, options)->element_size());
 }
 
+TEST(MakeDescriptionOfDescriptionTest, UnicodeTypesForcedNarrowDecoding)
+{
+    std::size_t const size = 10;
+    cpp_odbc::column_description const column_description = {name, SQL_WVARCHAR, size, 0, supports_null_values};
+
+    turbodbc::options options;
+
+    auto const test_unicode_description = make_description(column_description, options);
+
+    options.fetch_wchar_as_char = true;
+
+    auto const test_string_description = make_description(column_description, options);
+
+    ASSERT_TRUE(dynamic_cast<turbodbc::unicode_description const *>(test_unicode_description.get()))
+        << "Did not convert type identifier to expected unicode_description";
+    ASSERT_TRUE(dynamic_cast<turbodbc::string_description const *>(test_string_description.get()))
+        << "Did not convert type identifier to expected string_description";
+
+    EXPECT_EQ(size + 1, test_string_description->element_size());
+    EXPECT_EQ((size + 1) * 2, test_unicode_description->element_size());
+
+}
+
 TEST(MakeDescriptionOfDescriptionTest, FloatingPointTypes)
 {
     std::vector<SQLSMALLINT> const types = {

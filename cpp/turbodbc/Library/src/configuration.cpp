@@ -13,7 +13,8 @@ options::options() :
     autocommit(false),
     large_decimals_as_64_bit_types(false),
     limit_varchar_results_to_max(false),
-    force_extra_capacity_for_unicode(false)
+    force_extra_capacity_for_unicode(false),
+    fetch_wchar_as_char(false)
 {
 }
 

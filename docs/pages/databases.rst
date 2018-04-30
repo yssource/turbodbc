@@ -28,3 +28,4 @@ performance to expect.
     databases/postgresql
     databases/mysql
     databases/mssql
+    databases/netezza

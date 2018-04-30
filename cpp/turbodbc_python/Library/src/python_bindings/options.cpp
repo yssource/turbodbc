@@ -71,6 +71,7 @@ void for_options(pybind11::module & module)
         .def_readwrite("large_decimals_as_64_bit_types", &turbodbc::options::large_decimals_as_64_bit_types)
         .def_readwrite("limit_varchar_results_to_max", &turbodbc::options::limit_varchar_results_to_max)
         .def_readwrite("force_extra_capacity_for_unicode", &turbodbc::options::force_extra_capacity_for_unicode)
+        .def_readwrite("fetch_wchar_as_char", &turbodbc::options::fetch_wchar_as_char)
     ;
 
 }

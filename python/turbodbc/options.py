@@ -8,7 +8,8 @@ def make_options(read_buffer_size=None,
                  autocommit=None,
                  large_decimals_as_64_bit_types=None,
                  limit_varchar_results_to_max=None,
-                 force_extra_capacity_for_unicode=None):
+                 force_extra_capacity_for_unicode=None,
+                 fetch_wchar_as_char=None):
     """
     Create options that control how turbodbc interacts with a database. These
     options affect performance for the most part, but some options may require adjustment
@@ -59,6 +60,12 @@ def make_options(read_buffer_size=None,
      allocated for ``VARCHAR`` and ``NVARCHAR`` fields and prevent string truncations.
      Please note that this option only relates to retrieving results, not sending parameters to the
      database.
+    :param fetch_wchar_as_char Affects behavior. Some ODBC drivers retrieve single byte encoded strings
+     into ``NVARCHAR`` fields of result sets, which are decoded incorrectly by turbodbc default settings,
+     resulting in corrupt strings. Set this option to ``True`` to have turbodbc treat ``NVARCHAR`` types
+     as narrow character types when decoding the fields in result sets.
+     Please note that this option only relates to retrieving results, not sending parameters to the
+     database.
     :return: An option struct that is suitable to pass to the ``turbodbc_options`` parameter of
      ``turbodbc.connect()``
     """
@@ -90,5 +97,8 @@ def make_options(read_buffer_size=None,
 
     if not force_extra_capacity_for_unicode is None:
         options.force_extra_capacity_for_unicode = force_extra_capacity_for_unicode
+
+    if not fetch_wchar_as_char is None:
+        options.fetch_wchar_as_char = fetch_wchar_as_char
 
     return options
