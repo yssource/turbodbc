@@ -199,9 +199,16 @@ def get_extension_modules():
     return extension_modules
 
 
+here = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(here, 'README.md')) as f:
+    long_description = f.read()
+
+
 setup(name = 'turbodbc',
       version = '2.6.0',
       description = 'turbodbc is a Python DB API 2.0 compatible ODBC driver',
+      long_description=long_description,
+      long_description_content_type='text/markdown',
       include_package_data = True,
       url = 'https://github.com/blue-yonder/turbodbc',
       author='Michael Koenig',
