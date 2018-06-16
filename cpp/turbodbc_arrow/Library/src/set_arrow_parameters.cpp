@@ -18,7 +18,14 @@ using arrow::BinaryArray;
 using arrow::ChunkedArray;
 using arrow::Date32Array;
 using arrow::DoubleType;
+using arrow::Int8Type;
+using arrow::Int16Type;
+using arrow::Int32Type;
 using arrow::Int64Type;
+using arrow::UInt8Type;
+using arrow::UInt16Type;
+using arrow::UInt32Type;
+using arrow::UInt64Type;
 using arrow::NumericArray;
 using arrow::StringArray;
 using arrow::Table;
@@ -159,6 +166,31 @@ namespace {
       }
     };
 
+    template <typename SrcArrowType, typename DestArrowType>
+    struct casting_numeric_converter : public parameter_converter {
+        casting_numeric_converter(std::shared_ptr<ChunkedArray> const & data,
+                                 turbodbc::bound_parameter_set & parameters,
+                                 std::size_t parameter_index,
+                                 turbodbc::type_code type) :
+            parameter_converter(data, parameters, parameter_index)
+        {
+          parameters.rebind(parameter_index, turbodbc::make_description(type, 0));
+        }
+
+      void set_batch(int64_t start, int64_t elements) final {
+        auto & buffer = get_buffer();
+
+        // Currently only non-chunked columns are supported
+        auto const& typed_array = static_cast<const typename TypeTraits<SrcArrowType>::ArrayType&>(*data->chunk(0));
+        typename SrcArrowType::c_type const* data_ptr = typed_array.raw_values();
+        typename DestArrowType::c_type* target_ptr =
+            reinterpret_cast<typename DestArrowType::c_type*>(buffer.data_pointer());
+        std::copy(data_ptr + start, data_ptr + start + elements, target_ptr);
+
+        set_indicator<sizeof(typename DestArrowType::c_type)>(buffer, start, elements);
+      }
+    };
+
     struct double_converter : public numeric_converter<DoubleType> {
         double_converter(std::shared_ptr<ChunkedArray> const & data,
                          turbodbc::bound_parameter_set & parameters,
@@ -172,6 +204,15 @@ namespace {
                          turbodbc::bound_parameter_set & parameters,
                          std::size_t parameter_index) :
             numeric_converter<Int64Type>(data, parameters, parameter_index, turbodbc::type_code::integer)
+        { }
+    };
+
+    template <typename ArrowType>
+    struct int_converter : public casting_numeric_converter<ArrowType, Int64Type> {
+        int_converter(std::shared_ptr<ChunkedArray> const & data,
+                      turbodbc::bound_parameter_set & parameters,
+                      std::size_t parameter_index) :
+            casting_numeric_converter<ArrowType, Int64Type>(data, parameters, parameter_index, turbodbc::type_code::integer)
         { }
     };
 
@@ -281,8 +322,26 @@ namespace {
             switch (dtype) {
               case arrow::Type::NA:
                 converters.emplace_back(new null_converter(data, parameters, i));
+              case arrow::Type::INT8:
+                converters.emplace_back(new int_converter<Int8Type>(data, parameters, i));
+                break;
+              case arrow::Type::INT16:
+                converters.emplace_back(new int_converter<Int16Type>(data, parameters, i));
+                break;
+              case arrow::Type::INT32:
+                converters.emplace_back(new int_converter<Int32Type>(data, parameters, i));
+                break;
               case arrow::Type::INT64:
                 converters.emplace_back(new int64_converter(data, parameters, i));
+                break;
+              case arrow::Type::UINT8:
+                converters.emplace_back(new int_converter<UInt8Type>(data, parameters, i));
+                break;
+              case arrow::Type::UINT16:
+                converters.emplace_back(new int_converter<UInt16Type>(data, parameters, i));
+                break;
+              case arrow::Type::UINT32:
+                converters.emplace_back(new int_converter<UInt32Type>(data, parameters, i));
                 break;
               case arrow::Type::BINARY:
               case arrow::Type::STRING:
