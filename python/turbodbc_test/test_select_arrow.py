@@ -271,3 +271,15 @@ def test_arrow_two_columns(dsn, configuration):
                 (_fix_case(configuration, 'a'), [1, 2]),
                 (_fix_case(configuration, 'b'), [42, 41])]
             )
+
+
+@for_each_database
+@pyarrow
+def test_arrow_two_columns(dsn, configuration):
+    with open_cursor(configuration, rows_to_buffer=1) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT TWO INTEGER COLUMNS') as table_name:
+            cursor.executemany("INSERT INTO {} VALUES (?, ?)".format(table_name),
+                               [[1, 42], [2, 41]])
+            cursor.execute("SELECT a, b FROM {} ORDER BY a".format(table_name))
+            result = list(cursor.fetcharrowbatches())
+            assert len(result) == 2

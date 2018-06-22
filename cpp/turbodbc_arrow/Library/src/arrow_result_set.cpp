@@ -170,7 +170,8 @@ Status append_to_string_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuild
         static_cast<StringBuilder&>(*builder), input_buffer);
 }
 
-Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
+
+Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out, bool batch_only)
 {
     std::size_t rows_in_batch = base_result_.fetch_next_batch();
     auto const column_info = base_result_.get_column_info();
@@ -224,6 +225,10 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
                     break;
             }
         }
+        // Exit early if we are fetching one batch
+        if (batch_only) {
+            break;
+        }
         rows_in_batch = base_result_.fetch_next_batch();
     } while (rows_in_batch != 0);
 
@@ -242,10 +247,23 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out)
     return Status::OK();
 }
 
+
+pybind11::object arrow_result_set::fetch_next_batch()
+{
+    std::shared_ptr<arrow::Table> table;
+    if (not fetch_all_native(&table, true).ok()) {
+        throw turbodbc::interface_error("Fetching Arrow result set failed.");
+    }
+
+    arrow::py::import_pyarrow();
+    return pybind11::reinterpret_steal<pybind11::object>(pybind11::handle(arrow::py::wrap_table(table)));
+}
+
+
 pybind11::object arrow_result_set::fetch_all()
 {
     std::shared_ptr<arrow::Table> table;
-    if (not fetch_all_native(&table).ok()) {
+    if (not fetch_all_native(&table, false).ok()) {
         throw turbodbc::interface_error("Fetching Arrow result set failed.");
     }
 
