@@ -27,7 +27,7 @@ PYBIND11_MODULE(turbodbc_arrow_support, module)
 
     pybind11::class_<arrow_result_set>(module, "ArrowResultSet")
         .def("fetch_all", &arrow_result_set::fetch_all)
-        .def("fetch_next_batch", &arrow_resultset::fetch_next_batch);
+        .def("fetch_next_batch", &arrow_result_set::fetch_next_batch);
 
     module.def("make_arrow_result_set", make_arrow_result_set);
     module.def("set_arrow_parameters", set_arrow_parameters);
