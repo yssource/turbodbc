@@ -10,6 +10,7 @@ namespace arrow {
 class Schema;
 class Status;
 class Table;
+class ArrayBuilder;
 
 }
 
@@ -52,6 +53,8 @@ class PYBIND11_EXPORT arrow_result_set {
     std::shared_ptr<arrow::Schema> schema();
 
   private:
+    arrow::Status process_batch(size_t rows_in_batch, std::vector<std::unique_ptr<arrow::ArrayBuilder>> const& columns);
+
     turbodbc::result_sets::result_set & base_result_;
     bool strings_as_dictionary_;
     bool adaptive_integers_;

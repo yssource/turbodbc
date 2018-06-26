@@ -171,7 +171,49 @@ Status append_to_string_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuild
 }
 
 
-Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out, bool batch_only)
+Status arrow_result_set::process_batch(size_t rows_in_batch, std::vector<std::unique_ptr<ArrayBuilder>> const& columns) {
+    // TODO: Use a PoolBuffer for this and only allocate it once
+    auto const column_info = base_result_.get_column_info();
+    auto const n_columns = column_info.size();
+    std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>> const buffers = base_result_.get_buffers();
+
+    std::vector<uint8_t> valid_bytes(rows_in_batch);
+    for (size_t i = 0; i != n_columns; ++i) {
+        auto const indicator_pointer = buffers[i].get().indicator_pointer();
+        for (size_t element = 0; element != rows_in_batch; ++element) {
+            if (indicator_pointer[element] == SQL_NULL_DATA) {
+                valid_bytes[element] = 0;
+            } else {
+                valid_bytes[element] = 1;
+            }
+        }
+        switch (column_info[i].type) {
+            case turbodbc::type_code::floating_point:
+                ARROW_RETURN_NOT_OK(append_to_double_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data()));
+                break;
+            case turbodbc::type_code::integer:
+                ARROW_RETURN_NOT_OK(append_to_int_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data(), adaptive_integers_));
+                break;
+            case turbodbc::type_code::boolean:
+                ARROW_RETURN_NOT_OK(append_to_bool_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data()));
+                break;
+            case turbodbc::type_code::timestamp:
+                ARROW_RETURN_NOT_OK(append_to_timestamp_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data()));
+                break;
+            case turbodbc::type_code::date:
+                ARROW_RETURN_NOT_OK(append_to_date_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data()));
+                break;
+            default:
+                // Strings are the only remaining type
+                ARROW_RETURN_NOT_OK(append_to_string_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data(), strings_as_dictionary_));
+                break;
+        }
+    }
+    return Status::OK();
+}
+
+
+Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out, bool single_batch)
 {
     std::size_t rows_in_batch = base_result_.fetch_next_batch();
     auto const column_info = base_result_.get_column_info();
@@ -189,54 +231,20 @@ Status arrow_result_set::fetch_all_native(std::shared_ptr<arrow::Table>* out, bo
         columns.push_back(make_array_builder(column_info[i].type, strings_as_dictionary_, adaptive_integers_));
     }
 
-    do {
-        std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>> const buffers = base_result_.get_buffers();
-
-        // TODO: Use a PoolBuffer for this and only allocate it once
-        std::vector<uint8_t> valid_bytes(rows_in_batch);
-        for (size_t i = 0; i != n_columns; ++i) {
-            auto const indicator_pointer = buffers[i].get().indicator_pointer();
-            for (size_t element = 0; element != rows_in_batch; ++element) {
-                if (indicator_pointer[element] == SQL_NULL_DATA) {
-                    valid_bytes[element] = 0;
-                } else {
-                    valid_bytes[element] = 1;
-                }
-            }
-            switch (column_info[i].type) {
-                case turbodbc::type_code::floating_point:
-                    ARROW_RETURN_NOT_OK(append_to_double_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data()));
-                    break;
-                case turbodbc::type_code::integer:
-                    ARROW_RETURN_NOT_OK(append_to_int_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data(), adaptive_integers_));
-                    break;
-                case turbodbc::type_code::boolean:
-                    ARROW_RETURN_NOT_OK(append_to_bool_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data()));
-                    break;
-                case turbodbc::type_code::timestamp:
-                    ARROW_RETURN_NOT_OK(append_to_timestamp_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data()));
-                    break;
-                case turbodbc::type_code::date:
-                    ARROW_RETURN_NOT_OK(append_to_date_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data()));
-                    break;
-                default:
-                    // Strings are the only remaining type
-                    ARROW_RETURN_NOT_OK(append_to_string_builder(rows_in_batch, columns[i], buffers[i].get(), valid_bytes.data(), strings_as_dictionary_));
-                    break;
-            }
-        }
-        // Exit early if we are fetching one batch
-        if (batch_only) {
-            break;
-        }
-        rows_in_batch = base_result_.fetch_next_batch();
-    } while (rows_in_batch != 0);
+    if (single_batch) {
+        ARROW_RETURN_NOT_OK(process_batch(rows_in_batch, columns));
+    } else {
+        do {
+            ARROW_RETURN_NOT_OK(process_batch(rows_in_batch, columns));
+            rows_in_batch = base_result_.fetch_next_batch();
+        } while (rows_in_batch != 0);
+    }
 
     std::vector<std::shared_ptr<arrow::Array>> arrow_arrays;
     std::vector<std::shared_ptr<arrow::Field>> fields;
     for (size_t i = 0; i != n_columns; ++i) {
         std::shared_ptr<arrow::Array> array;
-        columns[i]->Finish(&array);
+        ARROW_RETURN_NOT_OK(columns[i]->Finish(&array));
         fields.emplace_back(std::make_shared<arrow::Field>(column_info[i].name, array->type(), column_info[i].supports_null_values));
         arrow_arrays.emplace_back(array);
     }
