@@ -10,6 +10,7 @@ Version 2.6.1 (UNRELEASED)
     If set to ``True``, wide character types (``NVARCHAR``) are fetched and
     decoded as narrow character types for compatibility with certain
     databases/drivers (thanks @yaxxie).
+*   Added batched fetch support for Arrow as ``fetcharrowbatches``.
 
 Version 2.6.0
 -------------

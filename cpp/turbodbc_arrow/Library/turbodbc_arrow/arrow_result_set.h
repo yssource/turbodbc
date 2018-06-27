@@ -36,13 +36,13 @@ class PYBIND11_EXPORT arrow_result_set {
     arrow::Status fetch_all_native(std::shared_ptr<arrow::Table>* out, bool batch_only);
 
     /**
-      * @brief Retrieve a boost Python object which contains
+      * @brief Retrieve a Python object which contains
       *        values and masks for the current batch as pyarrow.Table
       */
     pybind11::object fetch_next_batch();
 
     /**
-     * @brief Retrieve a boost Python object which contains
+     * @brief Retrieve a Python object which contains
      *        values and masks for all data as pyarrow.Table
      */
     pybind11::object fetch_all();
