@@ -113,7 +113,7 @@ class ArrowResultSetTest : public ::testing::Test {
 
             turbodbc_arrow::arrow_result_set ars(rs, strings_as_dictionary, adaptive_integers);
             std::shared_ptr<arrow::Table> table;
-            ASSERT_OK(ars.fetch_all_native(&table));
+            ASSERT_OK(ars.fetch_all_native(&table, false));
             ASSERT_TRUE(expected_table->Equals(*table));
         }
 
@@ -209,7 +209,7 @@ TEST_F(ArrowResultSetTest, SingleBatchSingleColumnResultSetConversion)
 
     turbodbc_arrow::arrow_result_set ars(rs, strings_as_strings, plain_integers);
     std::shared_ptr<arrow::Table> table;
-    ASSERT_OK(ars.fetch_all_native(&table));
+    ASSERT_OK(ars.fetch_all_native(&table, false));
     ASSERT_TRUE(expected_table->Equals(*table));
 }
 

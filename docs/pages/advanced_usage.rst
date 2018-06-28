@@ -170,8 +170,9 @@ Please note that enabling this option leads to increased memory usage when retri
 fields in result sets. Parameters sent to the database are not affected by this option.
 
 .. _advanced_usage_options_wide_chars_as_narrow:
+
 Decoding wide character types as narrow types
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Set ``fetch_wchar_as_char`` to ``True`` if  you find that strings retrieved
 from ``NVARCHAR(n)`` fields are being corrupted. Some ODBC drivers place single byte encodings
@@ -468,6 +469,25 @@ returned by the database. This mode can be activated by setting
     __COL0__    3 non-null int8
     dtypes: int8(1)
     memory usage: 75.0 bytes
+
+
+Obtaining Apache Arrow result sets in batches
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Similar to the numpy support for fetching results as batche, you can
+fetch an query result as an iterator of pyarrow tables.
+
+::
+
+    >>> cursor.execute("SELECT A, B FROM my_table")
+    >>> batches = cursor.fetcharrowbatches()
+    >>> for batch in batches:
+    ...     print(batch)
+    pyarrow.Table
+
+
+The size of the batches depends on the ``read_buffer_size`` attribute set in
+the :ref:`performance options <advanced_usage_options_read_buffer>`.
 
 
 .. _advanced_usage_arrow_parameters:

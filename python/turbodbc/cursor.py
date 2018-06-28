@@ -307,6 +307,40 @@ class Cursor(object):
             first_run = False
             yield result_batch
 
+    def fetcharrowbatches(self, strings_as_dictionary=False, adaptive_integers=False):
+        """
+        Fetches rows in the active result set generated with ``execute()`` or
+        ``executemany()`` as an iterable of arrow tables.
+
+        :param strings_as_dictionary: If true, fetch string columns as
+                 dictionary[string] instead of a plain string column.
+
+        :param adaptive_integers: If true, instead of the integer type returned
+                by the database (driver), this produce integer columns with the
+                smallest possible integer type in which all values can be
+                stored. Be aware that here the type depends on the resulting
+                data.
+
+        :return: generator of ``pyarrow.Table``
+        """
+        self._assert_valid_result_set()
+        if _has_arrow_support():
+            from turbodbc_arrow_support import make_arrow_result_set
+            rs = make_arrow_result_set(
+                self.impl.get_result_set(),
+                strings_as_dictionary,
+                adaptive_integers)
+            first_run = True
+            while True:
+                table = rs.fetch_next_batch()
+                is_empty_batch = (len(table) == 0)
+                if is_empty_batch and not first_run:
+                    raise StopIteration # Let us return a typed result set at least once
+                first_run = False
+                yield table
+        else:
+            raise Error(_NO_ARROW_SUPPORT_MSG)
+
     def fetchallarrow(self, strings_as_dictionary=False, adaptive_integers=False):
         """
         Fetches all rows in the active result set generated with ``execute()`` or
