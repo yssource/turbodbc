@@ -11,6 +11,8 @@ Version 2.6.1 (UNRELEASED)
     decoded as narrow character types for compatibility with certain
     databases/drivers (thanks @yaxxie).
 *   Added batched fetch support for Arrow as ``fetcharrowbatches``.
+*   Support (u)int8, (u)int16, (u)int32 Arrow columns on
+    ``executemanycolumns()``.
 
 Version 2.6.0
 -------------
