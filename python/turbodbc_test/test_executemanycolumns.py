@@ -123,15 +123,27 @@ def _full_column_tests(configuration, fixture, values, dtype, column_backend):
     _test_column_matches_buffer_size(configuration, fixture, values, dtype, column_backend)
     _test_column_exceeds_buffer_size(configuration, fixture, values, dtype, column_backend)
     _test_masked_column(configuration, fixture, values, dtype, column_backend)
-    _test_masked_column_with_shrunk_mask(configuration, fixture, values, dtype)
     _test_masked_column_exceeds_buffer_size(configuration, fixture, values, dtype, column_backend)
-    _test_single_masked_value(configuration, fixture, values, dtype)
+    if column_backend == 'numpy':
+        # For these tests there is no equivalent input structure in Python
+        _test_masked_column_with_shrunk_mask(configuration, fixture, values, dtype)
+        _test_single_masked_value(configuration, fixture, values, dtype)
+
 
 
 @for_each_column_backend
 @for_each_database
-def test_integer_column(dsn, configuration, column_backend):
-    _full_column_tests(configuration, "INSERT INTEGER", [17, 23, 42], 'int64', column_backend)
+@pytest.mark.parametrize('dtype', [
+    'int8', 'int16', 'int32', 'int64',
+    'uint8', 'uint16', 'uint32', 'uint64',
+])
+def test_integer_column(dsn, configuration, column_backend, dtype):
+    if column_backend == 'numpy' and dtype != 'int64':
+        pytest.skip("numpy INSERTs only support int64 as integeral dtype")
+    elif dtype == 'uint64':
+        pytest.skip("uint64 values may be too large to fit into int64")
+    else:
+        _full_column_tests(configuration, "INSERT INTEGER", [17, 23, 42], dtype, column_backend)
 
 
 @for_each_column_backend

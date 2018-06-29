@@ -108,8 +108,7 @@ class ArrowResultSetTest : public ::testing::Test {
 
         void CheckRoundtrip(bool strings_as_dictionary, bool adaptive_integers) {
             auto schema = std::make_shared<arrow::Schema>(expected_fields);
-            std::shared_ptr<arrow::Table> expected_table;
-            ASSERT_OK(MakeTable(schema, expected_arrays, &expected_table));
+            std::shared_ptr<arrow::Table> expected_table = arrow::Table::Make(schema, expected_arrays);
 
             turbodbc_arrow::arrow_result_set ars(rs, strings_as_dictionary, adaptive_integers);
             std::shared_ptr<arrow::Table> table;
