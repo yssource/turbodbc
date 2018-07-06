@@ -3,16 +3,17 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
-Version 2.6.1 (UNRELEASED)
+Version 2.7.0
 -------------
 
 *   Added new keyword argument ``fetch_wchar_as_char`` to ``make_options()``.
     If set to ``True``, wide character types (``NVARCHAR``) are fetched and
     decoded as narrow character types for compatibility with certain
     databases/drivers (thanks @yaxxie).
-*   Added batched fetch support for Arrow as ``fetcharrowbatches``.
+*   Added batched fetch support for Arrow as ``fetcharrowbatches()``
+    (thanks @mariusvniekerk).
 *   Support (u)int8, (u)int16, (u)int32 Arrow columns on
-    ``executemanycolumns()``.
+    ``executemanycolumns()`` (thanks @xhochy).
 
 Version 2.6.0
 -------------
