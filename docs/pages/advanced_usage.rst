@@ -113,7 +113,7 @@ Autocommit
 
 Set ``autocommit`` to ``True`` if you want the database to ``COMMIT`` your
 changes automatically after each query or command. By default, ``autocommit``
-is disabled and users are required to call ``cursor.commit()`` to persist
+is disabled and users are required to call ``connection.commit()`` to persist
 their changes.
 
 .. note::
