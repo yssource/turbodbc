@@ -303,7 +303,7 @@ class Cursor(object):
             result_batch = _make_masked_arrays(numpy_result_set.fetch_next_batch())
             is_empty_batch = (len(result_batch[0]) == 0)
             if is_empty_batch and not first_run:
-                raise StopIteration # Let us return a typed result set at least once
+                return # Let us return a typed result set at least once
             first_run = False
             yield result_batch
 
@@ -335,7 +335,7 @@ class Cursor(object):
                 table = rs.fetch_next_batch()
                 is_empty_batch = (len(table) == 0)
                 if is_empty_batch and not first_run:
-                    raise StopIteration # Let us return a typed result set at least once
+                    return # Let us return a typed result set at least once
                 first_run = False
                 yield table
         else:
