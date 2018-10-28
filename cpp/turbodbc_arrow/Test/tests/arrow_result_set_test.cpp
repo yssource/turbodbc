@@ -94,7 +94,7 @@ class ArrowResultSetTest : public ::testing::Test {
             EXPECT_OK(AllocateResizableBuffer(pool, data_nbytes, &data));
 
             // Fill with random data
-            arrow::test::random_bytes(data_nbytes, 0 /*random_seed*/, data->mutable_data());
+            arrow::random_bytes(data_nbytes, 0 /*random_seed*/, data->mutable_data());
 
             std::shared_ptr<arrow::ResizableBuffer> null_bitmap;
             const int64_t null_nbytes = arrow::BitUtil::BytesForBits(length);
