@@ -26,12 +26,6 @@ matrix:
     - ODBC_DIR=odbc
   - os: linux
     language: python
-    python: "3.4"
-    env:
-    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
-    - ODBC_DIR=odbc
-  - os: linux
-    language: python
     python: "3.5"
     env:
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
