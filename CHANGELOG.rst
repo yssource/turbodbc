@@ -3,11 +3,13 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
-Version 2.7.1
+Version 3.0.0
 -------------
 
 *   Adjust generators to conform to PEP-479
 *   Build wheels for Python 3.7 on Windows
+*   Drop support for Python 3.4
+*   Update to Apache Arrow 0.11
 
 Version 2.7.0
 -------------
