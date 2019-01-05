@@ -9,6 +9,7 @@ Version 3.1.0
 *  Update to Apache Arrow 0.12
 *  Support the unicode datatype in the Arrow support. This primarily enables
    MS SQL support for the Arrow adapter.
+*  Windows support for the Arrow adapter.
 
 Version 3.0.0
 -------------
