@@ -3,6 +3,11 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
+Version 3.1.0
+-------------
+
+*   Update to Apache Arrow 0.12
+
 Version 3.0.0
 -------------
 
