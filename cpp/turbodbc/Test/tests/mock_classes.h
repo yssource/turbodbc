@@ -54,6 +54,7 @@ namespace turbodbc_test {
 		MOCK_CONST_METHOD1( do_describe_column_wide, cpp_odbc::column_description(SQLUSMALLINT));
 		MOCK_CONST_METHOD1( do_describe_parameter, cpp_odbc::column_description(SQLUSMALLINT));
 		MOCK_CONST_METHOD0( do_more_results, bool());
+		MOCK_METHOD0( do_finalize, void());
 	};
 
     using mock_connection = testing::NiceMock<default_mock_connection>;

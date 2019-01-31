@@ -116,4 +116,12 @@ bool statement::more_results() const
     return do_more_results();
 }
 
+void statement::finalize()
+{
+    if(!finalized){
+        finalized = true;
+        do_finalize();
+    }
+}
+
 }

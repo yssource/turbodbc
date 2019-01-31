@@ -62,4 +62,9 @@ int64_t command::get_row_count()
     }
 }
 
+void command::finalize()
+{
+    const_cast<cpp_odbc::statement &>(*statement_).finalize();
+}
+
 }

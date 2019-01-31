@@ -42,8 +42,7 @@ cursor::~cursor() = default;
 
 void cursor::prepare(std::string const & sql)
 {
-    results_.reset();
-    command_.reset();
+    reset();
     auto statement = connection_->make_statement();
     if (configuration_.options.prefer_unicode) {
         statement->prepare(as_utf16(sql));
@@ -82,5 +81,13 @@ std::shared_ptr<turbodbc::command> cursor::get_command()
     return command_;
 }
 
+void cursor::reset()
+{
+    results_.reset();
+    if(command_) {
+        command_->finalize();
+    }
+    command_.reset();
+}
 
 }

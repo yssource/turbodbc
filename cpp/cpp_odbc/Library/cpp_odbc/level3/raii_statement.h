@@ -55,6 +55,7 @@ private:
 	column_description do_describe_column_wide(SQLUSMALLINT column_id) const final;
 	column_description do_describe_parameter(SQLUSMALLINT parameter_id) const final;
 	bool do_more_results() const final;
+	void do_finalize() final;
 
 	std::shared_ptr<raii_connection const> connection_;
 	std::shared_ptr<level2::api const> api_;

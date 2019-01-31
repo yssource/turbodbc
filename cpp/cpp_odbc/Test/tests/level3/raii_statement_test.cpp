@@ -405,3 +405,18 @@ TEST(RaiiStatementTest, MoreResults)
     raii_statement statement(connection);
     EXPECT_TRUE( not statement.more_results() );
 }
+
+
+TEST(RaiiStatementTest, DoFinalize)
+{
+    auto api = make_default_api();
+    auto environment = std::make_shared<raii_environment>(api);
+    auto connection = std::make_shared<raii_connection>(environment, "dummy");
+
+    statement_handle s_handle = {&value_c};
+
+    EXPECT_CALL(*api, do_free_handle(s_handle)).Times(1);
+
+    raii_statement statement(connection);
+    statement.finalize();
+}
