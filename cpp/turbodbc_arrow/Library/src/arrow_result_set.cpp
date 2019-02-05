@@ -109,9 +109,9 @@ std::unique_ptr<ArrayBuilder> make_array_builder(turbodbc::type_code type, bool 
             return std::unique_ptr<Date32Builder>(new Date32Builder());
         case turbodbc::type_code::unicode:
             if (strings_as_dictionary) {
-                return std::unique_ptr<StringDictionaryBuilder>(new StringDictionaryBuilder(::arrow::utf8(), ::arrow::default_memory_pool()));
+                return std::unique_ptr<StringDictionaryBuilderProxy>(new StringDictionaryBuilderProxy(::arrow::utf8(), ::arrow::default_memory_pool()));
             } else {
-                return std::unique_ptr<StringBuilder>(new StringBuilder());
+                return std::unique_ptr<StringBuilderProxy>(new StringBuilderProxy());
             }
         default:
             if (strings_as_dictionary) {
@@ -252,12 +252,12 @@ Status append_to_string_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuild
 
 Status append_to_unicode_builder(size_t rows_in_batch, std::unique_ptr<ArrayBuilder> const& builder, cpp_odbc::multi_value_buffer const& input_buffer, uint8_t*, bool strings_as_dictionary) {
     if (strings_as_dictionary) {
-        return AppendUnicodeStringsToBuilder<StringDictionaryBuilder>(rows_in_batch,
-            static_cast<StringDictionaryBuilder&>(*builder), input_buffer);
+        return AppendUnicodeStringsToBuilder<StringDictionaryBuilderProxy>(rows_in_batch,
+            static_cast<StringDictionaryBuilderProxy&>(*builder), input_buffer);
     }
 
-    return AppendUnicodeStringsToBuilder<StringBuilder>(rows_in_batch,
-        static_cast<StringBuilder&>(*builder), input_buffer);
+    return AppendUnicodeStringsToBuilder<StringBuilderProxy>(rows_in_batch,
+        static_cast<StringBuilderProxy&>(*builder), input_buffer);
 }
 
 
