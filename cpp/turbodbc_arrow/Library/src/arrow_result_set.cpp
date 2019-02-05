@@ -140,11 +140,11 @@ Status AppendUnicodeStringsToBuilder(size_t rows_in_batch, BuilderType& builder,
     for (std::size_t j = 0; j != rows_in_batch; ++j) {
         auto const element = input_buffer[j];
         if (element.indicator == SQL_NULL_DATA) {
-            ARROW_RETURN_NOT_OK(builder.AppendNull());
+            ARROW_RETURN_NOT_OK(builder.AppendNullProxy());
         } else {
             std::u16string str_u16(reinterpret_cast<const char16_t*>(element.data_pointer), element.indicator / 2);
             std::string u8string = boost::locale::conv::utf_to_utf<char>(str_u16);;
-            ARROW_RETURN_NOT_OK(builder.Append(u8string));
+            ARROW_RETURN_NOT_OK(builder.AppendProxy(u8string.data(), u8string.size()));
         }
     }
     return Status::OK();
