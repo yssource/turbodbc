@@ -107,7 +107,13 @@
 		"INSERT TIMESTAMP": {
 			"table": "a TIMESTAMP"
 		},
-	
+
+		"INSERT DUPLICATE UNIQUECOL": {
+			"table": "a integer NOT NULL",
+			"setup": ["ALTER TABLE {table_name} ADD CONSTRAINT test_idu_a_unique PRIMARY KEY(a)",
+				      "INSERT INTO {table_name} VALUES (1)"]
+		},
+
 		"DESCRIPTION": {
 			"table": "as_int INTEGER, as_double DOUBLE PRECISION, as_varchar VARCHAR(100), as_date DATE, as_timestamp TIMESTAMP, as_int_not_null INTEGER NOT NULL"
 		},

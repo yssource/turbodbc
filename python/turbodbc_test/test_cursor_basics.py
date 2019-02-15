@@ -1,9 +1,9 @@
 import pytest
 import six
 
-from turbodbc import connect, InterfaceError, Error
+from turbodbc import connect, InterfaceError, Error, DatabaseError
 
-from helpers import for_one_database, get_credentials, open_cursor
+from helpers import for_one_database, get_credentials, open_cursor, for_each_database
 from query_fixture import query_fixture
 
 
@@ -127,6 +127,7 @@ def test_connection_does_not_strongly_reference_cursors(dsn, configuration):
     import sys
     assert sys.getrefcount(cursor) == 2
 
+
 @for_one_database
 def test_pep343_with_statement(dsn, configuration):
     with connect(dsn, **get_credentials(configuration)) as connection:
@@ -136,3 +137,14 @@ def test_pep343_with_statement(dsn, configuration):
         # cursor should be closed
         with pytest.raises(InterfaceError):
             cursor.execute("SELECT 42")
+
+
+@for_each_database
+def test_insert_duplicate_uniquecol_raises(dsn, configuration):
+    with open_cursor(configuration) as cursor:
+        with query_fixture(cursor, configuration, 'INSERT DUPLICATE UNIQUECOL') as table_name:
+            with pytest.raises(DatabaseError) as ex:
+                cursor.execute("INSERT INTO {table_name} VALUES (1)".format(table_name=table_name))
+                # some databases (e.g. exasol) report failure not in the execute statement above, but only
+                # when closing the odbc handle, i.e. at cursor.close:
+                cursor.close()
