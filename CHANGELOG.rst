@@ -6,7 +6,12 @@ From version 2.0.0, turbodbc adapts semantic versioning.
 Version 3.1.0
 -------------
 
-*   Update to Apache Arrow 0.12
+*  Update to Apache Arrow 0.12
+*  Support the unicode datatype in the Arrow support. This primarily enables
+   MS SQL support for the Arrow adapter.
+*  Windows support for the Arrow adapter.
+*  Add a new entry to the build matrix that tests Python 3.7 with conda and
+   MS SQL on Linux.
 
 Version 3.0.0
 -------------
