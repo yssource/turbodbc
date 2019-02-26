@@ -12,6 +12,7 @@ Version 3.1.0
 *  Windows support for the Arrow adapter.
 *  Add a new entry to the build matrix that tests Python 3.7 with conda and
    MS SQL on Linux.
+*  Big hands to @xhochy for making all these changes!
 
 Version 3.0.0
 -------------
