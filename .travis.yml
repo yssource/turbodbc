@@ -134,6 +134,8 @@ script:
   - |
     if [ "${TURBODBC_USE_CONDA}" == "yes" ]; then
       export UNIXODBC_INCLUDE_DIR=$CONDA_PREFIX/include
+      # Install correct MS SQL driver path
+      odbcinst -i -d -f /opt/microsoft/msodbcsql17/etc/odbcinst.ini
       cmake -DBOOST_ROOT=$CONDA_PREFIX -DBUILD_COVERAGE=ON -DCMAKE_INSTALL_PREFIX=./dist  -DPYTHON_EXECUTABLE=`which python` -GNinja ..
       ninja
     else
