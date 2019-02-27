@@ -38,6 +38,14 @@ public:
 
     int64_t get_row_count();
 
+    /**
+     * @brief discard any ressources associated with this instance
+     * 
+     * This should only be called directly prior to the destructor; it is not
+     * valid to call any other method (except the destructor) after calling finalize.
+     */
+    void finalize();
+
     ~command();
 
 private:

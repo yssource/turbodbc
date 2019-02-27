@@ -19,7 +19,7 @@ handle_(api_->allocate_statement_handle(connection->get_handle()))
 raii_statement::~raii_statement()
 {
     try {
-        api_->free_handle(handle_);
+        finalize();
     } catch(std::exception const & error) {
         std::cerr << "Error while freeing statement handle: " << error.what() << std::endl;
     }
@@ -134,6 +134,11 @@ column_description raii_statement::do_describe_parameter(SQLUSMALLINT parameter_
 bool raii_statement::do_more_results() const
 {
     return api_->more_results(handle_);
+}
+
+void raii_statement::do_finalize()
+{
+    api_->free_handle(handle_);
 }
 
 } }

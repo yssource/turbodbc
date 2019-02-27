@@ -113,6 +113,11 @@
 		"INSERT TIMESTAMP": {
 			"table": "a DATETIME2(6)"
 		},
+
+		"INSERT DUPLICATE UNIQUECOL": {
+			"table": "a int NOT NULL, CONSTRAINT AK_a UNIQUE(a)",
+			"setup": ["INSERT INTO {table_name} VALUES (1)"]
+		},
 	
 		"DESCRIPTION": {
 			"table": "as_int INTEGER, as_double DOUBLE PRECISION, as_varchar VARCHAR(100), as_date DATE, as_timestamp DATETIME2(6), as_int_not_null INTEGER NOT NULL"

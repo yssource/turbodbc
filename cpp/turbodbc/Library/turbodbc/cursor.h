@@ -24,6 +24,8 @@ public:
 
     void execute();
 
+    void reset();
+
     void add_parameter_set(std::vector <nullable_field> const &parameter_set);
 
     int64_t get_row_count();

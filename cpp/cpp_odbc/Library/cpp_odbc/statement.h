@@ -155,6 +155,14 @@ public:
     bool more_results() const;
 
     virtual ~statement();
+
+    /**
+     * @brief Close all odbc ressources associated with this instance
+     * 
+     * This should only be called directly prior to the destructor; it is not
+     * valid to call any other method (except the destructor) after calling finalize.
+     */
+    void finalize();
 protected:
     statement();
 private:
@@ -182,6 +190,10 @@ private:
     virtual column_description do_describe_column_wide(SQLUSMALLINT column_id) const = 0;
     virtual column_description do_describe_parameter(SQLUSMALLINT parameter_id) const = 0;
     virtual bool do_more_results() const = 0;
+
+    virtual void do_finalize() = 0;
+
+    bool finalized = false;
 };
 
 }

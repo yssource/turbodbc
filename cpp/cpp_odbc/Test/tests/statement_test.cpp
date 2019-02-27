@@ -243,3 +243,22 @@ TEST(StatementTest, MoreResultsForwards)
 
     EXPECT_FALSE(statement.more_results());
 }
+
+TEST(StatementTest, FinalizeForwards)
+{
+    mock_statement statement;
+    EXPECT_CALL( statement, do_finalize() ).Times(1);
+
+    statement.finalize();
+}
+
+
+TEST(StatementTest, FinalizeForwardsOnlyOnce)
+{
+    mock_statement statement;
+    EXPECT_CALL( statement, do_finalize() ).Times(1);
+
+    // do_finalize should only be called once, even if finalize is called twice
+    statement.finalize();
+    statement.finalize();
+}
