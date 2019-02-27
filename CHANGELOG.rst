@@ -3,11 +3,12 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
-Version 3.0.1
+Version 3.1.1
 -------------
 
 * Correctly report odbc errors when freeing the statement handle as exceptions;
   see `Github issue 153 <https://github.com/blue-yonder/turbodbc/issues/153>`_
+  (thanks @byjott)
 
 Version 3.1.0
 -------------
