@@ -20,9 +20,9 @@ target_link_libraries(turbodbc_arrow_test
     cpp_odbc
     ${Odbc_LIBRARIES}
     ${PYTHON_LIBRARY}
-    gmock_main
-    gtest
-    gmock
+    ${GMOCK_MAIN_LIBRARY}
+    ${GMOCK_LIBRARY}
+    ${GTEST_LIBRARY}
 )
 
 if (MSVC)

@@ -18,9 +18,9 @@ target_link_libraries(turbodbc_test
     cpp_odbc
     ${Odbc_LIBRARIES}
     ${PYTHON_LIBRARIES}
-    gmock_main
-    gtest
-    gmock
+    ${GMOCK_MAIN_LIBRARY}
+    ${GMOCK_LIBRARY}
+    ${GTEST_LIBRARY}
 )
 
 IF(UNIX)

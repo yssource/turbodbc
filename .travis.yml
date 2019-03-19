@@ -103,7 +103,7 @@ before_install: |
     conda config --remove channels defaults
     conda config --add channels conda-forge
     conda create -y -q -n turbodbc-dev pyarrow=0.12.0 numpy pybind11 boost-cpp=1.68 \
-        pytest pytest-cov mock cmake unixodbc coveralls python=3.7 \
+        pytest pytest-cov mock cmake unixodbc coveralls gtest gmock python=3.7 \
         gxx_linux-64 gcc_linux-64 ninja make \
         -c conda-forge
     conda activate turbodbc-dev
