@@ -9,6 +9,8 @@ Version 3.1.1
 * Correctly report odbc errors when freeing the statement handle as exceptions;
   see `Github issue 153 <https://github.com/blue-yonder/turbodbc/issues/153>`_
   (thanks @byjott)
+* Support user-provided gmock/gtest, e.g. in conda environments via
+  ``conda install -c conda-forge gtest gmock``.
 
 Version 3.1.0
 -------------

@@ -13,10 +13,10 @@ add_dependencies(cpp_odbc_test
 )
 
 target_link_libraries(cpp_odbc_test
+    ${GMOCK_MAIN_LIBRARY}
+    ${GMOCK_LIBRARY}
+    ${GTEST_LIBRARY}
 	cpp_odbc
-    gmock_main
-    gtest
-    gmock
     ${Odbc_LIBRARIES}
 )
 
