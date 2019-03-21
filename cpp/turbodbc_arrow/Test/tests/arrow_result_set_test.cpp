@@ -5,12 +5,22 @@
 #undef BOOL
 #undef timezone
 #include <arrow/api.h>
-#include <arrow/test-util.h>
+// ARROW_VERSION is defined from 0.13.0 on
+#ifdef ARROW_VERSION
+  #include <arrow/testing/gtest_util.h>
+  #include <arrow/testing/util.h>
+#else
+  #include <arrow/test-util.h>
+  #define ARROW_EXPECT_OK EXPECT_OK
+#endif
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <sql.h>
 
 using arrow::StringDictionaryBuilder;
+#ifdef ARROW_VERSION
+using arrow::random_bytes;
+#endif
 
 namespace {
 
@@ -39,11 +49,13 @@ namespace {
         ASSERT_OK(builder.Finish(out));
     }
 
+#ifndef ARROW_VERSION
     void random_bytes(int64_t n, uint32_t seed, uint8_t* out) {
         std::default_random_engine gen(seed);
         std::uniform_int_distribution<uint32_t> d(0, std::numeric_limits<uint8_t>::max());
         std::generate(out, out + n, [&d, &gen] { return static_cast<uint8_t>(d(gen)); });
     }
+#endif
 
 }
 
@@ -98,14 +110,14 @@ class ArrowResultSetTest : public ::testing::Test {
         std::shared_ptr<arrow::Array> MakePrimitive(int64_t length, int64_t null_count = 0) {
             std::shared_ptr<arrow::ResizableBuffer> data;
             const int64_t data_nbytes = length * sizeof(typename ArrayType::value_type);
-            EXPECT_OK(AllocateResizableBuffer(pool, data_nbytes, &data));
+            ARROW_EXPECT_OK(AllocateResizableBuffer(pool, data_nbytes, &data));
 
             // Fill with random data
             random_bytes(data_nbytes, 0 /*random_seed*/, data->mutable_data());
 
             std::shared_ptr<arrow::ResizableBuffer> null_bitmap;
             const int64_t null_nbytes = arrow::BitUtil::BytesForBits(length);
-            EXPECT_OK(AllocateResizableBuffer(pool, null_nbytes, &null_bitmap));
+            ARROW_EXPECT_OK(AllocateResizableBuffer(pool, null_nbytes, &null_bitmap));
             memset(null_bitmap->mutable_data(), 255, null_nbytes);
             for (int64_t i = 0; i < null_count; i++) {
                 arrow::BitUtil::ClearBit(null_bitmap->mutable_data(), i * (length / null_count));
@@ -227,7 +239,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionInteger)
     std::shared_ptr<arrow::Array> nonnull_array = MakePrimitive<arrow::Int64Array>(2 * OUTPUT_SIZE);
     expected_arrays.push_back(nonnull_array);
     expected_fields.push_back(arrow::field("nonnull_int_column", arrow::int64(), false));
-    
+
     MockSchema({{"int_column", turbodbc::type_code::integer, size_unimportant, true},
             {"nonnull_int_column", turbodbc::type_code::integer, size_unimportant, false}});
     MockOutput({{BufferFromPrimitive(array, OUTPUT_SIZE, 0), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, 0)},
@@ -260,7 +272,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionFloat)
     std::shared_ptr<arrow::Array> nonnull_array = MakePrimitive<arrow::DoubleArray>(2 * OUTPUT_SIZE);
     expected_arrays.push_back(nonnull_array);
     expected_fields.push_back(arrow::field("nonnull_float_column", arrow::float64(), false));
-    
+
     MockSchema({{"float_column", turbodbc::type_code::floating_point, size_unimportant, true},
             {"nonnull_float_column", turbodbc::type_code::floating_point, size_unimportant, false}});
     MockOutput({{BufferFromPrimitive(array, OUTPUT_SIZE, 0), BufferFromPrimitive(nonnull_array, OUTPUT_SIZE, 0)},
@@ -314,7 +326,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionBoolean)
     }
     expected_arrays.push_back(nonnull_array);
     expected_fields.push_back(arrow::field("nonnull_bool_column", arrow::boolean(), false));
-    
+
     MockSchema({{"bool_column", turbodbc::type_code::boolean, size_unimportant, true},
             {"nonnull_bool_column", turbodbc::type_code::boolean, size_unimportant, false}});
     MockOutput({{buffer_1, buffer_2}, {buffer_1_2, buffer_2_2}});
@@ -374,7 +386,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionString)
     }
     expected_arrays.push_back(nonnull_array);
     expected_fields.push_back(arrow::field("nonnull_str_column", arrow::utf8(), false));
-    
+
     MockSchema({{"str_column", turbodbc::type_code::string, size_unimportant, true},
             {"nonnull_str_column", turbodbc::type_code::string, size_unimportant, false}});
     MockOutput({{buffer_1, buffer_2}, {buffer_1_2, buffer_2_2}});
@@ -461,7 +473,7 @@ TEST_F(ArrowResultSetTest, MultiBatchConversionTimestamp)
     }
     expected_arrays.push_back(nonnull_array);
     expected_fields.push_back(arrow::field("nonnull_timestamp_column", arrow::timestamp(arrow::TimeUnit::MICRO), false));
-    
+
     MockSchema({{"timestamp_column", turbodbc::type_code::timestamp, size_unimportant, true},
             {"nonnull_timestamp_column", turbodbc::type_code::timestamp, size_unimportant, false}});
     MockOutput({{buffer_1, buffer_2}, {buffer_1_2, buffer_2_2}});
