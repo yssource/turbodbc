@@ -10,6 +10,7 @@ matrix:
     - TRAVIS_PYTHON_VERSION="2.7.12"
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json"
     - ODBC_DIR=odbc_osx
+    - TURBODBC_ARROW_VERSION=0.13.0
 #  Disable for now until a workaround for the detection of pyenv versions by pybind11
 #  is found
 #  - os: osx
@@ -24,18 +25,28 @@ matrix:
     env:
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
     - ODBC_DIR=odbc
+    - TURBODBC_ARROW_VERSION=0.13.0
   - os: linux
     language: python
     python: "3.5"
     env:
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
     - ODBC_DIR=odbc
+    - TURBODBC_ARROW_VERSION=0.13.0
   - os: linux
     language: python
     python: "3.6"
     env:
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
     - ODBC_DIR=odbc
+    - TURBODBC_ARROW_VERSION=0.12.1
+  - os: linux
+    language: python
+    python: "3.6"
+    env:
+    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
+    - ODBC_DIR=odbc
+    - TURBODBC_ARROW_VERSION=0.13.0
   - os: linux
     dist: xenial
     language: python
@@ -54,6 +65,7 @@ matrix:
     - TURBODBC_USE_CONDA=yes
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mssql.json"
     - ODBC_DIR=odbc
+    - TURBODBC_ARROW_VERSION=0.13.0
 
 
 services:
@@ -102,7 +114,7 @@ before_install: |
     source $MINICONDA/etc/profile.d/conda.sh
     conda config --remove channels defaults
     conda config --add channels conda-forge
-    conda create -y -q -n turbodbc-dev pyarrow=0.12.0 numpy pybind11 boost-cpp=1.68 \
+    conda create -y -q -n turbodbc-dev pyarrow=$TURBODBC_ARROW_VERSION numpy pybind11 boost-cpp=1.68 \
         pytest pytest-cov mock cmake unixodbc coveralls gtest gmock python=3.7 \
         gxx_linux-64 gcc_linux-64 ninja make \
         -c conda-forge
@@ -111,7 +123,7 @@ before_install: |
 
 install: |
   if [ "${TURBODBC_USE_CONDA}" != "yes" ]; then
-    pip install numpy==1.14.5 pyarrow==0.12.0 six twine pytest-cov coveralls pandas
+    pip install numpy==1.14.5 pyarrow==$TURBODBC_ARROW_VERSION six twine pytest-cov coveralls pandas
   fi
 
 before_script: |
