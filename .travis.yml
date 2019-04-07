@@ -79,6 +79,11 @@ services:
   - postgresql
 
 addons:
+  homebrew:
+    packages:
+      - unixodbc
+      - pyenv-virtualenv
+      - psqlodbc
   apt:
     packages:
       - unixodbc
@@ -91,11 +96,6 @@ addons:
 
 before_install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-    brew update
-    brew outdated pyenv || brew upgrade pyenv
-    brew install unixodbc
-    brew install pyenv-virtualenv
-    brew install psqlodbc
     eval "$(pyenv init -)"
     pyenv install ${TRAVIS_PYTHON_VERSION}
     pyenv virtualenv ${TRAVIS_PYTHON_VERSION} turbodbc
@@ -120,16 +120,38 @@ before_install: |
     source $MINICONDA/etc/profile.d/conda.sh
     conda config --remove channels defaults
     conda config --add channels conda-forge
-    conda create -y -q -n turbodbc-dev pyarrow=$TURBODBC_ARROW_VERSION numpy pybind11 boost-cpp=1.68 \
-        pytest pytest-cov mock cmake unixodbc coveralls gtest gmock python=3.7 \
-        gxx_linux-64 gcc_linux-64 ninja make \
+    conda create -y -q -n turbodbc-dev \
+        gcc_linux-64 \
+        make \
+        ninja \
+        cmake \
+        coveralls \
+        gmock \
+        gtest \
+        gxx_linux-64 \
+        mock \
+        pytest \
+        pytest-cov \
+        python=3.7 \
+        unixodbc \
+        boost-cpp=1.68 \
+        numpy \
+        pyarrow=$TURBODBC_ARROW_VERSION \
+        pybind11 \
         -c conda-forge
     conda activate turbodbc-dev
   fi
 
 install: |
   if [ "${TURBODBC_USE_CONDA}" != "yes" ]; then
-    pip install numpy==1.14.5 pyarrow==$TURBODBC_ARROW_VERSION six twine pytest-cov coveralls pandas
+    pip install \
+      coveralls \
+      numpy==1.14.5 \
+      pandas \
+      pyarrow==$TURBODBC_ARROW_VERSION \
+      pytest-cov \
+      six \
+      twine 
   fi
 
 before_script: |
