@@ -11,6 +11,7 @@ Version 3.1.1
   (thanks @byjott)
 * Support user-provided gmock/gtest, e.g. in conda environments via
   ``conda install -c conda-forge gtest gmock``.
+* Make source code compatible with Apache Arrow 0.13.0
 
 Version 3.1.0
 -------------

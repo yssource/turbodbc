@@ -4,12 +4,14 @@ sudo: required
 matrix:
   include:
   - os: osx
+    name: CPython2.7 Arrow 0.13.0
     osx_image: xcode9.4
     language: generic
     env:
     - TRAVIS_PYTHON_VERSION="2.7.12"
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json"
     - ODBC_DIR=odbc_osx
+    - TURBODBC_ARROW_VERSION=0.13.0
 #  Disable for now until a workaround for the detection of pyenv versions by pybind11
 #  is found
 #  - os: osx
@@ -19,24 +21,39 @@ matrix:
 #    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json"
 #    - ODBC_DIR=odbc_osx
   - os: linux
+    name: CPython2.7 Arrow 0.13.0
     language: python
     python: "2.7"
     env:
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
     - ODBC_DIR=odbc
+    - TURBODBC_ARROW_VERSION=0.13.0
   - os: linux
+    name: CPython3.5 Arrow 0.13.0
     language: python
     python: "3.5"
     env:
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
     - ODBC_DIR=odbc
+    - TURBODBC_ARROW_VERSION=0.13.0
   - os: linux
+    name: CPython3.6 Arrow 0.12.1
     language: python
     python: "3.6"
     env:
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
     - ODBC_DIR=odbc
+    - TURBODBC_ARROW_VERSION=0.12.1
   - os: linux
+    name: CPython3.6 Arrow 0.13.0
+    language: python
+    python: "3.6"
+    env:
+    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mysql.json"
+    - ODBC_DIR=odbc
+    - TURBODBC_ARROW_VERSION=0.13.0
+  - os: linux
+    name: CPython3.7 Arrow 0.13.0
     dist: xenial
     language: python
     addons:
@@ -54,6 +71,7 @@ matrix:
     - TURBODBC_USE_CONDA=yes
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mssql.json"
     - ODBC_DIR=odbc
+    - TURBODBC_ARROW_VERSION=0.13.0
 
 
 services:
@@ -61,6 +79,11 @@ services:
   - postgresql
 
 addons:
+  homebrew:
+    packages:
+      - unixodbc
+      - pyenv-virtualenv
+      - psqlodbc
   apt:
     packages:
       - unixodbc
@@ -73,11 +96,6 @@ addons:
 
 before_install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-    brew update
-    brew outdated pyenv || brew upgrade pyenv
-    brew install unixodbc
-    brew install pyenv-virtualenv
-    brew install psqlodbc
     eval "$(pyenv init -)"
     pyenv install ${TRAVIS_PYTHON_VERSION}
     pyenv virtualenv ${TRAVIS_PYTHON_VERSION} turbodbc
@@ -102,16 +120,38 @@ before_install: |
     source $MINICONDA/etc/profile.d/conda.sh
     conda config --remove channels defaults
     conda config --add channels conda-forge
-    conda create -y -q -n turbodbc-dev pyarrow=0.12.0 numpy pybind11 boost-cpp=1.68 \
-        pytest pytest-cov mock cmake unixodbc coveralls gtest gmock python=3.7 \
-        gxx_linux-64 gcc_linux-64 ninja make \
+    conda create -y -q -n turbodbc-dev \
+        gcc_linux-64 \
+        make \
+        ninja \
+        cmake \
+        coveralls \
+        gmock \
+        gtest \
+        gxx_linux-64 \
+        mock \
+        pytest \
+        pytest-cov \
+        python=3.7 \
+        unixodbc \
+        boost-cpp=1.68 \
+        numpy \
+        pyarrow=$TURBODBC_ARROW_VERSION \
+        pybind11 \
         -c conda-forge
     conda activate turbodbc-dev
   fi
 
 install: |
   if [ "${TURBODBC_USE_CONDA}" != "yes" ]; then
-    pip install numpy==1.14.5 pyarrow==0.12.0 six twine pytest-cov coveralls pandas
+    pip install \
+      coveralls \
+      numpy==1.14.5 \
+      pandas \
+      pyarrow==$TURBODBC_ARROW_VERSION \
+      pytest-cov \
+      six \
+      twine 
   fi
 
 before_script: |
