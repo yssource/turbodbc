@@ -71,14 +71,14 @@ class StringDictionaryBuilderProxy: public StringDictionaryBuilder {
         // ARROW-4367: StringDictionaryBuilder segfaults on Finish with only null entries
         if (length_ == null_count_) {
             auto values = std::make_shared<arrow::StringArray>(0, std::shared_ptr<arrow::Buffer>(), std::shared_ptr<arrow::Buffer>());
-            auto type = arrow::dictionary(arrow::int32(), values);
+            auto type = arrow::dictionary(arrow::int32(), arrow::utf8());
             Int32Builder builder;
             for (size_t i = 0; i != length_; i++) {
                 ARROW_RETURN_NOT_OK(builder.AppendNull());
             }
             std::shared_ptr<arrow::Array> indices;
             ARROW_RETURN_NOT_OK(builder.Finish(&indices));
-            *out = arrow::DictionaryArray(type, indices).data();
+            *out = arrow::DictionaryArray(type, indices, values).data();
 
             return Status::OK();
         }
