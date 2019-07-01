@@ -79,11 +79,6 @@ services:
   - postgresql
 
 addons:
-  homebrew:
-    packages:
-      - unixodbc
-      - pyenv-virtualenv
-      - psqlodbc
   apt:
     packages:
       - unixodbc
@@ -96,7 +91,9 @@ addons:
 
 before_install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+    brew install unixodbc pyenv-virtualenv pyenv-virtualenv psqlodbc
     eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
     pyenv install ${TRAVIS_PYTHON_VERSION}
     pyenv virtualenv ${TRAVIS_PYTHON_VERSION} turbodbc
     pyenv activate turbodbc

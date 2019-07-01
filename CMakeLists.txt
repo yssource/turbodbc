@@ -6,6 +6,11 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake_scripts)
 
 include(default_build_setup)
 
+# Boost 1.70 comes with its own CMake config which is incompatible with
+# using FindBoost.cmake from CMake. While we still support older Boost
+# versions, rely on the CMake built-in.
+set(Boost_NO_BOOST_CMAKE ON)
+
 add_subdirectory(pybind11)
 find_package(GTest)
 if (GTest_FOUND OR GTEST_FOUND)
