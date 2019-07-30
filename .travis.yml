@@ -151,7 +151,7 @@ before_install: |
         pytest-cov \
         python=3.7 \
         unixodbc \
-        boost-cpp=1.68 \
+        boost-cpp \
         numpy \
         pyarrow=$TURBODBC_ARROW_VERSION \
         pybind11 \
