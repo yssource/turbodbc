@@ -3,10 +3,11 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
-Next release
-------------
+Version 3.2.0
+-------------
 
 * Release GIL while fetching batches using Apache Arrow engine
+* Support Arrow 0.14.X
 
 
 Version 3.1.1
