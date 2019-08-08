@@ -246,5 +246,3 @@ deploy:
     python: "2.7"
     branch: master
     repo: blue-yonder/turbodbc
-  distributions: "sdist bdist_wheel"
-  skip_existing: true
