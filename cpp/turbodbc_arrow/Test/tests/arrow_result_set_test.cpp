@@ -212,8 +212,8 @@ TEST_F(ArrowResultSetTest, SingleBatchSingleColumnResultSetConversion)
     std::shared_ptr<arrow::Int64Array> typed_array = std::static_pointer_cast<arrow::Int64Array>(array);
     std::vector<std::shared_ptr<arrow::Field>> fields({std::make_shared<arrow::Field>("int_column", arrow::int64(), true)});
     std::shared_ptr<arrow::Schema> schema = std::make_shared<arrow::Schema>(fields);
-    std::vector<std::shared_ptr<arrow::Column>> columns ({std::make_shared<arrow::Column>(fields[0], array)});
-    std::shared_ptr<arrow::Table> expected_table = arrow::Table::Make(schema, columns);
+
+    std::shared_ptr<arrow::Table> expected_table = arrow::Table::Make(schema, {array});
 
     MockSchema({{"int_column", turbodbc::type_code::integer, size_unimportant, true}});
 
