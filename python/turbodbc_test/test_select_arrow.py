@@ -78,7 +78,7 @@ def test_arrow_int_column(dsn, configuration):
         assert isinstance(result, pa.Table)
         assert result.num_columns == 1
         assert result.num_rows == 1
-        assert result.column(0).name == _fix_case(configuration, "a")
+        assert result.schema[0].name == _fix_case(configuration, "a")
         assert str(result.column(0).type) == "int64"
         assert result.column(0).to_pylist() == [42]
 
@@ -89,7 +89,7 @@ def test_arrow_int_column_adaptive(dsn, configuration):
     with open_cursor(configuration) as cursor:
         cursor.execute("SELECT 42 AS a")
         result = cursor.fetchallarrow(adaptive_integers=True)
-        assert str(result.column(0).type) == "int8"
+        assert str(result.schema[0].type) == "int8"
         assert result.column(0).to_pylist() == [42]
 
 
@@ -103,8 +103,8 @@ def test_arrow_double_column(dsn, configuration):
             assert isinstance(result, pa.Table)
             assert result.num_columns == 1
             assert result.num_rows == 1
-            assert result.column(0).name == _fix_case(configuration, "a")
-            assert str(result.column(0).type) == "double"
+            assert result.schema[0].name == _fix_case(configuration, "a")
+            assert str(result.schema[0].type) == "double"
             assert result.column(0).to_pylist() == [3.14]
 
 
@@ -120,8 +120,8 @@ def test_arrow_boolean_column(dsn, configuration):
             assert isinstance(result, pa.Table)
             assert result.num_columns == 1
             assert result.num_rows == 3
-            assert result.column(0).name == _fix_case(configuration, "a")
-            assert str(result.column(0).type) == "bool"
+            assert result.schema[0].name == _fix_case(configuration, "a")
+            assert str(result.schema[0].type) == "bool"
             assert result.column(0).to_pylist() == [True, False, True]
 
 
@@ -137,8 +137,8 @@ def test_arrow_binary_column_with_null(dsn, configuration):
             assert isinstance(result, pa.Table)
             assert result.num_columns == 1
             assert result.num_rows == 2
-            assert result.column(0).name == _fix_case(configuration, "a")
-            assert str(result.column(0).type) == "int64"
+            assert result.schema[0].name == _fix_case(configuration, "a")
+            assert str(result.schema[0].type) == "int64"
             assert result.column(0).to_pylist() == [42, None]
             assert result.column(0).null_count == 1
 
