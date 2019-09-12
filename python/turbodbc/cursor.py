@@ -187,12 +187,20 @@ class Cursor(object):
 
         if _has_arrow_support():
             import pyarrow as pa
+
+            def _num_chunks(c):
+                if not isinstance(c, pa.ChunkedArray):
+                    # pyarrow < 0.15
+                    c = c.data
+                return c.num_chunks
+
             if isinstance(columns, pa.Table):
                 from turbodbc_arrow_support import set_arrow_parameters
 
                 for column in columns.itercolumns():
-                    if column.data.num_chunks != 1:
-                        raise NotImplementedError("Chunked Arrays are not yet supported")
+                    if _num_chunks(column) != 1:
+                        raise NotImplementedError("Chunked Arrays are "
+                                                  "not yet supported")
 
                 set_arrow_parameters(self.impl, columns)
                 return self._execute()
@@ -401,5 +409,3 @@ class Cursor(object):
         Conformance to PEP-343
         """
         return self.close()
-
-

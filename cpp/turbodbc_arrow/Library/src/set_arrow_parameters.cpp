@@ -351,7 +351,11 @@ namespace {
         std::vector<std::unique_ptr<parameter_converter>> converters;
 
         for (int64_t i = 0; i < table.num_columns(); ++i) {
-            std::shared_ptr<ChunkedArray> const & data = table.column(i)->data();
+#if ARROW_VERSION_MAJOR > 0 || ARROW_VERSION_MINOR >= 15
+            std::shared_ptr<ChunkedArray> data = table.column(i);
+#else
+            std::shared_ptr<ChunkedArray> data = table.column(i)->data();
+#endif
             arrow::Type::type dtype = data->type()->id();
 
             switch (dtype) {
