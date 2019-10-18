@@ -92,7 +92,26 @@ matrix:
     - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mssql.json"
     - ODBC_DIR=odbc
     - TURBODBC_ARROW_VERSION=0.14.1
-
+  - os: linux
+    name: CPython3.7 Arrow 0.15.0
+    dist: xenial
+    language: python
+    addons:
+      apt:
+        packages:
+          - unixodbc
+          - unixodbc-dev
+          - odbc-postgresql
+    services:
+      - docker
+      - postgresql
+      - mysql
+    python: "3.7"
+    env:
+    - TURBODBC_USE_CONDA=yes
+    - TURBODBC_TEST_CONFIGURATION_FILES="query_fixtures_postgresql.json,query_fixtures_mssql.json"
+    - ODBC_DIR=odbc
+    - TURBODBC_ARROW_VERSION=0.15.0
 
 services:
   - mysql
