@@ -28,7 +28,7 @@ option(DISABLE_CXX11_ABI
 
 if (UNIX)
     # flags apply for both Linux and OSX!
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
     if (DISABLE_CXX11_ABI)
         set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
     endif()
@@ -43,7 +43,7 @@ if (UNIX)
         set(CMAKE_STATIC_LINKER_FLAGS_DEBUG "--coverage")
     endif()
 else()
-    set(CMAKE_CXX_FLAGS "/W3 /EHsc -DNOMINMAX")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /EHsc -DNOMINMAX")
     set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
     set(CMAKE_CXX_FLAGS_RELEASE "/MT")
 endif()
