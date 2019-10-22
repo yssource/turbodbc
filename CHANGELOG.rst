@@ -3,6 +3,12 @@ Version history / changelog
 
 From version 2.0.0, turbodbc adapts semantic versioning.
 
+Version 3.3.0
+-------------
+
+* Don't override but amend ``CMAKE_CXX_FLAGS``
+* Support Arrow 0.15.X
+
 Version 3.2.0
 -------------
 
